@@ -25,7 +25,7 @@
             color: white;
             padding: 1.5rem 1rem;
             text-align: center;
-            position: relative; /* Keep relative for potential absolute children */
+            position: relative;
         }
 
         header h1 {
@@ -704,11 +704,9 @@
             }
 
             .user-info {
-                position: absolute;
-                top: 1rem;
-                right: 1rem;
-                text-align: right;
-                margin-top: 0;
+                position: static;
+                margin-top: 1rem;
+                text-align: center;
             }
         }
 
@@ -720,32 +718,6 @@
                 right: 1rem;
                 text-align: right;
                 margin-top: 0;
-            }
-        }
-
-        /* Smartphone optimizations (header) */
-        @media (max-width: 767px) {
-            header {
-                padding: 1rem; /* Slightly reduced padding for smaller screens */
-            }
-            
-            header h1 {
-                font-size: 1.5rem; /* Smaller heading on small screens */
-                margin-bottom: 0.25rem;
-            }
-
-            /* Make user-info flow naturally on smaller screens */
-            .user-info {
-                position: static;
-                text-align: center;
-                margin-top: 1rem; /* Add some space below the header text */
-                right: auto; /* Remove absolute positioning attributes */
-                top: auto;
-            }
-
-            /* Adjust header padding if user-info is static to avoid large gaps */
-            header {
-                padding-bottom: 1rem; 
             }
         }
 
@@ -792,16 +764,17 @@
 </head>
 <body>
     <header>
-        <h1>🫁 Ademruimte</h1>
-        <p>Jouw persoonlijke hyperventilatie helper</p>
         <div class="user-info" id="user-info">
             <div class="spinner" id="auth-loading"></div>
         </div>
+        <h1>🫁 Ademruimte</h1>
+        <p>Jouw persoonlijke hyperventilatie helper</p>
         <div id="firebase-status" class="status-disconnected">
-            Firebase: Initialiseren...
+            🔥 Firebase: Initialiseren...
         </div>
     </header>
 
+    <!-- Login Screen -->
     <div id="login-screen" class="hidden">
         <div class="login-container">
             <div class="login-card">
@@ -813,6 +786,7 @@
                     Log in om je vooruitgang op te slaan en te synchroniseren tussen al je apparaten.
                 </p>
 
+                <!-- Google Login -->
                 <button class="google-btn" onclick="signInWithGoogle()">
                     <svg width="18" height="18" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -827,6 +801,7 @@
                     <span>of</span>
                 </div>
 
+                <!-- Email/Password Login -->
                 <form id="login-form">
                     <div class="form-group">
                         <label class="form-label">E-mail:</label>
@@ -860,6 +835,7 @@
         </div>
     </div>
 
+    <!-- Register Modal -->
     <div id="register-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -895,6 +871,7 @@
         </div>
     </div>
 
+    <!-- Main App (hidden until logged in) -->
     <div id="main-app" class="hidden">
         <nav class="nav-tabs">
             <button class="tab-btn active" data-tab="dashboard">🏠 Dashboard</button>
@@ -907,6 +884,7 @@
         </nav>
 
         <div class="container">
+            <!-- Dashboard Tab -->
             <div id="dashboard" class="tab-content">
                 <div class="card">
                     <h2>Welkom bij Ademruimte</h2>
@@ -955,6 +933,21 @@
                     <strong>💡 Tip van de dag:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.
                 </div>
 
+                <!-- Data Migration Section (if needed) -->
+                <div class="settings-section" id="migration-section" style="display: none;">
+                    <h3>📤 Data Migratie</h3>
+                    <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 1rem;">
+                        Heb je eerder de app gebruikt zonder account? Migreer je lokale data naar je cloud account.
+                    </p>
+                    <div class="button-group">
+                        <button class="btn btn-green" onclick="migrateLocalData()">
+                            📤 Migreer Lokale Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Crisis Tab -->
             <div id="crisis" class="tab-content hidden">
                 <div class="card">
                     <h2>🚨 Crisis Hulp - Luchthonger</h2>
@@ -999,6 +992,7 @@
                 </div>
             </div>
 
+            <!-- Buteyko Tab -->
             <div id="buteyko" class="tab-content hidden">
                 <div class="card">
                     <h2>🌬️ Buteyko Ademhaling</h2>
@@ -1078,6 +1072,7 @@
                 </div>
             </div>
 
+            <!-- Ritueel Tab -->
             <div id="ritueel" class="tab-content hidden">
                 <div class="card">
                     <h2>🕐 Afkoel Ritueel</h2>
@@ -1118,6 +1113,7 @@
                 </div>
             </div>
 
+            <!-- Gapen Tab -->
             <div id="gapen" class="tab-content hidden">
                 <div class="card">
                     <h2>🥱 Gaap Preventie Technieken</h2>
@@ -1168,6 +1164,7 @@
                 </div>
             </div>
 
+            <!-- EMDR Tab -->
             <div id="emdr" class="tab-content hidden">
                 <div class="card">
                     <h2>💜 EMDR Zelfhulp</h2>
@@ -1182,6 +1179,7 @@
                     <strong>🎧 Bilaterale Audio:</strong> Voor de beste ervaring, gebruik koptelefoon of oortjes. Zet het volume op een comfortabel niveau voordat je begint.
                 </div>
 
+                <!-- Audio Controls -->
                 <div class="card">
                     <h3>🔊 Bilaterale Audio Stimulatie</h3>
                     <p style="margin-bottom: 1rem;">Een 880Hz toon die van links naar rechts beweegt om bilaterale hersenstimulatie te ondersteunen.</p>
@@ -1243,6 +1241,7 @@
                 </div>
             </div>
 
+            <!-- Dagboek Tab -->
             <div id="dagboek" class="tab-content hidden">
                 <div class="card">
                     <h2>📖 Dagboek</h2>
@@ -1261,7 +1260,8 @@
                 </div>
 
                 <div id="dagboek-entries">
-                    </div>
+                    <!-- Entries worden hier geladen -->
+                </div>
 
                 <div class="card">
                     <h3>Patronen om naar uit te kijken</h3>
@@ -1277,6 +1277,7 @@
         </div>
     </div>
 
+    <!-- Dagboek Modal -->
     <div id="dagboek-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1337,6 +1338,7 @@
         <p>📞 In noodgevallen: contacteer altijd je huisarts of spoeddiensten</p>
     </footer>
 
+    <!-- Firebase en App JavaScript -->
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
@@ -1395,7 +1397,7 @@
             
         } catch (error) {
             console.error('❌ Firebase initialization error:', error);
-            updateFirebaseStatus('error', '🔥 Firebase: Fout. Controleer console.'); // More specific error message
+            updateFirebaseStatus('error', '🔥 Firebase: Fout');
         }
 
         // Authentication state observer
@@ -1423,16 +1425,12 @@
 
         function checkForLocalData() {
             const localData = localStorage.getItem('ademruimte-entries');
-            // This section assumes a 'migration-section' HTML element.
-            // If it doesn't exist in your HTML, this part won't have a visible effect.
-            // For this specific HTML, there is no 'migration-section'.
-            // const migrationSection = document.getElementById('migration-section');
+            const migrationSection = document.getElementById('migration-section');
             
             if (localData && JSON.parse(localData).length > 0) {
-                // if (migrationSection) migrationSection.style.display = 'block';
-                console.warn('Local data found. Consider adding a UI element for migration if not present.'); // Added warning
+                migrationSection.style.display = 'block';
             } else {
-                // if (migrationSection) migrationSection.style.display = 'none';
+                migrationSection.style.display = 'none';
             }
         }
 
@@ -1442,25 +1440,21 @@
                 '<div class="user-name">👋 ' + (user.displayName || user.email) + '</div>' +
                 '<button type="button" id="logout-button">Uitloggen</button>';
             
-            // Fix: Attach event listener with a small delay to ensure element is rendered
+            // Direct na het aanmaken van de button, event listener toevoegen
             setTimeout(() => {
                 const logoutBtn = document.getElementById('logout-button');
                 if (logoutBtn) {
-                    // Changed from directly assigning onclick to addEventListener for better practice and reliability
-                    logoutBtn.addEventListener('click', function() { 
+                    logoutBtn.onclick = function() {
                         console.log('Logout button clicked');
                         signOut(auth).then(() => {
                             console.log('Successfully signed out');
-                            // After signOut, onAuthStateChanged will handle showLoginScreen()
                         }).catch((error) => {
                             console.error('Sign out error:', error);
                             alert('Uitloggen mislukt: ' + error.message);
                         });
-                    });
-                } else {
-                    console.error("Logout button not found after updateUserInfo. Possible timing issue.");
+                    };
                 }
-            }, 100); // Small delay to allow DOM to update
+            }, 100);
         }
 
         function showLoginScreen() {
@@ -1484,15 +1478,7 @@
                 console.log('✅ Google sign-in successful:', result.user.email);
             } catch (error) {
                 console.error('❌ Google sign-in error:', error);
-                if (error.code === 'auth/popup-blocked') {
-                    alert('Inloggen met Google mislukt: Popup geblokkeerd. Sta pop-ups toe voor deze site en probeer opnieuw.');
-                } else if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/web-storage-unsupported') {
-                    // Specific message for user cancellation or storage issues
-                    alert('Inloggen met Google geannuleerd of mislukt. Probeer het opnieuw.');
-                }
-                else {
-                    alert('Google inloggen mislukt: ' + error.message);
-                }
+                alert('Google inloggen mislukt: ' + error.message);
             }
         };
 
@@ -1571,7 +1557,6 @@
                 const entryWithId = { ...entry, id: Date.now().toString(), bron: 'Lokaal', userId: 'local' };
                 stored.unshift(entryWithId);
                 localStorage.setItem('ademruimte-entries', JSON.stringify(stored));
-                console.log('✅ Entry saved to localStorage (Firebase not connected or no user).');
                 return { id: entryWithId.id, success: true };
             }
 
@@ -1588,13 +1573,12 @@
                 
             } catch (error) {
                 console.error('❌ Error saving to Firestore:', error);
-                // Fallback naar localStorage and display Firebase error message to user
+                // Fallback naar localStorage
                 const stored = JSON.parse(localStorage.getItem('ademruimte-entries') || '[]');
-                const entryWithId = { ...entry, id: Date.now().toString(), bron: `Lokaal (Firebase fout: ${error.message.substring(0, 50)}...)`, userId: currentUser?.uid || 'local' }; // Truncate error message
+                const entryWithId = { ...entry, id: Date.now().toString(), bron: 'Lokaal (Firebase fout)', userId: currentUser?.uid || 'local' };
                 stored.unshift(entryWithId);
                 localStorage.setItem('ademruimte-entries', JSON.stringify(stored));
-                alert(`Fout bij opslaan in Firebase: ${error.message}. Gegevens lokaal opgeslagen.`); // Alert user about the specific error
-                return { id: entryWithId.id, success: false, error: error.message };
+                return { id: entryWithId.id, success: true };
             }
         }
 
@@ -1602,7 +1586,6 @@
             if (!isFirebaseConnected || !currentUser) {
                 // Load from localStorage
                 const stored = localStorage.getItem('ademruimte-entries');
-                console.log('✅ Loaded from localStorage (Firebase not connected or no user).');
                 return stored ? JSON.parse(stored) : [];
             }
 
@@ -1632,7 +1615,6 @@
                 console.error('❌ Error loading from Firestore:', error);
                 // Fallback naar localStorage
                 const stored = localStorage.getItem('ademruimte-entries');
-                alert(`Fout bij laden vanuit Firebase: ${error.message}. Lokale gegevens worden geladen.`); // Alert user about the specific error
                 return stored ? JSON.parse(stored) : [];
             }
         }
@@ -1669,12 +1651,12 @@
                 let migratedCount = 0;
                 
                 for (const entry of entries) {
-                    // Skip entries that are already marked as cloud entries or belong to the current user (if user ID is present)
-                    if (entry.bron === 'Cloud' || (entry.userId && entry.userId === currentUser.uid)) {
+                    // Skip entries that are already marked as cloud entries
+                    if (entry.bron === 'Cloud' || entry.userId === currentUser.uid) {
                         continue;
                     }
 
-                    // Clean entry for migration - ensure only necessary fields are sent
+                    // Clean entry for migration
                     const cleanEntry = {
                         techniekGebruikt: entry.techniekGebruikt,
                         trigger: entry.trigger,
@@ -1682,17 +1664,11 @@
                         intensiteitNa: entry.intensiteitNa,
                         resultaat: entry.resultaat,
                         notities: entry.notities,
-                        // Do not include 'tijdstempel' from local storage directly if using serverTimestamp in Firestore
-                        // Firebase will set its own timestamp. If you want to preserve the client-side timestamp, store it in another field.
-                        // For simplicity, we'll let Firestore set it here.
+                        tijdstempel: entry.tijdstempel
                     };
 
-                    const result = await saveToFirestore(cleanEntry); // Use the existing save function
-                    if (result.success) {
-                        migratedCount++;
-                    } else {
-                        console.warn('Skipped migration of an entry due to Firebase error:', result.error);
-                    }
+                    await saveToFirestore(cleanEntry);
+                    migratedCount++;
                 }
 
                 if (migratedCount > 0) {
@@ -1701,14 +1677,13 @@
                     // Clear local storage after successful migration
                     localStorage.removeItem('ademruimte-entries');
                     
-                    // Hide migration section (if it exists, though not in this HTML)
-                    // const migrationSection = document.getElementById('migration-section');
-                    // if (migrationSection) migrationSection.style.display = 'none';
+                    // Hide migration section
+                    document.getElementById('migration-section').style.display = 'none';
                     
                     // Reload entries
                     await loadDagboekEntries();
                 } else {
-                    alert('📝 Geen nieuwe entries gevonden om te migreren of al gemigreerd.');
+                    alert('📝 Geen nieuwe entries gevonden om te migreren');
                 }
                 
             } catch (error) {
@@ -2018,4 +1993,440 @@
                 duration: 120,
                 instructions: [
                     "Sta op en strek je volledig uit",
-                    "Schud je armen en benen los",
+                    "Schud je armen en benen los", 
+                    "Rol je schouders 5x naar achteren",
+                    "Maak kleine cirkels met je hoofd (5x elke richting)"
+                ]
+            },
+            {
+                title: "Stap 2: Zintuigelijke Verschuiving",
+                duration: 120,
+                instructions: [
+                    "Raak 5 verschillende texturen aan in je omgeving",
+                    "Luister bewust naar 3 geluiden die je kunt horen",
+                    "Kijk naar iets aangenaams in de verte"
+                ]
+            },
+            {
+                title: "Stap 3: Voedings-ankerpunt",
+                duration: 120,
+                instructions: [
+                    "Drink een half glas water, langzaam en bewust",
+                    "Eet iets kleins met een sterke smaak",
+                    "Let op de smaak en textuur in je mond"
+                ]
+            },
+            {
+                title: "Stap 4: Mentale Overgang",
+                duration: 120,
+                instructions: [
+                    "Schrijf 3 woorden op die samenvatten waar je net aan werkte",
+                    "Schrijf daaronder 3 woorden voor wat je nu gaat doen",
+                    "Trek een lijn tussen deze sets woorden als symbolische afsluiting"
+                ]
+            },
+            {
+                title: "Stap 5: Bewegingsafsluiting",
+                duration: 120,
+                instructions: [
+                    "Loop even rond, bij voorkeur buiten of bij een open raam",
+                    "Maak 5-10 trage, bewuste stappen",
+                    "Eindig met een kleine glimlach"
+                ]
+            }
+        ];
+
+        // EMDR steps (updated with audio integration)
+        const emdrSteps = [
+            {
+                title: "Stap 1: Voorbereiding",
+                content: "Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt.<br><br><strong>💡 Tip:</strong> Je kunt de bilaterale audio bovenaan starten voor extra ondersteuning."
+            },
+            {
+                title: "Stap 2: Doelgerichtheid", 
+                content: "Denk heel kort aan het gevoel van luchthonger (niet meer dan 5 seconden). Schat de intensiteit en formuleer: 'Ik kan met dit gevoel omgaan'<br><br><strong>🎧 Optioneel:</strong> Start nu de bilaterale audio als je koptelefoon draagt."
+            },
+            {
+                title: "Stap 3: Bilaterale Stimulatie",
+                content: "Kies één of meerdere opties:<br><br><strong>🔊 Bilaterale Audio:</strong> Luister naar de 880Hz toon die van links naar rechts beweegt<br><strong>👀 Oogbewegingen:</strong> Beweeg je ogen langzaam van links naar rechts (15-20x)<br><strong>🤗 Butterfly hug:</strong> Kruis je armen en tik afwisselend op je schouders<br><strong>🦵 Knie-tikken:</strong> Tik afwisselend op je knieën met je handen"
+            },
+            {
+                title: "Stap 4: Check-in",
+                content: "Hoe voelt het luchthonger-gevoel nu? Welke gedachten komen op? Accepteer wat er komt zonder oordeel.<br><br><em>Je kunt de bilaterale stimulatie voortzetten tijdens deze reflectie.</em>"
+            },
+            {
+                title: "Stap 5: Positieve Verankering",
+                content: "Focus op 'Ik kan hiermee omgaan' en doe 10-15 bilaterale bewegingen of luister naar de audio terwijl je deze gedachte vasthoudt.<br><br><strong>🔇 Tip:</strong> Stop de audio als je klaar bent met de sessie."
+            }
+        ];
+
+        // Tab switching
+        window.showTab = function(tabName) {
+            // Stop audio when leaving EMDR tab
+            if (currentTab === 'emdr' && tabName !== 'emdr' && isAudioPlaying) {
+                stopBilateralAudio();
+            }
+
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.remove('hidden');
+            
+            // Set active button
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            
+            currentTab = tabName;
+
+            // Load content if needed
+            if (tabName === 'dagboek') {
+                loadDagboekEntries();
+            }
+        };
+
+        // Timer functions
+        window.startTimer = function() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+                return;
+            }
+
+            currentTime = ritualSteps[ritualStep].duration;
+            document.getElementById('timer-btn').innerHTML = '⏸️ Pause Timer';
+            
+            timerInterval = setInterval(() => {
+                currentTime--;
+                updateTimerDisplay();
+                
+                if (currentTime <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+                    document.getElementById('next-btn').style.display = 'inline-block';
+                }
+            }, 1000);
+        };
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(currentTime / 60);
+            const seconds = currentTime % 60;
+            const display = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+            document.getElementById('timer-display').textContent = display;
+        }
+
+        window.nextRitualStep = function() {
+            ritualStep++;
+            
+            if (ritualStep >= ritualSteps.length) {
+                // Ritual complete
+                document.getElementById('ritual-complete').classList.remove('hidden');
+                document.querySelector('#ritueel .card:nth-child(2)').style.display = 'none';
+                return;
+            }
+            
+            updateRitualDisplay();
+            document.getElementById('next-btn').style.display = 'none';
+        };
+
+        window.resetRitual = function() {
+            ritualStep = 0;
+            currentTime = 0;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            
+            document.getElementById('ritual-complete').classList.add('hidden');
+            document.querySelector('#ritueel .card:nth-child(2)').style.display = 'block';
+            document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+            document.getElementById('next-btn').style.display = 'none';
+            
+            updateRitualDisplay();
+        };
+
+        function updateRitualDisplay() {
+            const step = ritualSteps[ritualStep];
+            document.getElementById('ritual-title').textContent = step.title;
+            currentTime = step.duration;
+            updateTimerDisplay();
+            
+            const instructionsHtml = step.instructions.map(function(inst) {
+                return '<li>' + inst + '</li>';
+            }).join('');
+            document.getElementById('ritual-instructions').innerHTML = '<ul class="step-list">' + instructionsHtml + '</ul>';
+            
+            const progress = ((ritualStep + 1) / ritualSteps.length) * 100;
+            document.getElementById('ritual-progress').style.width = progress + '%';
+        }
+
+        // EMDR functions
+        window.nextEmdrStep = function() {
+            emdrStep++;
+            
+            if (emdrStep >= emdrSteps.length) {
+                // EMDR complete - stop audio
+                if (isAudioPlaying) {
+                    stopBilateralAudio();
+                }
+                document.getElementById('emdr-complete').classList.remove('hidden');
+                document.querySelector('#emdr .card:nth-child(4)').style.display = 'none';
+                return;
+            }
+            
+            updateEmdrDisplay();
+        };
+
+        window.prevEmdrStep = function() {
+            if (emdrStep > 0) {
+                emdrStep--;
+                updateEmdrDisplay();
+            }
+        };
+
+        function updateEmdrDisplay() {
+            const step = emdrSteps[emdrStep];
+            document.getElementById('emdr-title').textContent = step.title;
+            document.getElementById('emdr-content').innerHTML = step.content;
+            
+            // Show/hide intensity slider
+            if (emdrStep === 1) {
+                document.getElementById('emdr-intensity').classList.remove('hidden');
+            } else {
+                document.getElementById('emdr-intensity').classList.add('hidden');
+            }
+            
+            // Show/hide navigation buttons
+            document.getElementById('emdr-prev-btn').style.display = emdrStep > 0 ? 'inline-block' : 'none';
+            
+            if (emdrStep >= emdrSteps.length - 1) {
+                document.getElementById('emdr-next-btn').textContent = 'Voltooien';
+            } else {
+                document.getElementById('emdr-next-btn').textContent = 'Volgende';
+            }
+            
+            const progress = ((emdrStep + 1) / emdrSteps.length) * 100;
+            document.getElementById('emdr-progress').style.width = progress + '%';
+        }
+
+        // Cleanup when page is closed or refreshed
+        window.addEventListener('beforeunload', function() {
+            if (isAudioPlaying) {
+                stopBilateralAudio();
+            }
+        });
+
+        // Dagboek functions
+        window.openDagboekModal = function(technique) {
+            currentTechnique = technique;
+            document.getElementById('entry-trigger').value = technique ? `Tijdens/na ${technique}` : '';
+            document.getElementById('dagboek-modal').classList.add('show');
+        };
+
+        window.closeDagboekModal = function() {
+            document.getElementById('dagboek-modal').classList.remove('show');
+            
+            // Reset form fields
+            document.getElementById('entry-trigger').value = '';
+            document.getElementById('entry-before').value = '5';
+            document.getElementById('entry-after').value = '5';
+            document.getElementById('entry-result').value = '';
+            document.getElementById('entry-notes').value = '';
+            
+            // Reset range displays
+            document.getElementById('entry-before-value').textContent = '5';
+            document.getElementById('entry-after-value').textContent = '5';
+            
+            currentTechnique = '';
+        };
+
+        window.saveDagboekEntry = async function() {
+            try {
+                const entry = {
+                    techniekGebruikt: currentTechnique || 'Handmatige Entry',
+                    trigger: document.getElementById('entry-trigger').value,
+                    intensiteitVoor: parseInt(document.getElementById('entry-before').value),
+                    intensiteitNa: parseInt(document.getElementById('entry-after').value),
+                    resultaat: document.getElementById('entry-result').value,
+                    notities: document.getElementById('entry-notes').value,
+                    tijdstempel: new Date().toLocaleString('nl-BE')
+                };
+
+                await saveToFirestore(entry);
+                
+                closeDagboekModal();
+                
+                if (currentTab === 'dagboek') {
+                    await loadDagboekEntries();
+                }
+                
+                alert('✅ Entry opgeslagen!');
+                
+            } catch (error) {
+                alert('❌ Fout bij opslaan: ' + error.message);
+            }
+        };
+
+        window.loadDagboekEntries = async function() {
+            try {
+                const entries = await loadFromFirestore();
+                displayDagboekEntries(entries);
+                
+            } catch (error) {
+                console.error('Load entries failed:', error);
+                document.getElementById('dagboek-entries').innerHTML = 
+                    '<div class="alert alert-danger">' +
+                        '<strong>❌ Fout bij laden entries:</strong><br>' + 
+                        error.message +
+                    '</div>';
+            }
+        };
+
+        window.exportDagboek = async function() {
+            try {
+                const entries = await loadFromFirestore();
+                
+                if (!entries || entries.length === 0) {
+                    alert('📝 Geen entries om te exporteren');
+                    return;
+                }
+                
+                let exportText = 'ADEMRUIMTE DAGBOEK EXPORT\n';
+                exportText += '================================\n';
+                exportText += 'Gebruiker: ' + (currentUser ? (currentUser.displayName || currentUser.email) : 'Onbekend') + '\n';
+                exportText += 'Export datum: ' + new Date().toLocaleString('nl-BE') + '\n\n';
+                
+                for (let i = 0; i < entries.length; i++) {
+                    const entry = entries[i];
+                    exportText += 'ENTRY ' + (i + 1) + '\n';
+                    exportText += 'Datum: ' + entry.tijdstempel + '\n';
+                    exportText += 'Techniek: ' + entry.techniekGebruikt + '\n';
+                    exportText += 'Trigger: ' + (entry.trigger || 'Geen') + '\n';
+                    exportText += 'Intensiteit voor: ' + entry.intensiteitVoor + '/10\n';
+                    exportText += 'Intensiteit na: ' + entry.intensiteitNa + '/10\n';
+                    exportText += 'Resultaat: ' + getResultaatText(entry.resultaat) + '\n';
+                    exportText += 'Notities: ' + (entry.notities || 'Geen') + '\n';
+                    exportText += 'Bron: ' + (entry.bron || 'Onbekend') + '\n';
+                    exportText += '\n---\n\n';
+                }
+                
+                // Create downloadable file
+                const blob = new Blob([exportText], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'ademruimte-dagboek-' + new Date().toLocaleDateString('nl-BE') + '.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                alert('📁 Dagboek geëxporteerd als tekstbestand!');
+                
+            } catch (error) {
+                alert('❌ Fout bij exporteren: ' + error.message);
+            }
+        };
+
+        function displayDagboekEntries(entries) {
+            const container = document.getElementById('dagboek-entries');
+            
+            if (!entries || entries.length === 0) {
+                container.innerHTML = 
+                    '<div class="card">' +
+                        '<h3>Nog geen entries</h3>' +
+                        '<p>Maak een dagboekentry na het gebruiken van oefeningen om patronen bij te houden.</p>' +
+                        '<button class="btn btn-primary" onclick="openDagboekModal(\'Eerste Entry\')">' +
+                            'Maak je eerste entry' +
+                        '</button>' +
+                    '</div>';
+                return;
+            }
+            
+            const entriesHtml = entries.map(entry => {
+                return '<div class="entry-card">' +
+                    '<div class="entry-header">' +
+                        '<div>' +
+                            '<div class="entry-title">' + entry.techniekGebruikt + '</div>' +
+                            '<div style="font-size: 0.8rem; color: #6b7280;">' +
+                                entry.tijdstempel + ' • ' +
+                                '<span style="color: #3b82f6; font-size: 0.75rem;">' + (entry.bron || 'Onbekend') + '</span>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="entry-result ' + entry.resultaat + '">' +
+                            getResultaatText(entry.resultaat) +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="intensity-grid">' +
+                        '<div style="font-size: 0.85rem;">' +
+                            '<span style="color: #6b7280;">Voor:</span>' +
+                            '<span style="font-weight: 500; margin-left: 0.25rem;">' + entry.intensiteitVoor + '/10</span>' +
+                        '</div>' +
+                        '<div style="font-size: 0.85rem;">' +
+                            '<span style="color: #6b7280;">Na:</span>' +
+                            '<span style="font-weight: 500; margin-left: 0.25rem;">' + entry.intensiteitNa + '/10</span>' +
+                        '</div>' +
+                    '</div>' +
+                    (entry.trigger ? '<p style="font-size: 0.85rem; margin-bottom: 0.5rem;"><strong>Trigger:</strong> ' + entry.trigger + '</p>' : '') +
+                    (entry.notities ? '<p style="font-size: 0.85rem;"><strong>Notities:</strong> ' + entry.notities + '</p>' : '') +
+                '</div>';
+            }).join('');
+            
+            container.innerHTML = entriesHtml;
+        }
+
+        function getResultaatText(resultaat) {
+            const mapping = {
+                'zeer-goed': 'Zeer goed',
+                'goed': 'Goed',
+                'matig': 'Matig',
+                'geen-effect': 'Geen effect',
+                'slechter': 'Slechter'
+            };
+            return mapping[resultaat] || resultaat;
+        }
+
+        // Range slider updates
+        document.getElementById('emdr-intensity-slider').addEventListener('input', function() {
+            document.getElementById('emdr-intensity-value').textContent = this.value;
+        });
+
+        document.getElementById('entry-before').addEventListener('input', function() {
+            document.getElementById('entry-before-value').textContent = this.value;
+        });
+
+        document.getElementById('entry-after').addEventListener('input', function() {
+            document.getElementById('entry-after-value').textContent = this.value;
+        });
+
+        // Tab switching event listeners
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.getAttribute('data-tab');
+                showTab(tab);
+            });
+        });
+
+        // Initialize app on load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize ritual display
+            updateRitualDisplay();
+            
+            // Initialize EMDR display  
+            updateEmdrDisplay();
+
+            // Initialize breath display
+            updateBreathDisplay();
+        });
+
+    </script>
+</body>
+</html>

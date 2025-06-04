@@ -1518,7 +1518,7 @@
             }
         }
 
-        // Simplified logout function
+        // Improved logout function
         window.performLogout = async function() {
             if (!confirm('Weet je zeker dat je wilt uitloggen?')) {
                 return;
@@ -1535,19 +1535,55 @@
                     return;
                 }
                 
-                // Sign out from Firebase
-                await signOut(auth);
+                // Sign out from Firebase with timeout protection
+                const signOutPromise = signOut(auth);
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Logout timeout')), 8000)
+                );
+                
+                await Promise.race([signOutPromise, timeoutPromise]);
                 console.log('✅ Logout successful');
+                
+                // Backup check - if auth state doesn't change within 2 seconds, force it
+                setTimeout(() => {
+                    if (auth?.currentUser !== null) {
+                        console.log('⚠️ Auth state not cleared, forcing logout');
+                        // Clear auth cache manually
+                        currentUser = null;
+                        
+                        // Clear Firebase auth from localStorage
+                        const keys = Object.keys(localStorage);
+                        keys.forEach(key => {
+                            if (key.includes('firebase:authUser:')) {
+                                localStorage.removeItem(key);
+                            }
+                        });
+                        
+                        // Force show login screen
+                        showLoginScreen();
+                        resetLoginForm();
+                    }
+                }, 2000);
                 
             } catch (error) {
                 console.error('❌ Logout error:', error);
-                alert('❌ Uitloggen mislukt: ' + error.message);
                 
-                // Emergency fallback - clear everything and reload
+                // Emergency logout - clear everything
                 currentUser = null;
-                localStorage.removeItem('firebase:authUser:' + firebaseConfig.apiKey + ':[DEFAULT]');
+                
+                // Clear Firebase auth cache
+                const keys = Object.keys(localStorage);
+                keys.forEach(key => {
+                    if (key.includes('firebase:authUser:') || key.includes('firebase:host:')) {
+                        localStorage.removeItem(key);
+                    }
+                });
+                
+                // Force show login screen
                 showLoginScreen();
                 resetLoginForm();
+                
+                console.log('✅ Emergency logout completed');
             }
         };
 

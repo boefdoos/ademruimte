@@ -176,6 +176,15 @@
             background: #7c3aed;
         }
 
+        .btn-cyan {
+            background: #06b6d4;
+            color: white;
+        }
+
+        .btn-cyan:hover {
+            background: #0891b2;
+        }
+
         .alert {
             padding: 1rem;
             border-radius: 0.5rem;
@@ -215,6 +224,39 @@
             font-family: 'Courier New', monospace;
         }
 
+        .breath-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .breath-display.inhale {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: #1e40af;
+            transform: scale(1.05);
+        }
+
+        .breath-display.exhale {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: #065f46;
+            transform: scale(0.95);
+        }
+
+        .breath-display.hold {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #92400e;
+            transform: scale(1.02);
+        }
+
+        .breath-display.rest {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            color: #6b7280;
+        }
+
         .progress-bar {
             width: 100%;
             height: 0.5rem;
@@ -229,6 +271,24 @@
             background: #10b981;
             border-radius: 0.25rem;
             transition: width 0.3s ease;
+        }
+
+        .breath-progress {
+            height: 100%;
+            border-radius: 0.25rem;
+            transition: width linear;
+        }
+
+        .breath-progress.inhale {
+            background: #3b82f6;
+        }
+
+        .breath-progress.exhale {
+            background: #10b981;
+        }
+
+        .breath-progress.hold {
+            background: #f59e0b;
         }
 
         .form-group {
@@ -479,6 +539,38 @@
             border-color: #9ca3af;
         }
 
+        .breath-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .breath-setting {
+            text-align: center;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .breath-setting label {
+            display: block;
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+
+        .breath-setting input {
+            width: 60px;
+            text-align: center;
+            font-size: 1.125rem;
+            font-weight: bold;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            padding: 0.5rem;
+        }
+
         footer {
             text-align: center;
             padding: 2rem;
@@ -515,6 +607,16 @@
             
             .timer-display {
                 font-size: 2rem;
+            }
+
+            .breath-display {
+                font-size: 1.8rem;
+                padding: 1rem;
+            }
+
+            .breath-controls {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
             }
         }
     </style>
@@ -628,6 +730,7 @@
         <nav class="nav-tabs">
             <button class="tab-btn active" data-tab="dashboard">🏠 Dashboard</button>
             <button class="tab-btn" data-tab="crisis">🚨 Crisis</button>
+            <button class="tab-btn" data-tab="buteyko">🌬️ Buteyko</button>
             <button class="tab-btn" data-tab="ritueel">🕐 Ritueel</button>
             <button class="tab-btn" data-tab="gapen">🥱 Gapen</button>
             <button class="tab-btn" data-tab="emdr">💜 EMDR</button>
@@ -646,10 +749,7 @@
                     <strong>🔥 Synchronisatie Status:</strong><br>
                     <span id="connection-details">Je entries worden automatisch gesynchroniseerd tussen al je apparaten</span>
                     <br><br>
-                    <button class="btn btn-primary" onclick="testFirebaseConnection()">
-                        🔗 Test Connectie
-                    </button>
-                    <button class="btn btn-green" onclick="migrateLocalData()" style="margin-left: 0.5rem;">
+                    <button class="btn btn-green" onclick="migrateLocalData()">
                         📤 Lokale Data Migreren
                     </button>
                 </div>
@@ -659,6 +759,12 @@
                         <h3>🚨 Crisis Hulp</h3>
                         <p>Voor wanneer je luchthonger voelt opkomen</p>
                         <button class="btn btn-red" onclick="showTab('crisis')">Open Crisis Hulp</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>🌬️ Buteyko Ademhaling</h3>
+                        <p>CO2 tolerantie training</p>
+                        <button class="btn btn-cyan" onclick="showTab('buteyko')">Start Buteyko</button>
                     </div>
 
                     <div class="card">
@@ -733,6 +839,84 @@
                     <button class="btn btn-primary" onclick="openDagboekModal('Crisis Hulp Technieken')">
                         📝 Dagboek Entry Maken
                     </button>
+                </div>
+            </div>
+
+            <!-- Buteyko Tab -->
+            <div id="buteyko" class="tab-content hidden">
+                <div class="card">
+                    <h2>🌬️ Buteyko Ademhaling</h2>
+                    <p>Verbeter je CO2 tolerantie en verminder hyperventilatie neiging</p>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>💡 Hoe het werkt:</strong> Buteyko ademhaling helpt je lichaam wennen aan hogere CO2 niveaus, wat hyperventilatie-episodes kan verminderen.
+                </div>
+
+                <div class="card">
+                    <h3>Ademhaling Instellingen</h3>
+                    <div class="breath-controls">
+                        <div class="breath-setting">
+                            <label>Inademen (sec)</label>
+                            <input type="number" id="inhale-duration" value="4" min="2" max="10">
+                        </div>
+                        <div class="breath-setting">
+                            <label>Uitademen (sec)</label>
+                            <input type="number" id="exhale-duration" value="6" min="3" max="15">
+                        </div>
+                        <div class="breath-setting">
+                            <label>Pauze (sec)</label>
+                            <input type="number" id="hold-duration" value="3" min="1" max="20">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="breath-display rest" id="breath-display">
+                        Klik op start om te beginnen
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="breath-progress" id="breath-progress" style="width: 0%"></div>
+                    </div>
+
+                    <div style="text-align: center; margin: 1rem 0;">
+                        <div id="breath-cycle-counter" style="font-size: 1.125rem; color: #6b7280; margin-bottom: 1rem;">
+                            Cyclus: 0
+                        </div>
+                        
+                        <button id="breath-btn" class="btn btn-cyan" onclick="toggleBreathExercise()">
+                            ▶️ Start Buteyko
+                        </button>
+                        <button class="btn btn-orange" onclick="resetBreathExercise()" style="margin-left: 0.5rem;">
+                            🔄 Reset
+                        </button>
+                    </div>
+
+                    <div id="breath-complete" class="alert alert-success hidden">
+                        <strong>✅ Buteyko Sessie Voltooid!</strong><br>
+                        Goed gedaan! Je hebt een volledige ademhalingssessie afgerond.
+                        <br><br>
+                        <button class="btn btn-primary" onclick="openDagboekModal('Buteyko Ademhaling')">
+                            📝 Dagboek Entry Maken
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Buteyko Principes</h3>
+                    <div class="technique-card">
+                        <h4>Zachte Ademhaling</h4>
+                        <p>Adem zo zacht mogelijk - stel je voor dat je een veertje voor je neus niet wilt laten bewegen.</p>
+                    </div>
+                    <div class="technique-card">
+                        <h4>Langere Uitademing</h4>
+                        <p>De uitademing is langer dan de inademing om CO2 te behouden en het autonome zenuwstelsel te kalmeren.</p>
+                    </div>
+                    <div class="technique-card">
+                        <h4>Comfortabele Pauze</h4>
+                        <p>De ademhpauze na uitademing mag nooit geforceerd aanvoelen - stop als het oncomfortabel wordt.</p>
+                    </div>
                 </div>
             </div>
 
@@ -998,6 +1182,13 @@
         let currentTechnique = '';
         let dagboekEntries = [];
 
+        // Breath exercise variables
+        let breathInterval = null;
+        let breathPhase = 'rest'; // 'inhale', 'exhale', 'hold', 'rest'
+        let breathCycleCount = 0;
+        let breathPhaseTime = 0;
+        let breathCycleDuration = 0;
+
         // Initialize Firebase
         try {
             app = initializeApp(firebaseConfig);
@@ -1046,7 +1237,7 @@
             const userInfo = document.getElementById('user-info');
             userInfo.innerHTML = 
                 '<div style="margin-bottom: 0.5rem;">👋 ' + (user.displayName || user.email) + '</div>' +
-                '<button onclick="signOutUser()">Uitloggen</button>';
+                '<button onclick="handleSignOut()">Uitloggen</button>';
         }
 
         function showLoginScreen() {
@@ -1071,7 +1262,7 @@
             }
         };
 
-        window.signOutUser = async function() {
+        window.handleSignOut = async function() {
             try {
                 await signOut(auth);
                 console.log('✅ User signed out');
@@ -1272,7 +1463,128 @@
             }
         };
 
-        // Ritual steps (unchanged)
+        // Buteyko breathing exercise functions
+        window.toggleBreathExercise = function() {
+            if (breathInterval) {
+                stopBreathExercise();
+            } else {
+                startBreathExercise();
+            }
+        };
+
+        window.resetBreathExercise = function() {
+            stopBreathExercise();
+            breathCycleCount = 0;
+            breathPhase = 'rest';
+            updateBreathDisplay();
+            updateBreathProgress(0);
+            document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 0';
+            document.getElementById('breath-complete').classList.add('hidden');
+        };
+
+        function startBreathExercise() {
+            const inhale = parseInt(document.getElementById('inhale-duration').value);
+            const exhale = parseInt(document.getElementById('exhale-duration').value);
+            const hold = parseInt(document.getElementById('hold-duration').value);
+            
+            breathCycleDuration = inhale + exhale + hold;
+            breathPhase = 'inhale';
+            breathPhaseTime = 0;
+            
+            document.getElementById('breath-btn').innerHTML = '⏸️ Stop Buteyko';
+            document.getElementById('breath-btn').className = 'btn btn-red';
+            
+            breathInterval = setInterval(() => {
+                updateBreathCycle();
+            }, 100);
+        }
+
+        function stopBreathExercise() {
+            if (breathInterval) {
+                clearInterval(breathInterval);
+                breathInterval = null;
+            }
+            
+            breathPhase = 'rest';
+            updateBreathDisplay();
+            updateBreathProgress(0);
+            
+            document.getElementById('breath-btn').innerHTML = '▶️ Start Buteyko';
+            document.getElementById('breath-btn').className = 'btn btn-cyan';
+        }
+
+        function updateBreathCycle() {
+            const inhale = parseInt(document.getElementById('inhale-duration').value);
+            const exhale = parseInt(document.getElementById('exhale-duration').value);
+            const hold = parseInt(document.getElementById('hold-duration').value);
+            
+            breathPhaseTime += 0.1;
+            
+            // Update phase based on timing
+            let progress = 0;
+            
+            if (breathPhase === 'inhale') {
+                progress = (breathPhaseTime / inhale) * 100;
+                if (breathPhaseTime >= inhale) {
+                    breathPhase = 'exhale';
+                    breathPhaseTime = 0;
+                }
+            } else if (breathPhase === 'exhale') {
+                progress = (breathPhaseTime / exhale) * 100;
+                if (breathPhaseTime >= exhale) {
+                    breathPhase = 'hold';
+                    breathPhaseTime = 0;
+                }
+            } else if (breathPhase === 'hold') {
+                progress = (breathPhaseTime / hold) * 100;
+                if (breathPhaseTime >= hold) {
+                    breathPhase = 'inhale';
+                    breathPhaseTime = 0;
+                    breathCycleCount++;
+                    document.getElementById('breath-cycle-counter').textContent = `Cyclus: ${breathCycleCount}`;
+                    
+                    // Complete after 10 cycles
+                    if (breathCycleCount >= 10) {
+                        stopBreathExercise();
+                        document.getElementById('breath-complete').classList.remove('hidden');
+                        return;
+                    }
+                }
+            }
+            
+            updateBreathDisplay();
+            updateBreathProgress(Math.min(progress, 100));
+        }
+
+        function updateBreathDisplay() {
+            const display = document.getElementById('breath-display');
+            const progressBar = document.getElementById('breath-progress');
+            
+            display.className = `breath-display ${breathPhase}`;
+            progressBar.className = `breath-progress ${breathPhase}`;
+            
+            switch (breathPhase) {
+                case 'inhale':
+                    display.textContent = '🌬️ Inademen';
+                    break;
+                case 'exhale':
+                    display.textContent = '💨 Uitademen';
+                    break;
+                case 'hold':
+                    display.textContent = '⏸️ Pauze';
+                    break;
+                case 'rest':
+                default:
+                    display.textContent = 'Klik op start om te beginnen';
+                    break;
+            }
+        }
+
+        function updateBreathProgress(percentage) {
+            document.getElementById('breath-progress').style.width = percentage + '%';
+        }
+
+        // Ritual steps
         const ritualSteps = [
             {
                 title: "Stap 1: Fysieke Mini-Reset",
@@ -1322,7 +1634,7 @@
             }
         ];
 
-        // EMDR steps (unchanged)
+        // EMDR steps
         const emdrSteps = [
             {
                 title: "Stap 1: Voorbereiding",
@@ -1345,30 +1657,6 @@
                 content: "Focus op 'Ik kan hiermee omgaan' en doe 10-15 bilaterale bewegingen terwijl je deze gedachte vasthoudt."
             }
         ];
-
-        // Global functies (beschikbaar vanuit HTML)
-        window.testFirebaseConnection = function() {
-            if (isFirebaseConnected && currentUser) {
-                alert('✅ Firebase Connectie Succesvol!\n\n' + 
-                      'Firebase App: ✓\n' + 
-                      'Firestore Database: ✓\n' + 
-                      'Gebruiker ingelogd: ✓\n' + 
-                      'Cloud synchronisatie: ✓\n\n' + 
-                      'Je entries worden automatisch gesynchroniseerd tussen al je apparaten!');
-            } else if (isFirebaseConnected && !currentUser) {
-                alert('⚠️ Firebase Verbonden, Niet Ingelogd\n\n' + 
-                      'Firebase werkt, maar je bent niet ingelogd.\n' + 
-                      'Log in om je data te synchroniseren tussen apparaten.');
-            } else {
-                alert('❌ Firebase Offline\n\n' + 
-                      'Firebase connectie mislukt.\n' + 
-                      'Je entries worden lokaal opgeslagen in je browser.\n\n' + 
-                      'Check je internetverbinding en herlaad de pagina om opnieuw te proberen.');
-            }
-        };
-
-        // Rest of the functions remain the same...
-        // [Previous functions for tab switching, timer, ritual, emdr, dagboek etc.]
 
         // Tab switching
         window.showTab = function(tabName) {
@@ -1717,6 +2005,9 @@
             
             // Initialize EMDR display  
             updateEmdrDisplay();
+
+            // Initialize breath display
+            updateBreathDisplay();
         });
 
     </script>

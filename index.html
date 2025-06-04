@@ -26,59 +26,34 @@
             padding: 1rem;
             text-align: center;
             position: relative;
-            min-height: 80px;
+            min-height: 60px;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
         header h1 {
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 0.25rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 0;
+            letter-spacing: -0.02em;
         }
 
         header p {
-            font-size: 0.8rem;
-            opacity: 0.9;
-            margin: 0;
+            font-size: 0.75rem;
+            opacity: 0.85;
+            margin: 0.25rem 0 0 0;
         }
 
         .user-info {
             position: absolute;
-            top: 0.75rem;
+            top: 0.5rem;
             right: 0.75rem;
-            text-align: right;
-            font-size: 0.75rem;
-            max-width: 140px;
-        }
-
-        .user-info .user-name {
-            margin-bottom: 0.25rem;
-            font-weight: 500;
             font-size: 0.7rem;
+            color: rgba(255,255,255,0.8);
+            max-width: 120px;
             line-height: 1.2;
             word-break: break-word;
-        }
-
-        .user-info button {
-            background: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 0.4rem 0.6rem;
-            border-radius: 0.25rem;
-            cursor: pointer;
-            font-size: 0.7rem;
-            min-height: 32px;
-            min-width: 60px;
-            transition: all 0.2s;
-            display: block;
-            width: 100%;
-        }
-
-        .user-info button:hover, .user-info button:active {
-            background: rgba(255,255,255,0.3);
-            transform: scale(0.98);
         }
 
         .nav-tabs {
@@ -686,11 +661,24 @@
         /* Desktop optimizations */
         @media (min-width: 768px) {
             header {
-                padding: 2rem 1rem;
+                padding: 1.5rem 1rem;
+                min-height: 80px;
             }
             
             header h1 {
-                font-size: 2rem;
+                font-size: 1.75rem;
+                margin-bottom: 0.25rem;
+            }
+
+            header p {
+                font-size: 0.9rem;
+            }
+
+            .user-info {
+                top: 1rem;
+                right: 1rem;
+                font-size: 0.8rem;
+                max-width: 160px;
             }
             
             .container {
@@ -714,22 +702,12 @@
             .breath-controls {
                 grid-template-columns: 1fr 1fr 1fr;
             }
-
-            .user-info {
-                position: static;
-                margin-top: 1rem;
-                text-align: center;
-            }
         }
 
         /* Large screen optimizations */
         @media (min-width: 1024px) {
-            .user-info {
-                position: absolute;
-                top: 1rem;
-                right: 1rem;
-                text-align: right;
-                margin-top: 0;
+            header h1 {
+                font-size: 2rem;
             }
         }
 
@@ -954,6 +932,19 @@
                     <div class="button-group">
                         <button class="btn btn-green" onclick="migrateLocalData()">
                             📤 Migreer Lokale Data
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Account Settings Section -->
+                <div class="settings-section">
+                    <h3>👤 Account</h3>
+                    <div id="account-info" style="margin-bottom: 1rem;">
+                        <!-- Account info wordt hier ingevuld -->
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-red" id="logout-btn-main" onclick="performLogout()">
+                            🚪 Uitloggen
                         </button>
                     </div>
                 </div>
@@ -1436,15 +1427,27 @@
             app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             auth = getAuth(app);
+            
+            // Test Firebase connection
+            console.log('🔄 Testing Firebase connection...');
+            
+            // Try to access a collection to test connectivity
+            collection(db, "test");
+            
             isFirebaseConnected = true;
+            updateFirebaseStatus('connected', '🔥 Firebase: Actief');
             
-            updateFirebaseStatus('connected', '🔥 Firebase: Verbonden');
-            
-            console.log('✅ Firebase successfully initialized');
+            console.log('✅ Firebase successfully initialized and connected');
             
         } catch (error) {
             console.error('❌ Firebase initialization error:', error);
-            updateFirebaseStatus('error', '🔥 Firebase: Fout');
+            isFirebaseConnected = false;
+            updateFirebaseStatus('error', '🔥 Firebase: Offline');
+            
+            // Show user that they can still use the app
+            setTimeout(() => {
+                updateFirebaseStatus('disconnected', '📱 Lokale modus actief');
+            }, 3000);
         }
 
         // Authentication state observer
@@ -1455,6 +1458,7 @@
                 currentUser = user;
                 showMainApp();
                 updateUserInfo(user);
+                updateAccountInfo(user);
                 loadDagboekEntries();
                 checkForLocalData();
             } else {
@@ -1462,6 +1466,42 @@
                 showLoginScreen();
             }
         });
+
+        function updateAccountInfo(user) {
+            const accountInfo = document.getElementById('account-info');
+            if (accountInfo) {
+                accountInfo.innerHTML = 
+                    '<p style="color: #6b7280; font-size: 0.9rem;">' +
+                    '<strong>Ingelogd als:</strong><br>' + 
+                    (user.displayName || user.email) + 
+                    '</p>';
+            }
+        }
+
+        // Simple logout function
+        window.performLogout = function() {
+            if (confirm('Weet je zeker dat je wilt uitloggen?')) {
+                console.log('🔄 Performing logout...');
+                
+                // Stop any audio if playing
+                if (isAudioPlaying) {
+                    stopBilateralAudio();
+                }
+                
+                // Release wake lock
+                if (wakeLock) {
+                    releaseWakeLock();
+                }
+                
+                // Sign out using Firebase
+                signOut(auth).then(() => {
+                    console.log('✅ Logout successful');
+                }).catch((error) => {
+                    console.error('❌ Logout error:', error);
+                    alert('Uitloggen mislukt: ' + error.message);
+                });
+            }
+        };
 
         // Helper functies
         function updateFirebaseStatus(type, message) {
@@ -1541,56 +1581,9 @@
         function updateUserInfo(user) {
             const userInfo = document.getElementById('user-info');
             const displayName = user.displayName || user.email;
-            const shortName = displayName.length > 20 ? displayName.substring(0, 18) + '...' : displayName;
+            const shortName = displayName.length > 15 ? displayName.substring(0, 13) + '...' : displayName;
             
-            userInfo.innerHTML = 
-                '<div class="user-name">👋 ' + shortName + '</div>' +
-                '<button type="button" id="logout-button">Uitloggen</button>';
-            
-            // Ensure the button is clickable with multiple event methods
-            setTimeout(() => {
-                const logoutBtn = document.getElementById('logout-button');
-                if (logoutBtn) {
-                    // Remove any existing listeners
-                    logoutBtn.replaceWith(logoutBtn.cloneNode(true));
-                    const newLogoutBtn = document.getElementById('logout-button');
-                    
-                    // Add multiple event handlers for reliability
-                    newLogoutBtn.addEventListener('click', handleLogout);
-                    newLogoutBtn.addEventListener('touchend', handleLogout);
-                    newLogoutBtn.onclick = handleLogout;
-                    
-                    // Ensure button is interactive
-                    newLogoutBtn.style.pointerEvents = 'auto';
-                    newLogoutBtn.style.cursor = 'pointer';
-                    
-                    console.log('✅ Logout button configured');
-                }
-            }, 200);
-        }
-
-        async function handleLogout(e) {
-            if (e) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-            
-            console.log('🔄 Logout initiated...');
-            
-            try {
-                // Stop any audio if playing
-                if (isAudioPlaying) {
-                    stopBilateralAudio();
-                }
-                
-                // Sign out
-                await signOut(auth);
-                console.log('✅ Successfully signed out');
-                
-            } catch (error) {
-                console.error('❌ Sign out error:', error);
-                alert('Uitloggen mislukt: ' + error.message);
-            }
+            userInfo.innerHTML = '👋 ' + shortName;
         }
 
         function showLoginScreen() {
@@ -1702,16 +1695,23 @@
         async function saveToFirestore(entry, retryCount = 0) {
             const maxRetries = 2;
             
-            if (!isFirebaseConnected || !currentUser) {
-                // Fallback naar localStorage
-                const stored = JSON.parse(localStorage.getItem('ademruimte-entries') || '[]');
-                const entryWithId = { ...entry, id: Date.now().toString(), bron: 'Lokaal', userId: 'local' };
-                stored.unshift(entryWithId);
-                localStorage.setItem('ademruimte-entries', JSON.stringify(stored));
-                return { id: entryWithId.id, success: true };
+            // First check if we have a proper Firebase connection and user
+            if (!isFirebaseConnected) {
+                console.log('❌ Firebase not connected, using localStorage');
+                return saveToLocalStorage(entry, 'Firebase niet verbonden');
+            }
+            
+            if (!currentUser) {
+                console.log('❌ No current user, using localStorage');
+                return saveToLocalStorage(entry, 'Niet ingelogd');
             }
 
             try {
+                // Test Firebase connection first
+                if (retryCount === 0) {
+                    console.log('🔄 Attempting to save to Firebase...');
+                }
+
                 const docRef = await addDoc(collection(db, "dagboekEntries"), {
                     ...entry,
                     timestamp: serverTimestamp(),
@@ -1720,38 +1720,50 @@
                 });
                 
                 console.log('✅ Entry saved to Firebase with ID:', docRef.id);
-                return { id: docRef.id, success: true };
+                return { id: docRef.id, success: true, source: 'Firebase' };
                 
             } catch (error) {
-                console.error(`❌ Error saving to Firestore (attempt ${retryCount + 1}):`, error);
+                console.error(`❌ Firebase save error (attempt ${retryCount + 1}):`, error);
                 
-                // Retry logic for network errors
-                if (retryCount < maxRetries && (
-                    error.code === 'unavailable' || 
-                    error.code === 'deadline-exceeded' ||
-                    error.message.includes('network')
-                )) {
-                    console.log(`🔄 Retrying save in ${(retryCount + 1) * 1000}ms...`);
-                    await new Promise(resolve => setTimeout(resolve, (retryCount + 1) * 1000));
+                // Check for specific Firebase errors that might be retryable
+                const retryableErrors = [
+                    'unavailable', 
+                    'deadline-exceeded',
+                    'aborted',
+                    'internal'
+                ];
+                
+                const isRetryable = retryableErrors.includes(error.code) || 
+                                  error.message.includes('network') ||
+                                  error.message.includes('timeout');
+                
+                if (retryCount < maxRetries && isRetryable) {
+                    const delay = (retryCount + 1) * 1000;
+                    console.log(`🔄 Retrying Firebase save in ${delay}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, delay));
                     return saveToFirestore(entry, retryCount + 1);
                 }
                 
-                // Fallback naar localStorage on persistent failure
-                console.log('💾 Falling back to local storage');
-                const stored = JSON.parse(localStorage.getItem('ademruimte-entries') || '[]');
-                const entryWithId = { 
-                    ...entry, 
-                    id: Date.now().toString(), 
-                    bron: 'Lokaal (Firebase fout)', 
-                    userId: currentUser?.uid || 'local',
-                    error: error.message 
-                };
-                stored.unshift(entryWithId);
-                localStorage.setItem('ademruimte-entries', JSON.stringify(stored));
-                
-                // Show user-friendly error
-                throw new Error('Netwerkprobleem - entry lokaal opgeslagen');
+                // For non-retryable errors or after max retries, fall back to localStorage
+                console.log('💾 Firebase failed, falling back to localStorage');
+                return saveToLocalStorage(entry, `Firebase fout: ${error.code || error.message}`);
             }
+        }
+
+        function saveToLocalStorage(entry, reason) {
+            const stored = JSON.parse(localStorage.getItem('ademruimte-entries') || '[]');
+            const entryWithId = { 
+                ...entry, 
+                id: Date.now().toString(), 
+                bron: 'Lokaal',
+                reden: reason,
+                userId: currentUser?.uid || 'local'
+            };
+            stored.unshift(entryWithId);
+            localStorage.setItem('ademruimte-entries', JSON.stringify(stored));
+            
+            console.log('💾 Entry saved to localStorage:', entryWithId);
+            return { id: entryWithId.id, success: true, source: 'localStorage' };
         }
 
         async function loadFromFirestore() {
@@ -2534,7 +2546,7 @@
                 saveBtn.textContent = '💾 Opslaan...';
                 saveBtn.disabled = true;
 
-                await saveToFirestore(entry);
+                const result = await saveToFirestore(entry);
                 
                 // Restore button
                 saveBtn.textContent = originalText;
@@ -2546,7 +2558,14 @@
                     await loadDagboekEntries();
                 }
                 
-                alert('✅ Entry opgeslagen!');
+                // Show appropriate success message
+                if (result.source === 'Firebase') {
+                    alert('✅ Entry opgeslagen in cloud!');
+                } else {
+                    alert('⚠️ Entry lokaal opgeslagen\n\n' + 
+                          'Reden: ' + result.reden + '\n' +
+                          'De entry is veilig bewaard op dit apparaat.');
+                }
                 
             } catch (error) {
                 // Restore button on error
@@ -2555,7 +2574,7 @@
                 saveBtn.disabled = false;
                 
                 console.error('Save error:', error);
-                alert('⚠️ ' + error.message);
+                alert('❌ Opslaan mislukt: ' + error.message);
                 
                 // Don't close modal on error so user can try again
             }

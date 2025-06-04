@@ -23,12 +23,36 @@
             color: white;
             padding: 2rem 1rem;
             text-align: center;
+            position: relative;
         }
 
         header h1 {
             font-size: 2rem;
             font-weight: bold;
             margin-bottom: 0.5rem;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            text-align: right;
+            font-size: 0.875rem;
+        }
+
+        .user-info button {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            margin-left: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .user-info button:hover {
+            background: rgba(255,255,255,0.3);
         }
 
         .nav-tabs {
@@ -393,6 +417,68 @@
             font-weight: bold;
         }
 
+        .login-container {
+            max-width: 400px;
+            margin: 3rem auto;
+            padding: 0 1rem;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .divider {
+            text-align: center;
+            margin: 1.5rem 0;
+            position: relative;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #e5e7eb;
+            z-index: 1;
+        }
+
+        .divider span {
+            background: white;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .google-btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            background: white;
+            color: #374151;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .google-btn:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+
         footer {
             text-align: center;
             padding: 2rem;
@@ -407,6 +493,12 @@
             
             header h1 {
                 font-size: 1.5rem;
+            }
+            
+            .user-info {
+                position: static;
+                margin-top: 1rem;
+                text-align: center;
             }
             
             .container {
@@ -429,6 +521,9 @@
 </head>
 <body>
     <header>
+        <div class="user-info" id="user-info">
+            <div class="spinner" id="auth-loading"></div>
+        </div>
         <h1>🫁 Ademruimte</h1>
         <p>Jouw persoonlijke hyperventilatie helper</p>
         <div id="firebase-status" class="status-disconnected">
@@ -436,280 +531,378 @@
         </div>
     </header>
 
-    <nav class="nav-tabs">
-        <button class="tab-btn active" data-tab="dashboard">🏠 Dashboard</button>
-        <button class="tab-btn" data-tab="crisis">🚨 Crisis</button>
-        <button class="tab-btn" data-tab="ritueel">🕐 Ritueel</button>
-        <button class="tab-btn" data-tab="gapen">🥱 Gapen</button>
-        <button class="tab-btn" data-tab="emdr">💜 EMDR</button>
-        <button class="tab-btn" data-tab="dagboek">📖 Dagboek</button>
-    </nav>
-
-    <div class="container">
-        <!-- Dashboard Tab -->
-        <div id="dashboard" class="tab-content">
-            <div class="card">
-                <h2>Welkom bij Ademruimte</h2>
-                <p>Jouw persoonlijke hulp voor het omgaan met hyperventilatie en luchthonger-gevoelens.</p>
-            </div>
-
-            <div class="alert alert-info">
-                <strong>🔥 Firebase Cloud Opslag:</strong><br>
-                <span id="connection-details">Je entries worden automatisch opgeslagen in de cloud</span>
-                <br><br>
-                <button class="btn btn-primary" onclick="testFirebaseConnection()">
-                    🔗 Test Firebase Connectie
-                </button>
-            </div>
-
-            <div class="grid">
-                <div class="card">
-                    <h3>🚨 Crisis Hulp</h3>
-                    <p>Voor wanneer je luchthonger voelt opkomen</p>
-                    <button class="btn btn-red" onclick="showTab('crisis')">Open Crisis Hulp</button>
-                </div>
-
-                <div class="card">
-                    <h3>🕐 Afkoel Ritueel</h3>
-                    <p>Na intensief denkwerk</p>
-                    <button class="btn btn-green" onclick="showTab('ritueel')">Start Ritueel</button>
-                </div>
-
-                <div class="card">
-                    <h3>🥱 Gaap Preventie</h3>
-                    <p>Technieken voor gaapaanvallen</p>
-                    <button class="btn btn-orange" onclick="showTab('gapen')">Bekijk Technieken</button>
-                </div>
-
-                <div class="card">
-                    <h3>💜 EMDR Zelfhulp</h3>
-                    <p>Voor luchthonger-gevoelens</p>
-                    <button class="btn btn-purple" onclick="showTab('emdr')">Start EMDR</button>
-                </div>
-
-                <div class="card">
-                    <h3>📖 Dagboek</h3>
-                    <p>Bijhouden van patronen</p>
-                    <button class="btn btn-primary" onclick="showTab('dagboek')">Open Dagboek</button>
-                </div>
-            </div>
-
-            <div class="alert alert-info">
-                <strong>💡 Tip van de dag:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.
-            </div>
-        </div>
-
-        <!-- Crisis Tab -->
-        <div id="crisis" class="tab-content hidden">
-            <div class="card">
-                <h2>🚨 Crisis Hulp - Luchthonger</h2>
-                <p>Voor wanneer je dat benauwde gevoel voelt opkomen</p>
-            </div>
-
-            <div class="technique-card">
-                <h4>1. Paradoxale Ademhaling</h4>
-                <p>Start met bewust zeer kleine, korte ademhalingen. Na 3-4 van deze mini-ademhalingen, probeer een iets langere uitademing.</p>
-            </div>
-
-            <div class="technique-card">
-                <h4>2. Purse-lip Ademhaling</h4>
-                <p>Tuut je lippen bij het uitademen om lichte weerstand te creëren. Dit helpt bij luchthonger en stabiliseert CO2-niveaus.</p>
-            </div>
-
-            <div class="technique-card">
-                <h4>3. IJswater Techniek</h4>
-                <p>Breng iets kouds tegen je gezicht (vooral rond wangen en ogen) om de duikreflex te activeren.</p>
-            </div>
-
-            <div class="technique-card">
-                <h4>4. Herframing</h4>
-                <p>"Dit is geen echt zuurstoftekort, dit is een sensatie die voorbij zal gaan. Mijn lichaam krijgt genoeg zuurstof."</p>
-            </div>
-
-            <div class="card">
-                <h3>5-4-3-2-1 Grounding</h3>
-                <ul class="step-list">
-                    <li>5 dingen die je ZIET</li>
-                    <li>4 dingen die je VOELT</li>
-                    <li>3 dingen die je HOORT</li>
-                    <li>2 dingen die je RUIKT</li>
-                    <li>1 ding dat je PROEFT</li>
-                </ul>
-            </div>
-
-            <div class="card">
-                <button class="btn btn-primary" onclick="openDagboekModal('Crisis Hulp Technieken')">
-                    📝 Dagboek Entry Maken
-                </button>
-            </div>
-        </div>
-
-        <!-- Ritueel Tab -->
-        <div id="ritueel" class="tab-content hidden">
-            <div class="card">
-                <h2>🕐 Afkoel Ritueel</h2>
-                <p>Voor na periodes van intensief denkwerk (5-10 minuten)</p>
-            </div>
-
-            <div class="card">
-                <h3 id="ritual-title">Stap 1: Fysieke Mini-Reset</h3>
-                <div class="timer-display" id="timer-display">2:00</div>
+    <!-- Login Screen -->
+    <div id="login-screen" class="hidden">
+        <div class="login-container">
+            <div class="login-card">
+                <h2 style="text-align: center; margin-bottom: 1.5rem; color: #1f2937;">
+                    Welkom bij Ademruimte
+                </h2>
                 
-                <div id="ritual-instructions">
-                    <ul class="step-list">
-                        <li>Sta op en strek je volledig uit</li>
-                        <li>Schud je armen en benen los</li>
-                        <li>Rol je schouders 5x naar achteren</li>
-                        <li>Maak kleine cirkels met je hoofd (5x elke richting)</li>
-                    </ul>
+                <p style="text-align: center; margin-bottom: 2rem; color: #6b7280;">
+                    Log in om je vooruitgang op te slaan en te synchroniseren tussen al je apparaten.
+                </p>
+
+                <!-- Google Login -->
+                <button class="google-btn" onclick="signInWithGoogle()">
+                    <svg width="18" height="18" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Doorgaan met Google
+                </button>
+
+                <div class="divider">
+                    <span>of</span>
                 </div>
 
-                <div style="margin: 1rem 0;">
-                    <button id="timer-btn" class="btn btn-green" onclick="startTimer()">▶️ Start Timer</button>
-                    <button class="btn btn-primary" onclick="nextRitualStep()" id="next-btn" style="display: none;">Volgende Stap</button>
-                    <button class="btn btn-orange" onclick="resetRitual()">🔄 Reset</button>
-                </div>
+                <!-- Email/Password Login -->
+                <form id="login-form">
+                    <div class="form-group">
+                        <label class="form-label">E-mail:</label>
+                        <input type="email" id="login-email" class="form-input" placeholder="jouw@email.com" required>
+                    </div>
 
-                <div class="progress-bar">
-                    <div class="progress-fill" id="ritual-progress" style="width: 20%"></div>
-                </div>
+                    <div class="form-group">
+                        <label class="form-label">Wachtwoord:</label>
+                        <input type="password" id="login-password" class="form-input" placeholder="Wachtwoord" required>
+                    </div>
 
-                <div id="ritual-complete" class="alert alert-success hidden">
-                    <strong>✅ Afkoel Ritueel Voltooid!</strong><br>
-                    Goed gedaan! Je hebt alle stappen doorlopen.
-                    <br><br>
-                    <button class="btn btn-primary" onclick="openDagboekModal('Afkoel Ritueel')">
-                        📝 Dagboek Entry Maken
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
+                        Inloggen
+                    </button>
+                </form>
+
+                <div style="text-align: center;">
+                    <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 1rem;">
+                        Nog geen account?
+                    </p>
+                    <button class="btn btn-green" onclick="showRegisterForm()" style="width: 100%;">
+                        Account Aanmaken
                     </button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Gapen Tab -->
-        <div id="gapen" class="tab-content hidden">
-            <div class="card">
-                <h2>🥱 Gaap Preventie Technieken</h2>
-                <p>Voor wanneer je die vervelende gaapaanvallen voelt opkomen</p>
+    <!-- Register Modal -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Account Aanmaken</h3>
+                <button class="close-btn" onclick="closeRegisterModal()">&times;</button>
             </div>
-
-            <div class="technique-card">
-                <h4>Lipremming-techniek</h4>
-                <p>Druk je lippen zachtjes op elkaar wanneer je een gaapneiging voelt. Laat de lucht langzaam door je neus in en uit gaan.</p>
-            </div>
-
-            <div class="technique-card">
-                <h4>Mini-ademhalingen</h4>
-                <p>Neem bewust 3-4 zeer kleine, ondiepe ademhalingen door je neus. Hiermee voorkom je de grote 'zucht-ademhaling'.</p>
-            </div>
-
-            <div class="technique-card">
-                <h4>Tongpositie veranderen</h4>
-                <p>Plaats je tongpunt tegen je gehemelte (achter je voortanden). Dit vermindert de neiging tot gapen.</p>
-            </div>
-
-            <div class="technique-card">
-                <h4>Water drinken</h4>
-                <p>Neem kleine slokjes water wanneer je merkt dat je begint te gapen. Dit doorbreekt het ademhalingspatroon.</p>
-            </div>
-
-            <div class="alert alert-info">
-                <strong>💡 Belangrijk om te onthouden:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Ze geven je de kans om preventief in te grijpen voordat een volledige hyperventilatie-episode begint.
-            </div>
-
-            <div class="card">
-                <h3>Gedachte-Breaking Technieken</h3>
-                <div class="technique-card">
-                    <strong>Paradoxale intentie:</strong> "Oké hersenen, jullie willen dat ik ga gapen? Prima, ik ga nu heel bewust gapen"
+            
+            <form id="register-form">
+                <div class="form-group">
+                    <label class="form-label">Naam:</label>
+                    <input type="text" id="register-name" class="form-input" placeholder="Jouw naam" required>
                 </div>
-                <div class="technique-card">
-                    <strong>Herframing:</strong> "Mijn brein probeert me te beschermen, maar ik hoef niet te reageren"
-                </div>
-                <div class="technique-card">
-                    <strong>Aandacht verplaatsen:</strong> Tel 5 blauwe dingen die je kunt zien
-                </div>
-            </div>
 
-            <div class="card">
-                <button class="btn btn-primary" onclick="openDagboekModal('Gaap Preventie Technieken')">
-                    📝 Dagboek Entry Maken
-                </button>
-            </div>
+                <div class="form-group">
+                    <label class="form-label">E-mail:</label>
+                    <input type="email" id="register-email" class="form-input" placeholder="jouw@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Wachtwoord:</label>
+                    <input type="password" id="register-password" class="form-input" placeholder="Minimaal 6 karakters" required minlength="6">
+                </div>
+
+                <div style="display: flex; gap: 0.5rem;">
+                    <button type="submit" class="btn btn-green">
+                        Account Aanmaken
+                    </button>
+                    <button type="button" class="btn btn-orange" onclick="closeRegisterModal()">
+                        Annuleren
+                    </button>
+                </div>
+            </form>
         </div>
+    </div>
 
-        <!-- EMDR Tab -->
-        <div id="emdr" class="tab-content hidden">
-            <div class="card">
-                <h2>💜 EMDR Zelfhulp</h2>
-                <p>Voor luchthonger-gevoelens (dit is ondersteuning, geen vervanging voor professionele EMDR)</p>
-            </div>
+    <!-- Main App (hidden until logged in) -->
+    <div id="main-app" class="hidden">
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="dashboard">🏠 Dashboard</button>
+            <button class="tab-btn" data-tab="crisis">🚨 Crisis</button>
+            <button class="tab-btn" data-tab="ritueel">🕐 Ritueel</button>
+            <button class="tab-btn" data-tab="gapen">🥱 Gapen</button>
+            <button class="tab-btn" data-tab="emdr">💜 EMDR</button>
+            <button class="tab-btn" data-tab="dagboek">📖 Dagboek</button>
+        </nav>
 
-            <div class="alert alert-warning">
-                <strong>⚠️ Gebruik dit alleen voor milde tot matige gevoelens. Stop als je je overweldigd voelt.</strong>
-            </div>
-
-            <div class="card">
-                <h3 id="emdr-title">Stap 1: Voorbereiding</h3>
-                <div id="emdr-content">
-                    <p>Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt.</p>
+        <div class="container">
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content">
+                <div class="card">
+                    <h2>Welkom bij Ademruimte</h2>
+                    <p>Jouw persoonlijke hulp voor het omgaan met hyperventilatie en luchthonger-gevoelens.</p>
                 </div>
 
-                <div id="emdr-intensity" class="hidden">
-                    <div class="form-group">
-                        <label class="form-label">Intensiteit van luchthonger-gevoel (1-10):</label>
-                        <input type="range" min="1" max="10" value="5" class="range-input" id="emdr-intensity-slider">
-                        <div class="range-value" id="emdr-intensity-value">5</div>
+                <div class="alert alert-info">
+                    <strong>🔥 Synchronisatie Status:</strong><br>
+                    <span id="connection-details">Je entries worden automatisch gesynchroniseerd tussen al je apparaten</span>
+                    <br><br>
+                    <button class="btn btn-primary" onclick="testFirebaseConnection()">
+                        🔗 Test Connectie
+                    </button>
+                    <button class="btn btn-green" onclick="migrateLocalData()" style="margin-left: 0.5rem;">
+                        📤 Lokale Data Migreren
+                    </button>
+                </div>
+
+                <div class="grid">
+                    <div class="card">
+                        <h3>🚨 Crisis Hulp</h3>
+                        <p>Voor wanneer je luchthonger voelt opkomen</p>
+                        <button class="btn btn-red" onclick="showTab('crisis')">Open Crisis Hulp</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>🕐 Afkoel Ritueel</h3>
+                        <p>Na intensief denkwerk</p>
+                        <button class="btn btn-green" onclick="showTab('ritueel')">Start Ritueel</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>🥱 Gaap Preventie</h3>
+                        <p>Technieken voor gaapaanvallen</p>
+                        <button class="btn btn-orange" onclick="showTab('gapen')">Bekijk Technieken</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>💜 EMDR Zelfhulp</h3>
+                        <p>Voor luchthonger-gevoelens</p>
+                        <button class="btn btn-purple" onclick="showTab('emdr')">Start EMDR</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>📖 Dagboek</h3>
+                        <p>Bijhouden van patronen</p>
+                        <button class="btn btn-primary" onclick="showTab('dagboek')">Open Dagboek</button>
                     </div>
                 </div>
 
-                <div style="margin: 1rem 0;">
-                    <button id="emdr-prev-btn" class="btn btn-orange" onclick="prevEmdrStep()" style="display: none;">Vorige</button>
-                    <button id="emdr-next-btn" class="btn btn-purple" onclick="nextEmdrStep()">Volgende</button>
+                <div class="alert alert-info">
+                    <strong>💡 Tip van de dag:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.
+                </div>
+            </div>
+
+            <!-- Crisis Tab -->
+            <div id="crisis" class="tab-content hidden">
+                <div class="card">
+                    <h2>🚨 Crisis Hulp - Luchthonger</h2>
+                    <p>Voor wanneer je dat benauwde gevoel voelt opkomen</p>
                 </div>
 
-                <div class="progress-bar">
-                    <div class="progress-fill" id="emdr-progress" style="width: 20%"></div>
+                <div class="technique-card">
+                    <h4>1. Paradoxale Ademhaling</h4>
+                    <p>Start met bewust zeer kleine, korte ademhalingen. Na 3-4 van deze mini-ademhalingen, probeer een iets langere uitademing.</p>
                 </div>
 
-                <div id="emdr-complete" class="alert alert-success hidden">
-                    <strong>✅ EMDR Sessie Voltooid!</strong><br>
-                    <button class="btn btn-primary" onclick="openDagboekModal('EMDR Zelfhulp Sessie')">
+                <div class="technique-card">
+                    <h4>2. Purse-lip Ademhaling</h4>
+                    <p>Tuut je lippen bij het uitademen om lichte weerstand te creëren. Dit helpt bij luchthonger en stabiliseert CO2-niveaus.</p>
+                </div>
+
+                <div class="technique-card">
+                    <h4>3. IJswater Techniek</h4>
+                    <p>Breng iets kouds tegen je gezicht (vooral rond wangen en ogen) om de duikreflex te activeren.</p>
+                </div>
+
+                <div class="technique-card">
+                    <h4>4. Herframing</h4>
+                    <p>"Dit is geen echt zuurstoftekort, dit is een sensatie die voorbij zal gaan. Mijn lichaam krijgt genoeg zuurstof."</p>
+                </div>
+
+                <div class="card">
+                    <h3>5-4-3-2-1 Grounding</h3>
+                    <ul class="step-list">
+                        <li>5 dingen die je ZIET</li>
+                        <li>4 dingen die je VOELT</li>
+                        <li>3 dingen die je HOORT</li>
+                        <li>2 dingen die je RUIKT</li>
+                        <li>1 ding dat je PROEFT</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <button class="btn btn-primary" onclick="openDagboekModal('Crisis Hulp Technieken')">
                         📝 Dagboek Entry Maken
                     </button>
                 </div>
             </div>
-        </div>
 
-        <!-- Dagboek Tab -->
-        <div id="dagboek" class="tab-content hidden">
-            <div class="card">
-                <h2>📖 Dagboek</h2>
-                <p>Overzicht van je sessies en vooruitgang</p>
-                <div style="margin-top: 1rem;">
-                    <button class="btn btn-primary" onclick="openDagboekModal('Handmatige Entry')">
-                        ➕ Nieuwe Entry
-                    </button>
-                    <button class="btn btn-green" onclick="loadDagboekEntries()" style="margin-left: 0.5rem;">
-                        🔄 Vernieuw
-                    </button>
-                    <button class="btn btn-orange" onclick="exportDagboek()" style="margin-left: 0.5rem;">
-                        📥 Export Dagboek
+            <!-- Ritueel Tab -->
+            <div id="ritueel" class="tab-content hidden">
+                <div class="card">
+                    <h2>🕐 Afkoel Ritueel</h2>
+                    <p>Voor na periodes van intensief denkwerk (5-10 minuten)</p>
+                </div>
+
+                <div class="card">
+                    <h3 id="ritual-title">Stap 1: Fysieke Mini-Reset</h3>
+                    <div class="timer-display" id="timer-display">2:00</div>
+                    
+                    <div id="ritual-instructions">
+                        <ul class="step-list">
+                            <li>Sta op en strek je volledig uit</li>
+                            <li>Schud je armen en benen los</li>
+                            <li>Rol je schouders 5x naar achteren</li>
+                            <li>Maak kleine cirkels met je hoofd (5x elke richting)</li>
+                        </ul>
+                    </div>
+
+                    <div style="margin: 1rem 0;">
+                        <button id="timer-btn" class="btn btn-green" onclick="startTimer()">▶️ Start Timer</button>
+                        <button class="btn btn-primary" onclick="nextRitualStep()" id="next-btn" style="display: none;">Volgende Stap</button>
+                        <button class="btn btn-orange" onclick="resetRitual()">🔄 Reset</button>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="ritual-progress" style="width: 20%"></div>
+                    </div>
+
+                    <div id="ritual-complete" class="alert alert-success hidden">
+                        <strong>✅ Afkoel Ritueel Voltooid!</strong><br>
+                        Goed gedaan! Je hebt alle stappen doorlopen.
+                        <br><br>
+                        <button class="btn btn-primary" onclick="openDagboekModal('Afkoel Ritueel')">
+                            📝 Dagboek Entry Maken
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gapen Tab -->
+            <div id="gapen" class="tab-content hidden">
+                <div class="card">
+                    <h2>🥱 Gaap Preventie Technieken</h2>
+                    <p>Voor wanneer je die vervelende gaapaanvallen voelt opkomen</p>
+                </div>
+
+                <div class="technique-card">
+                    <h4>Lipremming-techniek</h4>
+                    <p>Druk je lippen zachtjes op elkaar wanneer je een gaapneiging voelt. Laat de lucht langzaam door je neus in en uit gaan.</p>
+                </div>
+
+                <div class="technique-card">
+                    <h4>Mini-ademhalingen</h4>
+                    <p>Neem bewust 3-4 zeer kleine, ondiepe ademhalingen door je neus. Hiermee voorkom je de grote 'zucht-ademhaling'.</p>
+                </div>
+
+                <div class="technique-card">
+                    <h4>Tongpositie veranderen</h4>
+                    <p>Plaats je tongpunt tegen je gehemelte (achter je voortanden). Dit vermindert de neiging tot gapen.</p>
+                </div>
+
+                <div class="technique-card">
+                    <h4>Water drinken</h4>
+                    <p>Neem kleine slokjes water wanneer je merkt dat je begint te gapen. Dit doorbreekt het ademhalingspatroon.</p>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>💡 Belangrijk om te onthouden:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Ze geven je de kans om preventief in te grijpen voordat een volledige hyperventilatie-episode begint.
+                </div>
+
+                <div class="card">
+                    <h3>Gedachte-Breaking Technieken</h3>
+                    <div class="technique-card">
+                        <strong>Paradoxale intentie:</strong> "Oké hersenen, jullie willen dat ik ga gapen? Prima, ik ga nu heel bewust gapen"
+                    </div>
+                    <div class="technique-card">
+                        <strong>Herframing:</strong> "Mijn brein probeert me te beschermen, maar ik hoef niet te reageren"
+                    </div>
+                    <div class="technique-card">
+                        <strong>Aandacht verplaatsen:</strong> Tel 5 blauwe dingen die je kunt zien
+                    </div>
+                </div>
+
+                <div class="card">
+                    <button class="btn btn-primary" onclick="openDagboekModal('Gaap Preventie Technieken')">
+                        📝 Dagboek Entry Maken
                     </button>
                 </div>
             </div>
 
-            <div id="dagboek-entries">
-                <!-- Entries worden hier geladen -->
+            <!-- EMDR Tab -->
+            <div id="emdr" class="tab-content hidden">
+                <div class="card">
+                    <h2>💜 EMDR Zelfhulp</h2>
+                    <p>Voor luchthonger-gevoelens (dit is ondersteuning, geen vervanging voor professionele EMDR)</p>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ Gebruik dit alleen voor milde tot matige gevoelens. Stop als je je overweldigd voelt.</strong>
+                </div>
+
+                <div class="card">
+                    <h3 id="emdr-title">Stap 1: Voorbereiding</h3>
+                    <div id="emdr-content">
+                        <p>Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt.</p>
+                    </div>
+
+                    <div id="emdr-intensity" class="hidden">
+                        <div class="form-group">
+                            <label class="form-label">Intensiteit van luchthonger-gevoel (1-10):</label>
+                            <input type="range" min="1" max="10" value="5" class="range-input" id="emdr-intensity-slider">
+                            <div class="range-value" id="emdr-intensity-value">5</div>
+                        </div>
+                    </div>
+
+                    <div style="margin: 1rem 0;">
+                        <button id="emdr-prev-btn" class="btn btn-orange" onclick="prevEmdrStep()" style="display: none;">Vorige</button>
+                        <button id="emdr-next-btn" class="btn btn-purple" onclick="nextEmdrStep()">Volgende</button>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="emdr-progress" style="width: 20%"></div>
+                    </div>
+
+                    <div id="emdr-complete" class="alert alert-success hidden">
+                        <strong>✅ EMDR Sessie Voltooid!</strong><br>
+                        <button class="btn btn-primary" onclick="openDagboekModal('EMDR Zelfhulp Sessie')">
+                            📝 Dagboek Entry Maken
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            <div class="card">
-                <h3>Patronen om naar uit te kijken</h3>
-                <ul class="step-list">
-                    <li>Welke technieken het beste werken voor jou</li>
-                    <li>Tijdstippen waarop klachten vaker voorkomen</li>
-                    <li>Specifieke triggers (werk, stress, bepaalde gedachten)</li>
-                    <li>Verband tussen maagklachten en ademhalingsproblemen</li>
-                    <li>Verbetering in intensiteit scores over tijd</li>
-                </ul>
+            <!-- Dagboek Tab -->
+            <div id="dagboek" class="tab-content hidden">
+                <div class="card">
+                    <h2>📖 Dagboek</h2>
+                    <p>Overzicht van je sessies en vooruitgang</p>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn btn-primary" onclick="openDagboekModal('Handmatige Entry')">
+                            ➕ Nieuwe Entry
+                        </button>
+                        <button class="btn btn-green" onclick="loadDagboekEntries()" style="margin-left: 0.5rem;">
+                            🔄 Vernieuw
+                        </button>
+                        <button class="btn btn-orange" onclick="exportDagboek()" style="margin-left: 0.5rem;">
+                            📥 Export Dagboek
+                        </button>
+                    </div>
+                </div>
+
+                <div id="dagboek-entries">
+                    <!-- Entries worden hier geladen -->
+                </div>
+
+                <div class="card">
+                    <h3>Patronen om naar uit te kijken</h3>
+                    <ul class="step-list">
+                        <li>Welke technieken het beste werken voor jou</li>
+                        <li>Tijdstippen waarop klachten vaker voorkomen</li>
+                        <li>Specifieke triggers (werk, stress, bepaalde gedachten)</li>
+                        <li>Verband tussen maagklachten en ademhalingsproblemen</li>
+                        <li>Verbetering in intensiteit scores over tijd</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -779,7 +972,8 @@
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, orderBy, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
         // Firebase configuratie
         const firebaseConfig = {
@@ -793,7 +987,8 @@
         };
 
         // Global variables
-        let app, db;
+        let app, db, auth;
+        let currentUser = null;
         let isFirebaseConnected = false;
         let currentTab = 'dashboard';
         let timerInterval = null;
@@ -807,18 +1002,34 @@
         try {
             app = initializeApp(firebaseConfig);
             db = getFirestore(app);
+            auth = getAuth(app);
             isFirebaseConnected = true;
             
             updateFirebaseStatus('connected', '🔥 Firebase: Verbonden');
-            updateConnectionDetails('✅ Cloud opslag actief');
             
             console.log('✅ Firebase successfully initialized');
             
         } catch (error) {
             console.error('❌ Firebase initialization error:', error);
             updateFirebaseStatus('error', '🔥 Firebase: Fout');
-            updateConnectionDetails('❌ Connectie mislukt - lokale opslag wordt gebruikt');
         }
+
+        // Authentication state observer
+        onAuthStateChanged(auth, (user) => {
+            document.getElementById('auth-loading').style.display = 'none';
+            
+            if (user) {
+                currentUser = user;
+                showMainApp();
+                updateUserInfo(user);
+                updateConnectionDetails('✅ Ingelogd als ' + (user.displayName || user.email) + ' - Data wordt gesynchroniseerd');
+                loadDagboekEntries();
+            } else {
+                currentUser = null;
+                showLoginScreen();
+                updateConnectionDetails('❌ Niet ingelogd - Log in om je data te synchroniseren');
+            }
+        });
 
         // Helper functies
         function updateFirebaseStatus(type, message) {
@@ -831,12 +1042,102 @@
             document.getElementById('connection-details').innerHTML = html;
         }
 
+        function updateUserInfo(user) {
+            const userInfo = document.getElementById('user-info');
+            userInfo.innerHTML = 
+                '<div style="margin-bottom: 0.5rem;">👋 ' + (user.displayName || user.email) + '</div>' +
+                '<button onclick="signOutUser()">Uitloggen</button>';
+        }
+
+        function showLoginScreen() {
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('main-app').classList.add('hidden');
+        }
+
+        function showMainApp() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+        }
+
+        // Authentication functions
+        window.signInWithGoogle = async function() {
+            try {
+                const provider = new GoogleAuthProvider();
+                const result = await signInWithPopup(auth, provider);
+                console.log('✅ Google sign-in successful:', result.user.email);
+            } catch (error) {
+                console.error('❌ Google sign-in error:', error);
+                alert('Google inloggen mislukt: ' + error.message);
+            }
+        };
+
+        window.signOutUser = async function() {
+            try {
+                await signOut(auth);
+                console.log('✅ User signed out');
+            } catch (error) {
+                console.error('❌ Sign out error:', error);
+                alert('Uitloggen mislukt: ' + error.message);
+            }
+        };
+
+        window.showRegisterForm = function() {
+            document.getElementById('register-modal').classList.add('show');
+        };
+
+        window.closeRegisterModal = function() {
+            document.getElementById('register-modal').classList.remove('show');
+            // Reset form
+            document.getElementById('register-form').reset();
+        };
+
+        // Login form handler
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                console.log('✅ Email sign-in successful');
+            } catch (error) {
+                console.error('❌ Email sign-in error:', error);
+                alert('Inloggen mislukt: ' + error.message);
+            }
+        });
+
+        // Register form handler
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            
+            try {
+                const result = await createUserWithEmailAndPassword(auth, email, password);
+                
+                // Update user profile with name
+                await updateProfile(result.user, {
+                    displayName: name
+                });
+                
+                console.log('✅ Account created successfully');
+                closeRegisterModal();
+                
+            } catch (error) {
+                console.error('❌ Registration error:', error);
+                alert('Account aanmaken mislukt: ' + error.message);
+            }
+        });
+
         // Firebase functies
         async function saveToFirestore(entry) {
-            if (!isFirebaseConnected) {
+            if (!isFirebaseConnected || !currentUser) {
                 // Fallback naar localStorage
                 const stored = JSON.parse(localStorage.getItem('ademruimte-entries') || '[]');
-                const entryWithId = { ...entry, id: Date.now().toString(), bron: 'Lokaal' };
+                const entryWithId = { ...entry, id: Date.now().toString(), bron: 'Lokaal', userId: 'local' };
                 stored.unshift(entryWithId);
                 localStorage.setItem('ademruimte-entries', JSON.stringify(stored));
                 return { id: entryWithId.id, success: true };
@@ -846,7 +1147,8 @@
                 const docRef = await addDoc(collection(db, "dagboekEntries"), {
                     ...entry,
                     timestamp: serverTimestamp(),
-                    userId: "demo-user"
+                    userId: currentUser.uid,
+                    userEmail: currentUser.email
                 });
                 
                 console.log('✅ Entry saved to Firebase with ID:', docRef.id);
@@ -856,7 +1158,7 @@
                 console.error('❌ Error saving to Firestore:', error);
                 // Fallback naar localStorage
                 const stored = JSON.parse(localStorage.getItem('ademruimte-entries') || '[]');
-                const entryWithId = { ...entry, id: Date.now().toString(), bron: 'Lokaal (Firebase fout)' };
+                const entryWithId = { ...entry, id: Date.now().toString(), bron: 'Lokaal (Firebase fout)', userId: currentUser?.uid || 'local' };
                 stored.unshift(entryWithId);
                 localStorage.setItem('ademruimte-entries', JSON.stringify(stored));
                 return { id: entryWithId.id, success: true };
@@ -864,14 +1166,18 @@
         }
 
         async function loadFromFirestore() {
-            if (!isFirebaseConnected) {
+            if (!isFirebaseConnected || !currentUser) {
                 // Load from localStorage
                 const stored = localStorage.getItem('ademruimte-entries');
                 return stored ? JSON.parse(stored) : [];
             }
 
             try {
-                const q = query(collection(db, "dagboekEntries"), orderBy("timestamp", "desc"));
+                const q = query(
+                    collection(db, "dagboekEntries"), 
+                    where("userId", "==", currentUser.uid),
+                    orderBy("timestamp", "desc")
+                );
                 const querySnapshot = await getDocs(q);
                 
                 const entries = [];
@@ -881,11 +1187,11 @@
                         id: doc.id,
                         ...data,
                         tijdstempel: data.timestamp ? data.timestamp.toDate().toLocaleString('nl-BE') : 'Onbekend',
-                        bron: "Firebase"
+                        bron: "Cloud"
                     });
                 });
                 
-                console.log('✅ Loaded', entries.length, 'entries from Firebase');
+                console.log('✅ Loaded', entries.length, 'entries from Firebase for user:', currentUser.email);
                 return entries;
                 
             } catch (error) {
@@ -896,7 +1202,77 @@
             }
         }
 
-        // Ritual steps
+        // Data migration function
+        window.migrateLocalData = async function() {
+            if (!currentUser) {
+                alert('❌ Je moet ingelogd zijn om data te migreren');
+                return;
+            }
+
+            const localData = localStorage.getItem('ademruimte-entries');
+            if (!localData) {
+                alert('📝 Geen lokale data gevonden om te migreren');
+                return;
+            }
+
+            const entries = JSON.parse(localData);
+            if (entries.length === 0) {
+                alert('📝 Geen entries gevonden om te migreren');
+                return;
+            }
+
+            const confirmMigration = confirm(
+                `🔄 Data Migratie\n\n` +
+                `Er zijn ${entries.length} lokale entries gevonden.\n` +
+                `Wil je deze migreren naar je cloud account?\n\n` +
+                `Dit zal ze toevoegen aan je cloud opslag.`
+            );
+
+            if (!confirmMigration) return;
+
+            try {
+                let migratedCount = 0;
+                
+                for (const entry of entries) {
+                    // Skip entries that are already marked as cloud entries
+                    if (entry.bron === 'Cloud' || entry.userId === currentUser.uid) {
+                        continue;
+                    }
+
+                    // Clean entry for migration
+                    const cleanEntry = {
+                        techniekGebruikt: entry.techniekGebruikt,
+                        trigger: entry.trigger,
+                        intensiteitVoor: entry.intensiteitVoor,
+                        intensiteitNa: entry.intensiteitNa,
+                        resultaat: entry.resultaat,
+                        notities: entry.notities,
+                        tijdstempel: entry.tijdstempel
+                    };
+
+                    await saveToFirestore(cleanEntry);
+                    migratedCount++;
+                }
+
+                if (migratedCount > 0) {
+                    alert(`✅ Migratie Voltooid!\n\n${migratedCount} entries zijn succesvol gemigreerd naar je cloud account.`);
+                    
+                    // Clear local storage after successful migration
+                    localStorage.removeItem('ademruimte-entries');
+                    
+                    // Reload entries
+                    await loadDagboekEntries();
+                } else {
+                    alert('📝 Geen nieuwe entries gevonden om te migreren');
+                }
+                
+            } catch (error) {
+                console.error('❌ Migration error:', error);
+                alert('❌ Migratie mislukt: ' + error.message);
+            }
+        };
+
+        // Ritual steps (unchanged)
         const ritualSteps = [
             {
                 title: "Stap 1: Fysieke Mini-Reset",
@@ -946,7 +1322,7 @@
             }
         ];
 
-        // EMDR steps
+        // EMDR steps (unchanged)
         const emdrSteps = [
             {
                 title: "Stap 1: Voorbereiding",
@@ -972,19 +1348,27 @@
 
         // Global functies (beschikbaar vanuit HTML)
         window.testFirebaseConnection = function() {
-            if (isFirebaseConnected) {
+            if (isFirebaseConnected && currentUser) {
                 alert('✅ Firebase Connectie Succesvol!\n\n' + 
                       'Firebase App: ✓\n' + 
                       'Firestore Database: ✓\n' + 
-                      'Cloud opslag: ✓\n\n' + 
-                      'Je entries worden automatisch opgeslagen in de cloud!');
+                      'Gebruiker ingelogd: ✓\n' + 
+                      'Cloud synchronisatie: ✓\n\n' + 
+                      'Je entries worden automatisch gesynchroniseerd tussen al je apparaten!');
+            } else if (isFirebaseConnected && !currentUser) {
+                alert('⚠️ Firebase Verbonden, Niet Ingelogd\n\n' + 
+                      'Firebase werkt, maar je bent niet ingelogd.\n' + 
+                      'Log in om je data te synchroniseren tussen apparaten.');
             } else {
-                alert('⚠️ Firebase Offline\n\n' + 
+                alert('❌ Firebase Offline\n\n' + 
                       'Firebase connectie mislukt.\n' + 
                       'Je entries worden lokaal opgeslagen in je browser.\n\n' + 
                       'Check je internetverbinding en herlaad de pagina om opnieuw te proberen.');
             }
         };
+
+        // Rest of the functions remain the same...
+        // [Previous functions for tab switching, timer, ritual, emdr, dagboek etc.]
 
         // Tab switching
         window.showTab = function(tabName) {
@@ -1211,7 +1595,9 @@
                 }
                 
                 let exportText = 'ADEMRUIMTE DAGBOEK EXPORT\n';
-                exportText += '================================\n\n';
+                exportText += '================================\n';
+                exportText += 'Gebruiker: ' + (currentUser ? (currentUser.displayName || currentUser.email) : 'Onbekend') + '\n';
+                exportText += 'Export datum: ' + new Date().toLocaleString('nl-BE') + '\n\n';
                 
                 for (let i = 0; i < entries.length; i++) {
                     const entry = entries[i];
@@ -1331,11 +1717,6 @@
             
             // Initialize EMDR display  
             updateEmdrDisplay();
-            
-            // Load dagboek entries if on dagboek tab
-            if (currentTab === 'dagboek') {
-                loadDagboekEntries();
-            }
         });
 
     </script>

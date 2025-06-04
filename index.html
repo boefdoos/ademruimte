@@ -182,6 +182,186 @@
             color: #991b1b;
         }
 
+        .timer-display {
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            color: #1f2937;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 0.5rem;
+            background: #e5e7eb;
+            border-radius: 0.25rem;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #10b981;
+            border-radius: 0.25rem;
+            transition: width 0.3s ease;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 4rem;
+        }
+
+        .range-input {
+            width: 100%;
+            margin: 0.5rem 0;
+        }
+
+        .range-value {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.125rem;
+            color: #3b82f6;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            margin-left: auto;
+        }
+
+        .technique-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .technique-card h4 {
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+        }
+
+        .entry-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .entry-title {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .entry-result {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .entry-result.zeer-goed { color: #059669; }
+        .entry-result.goed { color: #10b981; }
+        .entry-result.matig { color: #f59e0b; }
+        .entry-result.geen-effect { color: #6b7280; }
+        .entry-result.slechter { color: #ef4444; }
+
+        .intensity-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid #f3f4f6;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         .status-connected {
             color: #059669;
             font-size: 0.75rem;
@@ -197,8 +377,20 @@
             font-size: 0.75rem;
         }
 
-        .hidden {
-            display: none !important;
+        .step-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .step-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .step-list li:before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
         }
 
         footer {
@@ -228,6 +420,10 @@
             .grid {
                 grid-template-columns: 1fr;
             }
+            
+            .timer-display {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
@@ -242,6 +438,10 @@
 
     <nav class="nav-tabs">
         <button class="tab-btn active" data-tab="dashboard">🏠 Dashboard</button>
+        <button class="tab-btn" data-tab="crisis">🚨 Crisis</button>
+        <button class="tab-btn" data-tab="ritueel">🕐 Ritueel</button>
+        <button class="tab-btn" data-tab="gapen">🥱 Gapen</button>
+        <button class="tab-btn" data-tab="emdr">💜 EMDR</button>
         <button class="tab-btn" data-tab="dagboek">📖 Dagboek</button>
     </nav>
 
@@ -254,17 +454,11 @@
             </div>
 
             <div class="alert alert-info">
-                <strong>🔥 Firebase Status:</strong><br>
-                <span id="connection-details">Bezig met verbinden...</span>
+                <strong>🔥 Firebase Cloud Opslag:</strong><br>
+                <span id="connection-details">Je entries worden automatisch opgeslagen in de cloud</span>
                 <br><br>
                 <button class="btn btn-primary" onclick="testFirebaseConnection()">
                     🔗 Test Firebase Connectie
-                </button>
-                <button class="btn btn-green" onclick="testFirestoreWrite()" style="margin-left: 0.5rem;">
-                    ✍️ Test Schrijven
-                </button>
-                <button class="btn btn-orange" onclick="testFirestoreRead()" style="margin-left: 0.5rem;">
-                    📖 Test Lezen
                 </button>
             </div>
 
@@ -272,13 +466,215 @@
                 <div class="card">
                     <h3>🚨 Crisis Hulp</h3>
                     <p>Voor wanneer je luchthonger voelt opkomen</p>
-                    <button class="btn btn-red" onclick="addTestEntry('Crisis Hulp')">Simuleer Crisis Entry</button>
+                    <button class="btn btn-red" onclick="showTab('crisis')">Open Crisis Hulp</button>
+                </div>
+
+                <div class="card">
+                    <h3>🕐 Afkoel Ritueel</h3>
+                    <p>Na intensief denkwerk</p>
+                    <button class="btn btn-green" onclick="showTab('ritueel')">Start Ritueel</button>
+                </div>
+
+                <div class="card">
+                    <h3>🥱 Gaap Preventie</h3>
+                    <p>Technieken voor gaapaanvallen</p>
+                    <button class="btn btn-orange" onclick="showTab('gapen')">Bekijk Technieken</button>
+                </div>
+
+                <div class="card">
+                    <h3>💜 EMDR Zelfhulp</h3>
+                    <p>Voor luchthonger-gevoelens</p>
+                    <button class="btn btn-purple" onclick="showTab('emdr')">Start EMDR</button>
                 </div>
 
                 <div class="card">
                     <h3>📖 Dagboek</h3>
                     <p>Bijhouden van patronen</p>
                     <button class="btn btn-primary" onclick="showTab('dagboek')">Open Dagboek</button>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 Tip van de dag:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.
+            </div>
+        </div>
+
+        <!-- Crisis Tab -->
+        <div id="crisis" class="tab-content hidden">
+            <div class="card">
+                <h2>🚨 Crisis Hulp - Luchthonger</h2>
+                <p>Voor wanneer je dat benauwde gevoel voelt opkomen</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>1. Paradoxale Ademhaling</h4>
+                <p>Start met bewust zeer kleine, korte ademhalingen. Na 3-4 van deze mini-ademhalingen, probeer een iets langere uitademing.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>2. Purse-lip Ademhaling</h4>
+                <p>Tuut je lippen bij het uitademen om lichte weerstand te creëren. Dit helpt bij luchthonger en stabiliseert CO2-niveaus.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>3. IJswater Techniek</h4>
+                <p>Breng iets kouds tegen je gezicht (vooral rond wangen en ogen) om de duikreflex te activeren.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>4. Herframing</h4>
+                <p>"Dit is geen echt zuurstoftekort, dit is een sensatie die voorbij zal gaan. Mijn lichaam krijgt genoeg zuurstof."</p>
+            </div>
+
+            <div class="card">
+                <h3>5-4-3-2-1 Grounding</h3>
+                <ul class="step-list">
+                    <li>5 dingen die je ZIET</li>
+                    <li>4 dingen die je VOELT</li>
+                    <li>3 dingen die je HOORT</li>
+                    <li>2 dingen die je RUIKT</li>
+                    <li>1 ding dat je PROEFT</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <button class="btn btn-primary" onclick="openDagboekModal('Crisis Hulp Technieken')">
+                    📝 Dagboek Entry Maken
+                </button>
+            </div>
+        </div>
+
+        <!-- Ritueel Tab -->
+        <div id="ritueel" class="tab-content hidden">
+            <div class="card">
+                <h2>🕐 Afkoel Ritueel</h2>
+                <p>Voor na periodes van intensief denkwerk (5-10 minuten)</p>
+            </div>
+
+            <div class="card">
+                <h3 id="ritual-title">Stap 1: Fysieke Mini-Reset</h3>
+                <div class="timer-display" id="timer-display">2:00</div>
+                
+                <div id="ritual-instructions">
+                    <ul class="step-list">
+                        <li>Sta op en strek je volledig uit</li>
+                        <li>Schud je armen en benen los</li>
+                        <li>Rol je schouders 5x naar achteren</li>
+                        <li>Maak kleine cirkels met je hoofd (5x elke richting)</li>
+                    </ul>
+                </div>
+
+                <div style="margin: 1rem 0;">
+                    <button id="timer-btn" class="btn btn-green" onclick="startTimer()">▶️ Start Timer</button>
+                    <button class="btn btn-primary" onclick="nextRitualStep()" id="next-btn" style="display: none;">Volgende Stap</button>
+                    <button class="btn btn-orange" onclick="resetRitual()">🔄 Reset</button>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="ritual-progress" style="width: 20%"></div>
+                </div>
+
+                <div id="ritual-complete" class="alert alert-success hidden">
+                    <strong>✅ Afkoel Ritueel Voltooid!</strong><br>
+                    Goed gedaan! Je hebt alle stappen doorlopen.
+                    <br><br>
+                    <button class="btn btn-primary" onclick="openDagboekModal('Afkoel Ritueel')">
+                        📝 Dagboek Entry Maken
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gapen Tab -->
+        <div id="gapen" class="tab-content hidden">
+            <div class="card">
+                <h2>🥱 Gaap Preventie Technieken</h2>
+                <p>Voor wanneer je die vervelende gaapaanvallen voelt opkomen</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>Lipremming-techniek</h4>
+                <p>Druk je lippen zachtjes op elkaar wanneer je een gaapneiging voelt. Laat de lucht langzaam door je neus in en uit gaan.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>Mini-ademhalingen</h4>
+                <p>Neem bewust 3-4 zeer kleine, ondiepe ademhalingen door je neus. Hiermee voorkom je de grote 'zucht-ademhaling'.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>Tongpositie veranderen</h4>
+                <p>Plaats je tongpunt tegen je gehemelte (achter je voortanden). Dit vermindert de neiging tot gapen.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>Water drinken</h4>
+                <p>Neem kleine slokjes water wanneer je merkt dat je begint te gapen. Dit doorbreekt het ademhalingspatroon.</p>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 Belangrijk om te onthouden:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Ze geven je de kans om preventief in te grijpen voordat een volledige hyperventilatie-episode begint.
+            </div>
+
+            <div class="card">
+                <h3>Gedachte-Breaking Technieken</h3>
+                <div class="technique-card">
+                    <strong>Paradoxale intentie:</strong> "Oké hersenen, jullie willen dat ik ga gapen? Prima, ik ga nu heel bewust gapen"
+                </div>
+                <div class="technique-card">
+                    <strong>Herframing:</strong> "Mijn brein probeert me te beschermen, maar ik hoef niet te reageren"
+                </div>
+                <div class="technique-card">
+                    <strong>Aandacht verplaatsen:</strong> Tel 5 blauwe dingen die je kunt zien
+                </div>
+            </div>
+
+            <div class="card">
+                <button class="btn btn-primary" onclick="openDagboekModal('Gaap Preventie Technieken')">
+                    📝 Dagboek Entry Maken
+                </button>
+            </div>
+        </div>
+
+        <!-- EMDR Tab -->
+        <div id="emdr" class="tab-content hidden">
+            <div class="card">
+                <h2>💜 EMDR Zelfhulp</h2>
+                <p>Voor luchthonger-gevoelens (dit is ondersteuning, geen vervanging voor professionele EMDR)</p>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ Gebruik dit alleen voor milde tot matige gevoelens. Stop als je je overweldigd voelt.</strong>
+            </div>
+
+            <div class="card">
+                <h3 id="emdr-title">Stap 1: Voorbereiding</h3>
+                <div id="emdr-content">
+                    <p>Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt.</p>
+                </div>
+
+                <div id="emdr-intensity" class="hidden">
+                    <div class="form-group">
+                        <label class="form-label">Intensiteit van luchthonger-gevoel (1-10):</label>
+                        <input type="range" min="1" max="10" value="5" class="range-input" id="emdr-intensity-slider">
+                        <div class="range-value" id="emdr-intensity-value">5</div>
+                    </div>
+                </div>
+
+                <div style="margin: 1rem 0;">
+                    <button id="emdr-prev-btn" class="btn btn-orange" onclick="prevEmdrStep()" style="display: none;">Vorige</button>
+                    <button id="emdr-next-btn" class="btn btn-purple" onclick="nextEmdrStep()">Volgende</button>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="emdr-progress" style="width: 20%"></div>
+                </div>
+
+                <div id="emdr-complete" class="alert alert-success hidden">
+                    <strong>✅ EMDR Sessie Voltooid!</strong><br>
+                    <button class="btn btn-primary" onclick="openDagboekModal('EMDR Zelfhulp Sessie')">
+                        📝 Dagboek Entry Maken
+                    </button>
                 </div>
             </div>
         </div>
@@ -289,14 +685,14 @@
                 <h2>📖 Dagboek</h2>
                 <p>Overzicht van je sessies en vooruitgang</p>
                 <div style="margin-top: 1rem;">
-                    <button class="btn btn-primary" onclick="addTestEntry('Handmatige Entry')">
-                        ➕ Test Entry Toevoegen
+                    <button class="btn btn-primary" onclick="openDagboekModal('Handmatige Entry')">
+                        ➕ Nieuwe Entry
                     </button>
                     <button class="btn btn-green" onclick="loadDagboekEntries()" style="margin-left: 0.5rem;">
                         🔄 Vernieuw
                     </button>
-                    <button class="btn btn-red" onclick="clearAllEntries()" style="margin-left: 0.5rem;">
-                        🗑️ Alles Wissen
+                    <button class="btn btn-orange" onclick="exportDagboek()" style="margin-left: 0.5rem;">
+                        📥 Export Dagboek
                     </button>
                 </div>
             </div>
@@ -304,6 +700,74 @@
             <div id="dagboek-entries">
                 <!-- Entries worden hier geladen -->
             </div>
+
+            <div class="card">
+                <h3>Patronen om naar uit te kijken</h3>
+                <ul class="step-list">
+                    <li>Welke technieken het beste werken voor jou</li>
+                    <li>Tijdstippen waarop klachten vaker voorkomen</li>
+                    <li>Specifieke triggers (werk, stress, bepaalde gedachten)</li>
+                    <li>Verband tussen maagklachten en ademhalingsproblemen</li>
+                    <li>Verbetering in intensiteit scores over tijd</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dagboek Modal -->
+    <div id="dagboek-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📝 Dagboek Entry</h3>
+                <button class="close-btn" onclick="closeDagboekModal()">&times;</button>
+            </div>
+            
+            <form id="dagboek-form">
+                <div class="form-group">
+                    <label class="form-label">Situatie/Trigger:</label>
+                    <input type="text" id="entry-trigger" class="form-input" placeholder="Bijv. na intensief werken">
+                </div>
+
+                <div class="grid">
+                    <div class="form-group">
+                        <label class="form-label">Intensiteit voor (1-10):</label>
+                        <input type="range" min="1" max="10" value="5" class="range-input" id="entry-before">
+                        <div class="range-value" id="entry-before-value">5</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Intensiteit na (1-10):</label>
+                        <input type="range" min="1" max="10" value="5" class="range-input" id="entry-after">
+                        <div class="range-value" id="entry-after-value">5</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Resultaat:</label>
+                    <select id="entry-result" class="form-select">
+                        <option value="">Selecteer resultaat...</option>
+                        <option value="zeer-goed">Zeer goed - volledig opgelost</option>
+                        <option value="goed">Goed - duidelijke verbetering</option>
+                        <option value="matig">Matig - kleine verbetering</option>
+                        <option value="geen-effect">Geen effect</option>
+                        <option value="slechter">Iets slechter</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Notities:</label>
+                    <textarea id="entry-notes" class="form-textarea" placeholder="Wat viel je op?"></textarea>
+                </div>
+
+                <div style="display: flex; gap: 0.5rem;">
+                    <button type="button" class="btn btn-primary" onclick="saveDagboekEntry()">
+                        📁 Opslaan
+                    </button>
+                    <button type="button" class="btn btn-orange" onclick="closeDagboekModal()">
+                        Annuleren
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -315,7 +779,7 @@
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, orderBy, query, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
         // Firebase configuratie
         const firebaseConfig = {
@@ -328,28 +792,36 @@
             measurementId: "G-SD2ZEYNMNY"
         };
 
-        // Initialize Firebase
+        // Global variables
         let app, db;
         let isFirebaseConnected = false;
+        let currentTab = 'dashboard';
+        let timerInterval = null;
+        let currentTime = 0;
+        let ritualStep = 0;
+        let emdrStep = 0;
+        let currentTechnique = '';
+        let dagboekEntries = [];
 
+        // Initialize Firebase
         try {
             app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             isFirebaseConnected = true;
             
-            updateStatus('connected', '🔥 Firebase: Verbonden');
-            updateConnectionDetails('✅ App geïnitialiseerd<br>✅ Firestore database verbonden<br>✅ Klaar voor gebruik');
+            updateFirebaseStatus('connected', '🔥 Firebase: Verbonden');
+            updateConnectionDetails('✅ Cloud opslag actief');
             
             console.log('✅ Firebase successfully initialized');
             
         } catch (error) {
             console.error('❌ Firebase initialization error:', error);
-            updateStatus('error', '🔥 Firebase: Initialisatie fout');
-            updateConnectionDetails('❌ Fout: ' + error.message);
+            updateFirebaseStatus('error', '🔥 Firebase: Fout');
+            updateConnectionDetails('❌ Connectie mislukt - lokale opslag wordt gebruikt');
         }
 
         // Helper functies
-        function updateStatus(type, message) {
+        function updateFirebaseStatus(type, message) {
             const statusElement = document.getElementById('firebase-status');
             statusElement.textContent = message;
             statusElement.className = `status-${type}`;
@@ -362,7 +834,12 @@
         // Firebase functies
         async function saveToFirestore(entry) {
             if (!isFirebaseConnected) {
-                throw new Error('Firebase niet verbonden');
+                // Fallback naar localStorage
+                const stored = JSON.parse(localStorage.getItem('ademruimte-entries') || '[]');
+                const entryWithId = { ...entry, id: Date.now().toString(), bron: 'Lokaal' };
+                stored.unshift(entryWithId);
+                localStorage.setItem('ademruimte-entries', JSON.stringify(stored));
+                return { id: entryWithId.id, success: true };
             }
 
             try {
@@ -372,18 +849,25 @@
                     userId: "demo-user"
                 });
                 
-                console.log('✅ Entry saved with ID:', docRef.id);
+                console.log('✅ Entry saved to Firebase with ID:', docRef.id);
                 return { id: docRef.id, success: true };
                 
             } catch (error) {
                 console.error('❌ Error saving to Firestore:', error);
-                throw error;
+                // Fallback naar localStorage
+                const stored = JSON.parse(localStorage.getItem('ademruimte-entries') || '[]');
+                const entryWithId = { ...entry, id: Date.now().toString(), bron: 'Lokaal (Firebase fout)' };
+                stored.unshift(entryWithId);
+                localStorage.setItem('ademruimte-entries', JSON.stringify(stored));
+                return { id: entryWithId.id, success: true };
             }
         }
 
         async function loadFromFirestore() {
             if (!isFirebaseConnected) {
-                throw new Error('Firebase niet verbonden');
+                // Load from localStorage
+                const stored = localStorage.getItem('ademruimte-entries');
+                return stored ? JSON.parse(stored) : [];
             }
 
             try {
@@ -401,210 +885,106 @@
                     });
                 });
                 
-                console.log('✅ Loaded', entries.length, 'entries from Firestore');
+                console.log('✅ Loaded', entries.length, 'entries from Firebase');
                 return entries;
                 
             } catch (error) {
                 console.error('❌ Error loading from Firestore:', error);
-                throw error;
+                // Fallback naar localStorage
+                const stored = localStorage.getItem('ademruimte-entries');
+                return stored ? JSON.parse(stored) : [];
             }
         }
 
-        async function clearFirestore() {
-            if (!isFirebaseConnected) {
-                throw new Error('Firebase niet verbonden');
+        // Ritual steps
+        const ritualSteps = [
+            {
+                title: "Stap 1: Fysieke Mini-Reset",
+                duration: 120,
+                instructions: [
+                    "Sta op en strek je volledig uit",
+                    "Schud je armen en benen los", 
+                    "Rol je schouders 5x naar achteren",
+                    "Maak kleine cirkels met je hoofd (5x elke richting)"
+                ]
+            },
+            {
+                title: "Stap 2: Zintuigelijke Verschuiving",
+                duration: 120,
+                instructions: [
+                    "Raak 5 verschillende texturen aan in je omgeving",
+                    "Luister bewust naar 3 geluiden die je kunt horen",
+                    "Kijk naar iets aangenaams in de verte"
+                ]
+            },
+            {
+                title: "Stap 3: Voedings-ankerpunt",
+                duration: 120,
+                instructions: [
+                    "Drink een half glas water, langzaam en bewust",
+                    "Eet iets kleins met een sterke smaak",
+                    "Let op de smaak en textuur in je mond"
+                ]
+            },
+            {
+                title: "Stap 4: Mentale Overgang",
+                duration: 120,
+                instructions: [
+                    "Schrijf 3 woorden op die samenvatten waar je net aan werkte",
+                    "Schrijf daaronder 3 woorden voor wat je nu gaat doen",
+                    "Trek een lijn tussen deze sets woorden als symbolische afsluiting"
+                ]
+            },
+            {
+                title: "Stap 5: Bewegingsafsluiting",
+                duration: 120,
+                instructions: [
+                    "Loop even rond, bij voorkeur buiten of bij een open raam",
+                    "Maak 5-10 trage, bewuste stappen",
+                    "Eindig met een kleine glimlach"
+                ]
             }
+        ];
 
-            try {
-                const querySnapshot = await getDocs(collection(db, "dagboekEntries"));
-                const deletePromises = [];
-                
-                querySnapshot.forEach((document) => {
-                    deletePromises.push(deleteDoc(doc(db, "dagboekEntries", document.id)));
-                });
-                
-                await Promise.all(deletePromises);
-                console.log('✅ All entries cleared from Firestore');
-                return true;
-                
-            } catch (error) {
-                console.error('❌ Error clearing Firestore:', error);
-                throw error;
+        // EMDR steps
+        const emdrSteps = [
+            {
+                title: "Stap 1: Voorbereiding",
+                content: "Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt."
+            },
+            {
+                title: "Stap 2: Doelgerichtheid", 
+                content: "Denk heel kort aan het gevoel van luchthonger (niet meer dan 5 seconden). Schat de intensiteit en formuleer: 'Ik kan met dit gevoel omgaan'"
+            },
+            {
+                title: "Stap 3: Bilaterale Stimulatie",
+                content: "Kies één optie:<br><br><strong>Oogbewegingen:</strong> Beweeg je ogen langzaam van links naar rechts (15-20x)<br><strong>Butterfly hug:</strong> Kruis je armen en tik afwisselend op je schouders<br><strong>Knie-tikken:</strong> Tik afwisselend op je knieën met je handen"
+            },
+            {
+                title: "Stap 4: Check-in",
+                content: "Hoe voelt het luchthonger-gevoel nu? Welke gedachten komen op? Accepteer wat er komt zonder oordeel."
+            },
+            {
+                title: "Stap 5: Positieve Verankering",
+                content: "Focus op 'Ik kan hiermee omgaan' en doe 10-15 bilaterale bewegingen terwijl je deze gedachte vasthoudt."
             }
-        }
+        ];
 
         // Global functies (beschikbaar vanuit HTML)
-        window.testFirebaseConnection = async function() {
-            try {
-                if (!isFirebaseConnected) {
-                    alert('❌ Firebase is niet geïnitialiseerd');
-                    return;
-                }
-
-                // Test basic connection
-                const testCollection = collection(db, "connectionTest");
+        window.testFirebaseConnection = function() {
+            if (isFirebaseConnected) {
                 alert('✅ Firebase Connectie Succesvol!\n\n' + 
                       'Firebase App: ✓\n' + 
                       'Firestore Database: ✓\n' + 
-                      'Collectie toegang: ✓\n\n' + 
-                      'Je kunt nu data opslaan en laden!');
-                      
-            } catch (error) {
-                alert('❌ Firebase Connectie Fout:\n\n' + error.message);
-                console.error('Connection test failed:', error);
+                      'Cloud opslag: ✓\n\n' + 
+                      'Je entries worden automatisch opgeslagen in de cloud!');
+            } else {
+                alert('⚠️ Firebase Offline\n\n' + 
+                      'Firebase connectie mislukt.\n' + 
+                      'Je entries worden lokaal opgeslagen in je browser.\n\n' + 
+                      'Check je internetverbinding en herlaad de pagina om opnieuw te proberen.');
             }
         };
-
-        window.testFirestoreWrite = async function() {
-            try {
-                const testEntry = {
-                    test: true,
-                    message: "Firebase connectie test",
-                    testTime: new Date().toLocaleString('nl-BE')
-                };
-
-                const result = await saveToFirestore(testEntry);
-                alert('✅ Schrijf Test Succesvol!\n\n' + 
-                      'Test entry opgeslagen met ID: ' + result.id + '\n\n' + 
-                      'Firebase schrijfoperaties werken correct!');
-                      
-            } catch (error) {
-                alert('❌ Schrijf Test Fout:\n\n' + error.message);
-                console.error('Write test failed:', error);
-            }
-        };
-
-        window.testFirestoreRead = async function() {
-            try {
-                const entries = await loadFromFirestore();
-                alert('✅ Lees Test Succesvol!\n\n' + 
-                      'Aantal entries geladen: ' + entries.length + '\n\n' + 
-                      'Firebase leesoperaties werken correct!');
-                      
-                // Update UI if on dagboek tab
-                if (document.getElementById('dagboek').classList.contains('hidden') === false) {
-                    displayDagboekEntries(entries);
-                }
-                
-            } catch (error) {
-                alert('❌ Lees Test Fout:\n\n' + error.message);
-                console.error('Read test failed:', error);
-            }
-        };
-
-        window.addTestEntry = async function(techniek) {
-            try {
-                const entry = {
-                    techniekGebruikt: techniek || 'Test Entry',
-                    trigger: 'Firebase test entry',
-                    intensiteitVoor: Math.floor(Math.random() * 10) + 1,
-                    intensiteitNa: Math.floor(Math.random() * 6) + 1,
-                    resultaat: ['zeer-goed', 'goed', 'matig'][Math.floor(Math.random() * 3)],
-                    notities: 'Dit is een test entry om Firebase functionaliteit te testen',
-                    tijdstempel: new Date().toLocaleString('nl-BE'),
-                    bron: 'Test'
-                };
-
-                await saveToFirestore(entry);
-                alert('✅ Test Entry Toegevoegd!\n\nEntry succesvol opgeslagen in Firebase');
-                
-                // Refresh dagboek if visible
-                if (document.getElementById('dagboek').classList.contains('hidden') === false) {
-                    await loadDagboekEntries();
-                }
-                
-            } catch (error) {
-                alert('❌ Fout bij toevoegen entry:\n\n' + error.message);
-                console.error('Add entry failed:', error);
-            }
-        };
-
-        window.loadDagboekEntries = async function() {
-            try {
-                const entries = await loadFromFirestore();
-                displayDagboekEntries(entries);
-                
-            } catch (error) {
-                console.error('Load entries failed:', error);
-                document.getElementById('dagboek-entries').innerHTML = 
-                    '<div class="alert alert-danger">' +
-                        '<strong>❌ Fout bij laden entries:</strong><br>' + 
-                        error.message +
-                    '</div>';
-            }
-        };
-
-        window.clearAllEntries = async function() {
-            if (!confirm('⚠️ Weet je zeker dat je alle entries wilt wissen?\n\nDit kan niet ongedaan worden gemaakt.')) {
-                return;
-            }
-
-            try {
-                await clearFirestore();
-                alert('✅ Alle entries gewist!');
-                await loadDagboekEntries();
-                
-            } catch (error) {
-                alert('❌ Fout bij wissen entries:\n\n' + error.message);
-                console.error('Clear entries failed:', error);
-            }
-        };
-
-        // Helper functies
-        function displayDagboekEntries(entries) {
-            const container = document.getElementById('dagboek-entries');
-            
-            if (!entries || entries.length === 0) {
-                container.innerHTML = 
-                    '<div class="card">' +
-                        '<h3>Nog geen entries</h3>' +
-                        '<p>Voeg een test entry toe om de Firebase functionaliteit te testen.</p>' +
-                    '</div>';
-                return;
-            }
-            
-            const entriesHtml = entries.map(entry => {
-                return '<div class="card">' +
-                    '<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">' +
-                        '<div>' +
-                            '<div style="font-weight: 600; color: #1f2937;">' + entry.techniekGebruikt + '</div>' +
-                            '<div style="font-size: 0.875rem; color: #6b7280;">' +
-                                entry.tijdstempel + ' • ' +
-                                '<span style="color: #3b82f6;">' + entry.bron + '</span>' +
-                            '</div>' +
-                        '</div>' +
-                        '<div style="font-size: 0.875rem; font-weight: 500; color: #059669;">' +
-                            getResultaatText(entry.resultaat) +
-                        '</div>' +
-                    '</div>' +
-                    '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 0.75rem;">' +
-                        '<div style="font-size: 0.875rem;">' +
-                            '<span style="color: #6b7280;">Voor:</span> ' +
-                            '<span style="font-weight: 500;">' + entry.intensiteitVoor + '/10</span>' +
-                        '</div>' +
-                        '<div style="font-size: 0.875rem;">' +
-                            '<span style="color: #6b7280;">Na:</span> ' +
-                            '<span style="font-weight: 500;">' + entry.intensiteitNa + '/10</span>' +
-                        '</div>' +
-                    '</div>' +
-                    (entry.trigger ? '<p style="font-size: 0.875rem; margin-bottom: 0.5rem;"><strong>Trigger:</strong> ' + entry.trigger + '</p>' : '') +
-                    (entry.notities ? '<p style="font-size: 0.875rem;"><strong>Notities:</strong> ' + entry.notities + '</p>' : '') +
-                '</div>';
-            }).join('');
-            
-            container.innerHTML = entriesHtml;
-        }
-
-        function getResultaatText(resultaat) {
-            const mapping = {
-                'zeer-goed': 'Zeer goed',
-                'goed': 'Goed', 
-                'matig': 'Matig',
-                'geen-effect': 'Geen effect',
-                'slechter': 'Slechter'
-            };
-            return mapping[resultaat] || resultaat;
-        }
 
         // Tab switching
         window.showTab = function(tabName) {
@@ -624,11 +1004,317 @@
             // Set active button
             document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
             
+            currentTab = tabName;
+
             // Load content if needed
             if (tabName === 'dagboek') {
                 loadDagboekEntries();
             }
         };
+
+        // Timer functions
+        window.startTimer = function() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+                return;
+            }
+
+            currentTime = ritualSteps[ritualStep].duration;
+            document.getElementById('timer-btn').innerHTML = '⏸️ Pause Timer';
+            
+            timerInterval = setInterval(() => {
+                currentTime--;
+                updateTimerDisplay();
+                
+                if (currentTime <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+                    document.getElementById('next-btn').style.display = 'inline-block';
+                }
+            }, 1000);
+        };
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(currentTime / 60);
+            const seconds = currentTime % 60;
+            const display = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+            document.getElementById('timer-display').textContent = display;
+        }
+
+        window.nextRitualStep = function() {
+            ritualStep++;
+            
+            if (ritualStep >= ritualSteps.length) {
+                // Ritual complete
+                document.getElementById('ritual-complete').classList.remove('hidden');
+                document.querySelector('#ritueel .card:nth-child(2)').style.display = 'none';
+                return;
+            }
+            
+            updateRitualDisplay();
+            document.getElementById('next-btn').style.display = 'none';
+        };
+
+        window.resetRitual = function() {
+            ritualStep = 0;
+            currentTime = 0;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            
+            document.getElementById('ritual-complete').classList.add('hidden');
+            document.querySelector('#ritueel .card:nth-child(2)').style.display = 'block';
+            document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+            document.getElementById('next-btn').style.display = 'none';
+            
+            updateRitualDisplay();
+        };
+
+        function updateRitualDisplay() {
+            const step = ritualSteps[ritualStep];
+            document.getElementById('ritual-title').textContent = step.title;
+            currentTime = step.duration;
+            updateTimerDisplay();
+            
+            const instructionsHtml = step.instructions.map(function(inst) {
+                return '<li>' + inst + '</li>';
+            }).join('');
+            document.getElementById('ritual-instructions').innerHTML = '<ul class="step-list">' + instructionsHtml + '</ul>';
+            
+            const progress = ((ritualStep + 1) / ritualSteps.length) * 100;
+            document.getElementById('ritual-progress').style.width = progress + '%';
+        }
+
+        // EMDR functions
+        window.nextEmdrStep = function() {
+            emdrStep++;
+            
+            if (emdrStep >= emdrSteps.length) {
+                // EMDR complete
+                document.getElementById('emdr-complete').classList.remove('hidden');
+                document.querySelector('#emdr .card:nth-child(3)').style.display = 'none';
+                return;
+            }
+            
+            updateEmdrDisplay();
+        };
+
+        window.prevEmdrStep = function() {
+            if (emdrStep > 0) {
+                emdrStep--;
+                updateEmdrDisplay();
+            }
+        };
+
+        function updateEmdrDisplay() {
+            const step = emdrSteps[emdrStep];
+            document.getElementById('emdr-title').textContent = step.title;
+            document.getElementById('emdr-content').innerHTML = step.content;
+            
+            // Show/hide intensity slider
+            if (emdrStep === 1) {
+                document.getElementById('emdr-intensity').classList.remove('hidden');
+            } else {
+                document.getElementById('emdr-intensity').classList.add('hidden');
+            }
+            
+            // Show/hide navigation buttons
+            document.getElementById('emdr-prev-btn').style.display = emdrStep > 0 ? 'inline-block' : 'none';
+            
+            if (emdrStep >= emdrSteps.length - 1) {
+                document.getElementById('emdr-next-btn').textContent = 'Voltooien';
+            } else {
+                document.getElementById('emdr-next-btn').textContent = 'Volgende';
+            }
+            
+            const progress = ((emdrStep + 1) / emdrSteps.length) * 100;
+            document.getElementById('emdr-progress').style.width = progress + '%';
+        }
+
+        // Dagboek functions
+        window.openDagboekModal = function(technique) {
+            currentTechnique = technique;
+            document.getElementById('entry-trigger').value = technique ? `Tijdens/na ${technique}` : '';
+            document.getElementById('dagboek-modal').classList.add('show');
+        };
+
+        window.closeDagboekModal = function() {
+            document.getElementById('dagboek-modal').classList.remove('show');
+            
+            // Reset form fields
+            document.getElementById('entry-trigger').value = '';
+            document.getElementById('entry-before').value = '5';
+            document.getElementById('entry-after').value = '5';
+            document.getElementById('entry-result').value = '';
+            document.getElementById('entry-notes').value = '';
+            
+            // Reset range displays
+            document.getElementById('entry-before-value').textContent = '5';
+            document.getElementById('entry-after-value').textContent = '5';
+            
+            currentTechnique = '';
+        };
+
+        window.saveDagboekEntry = async function() {
+            try {
+                const entry = {
+                    techniekGebruikt: currentTechnique || 'Handmatige Entry',
+                    trigger: document.getElementById('entry-trigger').value,
+                    intensiteitVoor: parseInt(document.getElementById('entry-before').value),
+                    intensiteitNa: parseInt(document.getElementById('entry-after').value),
+                    resultaat: document.getElementById('entry-result').value,
+                    notities: document.getElementById('entry-notes').value,
+                    tijdstempel: new Date().toLocaleString('nl-BE')
+                };
+
+                await saveToFirestore(entry);
+                
+                closeDagboekModal();
+                
+                if (currentTab === 'dagboek') {
+                    await loadDagboekEntries();
+                }
+                
+                alert('✅ Entry opgeslagen!');
+                
+            } catch (error) {
+                alert('❌ Fout bij opslaan: ' + error.message);
+            }
+        };
+
+        window.loadDagboekEntries = async function() {
+            try {
+                const entries = await loadFromFirestore();
+                displayDagboekEntries(entries);
+                
+            } catch (error) {
+                console.error('Load entries failed:', error);
+                document.getElementById('dagboek-entries').innerHTML = 
+                    '<div class="alert alert-danger">' +
+                        '<strong>❌ Fout bij laden entries:</strong><br>' + 
+                        error.message +
+                    '</div>';
+            }
+        };
+
+        window.exportDagboek = async function() {
+            try {
+                const entries = await loadFromFirestore();
+                
+                if (!entries || entries.length === 0) {
+                    alert('📝 Geen entries om te exporteren');
+                    return;
+                }
+                
+                let exportText = 'ADEMRUIMTE DAGBOEK EXPORT\n';
+                exportText += '================================\n\n';
+                
+                for (let i = 0; i < entries.length; i++) {
+                    const entry = entries[i];
+                    exportText += 'ENTRY ' + (i + 1) + '\n';
+                    exportText += 'Datum: ' + entry.tijdstempel + '\n';
+                    exportText += 'Techniek: ' + entry.techniekGebruikt + '\n';
+                    exportText += 'Trigger: ' + (entry.trigger || 'Geen') + '\n';
+                    exportText += 'Intensiteit voor: ' + entry.intensiteitVoor + '/10\n';
+                    exportText += 'Intensiteit na: ' + entry.intensiteitNa + '/10\n';
+                    exportText += 'Resultaat: ' + getResultaatText(entry.resultaat) + '\n';
+                    exportText += 'Notities: ' + (entry.notities || 'Geen') + '\n';
+                    exportText += 'Bron: ' + (entry.bron || 'Onbekend') + '\n';
+                    exportText += '\n---\n\n';
+                }
+                
+                // Create downloadable file
+                const blob = new Blob([exportText], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'ademruimte-dagboek-' + new Date().toLocaleDateString('nl-BE') + '.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                alert('📁 Dagboek geëxporteerd als tekstbestand!');
+                
+            } catch (error) {
+                alert('❌ Fout bij exporteren: ' + error.message);
+            }
+        };
+
+        function displayDagboekEntries(entries) {
+            const container = document.getElementById('dagboek-entries');
+            
+            if (!entries || entries.length === 0) {
+                container.innerHTML = 
+                    '<div class="card">' +
+                        '<h3>Nog geen entries</h3>' +
+                        '<p>Maak een dagboekentry na het gebruiken van oefeningen om patronen bij te houden.</p>' +
+                        '<button class="btn btn-primary" onclick="openDagboekModal(\'Eerste Entry\')">' +
+                            'Maak je eerste entry' +
+                        '</button>' +
+                    '</div>';
+                return;
+            }
+            
+            const entriesHtml = entries.map(entry => {
+                return '<div class="entry-card">' +
+                    '<div class="entry-header">' +
+                        '<div>' +
+                            '<div class="entry-title">' + entry.techniekGebruikt + '</div>' +
+                            '<div style="font-size: 0.875rem; color: #6b7280;">' +
+                                entry.tijdstempel + ' • ' +
+                                '<span style="color: #3b82f6; font-size: 0.75rem;">' + (entry.bron || 'Onbekend') + '</span>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="entry-result ' + entry.resultaat + '">' +
+                            getResultaatText(entry.resultaat) +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="intensity-grid">' +
+                        '<div style="font-size: 0.875rem;">' +
+                            '<span style="color: #6b7280;">Voor:</span>' +
+                            '<span style="font-weight: 500; margin-left: 0.25rem;">' + entry.intensiteitVoor + '/10</span>' +
+                        '</div>' +
+                        '<div style="font-size: 0.875rem;">' +
+                            '<span style="color: #6b7280;">Na:</span>' +
+                            '<span style="font-weight: 500; margin-left: 0.25rem;">' + entry.intensiteitNa + '/10</span>' +
+                        '</div>' +
+                    '</div>' +
+                    (entry.trigger ? '<p style="font-size: 0.875rem; margin-bottom: 0.5rem;"><strong>Trigger:</strong> ' + entry.trigger + '</p>' : '') +
+                    (entry.notities ? '<p style="font-size: 0.875rem;"><strong>Notities:</strong> ' + entry.notities + '</p>' : '') +
+                '</div>';
+            }).join('');
+            
+            container.innerHTML = entriesHtml;
+        }
+
+        function getResultaatText(resultaat) {
+            const mapping = {
+                'zeer-goed': 'Zeer goed',
+                'goed': 'Goed',
+                'matig': 'Matig',
+                'geen-effect': 'Geen effect',
+                'slechter': 'Slechter'
+            };
+            return mapping[resultaat] || resultaat;
+        }
+
+        // Range slider updates
+        document.getElementById('emdr-intensity-slider').addEventListener('input', function() {
+            document.getElementById('emdr-intensity-value').textContent = this.value;
+        });
+
+        document.getElementById('entry-before').addEventListener('input', function() {
+            document.getElementById('entry-before-value').textContent = this.value;
+        });
+
+        document.getElementById('entry-after').addEventListener('input', function() {
+            document.getElementById('entry-after-value').textContent = this.value;
+        });
 
         // Tab switching event listeners
         document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -638,12 +1324,19 @@
             });
         });
 
-        // Auto-load dagboek when page loads
-        setTimeout(() => {
-            if (isFirebaseConnected) {
+        // Initialize app on load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize ritual display
+            updateRitualDisplay();
+            
+            // Initialize EMDR display  
+            updateEmdrDisplay();
+            
+            // Load dagboek entries if on dagboek tab
+            if (currentTab === 'dagboek') {
                 loadDagboekEntries();
             }
-        }, 1000);
+        });
 
     </script>
 </body>

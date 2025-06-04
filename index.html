@@ -16,20 +16,27 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: #f9fafb;
             line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         header {
             background: linear-gradient(135deg, #3b82f6, #1d4ed8);
             color: white;
-            padding: 2rem 1rem;
+            padding: 1.5rem 1rem;
             text-align: center;
             position: relative;
         }
 
         header h1 {
-            font-size: 2rem;
+            font-size: 1.75rem;
             font-weight: bold;
             margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
         }
 
         .user-info {
@@ -37,18 +44,25 @@
             top: 1rem;
             right: 1rem;
             text-align: right;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
+        }
+
+        .user-info .user-name {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
         }
 
         .user-info button {
             background: rgba(255,255,255,0.2);
             border: 1px solid rgba(255,255,255,0.3);
             color: white;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.75rem;
             border-radius: 0.375rem;
             cursor: pointer;
-            margin-left: 0.5rem;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            min-height: 40px;
+            min-width: 80px;
+            transition: all 0.2s;
         }
 
         .user-info button:hover {
@@ -58,21 +72,24 @@
         .nav-tabs {
             background: white;
             border-bottom: 2px solid #e5e7eb;
-            padding: 1rem;
+            padding: 0.5rem;
             overflow-x: auto;
             white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
         }
 
         .nav-tabs button {
             background: none;
             border: none;
             padding: 0.75rem 1rem;
-            margin-right: 0.5rem;
+            margin-right: 0.25rem;
             border-radius: 0.5rem;
             cursor: pointer;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             transition: all 0.2s;
             white-space: nowrap;
+            min-height: 44px;
+            touch-action: manipulation;
         }
 
         .nav-tabs button.active {
@@ -86,16 +103,16 @@
         }
 
         .container {
-            max-width: 4xl;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 2rem 1rem;
+            padding: 1rem;
         }
 
         .card {
             background: white;
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             border: 1px solid #e5e7eb;
         }
@@ -103,7 +120,7 @@
         .card h2 {
             color: #1f2937;
             margin-bottom: 1rem;
-            font-size: 1.5rem;
+            font-size: 1.375rem;
         }
 
         .card h3 {
@@ -115,20 +132,23 @@
         .grid {
             display: grid;
             gap: 1rem;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: 1fr;
         }
 
         .btn {
-            padding: 0.75rem 1.5rem;
+            padding: 0.875rem 1.25rem;
             border: none;
             border-radius: 0.5rem;
             cursor: pointer;
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             font-weight: 500;
             transition: all 0.2s;
             text-align: center;
             display: inline-block;
             text-decoration: none;
+            min-height: 48px;
+            touch-action: manipulation;
+            user-select: none;
         }
 
         .btn-primary {
@@ -189,6 +209,7 @@
             padding: 1rem;
             border-radius: 0.5rem;
             margin-bottom: 1rem;
+            font-size: 0.9rem;
         }
 
         .alert-info {
@@ -216,40 +237,44 @@
         }
 
         .timer-display {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: bold;
             text-align: center;
             color: #1f2937;
-            margin: 1rem 0;
+            margin: 1.5rem 0;
             font-family: 'Courier New', monospace;
         }
 
         .breath-display {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: bold;
             text-align: center;
-            margin: 2rem 0;
-            padding: 2rem;
+            margin: 1.5rem 0;
+            padding: 1.5rem;
             border-radius: 1rem;
             transition: all 0.3s ease;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .breath-display.inhale {
             background: linear-gradient(135deg, #dbeafe, #bfdbfe);
             color: #1e40af;
-            transform: scale(1.05);
+            transform: scale(1.02);
         }
 
         .breath-display.exhale {
             background: linear-gradient(135deg, #d1fae5, #a7f3d0);
             color: #065f46;
-            transform: scale(0.95);
+            transform: scale(0.98);
         }
 
         .breath-display.hold {
             background: linear-gradient(135deg, #fef3c7, #fde68a);
             color: #92400e;
-            transform: scale(1.02);
+            transform: scale(1.01);
         }
 
         .breath-display.rest {
@@ -259,9 +284,9 @@
 
         .progress-bar {
             width: 100%;
-            height: 0.5rem;
+            height: 0.75rem;
             background: #e5e7eb;
-            border-radius: 0.25rem;
+            border-radius: 0.375rem;
             overflow: hidden;
             margin: 1rem 0;
         }
@@ -269,13 +294,13 @@
         .progress-fill {
             height: 100%;
             background: #10b981;
-            border-radius: 0.25rem;
+            border-radius: 0.375rem;
             transition: width 0.3s ease;
         }
 
         .breath-progress {
             height: 100%;
-            border-radius: 0.25rem;
+            border-radius: 0.375rem;
             transition: width linear;
         }
 
@@ -300,31 +325,59 @@
             margin-bottom: 0.5rem;
             font-weight: 500;
             color: #374151;
+            font-size: 0.9rem;
         }
 
         .form-input, .form-select, .form-textarea {
             width: 100%;
-            padding: 0.5rem;
+            padding: 0.75rem;
             border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            min-height: 48px;
         }
 
         .form-textarea {
             resize: vertical;
-            min-height: 4rem;
+            min-height: 80px;
         }
 
         .range-input {
             width: 100%;
-            margin: 0.5rem 0;
+            margin: 0.75rem 0;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e5e7eb;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .range-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #3b82f6;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .range-input::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: #3b82f6;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
         }
 
         .range-value {
             text-align: center;
             font-weight: bold;
-            font-size: 1.125rem;
+            font-size: 1.25rem;
             color: #3b82f6;
+            margin: 0.5rem 0;
         }
 
         .modal {
@@ -336,20 +389,20 @@
             height: 100%;
             background: rgba(0,0,0,0.5);
             z-index: 1000;
+            padding: 1rem;
         }
 
         .modal.show {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1rem;
         }
 
         .modal-content {
             background: white;
-            border-radius: 0.5rem;
-            padding: 2rem;
-            max-width: 500px;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            max-width: 400px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
@@ -369,6 +422,8 @@
             cursor: pointer;
             color: #6b7280;
             margin-left: auto;
+            min-width: 40px;
+            min-height: 40px;
         }
 
         .technique-card {
@@ -382,12 +437,18 @@
         .technique-card h4 {
             color: #1e40af;
             margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .technique-card p {
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
 
         .entry-card {
             background: white;
             border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             padding: 1rem;
             margin-bottom: 1rem;
         }
@@ -397,16 +458,19 @@
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 0.75rem;
+            gap: 1rem;
         }
 
         .entry-title {
             font-weight: 600;
             color: #1f2937;
+            font-size: 0.95rem;
         }
 
         .entry-result {
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             font-weight: 500;
+            white-space: nowrap;
         }
 
         .entry-result.zeer-goed { color: #059669; }
@@ -448,17 +512,17 @@
 
         .status-connected {
             color: #059669;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
 
         .status-disconnected {
             color: #f59e0b;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
 
         .status-error {
             color: #ef4444;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
 
         .step-list {
@@ -467,8 +531,9 @@
         }
 
         .step-list li {
-            padding: 0.5rem 0;
+            padding: 0.75rem 0;
             border-bottom: 1px solid #f3f4f6;
+            font-size: 0.9rem;
         }
 
         .step-list li:before {
@@ -479,13 +544,13 @@
 
         .login-container {
             max-width: 400px;
-            margin: 3rem auto;
+            margin: 2rem auto;
             padding: 0 1rem;
         }
 
         .login-card {
             background: white;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             padding: 2rem;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             border: 1px solid #e5e7eb;
@@ -519,9 +584,9 @@
 
         .google-btn {
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.875rem;
             border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
+            border-radius: 0.5rem;
             background: white;
             color: #374151;
             cursor: pointer;
@@ -529,9 +594,10 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             font-weight: 500;
             transition: all 0.2s;
+            min-height: 48px;
         }
 
         .google-btn:hover {
@@ -541,7 +607,7 @@
 
         .breath-controls {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 1rem;
             margin: 1rem 0;
         }
@@ -562,61 +628,136 @@
         }
 
         .breath-setting input {
-            width: 60px;
+            width: 80px;
             text-align: center;
             font-size: 1.125rem;
             font-weight: bold;
             border: 1px solid #d1d5db;
             border-radius: 0.375rem;
             padding: 0.5rem;
+            min-height: 44px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .button-group .btn {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .settings-section {
+            background: #f8fafc;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border: 1px solid #e2e8f0;
+        }
+
+        .settings-section h3 {
+            color: #374151;
+            margin-bottom: 1rem;
+            font-size: 1rem;
         }
 
         footer {
             text-align: center;
-            padding: 2rem;
+            padding: 2rem 1rem;
             color: #6b7280;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
         }
 
-        @media (max-width: 768px) {
+        /* Desktop optimizations */
+        @media (min-width: 768px) {
+            header {
+                padding: 2rem 1rem;
+            }
+            
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                max-width: 1200px;
+                padding: 2rem 1rem;
+            }
+            
+            .grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+            
+            .timer-display {
+                font-size: 3rem;
+            }
+
+            .breath-display {
+                font-size: 2.5rem;
+                padding: 2rem;
+            }
+
+            .breath-controls {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+
+            .user-info {
+                position: static;
+                margin-top: 1rem;
+                text-align: center;
+            }
+        }
+
+        /* Large screen optimizations */
+        @media (min-width: 1024px) {
+            .user-info {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                text-align: right;
+                margin-top: 0;
+            }
+        }
+
+        /* Touch optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .btn {
+                min-height: 44px;
+                padding: 1rem 1.5rem;
+            }
+            
+            .nav-tabs button {
+                min-height: 44px;
+                padding: 1rem 1.25rem;
+            }
+            
+            .user-info button {
+                min-height: 44px;
+                min-width: 88px;
+            }
+        }
+
+        /* Landscape phone optimizations */
+        @media (max-height: 500px) and (orientation: landscape) {
             header {
                 padding: 1rem;
             }
             
             header h1 {
                 font-size: 1.5rem;
-            }
-            
-            .user-info {
-                position: static;
-                margin-top: 1rem;
-                text-align: center;
+                margin-bottom: 0.25rem;
             }
             
             .container {
-                padding: 1rem;
+                padding: 0.5rem;
             }
             
-            .card {
+            .timer-display, .breath-display {
+                font-size: 1.5rem;
+                margin: 0.5rem 0;
                 padding: 1rem;
-            }
-            
-            .grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .timer-display {
-                font-size: 2rem;
-            }
-
-            .breath-display {
-                font-size: 1.8rem;
-                padding: 1rem;
-            }
-
-            .breath-controls {
-                grid-template-columns: 1fr;
-                gap: 0.5rem;
             }
         }
     </style>
@@ -713,7 +854,7 @@
                     <input type="password" id="register-password" class="form-input" placeholder="Minimaal 6 karakters" required minlength="6">
                 </div>
 
-                <div style="display: flex; gap: 0.5rem;">
+                <div class="button-group">
                     <button type="submit" class="btn btn-green">
                         Account Aanmaken
                     </button>
@@ -743,15 +884,6 @@
                 <div class="card">
                     <h2>Welkom bij Ademruimte</h2>
                     <p>Jouw persoonlijke hulp voor het omgaan met hyperventilatie en luchthonger-gevoelens.</p>
-                </div>
-
-                <div class="alert alert-info">
-                    <strong>🔥 Synchronisatie Status:</strong><br>
-                    <span id="connection-details">Je entries worden automatisch gesynchroniseerd tussen al je apparaten</span>
-                    <br><br>
-                    <button class="btn btn-green" onclick="migrateLocalData()">
-                        📤 Lokale Data Migreren
-                    </button>
                 </div>
 
                 <div class="grid">
@@ -794,6 +926,19 @@
 
                 <div class="alert alert-info">
                     <strong>💡 Tip van de dag:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.
+                </div>
+
+                <!-- Settings Section (moved to bottom) -->
+                <div class="settings-section">
+                    <h3>⚙️ Account & Data</h3>
+                    <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 1rem;">
+                        <span id="connection-details">Je entries worden automatisch gesynchroniseerd tussen al je apparaten</span>
+                    </p>
+                    <div class="button-group">
+                        <button class="btn btn-green" onclick="migrateLocalData()">
+                            📤 Migreer Lokale Data
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -885,12 +1030,14 @@
                             Cyclus: 0
                         </div>
                         
-                        <button id="breath-btn" class="btn btn-cyan" onclick="toggleBreathExercise()">
-                            ▶️ Start Buteyko
-                        </button>
-                        <button class="btn btn-orange" onclick="resetBreathExercise()" style="margin-left: 0.5rem;">
-                            🔄 Reset
-                        </button>
+                        <div class="button-group">
+                            <button id="breath-btn" class="btn btn-cyan" onclick="toggleBreathExercise()">
+                                ▶️ Start Buteyko
+                            </button>
+                            <button class="btn btn-orange" onclick="resetBreathExercise()">
+                                🔄 Reset
+                            </button>
+                        </div>
                     </div>
 
                     <div id="breath-complete" class="alert alert-success hidden">
@@ -940,7 +1087,7 @@
                         </ul>
                     </div>
 
-                    <div style="margin: 1rem 0;">
+                    <div class="button-group">
                         <button id="timer-btn" class="btn btn-green" onclick="startTimer()">▶️ Start Timer</button>
                         <button class="btn btn-primary" onclick="nextRitualStep()" id="next-btn" style="display: none;">Volgende Stap</button>
                         <button class="btn btn-orange" onclick="resetRitual()">🔄 Reset</button>
@@ -1037,7 +1184,7 @@
                         </div>
                     </div>
 
-                    <div style="margin: 1rem 0;">
+                    <div class="button-group">
                         <button id="emdr-prev-btn" class="btn btn-orange" onclick="prevEmdrStep()" style="display: none;">Vorige</button>
                         <button id="emdr-next-btn" class="btn btn-purple" onclick="nextEmdrStep()">Volgende</button>
                     </div>
@@ -1060,14 +1207,14 @@
                 <div class="card">
                     <h2>📖 Dagboek</h2>
                     <p>Overzicht van je sessies en vooruitgang</p>
-                    <div style="margin-top: 1rem;">
+                    <div class="button-group">
                         <button class="btn btn-primary" onclick="openDagboekModal('Handmatige Entry')">
                             ➕ Nieuwe Entry
                         </button>
-                        <button class="btn btn-green" onclick="loadDagboekEntries()" style="margin-left: 0.5rem;">
+                        <button class="btn btn-green" onclick="loadDagboekEntries()">
                             🔄 Vernieuw
                         </button>
-                        <button class="btn btn-orange" onclick="exportDagboek()" style="margin-left: 0.5rem;">
+                        <button class="btn btn-orange" onclick="exportDagboek()">
                             📥 Export Dagboek
                         </button>
                     </div>
@@ -1136,7 +1283,7 @@
                     <textarea id="entry-notes" class="form-textarea" placeholder="Wat viel je op?"></textarea>
                 </div>
 
-                <div style="display: flex; gap: 0.5rem;">
+                <div class="button-group">
                     <button type="button" class="btn btn-primary" onclick="saveDagboekEntry()">
                         📁 Opslaan
                     </button>
@@ -1236,11 +1383,17 @@
         function updateUserInfo(user) {
             const userInfo = document.getElementById('user-info');
             userInfo.innerHTML = 
-                '<div style="margin-bottom: 0.5rem;">👋 ' + (user.displayName || user.email) + '</div>' +
+                '<div class="user-name">👋 ' + (user.displayName || user.email) + '</div>' +
                 '<button id="signout-btn">Uitloggen</button>';
             
-            // Add event listener for sign out button
-            document.getElementById('signout-btn').addEventListener('click', handleSignOut);
+            // Add event listener to signout button
+            const signoutBtn = document.getElementById('signout-btn');
+            if (signoutBtn) {
+                signoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    handleSignOut();
+                });
+            }
         }
 
         function showLoginScreen() {
@@ -1943,7 +2096,7 @@
                     '<div class="entry-header">' +
                         '<div>' +
                             '<div class="entry-title">' + entry.techniekGebruikt + '</div>' +
-                            '<div style="font-size: 0.875rem; color: #6b7280;">' +
+                            '<div style="font-size: 0.8rem; color: #6b7280;">' +
                                 entry.tijdstempel + ' • ' +
                                 '<span style="color: #3b82f6; font-size: 0.75rem;">' + (entry.bron || 'Onbekend') + '</span>' +
                             '</div>' +
@@ -1953,17 +2106,17 @@
                         '</div>' +
                     '</div>' +
                     '<div class="intensity-grid">' +
-                        '<div style="font-size: 0.875rem;">' +
+                        '<div style="font-size: 0.85rem;">' +
                             '<span style="color: #6b7280;">Voor:</span>' +
                             '<span style="font-weight: 500; margin-left: 0.25rem;">' + entry.intensiteitVoor + '/10</span>' +
                         '</div>' +
-                        '<div style="font-size: 0.875rem;">' +
+                        '<div style="font-size: 0.85rem;">' +
                             '<span style="color: #6b7280;">Na:</span>' +
                             '<span style="font-weight: 500; margin-left: 0.25rem;">' + entry.intensiteitNa + '/10</span>' +
                         '</div>' +
                     '</div>' +
-                    (entry.trigger ? '<p style="font-size: 0.875rem; margin-bottom: 0.5rem;"><strong>Trigger:</strong> ' + entry.trigger + '</p>' : '') +
-                    (entry.notities ? '<p style="font-size: 0.875rem;"><strong>Notities:</strong> ' + entry.notities + '</p>' : '') +
+                    (entry.trigger ? '<p style="font-size: 0.85rem; margin-bottom: 0.5rem;"><strong>Trigger:</strong> ' + entry.trigger + '</p>' : '') +
+                    (entry.notities ? '<p style="font-size: 0.85rem;"><strong>Notities:</strong> ' + entry.notities + '</p>' : '') +
                 '</div>';
             }).join('');
             

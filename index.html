@@ -943,8 +943,16 @@
                         <!-- Account info wordt hier ingevuld -->
                     </div>
                     <div class="button-group">
-                        <button class="btn btn-red" id="logout-btn-main" onclick="performLogout()">
+                        <button class="btn btn-red" onclick="performLogout()">
                             🚪 Uitloggen
+                        </button>
+                        <button class="btn btn-orange" onclick="forceLogout()">
+                            🔧 Force Logout
+                        </button>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <button class="btn btn-primary" onclick="testAuthStatus()" style="font-size: 0.8rem;">
+                            🔍 Debug Auth Status
                         </button>
                     </div>
                 </div>
@@ -1369,7 +1377,7 @@
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, orderBy, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
         // Firebase configuratie
@@ -1422,22 +1430,32 @@
             crisis: { sessions: 0, lastSession: null }
         };
 
-        // Initialize Firebase
+        // Initialize Firebase with better error handling
         try {
+            console.log('🔄 Initializing Firebase...');
             app = initializeApp(firebaseConfig);
+            
+            console.log('🔄 Getting Firestore...');
             db = getFirestore(app);
+            
+            console.log('🔄 Getting Auth...');
             auth = getAuth(app);
+            
+            console.log('🔍 Firebase objects created:', {
+                app: !!app,
+                db: !!db, 
+                auth: !!auth
+            });
             
             // Test Firebase connection
             console.log('🔄 Testing Firebase connection...');
-            
-            // Try to access a collection to test connectivity
             collection(db, "test");
             
             isFirebaseConnected = true;
             updateFirebaseStatus('connected', '🔥 Firebase: Actief');
             
             console.log('✅ Firebase successfully initialized and connected');
+            console.log('🔍 Auth object details:', auth);
             
         } catch (error) {
             console.error('❌ Firebase initialization error:', error);
@@ -1450,12 +1468,23 @@
             }, 3000);
         }
 
-        // Authentication state observer
+        // Enhanced authentication state observer
         onAuthStateChanged(auth, (user) => {
+            console.log('🔄 === AUTH STATE CHANGED ===');
+            console.log('New user state:', user ? 'LOGGED_IN' : 'LOGGED_OUT');
+            if (user) {
+                console.log('User details:', {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName
+                });
+            }
+            
             document.getElementById('auth-loading').style.display = 'none';
             
             if (user) {
                 currentUser = user;
+                console.log('✅ Showing main app for user:', user.email);
                 showMainApp();
                 updateUserInfo(user);
                 updateAccountInfo(user);
@@ -1463,8 +1492,15 @@
                 checkForLocalData();
             } else {
                 currentUser = null;
+                console.log('❌ No user, showing login screen');
+                console.log('Calling showLoginScreen...');
                 showLoginScreen();
+                console.log('Login screen should now be visible');
             }
+            
+            console.log('🔄 === AUTH STATE CHANGE COMPLETE ===');
+        }, (error) => {
+            console.error('❌ Auth state observer error:', error);
         });
 
         function updateAccountInfo(user) {
@@ -1477,95 +1513,159 @@
                     '</p>';
             }
         }
-// Vervang de huidige performLogout functie met deze versie:
-window.performLogout = async function() {
-    console.log('🔄 performLogout called');
-    
-    if (!confirm('Weet je zeker dat je wilt uitloggen?')) {
-        console.log('❌ Logout cancelled by user');
-        return;
-    }
-    
-    console.log('✅ User confirmed logout');
-    
-    try {
-        // Stop any audio if playing
-        if (isAudioPlaying) {
-            console.log('🔇 Stopping audio...');
-            stopBilateralAudio();
-        }
-        
-        // Release wake lock
-        if (wakeLock) {
-            console.log('💤 Releasing wake lock...');
-            releaseWakeLock();
-        }
-        
-        // Check if auth is available
-        if (!auth) {
-            console.error('❌ Firebase auth not initialized');
-            alert('Fout: Firebase authenticatie niet beschikbaar');
-            return;
-        }
-        
-        console.log('🔄 Attempting Firebase signOut...');
-        
-        // Use the already imported signOut function (remove the dynamic import)
-        await signOut(auth);
-        
-        console.log('✅ Firebase signOut successful');
-        
-    } catch (error) {
-        console.error('❌ Logout error details:', error);
-        alert('❌ Uitloggen mislukt: ' + error.message);
-    }
-};
 
-// Ook de forceLogout functie kan vereenvoudigd worden:
-window.forceLogout = async function() {
-    console.log('🔄 Force logout initiated...');
-    
-    try {
-        // Stop any running services
-        if (isAudioPlaying) stopBilateralAudio();
-        if (wakeLock) releaseWakeLock();
-        
-        // Clear current user state
-        currentUser = null;
-        
-        // Attempt normal signOut first
-        if (auth) {
-            try {
-                await signOut(auth);
-                console.log('✅ Normal signOut successful');
+        // Fixed logout functions
+        window.performLogout = async function() {
+            console.log('🔄 === LOGOUT DEBUG START ===');
+            console.log('Auth object:', auth);
+            console.log('Current user before logout:', auth?.currentUser);
+            console.log('Global currentUser:', currentUser);
+            
+            if (!confirm('Weet je zeker dat je wilt uitloggen?')) {
+                console.log('❌ Logout cancelled by user');
                 return;
-            } catch (signOutError) {
-                console.log('⚠️ Normal signOut failed, proceeding with force logout');
             }
-        }
-        
-        // Clear local storage
-        const keys = Object.keys(localStorage);
-        keys.forEach(key => {
-            if (key.includes('firebase') || key.includes('auth')) {
-                localStorage.removeItem(key);
+            
+            try {
+                // Stop any running services
+                if (isAudioPlaying) {
+                    console.log('🔇 Stopping audio...');
+                    stopBilateralAudio();
+                }
+                
+                if (wakeLock) {
+                    console.log('💤 Releasing wake lock...');
+                    releaseWakeLock();
+                }
+                
+                // Check if auth is available
+                if (!auth) {
+                    console.error('❌ Firebase auth not initialized');
+                    alert('Fout: Firebase authenticatie niet beschikbaar');
+                    return;
+                }
+                
+                if (!auth.currentUser) {
+                    console.log('⚠️ No user currently signed in, forcing login screen');
+                    showLoginScreen();
+                    return;
+                }
+                
+                console.log('🔄 Attempting Firebase signOut...');
+                console.log('User to sign out:', auth.currentUser.email);
+                
+                // Add a timeout to prevent hanging
+                const signOutPromise = signOut(auth);
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Timeout na 10 seconden')), 10000)
+                );
+                
+                await Promise.race([signOutPromise, timeoutPromise]);
+                
+                console.log('✅ SignOut promise resolved');
+                console.log('Auth currentUser after signOut:', auth?.currentUser);
+                
+                // Manual state cleanup if auth state doesn't trigger
+                setTimeout(() => {
+                    console.log('🔄 Checking auth state after 2 seconds...');
+                    console.log('Auth currentUser delayed check:', auth?.currentUser);
+                    
+                    if (auth?.currentUser === null || auth?.currentUser === undefined) {
+                        console.log('✅ Auth state is clear, manually triggering login screen');
+                        currentUser = null;
+                        showLoginScreen();
+                    } else {
+                        console.log('⚠️ Auth state still has user, this is the problem!');
+                        console.log('Remaining user:', auth.currentUser);
+                    }
+                }, 2000);
+                
+                console.log('✅ Logout process completed');
+                
+            } catch (error) {
+                console.error('❌ Logout error details:', error);
+                console.error('❌ Error type:', typeof error);
+                console.error('❌ Error message:', error.message);
+                console.error('❌ Error code:', error.code);
+                
+                // Force logout on any error
+                console.log('🔧 Forcing logout due to error...');
+                forceLogout();
             }
-        });
-        sessionStorage.clear();
-        
-        // Manually show login screen
-        showLoginScreen();
-        
-        console.log('✅ Force logout completed');
-        alert('✅ Geforceerd uitgelogd');
-        
-    } catch (error) {
-        console.error('❌ Force logout error:', error);
-        if (confirm('Uitloggen mislukt. Pagina herladen?')) {
-            location.reload();
-        }
-    }
-};
+            
+            console.log('🔄 === LOGOUT DEBUG END ===');
+        };
+
+        window.forceLogout = async function() {
+            console.log('🔄 === FORCE LOGOUT START ===');
+            
+            try {
+                // Stop services
+                if (isAudioPlaying) stopBilateralAudio();
+                if (wakeLock) releaseWakeLock();
+                
+                // Clear global state
+                currentUser = null;
+                
+                // Clear Firebase auth cache more aggressively
+                if (auth) {
+                    try {
+                        // Try normal signOut first
+                        await signOut(auth);
+                        console.log('✅ Normal signOut during force logout succeeded');
+                    } catch (signOutError) {
+                        console.log('⚠️ Normal signOut failed during force logout:', signOutError.message);
+                    }
+                    
+                    // Force clear auth state (this is more aggressive)
+                    if (auth._delegate) {
+                        auth._delegate._currentUser = null;
+                    }
+                }
+                
+                // Clear all auth-related localStorage
+                const keys = Object.keys(localStorage);
+                keys.forEach(key => {
+                    if (key.includes('firebase') || key.includes('auth') || key.includes('Firebase')) {
+                        console.log('🗑️ Removing localStorage key:', key);
+                        localStorage.removeItem(key);
+                    }
+                });
+                
+                // Clear sessionStorage
+                sessionStorage.clear();
+                
+                // Force show login screen
+                console.log('🔄 Forcing login screen display...');
+                showLoginScreen();
+                
+                console.log('✅ Force logout completed');
+                alert('✅ Geforceerd uitgelogd');
+                
+            } catch (error) {
+                console.error('❌ Force logout error:', error);
+                
+                // Last resort - reload page
+                if (confirm('Uitloggen volledig mislukt. Pagina herladen?')) {
+                    location.reload();
+                }
+            }
+            
+            console.log('🔄 === FORCE LOGOUT END ===');
+        };
+
+        // Add test button for Firebase auth status
+        window.testAuthStatus = function() {
+            console.log('🔍 === FIREBASE AUTH DEBUG ===');
+            console.log('Firebase app:', app);
+            console.log('Firebase auth:', auth);
+            console.log('Auth currentUser:', auth?.currentUser);
+            console.log('Global currentUser:', currentUser);
+            console.log('isFirebaseConnected:', isFirebaseConnected);
+            console.log('Auth state:', auth?.currentUser ? 'LOGGED_IN' : 'LOGGED_OUT');
+            
+            alert('Check browser console (F12) voor auth debug info');
+        };
 
         // Helper functies
         function updateFirebaseStatus(type, message) {
@@ -1574,12 +1674,47 @@ window.forceLogout = async function() {
             statusElement.className = `status-${type}`;
         }
 
+        // Enhanced screen switching with logging
+        function showLoginScreen() {
+            console.log('🔄 showLoginScreen called');
+            console.log('Login screen element:', document.getElementById('login-screen'));
+            console.log('Main app element:', document.getElementById('main-app'));
+            
+            const loginScreen = document.getElementById('login-screen');
+            const mainApp = document.getElementById('main-app');
+            
+            if (loginScreen && mainApp) {
+                loginScreen.classList.remove('hidden');
+                mainApp.classList.add('hidden');
+                console.log('✅ Screen switched to login');
+                
+                // Double check after a short delay
+                setTimeout(() => {
+                    console.log('🔍 Login screen visible?', !loginScreen.classList.contains('hidden'));
+                    console.log('🔍 Main app hidden?', mainApp.classList.contains('hidden'));
+                }, 100);
+            } else {
+                console.error('❌ Could not find login screen or main app elements');
+            }
+        }
+
+        function showMainApp() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+        }
+
+        // Fixed checkForLocalData that handles Firestore issues
         function checkForLocalData() {
             const localData = localStorage.getItem('ademruimte-entries');
             const migrationSection = document.getElementById('migration-section');
             
             if (localData && JSON.parse(localData).length > 0) {
-                migrationSection.style.display = 'block';
+                // Only show if we can use Firestore
+                if (isFirebaseConnected && currentUser) {
+                    migrationSection.style.display = 'block';
+                } else {
+                    migrationSection.style.display = 'none';
+                }
             } else {
                 migrationSection.style.display = 'none';
             }
@@ -1648,16 +1783,6 @@ window.forceLogout = async function() {
             const shortName = displayName.length > 15 ? displayName.substring(0, 13) + '...' : displayName;
             
             userInfo.innerHTML = '👋 ' + shortName;
-        }
-
-        function showLoginScreen() {
-            document.getElementById('login-screen').classList.remove('hidden');
-            document.getElementById('main-app').classList.add('hidden');
-        }
-
-        function showMainApp() {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('main-app').classList.remove('hidden');
         }
 
         // Authentication functions
@@ -1755,11 +1880,10 @@ window.forceLogout = async function() {
             }
         });
 
-        // Firebase functies with improved error handling
+        // Fixed Firebase functions with improved error handling for index issues
         async function saveToFirestore(entry, retryCount = 0) {
             const maxRetries = 2;
             
-            // First check if we have a proper Firebase connection and user
             if (!isFirebaseConnected) {
                 console.log('❌ Firebase not connected, using localStorage');
                 return saveToLocalStorage(entry, 'Firebase niet verbonden');
@@ -1771,10 +1895,7 @@ window.forceLogout = async function() {
             }
 
             try {
-                // Test Firebase connection first
-                if (retryCount === 0) {
-                    console.log('🔄 Attempting to save to Firebase...');
-                }
+                console.log('☁️ Saving to Firestore...');
 
                 const docRef = await addDoc(collection(db, "dagboekEntries"), {
                     ...entry,
@@ -1783,13 +1904,19 @@ window.forceLogout = async function() {
                     userEmail: currentUser.email
                 });
                 
-                console.log('✅ Entry saved to Firebase with ID:', docRef.id);
+                console.log('✅ Entry saved to Firestore with ID:', docRef.id);
                 return { id: docRef.id, success: true, source: 'Firebase' };
                 
             } catch (error) {
-                console.error(`❌ Firebase save error (attempt ${retryCount + 1}):`, error);
+                console.error(`❌ Firestore save error (attempt ${retryCount + 1}):`, error);
                 
-                // Check for specific Firebase errors that might be retryable
+                // Check for index errors specifically
+                if (error.code === 'failed-precondition' || error.message.includes('index')) {
+                    console.log('💡 Firestore index error - falling back to localStorage');
+                    return saveToLocalStorage(entry, 'Firestore index niet beschikbaar');
+                }
+                
+                // Check for other retryable errors
                 const retryableErrors = [
                     'unavailable', 
                     'deadline-exceeded',
@@ -1803,14 +1930,13 @@ window.forceLogout = async function() {
                 
                 if (retryCount < maxRetries && isRetryable) {
                     const delay = (retryCount + 1) * 1000;
-                    console.log(`🔄 Retrying Firebase save in ${delay}ms...`);
+                    console.log(`🔄 Retrying Firestore save in ${delay}ms...`);
                     await new Promise(resolve => setTimeout(resolve, delay));
                     return saveToFirestore(entry, retryCount + 1);
                 }
                 
-                // For non-retryable errors or after max retries, fall back to localStorage
-                console.log('💾 Firebase failed, falling back to localStorage');
-                return saveToLocalStorage(entry, `Firebase fout: ${error.code || error.message}`);
+                console.log('💾 Firestore failed, falling back to localStorage');
+                return saveToLocalStorage(entry, `Firestore fout: ${error.code || error.message}`);
             }
         }
 
@@ -1830,139 +1956,61 @@ window.forceLogout = async function() {
             return { id: entryWithId.id, success: true, source: 'localStorage' };
         }
 
- // Vervang je huidige loadFromFirestore functie met deze versie die geen index nodig heeft:
+        // Fixed loadFromFirestore - removes orderBy to avoid index requirements
+        async function loadFromFirestore() {
+            if (!isFirebaseConnected || !currentUser) {
+                console.log('📱 Loading from localStorage...');
+                const stored = localStorage.getItem('ademruimte-entries');
+                return stored ? JSON.parse(stored) : [];
+            }
 
-async function loadFromFirestore() {
-    if (!isFirebaseConnected || !currentUser) {
-        console.log('📱 Loading from localStorage...');
-        const stored = localStorage.getItem('ademruimte-entries');
-        return stored ? JSON.parse(stored) : [];
-    }
-
-    try {
-        console.log('☁️ Loading entries from Firestore for user:', currentUser.email);
-        
-        // Gebruik een eenvoudigere query zonder orderBy om index problemen te vermijden
-        const q = query(
-            collection(db, "dagboekEntries"), 
-            where("userId", "==", currentUser.uid)
-            // Verwijder orderBy om index requirement te vermijden
-        );
-        
-        const querySnapshot = await getDocs(q);
-        
-        const entries = [];
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            entries.push({
-                id: doc.id,
-                ...data,
-                tijdstempel: data.timestamp ? data.timestamp.toDate().toLocaleString('nl-BE') : 'Onbekend',
-                bron: "Cloud"
-            });
-        });
-        
-        // Sorteer in JavaScript in plaats van Firestore
-        entries.sort((a, b) => {
-            const dateA = data.timestamp ? data.timestamp.toDate() : new Date(0);
-            const dateB = data.timestamp ? data.timestamp.toDate() : new Date(0);
-            return dateB - dateA; // Nieuwste eerst
-        });
-        
-        console.log('✅ Loaded', entries.length, 'entries from Firestore');
-        return entries;
-        
-    } catch (error) {
-        console.error('❌ Firestore query error:', error);
-        console.log('📱 Falling back to localStorage due to Firestore error');
-        
-        // Toon gebruiker dat er een probleem is maar dat lokale data gebruikt wordt
-        if (error.code === 'failed-precondition' || error.message.includes('index')) {
-            console.log('💡 This is a Firestore index error - using localStorage instead');
+            try {
+                console.log('☁️ Loading entries from Firestore for user:', currentUser.email);
+                
+                // Use a simpler query without orderBy to avoid index requirements
+                const q = query(
+                    collection(db, "dagboekEntries"), 
+                    where("userId", "==", currentUser.uid)
+                    // Remove orderBy to avoid index requirement
+                );
+                
+                const querySnapshot = await getDocs(q);
+                
+                const entries = [];
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    entries.push({
+                        id: doc.id,
+                        ...data,
+                        tijdstempel: data.timestamp ? data.timestamp.toDate().toLocaleString('nl-BE') : 'Onbekend',
+                        bron: "Cloud"
+                    });
+                });
+                
+                // Sort in JavaScript instead of Firestore
+                entries.sort((a, b) => {
+                    const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
+                    const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
+                    return dateB - dateA; // Newest first
+                });
+                
+                console.log('✅ Loaded', entries.length, 'entries from Firestore');
+                return entries;
+                
+            } catch (error) {
+                console.error('❌ Firestore query error:', error);
+                console.log('📱 Falling back to localStorage due to Firestore error');
+                
+                // Show user that there's an issue but local data is used
+                if (error.code === 'failed-precondition' || error.message.includes('index')) {
+                    console.log('💡 This is a Firestore index error - using localStorage instead');
+                }
+                
+                // Fallback to localStorage
+                const stored = localStorage.getItem('ademruimte-entries');
+                return stored ? JSON.parse(stored) : [];
+            }
         }
-        
-        // Fallback naar localStorage
-        const stored = localStorage.getItem('ademruimte-entries');
-        return stored ? JSON.parse(stored) : [];
-    }
-}
-
-// Ook een verbeterde saveToFirestore die beter omgaat met index errors:
-async function saveToFirestore(entry, retryCount = 0) {
-    const maxRetries = 2;
-    
-    if (!isFirebaseConnected) {
-        console.log('❌ Firebase not connected, using localStorage');
-        return saveToLocalStorage(entry, 'Firebase niet verbonden');
-    }
-    
-    if (!currentUser) {
-        console.log('❌ No current user, using localStorage');
-        return saveToLocalStorage(entry, 'Niet ingelogd');
-    }
-
-    try {
-        console.log('☁️ Saving to Firestore...');
-
-        const docRef = await addDoc(collection(db, "dagboekEntries"), {
-            ...entry,
-            timestamp: serverTimestamp(),
-            userId: currentUser.uid,
-            userEmail: currentUser.email
-        });
-        
-        console.log('✅ Entry saved to Firestore with ID:', docRef.id);
-        return { id: docRef.id, success: true, source: 'Firebase' };
-        
-    } catch (error) {
-        console.error(`❌ Firestore save error (attempt ${retryCount + 1}):`, error);
-        
-        // Check for index errors specifically
-        if (error.code === 'failed-precondition' || error.message.includes('index')) {
-            console.log('💡 Firestore index error - falling back to localStorage');
-            return saveToLocalStorage(entry, 'Firestore index niet beschikbaar');
-        }
-        
-        // Check for other retryable errors
-        const retryableErrors = [
-            'unavailable', 
-            'deadline-exceeded',
-            'aborted',
-            'internal'
-        ];
-        
-        const isRetryable = retryableErrors.includes(error.code) || 
-                          error.message.includes('network') ||
-                          error.message.includes('timeout');
-        
-        if (retryCount < maxRetries && isRetryable) {
-            const delay = (retryCount + 1) * 1000;
-            console.log(`🔄 Retrying Firestore save in ${delay}ms...`);
-            await new Promise(resolve => setTimeout(resolve, delay));
-            return saveToFirestore(entry, retryCount + 1);
-        }
-        
-        console.log('💾 Firestore failed, falling back to localStorage');
-        return saveToLocalStorage(entry, `Firestore fout: ${error.code || error.message}`);
-    }
-}
-
-// Verbeterde checkForLocalData die rekening houdt met Firestore problemen:
-function checkForLocalData() {
-    const localData = localStorage.getItem('ademruimte-entries');
-    const migrationSection = document.getElementById('migration-section');
-    
-    if (localData && JSON.parse(localData).length > 0) {
-        // Alleen tonen als we Firestore kunnen gebruiken
-        if (isFirebaseConnected && currentUser) {
-            migrationSection.style.display = 'block';
-        } else {
-            migrationSection.style.display = 'none';
-        }
-    } else {
-        migrationSection.style.display = 'none';
-    }
-}
 
         // Data migration function
         window.migrateLocalData = async function() {

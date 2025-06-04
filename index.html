@@ -8,15 +8,7 @@
     <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyBd7qyX8x12QA93xygMX9oKenJJvlQBIIw",
-  authDomain: "my-helper-14982.firebaseapp.com",
-  projectId: "my-helper-14982",
-  storageBucket: "my-helper-14982.firebasestorage.app",
-  messagingSenderId: "179439366636",
-  appId: "1:179439366636:web:dd30f99dcd549ac31950c9",
-  measurementId: "G-GYN5X778B4"
+
 };
     <style>
         * {
@@ -1332,6 +1324,28 @@ const firebaseConfig = {
             return false; // Don't suppress default handling
         };
     </script>
-        
+  <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
+    authDomain: "ademruimte-12c09.firebaseapp.com",
+    projectId: "ademruimte-12c09",
+    storageBucket: "ademruimte-12c09.firebasestorage.app",
+    messagingSenderId: "744941871331",
+    appId: "1:744941871331:web:c3ce24d814fe41314d25d6",
+    measurementId: "G-SD2ZEYNMNY"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>      
 </body>
 </html>

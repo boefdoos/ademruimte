@@ -426,7 +426,6 @@
         }
     </style>
 </head>
-    isFirebaseEnabled = true
 <body>
     <header>
         <h1>🫁 Ademruimte</h1>
@@ -1306,6 +1305,24 @@
             };
             return mapping[resultaat] || resultaat;
         }
+
+        // Start the app when page loads
+        window.onload = function() {
+            debugLog('Page loaded, starting initialization');
+            init();
+        };
+
+        // Also try to init if page is already loaded
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setTimeout(init, 100);
+        }
+
+        // Global error handler
+        window.onerror = function(message, source, lineno, colno, error) {
+            debugLog('Global error:', message + ' at ' + lineno + ':' + colno);
+            return false; // Don't suppress default handling
+        };
+    </script>
         }
             const mapping = {
                 'zeer-goed': 'Zeer goed',

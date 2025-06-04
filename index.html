@@ -23,50 +23,62 @@
         header {
             background: linear-gradient(135deg, #3b82f6, #1d4ed8);
             color: white;
-            padding: 1.5rem 1rem;
+            padding: 1rem;
             text-align: center;
             position: relative;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         header h1 {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: bold;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
 
         header p {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             opacity: 0.9;
+            margin: 0;
         }
 
         .user-info {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
+            top: 0.75rem;
+            right: 0.75rem;
             text-align: right;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            max-width: 140px;
         }
 
         .user-info .user-name {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
             font-weight: 500;
+            font-size: 0.7rem;
+            line-height: 1.2;
+            word-break: break-word;
         }
 
         .user-info button {
             background: rgba(255,255,255,0.2);
             border: 1px solid rgba(255,255,255,0.3);
             color: white;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.375rem;
+            padding: 0.4rem 0.6rem;
+            border-radius: 0.25rem;
             cursor: pointer;
-            font-size: 0.75rem;
-            min-height: 40px;
-            min-width: 80px;
+            font-size: 0.7rem;
+            min-height: 32px;
+            min-width: 60px;
             transition: all 0.2s;
+            display: block;
+            width: 100%;
         }
 
-        .user-info button:hover {
+        .user-info button:hover, .user-info button:active {
             background: rgba(255,255,255,0.3);
+            transform: scale(0.98);
         }
 
         .nav-tabs {
@@ -312,8 +324,8 @@
             background: #10b981;
         }
 
-        .breath-progress.hold {
-            background: #f59e0b;
+        .breath-progress.gentle-breath {
+            background: #06b6d4;
         }
 
         .form-group {
@@ -1005,7 +1017,15 @@
 
                 <div class="card">
                     <h3>Ademhaling Instellingen</h3>
-                    <div class="breath-controls">
+                    <div style="margin-bottom: 1rem;">
+                        <label style="font-weight: 500; margin-bottom: 0.5rem; display: block;">Ademhaling Patroon:</label>
+                        <select id="breathing-pattern" class="form-select" onchange="updateBreathingPattern()">
+                            <option value="standard">Standaard (4-6-3)</option>
+                            <option value="gentle">Zacht (2x ademhaling + pauze)</option>
+                        </select>
+                    </div>
+                    
+                    <div id="standard-controls" class="breath-controls">
                         <div class="breath-setting">
                             <label>Inademen (sec)</label>
                             <input type="number" id="inhale-duration" value="4" min="2" max="10">
@@ -1017,6 +1037,21 @@
                         <div class="breath-setting">
                             <label>Pauze (sec)</label>
                             <input type="number" id="hold-duration" value="3" min="1" max="20">
+                        </div>
+                    </div>
+
+                    <div id="gentle-controls" class="breath-controls hidden">
+                        <div class="breath-setting">
+                            <label>Cyclus Tijd (sec)</label>
+                            <input type="number" id="gentle-cycle" value="10" min="8" max="15" readonly>
+                        </div>
+                        <div class="breath-setting">
+                            <label>Pauze (sec)</label>
+                            <input type="number" id="gentle-pause" value="4" min="2" max="8">
+                        </div>
+                        <div class="breath-setting">
+                            <label>Ademhalingen</label>
+                            <div style="font-weight: bold; color: #3b82f6; margin-top: 0.5rem;">2x per cyclus</div>
                         </div>
                     </div>
                 </div>
@@ -1095,6 +1130,7 @@
                     <div class="button-group">
                         <button id="timer-btn" class="btn btn-green" onclick="startTimer()">▶️ Start Timer</button>
                         <button class="btn btn-primary" onclick="nextRitualStep()" id="next-btn" style="display: none;">Volgende Stap</button>
+                        <button class="btn btn-cyan" onclick="skipToNextStep()" id="skip-btn">⏭️ Overslaan</button>
                         <button class="btn btn-orange" onclick="resetRitual()">🔄 Reset</button>
                     </div>
 
@@ -1384,6 +1420,17 @@
         let isAudioPlaying = false;
         let panPosition = -1; // Start left (-1), move to right (1)
 
+        // Wake lock for keeping screen on
+        let wakeLock = null;
+
+        // Progress tracking
+        let progressData = {
+            buteyko: { sessions: 0, totalTime: 0, lastSession: null },
+            ritual: { sessions: 0, totalTime: 0, lastSession: null },
+            emdr: { sessions: 0, totalTime: 0, lastSession: null },
+            crisis: { sessions: 0, lastSession: null }
+        };
+
         // Initialize Firebase
         try {
             app = initializeApp(firebaseConfig);
@@ -1434,27 +1481,116 @@
             }
         }
 
+        // Wake Lock API for keeping screen on
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('✅ Wake lock activated - screen will stay on');
+                    
+                    wakeLock.addEventListener('release', () => {
+                        console.log('Wake lock released');
+                    });
+                }
+            } catch (error) {
+                console.log('Wake lock not supported or failed:', error);
+            }
+        }
+
+        async function releaseWakeLock() {
+            if (wakeLock) {
+                try {
+                    await wakeLock.release();
+                    wakeLock = null;
+                    console.log('✅ Wake lock released');
+                } catch (error) {
+                    console.log('Error releasing wake lock:', error);
+                }
+            }
+        }
+
+        // Load progress data
+        function loadProgressData() {
+            const stored = localStorage.getItem('ademruimte-progress');
+            if (stored) {
+                progressData = { ...progressData, ...JSON.parse(stored) };
+            }
+        }
+
+        // Save progress data
+        function saveProgressData() {
+            localStorage.setItem('ademruimte-progress', JSON.stringify(progressData));
+        }
+
+        // Track session completion
+        function trackSession(type, duration = null) {
+            if (!progressData[type]) {
+                progressData[type] = { sessions: 0, totalTime: 0, lastSession: null };
+            }
+            
+            progressData[type].sessions++;
+            if (duration) {
+                progressData[type].totalTime += duration;
+            }
+            progressData[type].lastSession = new Date().toISOString();
+            
+            saveProgressData();
+            console.log(`✅ Tracked ${type} session:`, progressData[type]);
+        }
+
         function updateUserInfo(user) {
             const userInfo = document.getElementById('user-info');
+            const displayName = user.displayName || user.email;
+            const shortName = displayName.length > 20 ? displayName.substring(0, 18) + '...' : displayName;
+            
             userInfo.innerHTML = 
-                '<div class="user-name">👋 ' + (user.displayName || user.email) + '</div>' +
+                '<div class="user-name">👋 ' + shortName + '</div>' +
                 '<button type="button" id="logout-button">Uitloggen</button>';
             
-            // Direct na het aanmaken van de button, event listener toevoegen
+            // Ensure the button is clickable with multiple event methods
             setTimeout(() => {
                 const logoutBtn = document.getElementById('logout-button');
                 if (logoutBtn) {
-                    logoutBtn.onclick = function() {
-                        console.log('Logout button clicked');
-                        signOut(auth).then(() => {
-                            console.log('Successfully signed out');
-                        }).catch((error) => {
-                            console.error('Sign out error:', error);
-                            alert('Uitloggen mislukt: ' + error.message);
-                        });
-                    };
+                    // Remove any existing listeners
+                    logoutBtn.replaceWith(logoutBtn.cloneNode(true));
+                    const newLogoutBtn = document.getElementById('logout-button');
+                    
+                    // Add multiple event handlers for reliability
+                    newLogoutBtn.addEventListener('click', handleLogout);
+                    newLogoutBtn.addEventListener('touchend', handleLogout);
+                    newLogoutBtn.onclick = handleLogout;
+                    
+                    // Ensure button is interactive
+                    newLogoutBtn.style.pointerEvents = 'auto';
+                    newLogoutBtn.style.cursor = 'pointer';
+                    
+                    console.log('✅ Logout button configured');
                 }
-            }, 100);
+            }, 200);
+        }
+
+        async function handleLogout(e) {
+            if (e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            console.log('🔄 Logout initiated...');
+            
+            try {
+                // Stop any audio if playing
+                if (isAudioPlaying) {
+                    stopBilateralAudio();
+                }
+                
+                // Sign out
+                await signOut(auth);
+                console.log('✅ Successfully signed out');
+                
+            } catch (error) {
+                console.error('❌ Sign out error:', error);
+                alert('Uitloggen mislukt: ' + error.message);
+            }
         }
 
         function showLoginScreen() {
@@ -1474,8 +1610,21 @@
                 await setPersistence(auth, browserLocalPersistence);
                 
                 const provider = new GoogleAuthProvider();
-                const result = await signInWithPopup(auth, provider);
-                console.log('✅ Google sign-in successful:', result.user.email);
+                
+                try {
+                    const result = await signInWithPopup(auth, provider);
+                    console.log('✅ Google sign-in successful:', result.user.email);
+                } catch (popupError) {
+                    // Handle popup blocker
+                    if (popupError.code === 'auth/popup-blocked') {
+                        alert('🚫 Popup geblokkeerd!\n\nKlik opnieuw om in te loggen. Zorg ervoor dat popups toegestaan zijn voor deze site.');
+                        console.log('Popup blocked, user should try again');
+                    } else if (popupError.code === 'auth/popup-closed-by-user') {
+                        console.log('User closed popup');
+                    } else {
+                        throw popupError; // Re-throw other errors
+                    }
+                }
             } catch (error) {
                 console.error('❌ Google sign-in error:', error);
                 alert('Google inloggen mislukt: ' + error.message);
@@ -1549,8 +1698,10 @@
             }
         });
 
-        // Firebase functies
-        async function saveToFirestore(entry) {
+        // Firebase functies with improved error handling
+        async function saveToFirestore(entry, retryCount = 0) {
+            const maxRetries = 2;
+            
             if (!isFirebaseConnected || !currentUser) {
                 // Fallback naar localStorage
                 const stored = JSON.parse(localStorage.getItem('ademruimte-entries') || '[]');
@@ -1572,13 +1723,34 @@
                 return { id: docRef.id, success: true };
                 
             } catch (error) {
-                console.error('❌ Error saving to Firestore:', error);
-                // Fallback naar localStorage
+                console.error(`❌ Error saving to Firestore (attempt ${retryCount + 1}):`, error);
+                
+                // Retry logic for network errors
+                if (retryCount < maxRetries && (
+                    error.code === 'unavailable' || 
+                    error.code === 'deadline-exceeded' ||
+                    error.message.includes('network')
+                )) {
+                    console.log(`🔄 Retrying save in ${(retryCount + 1) * 1000}ms...`);
+                    await new Promise(resolve => setTimeout(resolve, (retryCount + 1) * 1000));
+                    return saveToFirestore(entry, retryCount + 1);
+                }
+                
+                // Fallback naar localStorage on persistent failure
+                console.log('💾 Falling back to local storage');
                 const stored = JSON.parse(localStorage.getItem('ademruimte-entries') || '[]');
-                const entryWithId = { ...entry, id: Date.now().toString(), bron: 'Lokaal (Firebase fout)', userId: currentUser?.uid || 'local' };
+                const entryWithId = { 
+                    ...entry, 
+                    id: Date.now().toString(), 
+                    bron: 'Lokaal (Firebase fout)', 
+                    userId: currentUser?.uid || 'local',
+                    error: error.message 
+                };
                 stored.unshift(entryWithId);
                 localStorage.setItem('ademruimte-entries', JSON.stringify(stored));
-                return { id: entryWithId.id, success: true };
+                
+                // Show user-friendly error
+                throw new Error('Netwerkprobleem - entry lokaal opgeslagen');
             }
         }
 
@@ -1693,6 +1865,28 @@
         };
 
         // Buteyko breathing exercise functions
+        let breathingPattern = 'standard';
+        let gentleBreathCount = 0;
+
+        window.updateBreathingPattern = function() {
+            breathingPattern = document.getElementById('breathing-pattern').value;
+            const standardControls = document.getElementById('standard-controls');
+            const gentleControls = document.getElementById('gentle-controls');
+            
+            if (breathingPattern === 'gentle') {
+                standardControls.classList.add('hidden');
+                gentleControls.classList.remove('hidden');
+            } else {
+                standardControls.classList.remove('hidden');
+                gentleControls.classList.add('hidden');
+            }
+            
+            // Reset if currently running
+            if (breathInterval) {
+                resetBreathExercise();
+            }
+        };
+
         window.toggleBreathExercise = function() {
             if (breathInterval) {
                 stopBreathExercise();
@@ -1704,6 +1898,7 @@
         window.resetBreathExercise = function() {
             stopBreathExercise();
             breathCycleCount = 0;
+            gentleBreathCount = 0;
             breathPhase = 'rest';
             updateBreathDisplay();
             updateBreathProgress(0);
@@ -1712,6 +1907,17 @@
         };
 
         function startBreathExercise() {
+            // Request wake lock to keep screen on
+            requestWakeLock();
+            
+            if (breathingPattern === 'gentle') {
+                startGentleBreathing();
+            } else {
+                startStandardBreathing();
+            }
+        }
+
+        function startStandardBreathing() {
             const inhale = parseInt(document.getElementById('inhale-duration').value);
             const exhale = parseInt(document.getElementById('exhale-duration').value);
             const hold = parseInt(document.getElementById('hold-duration').value);
@@ -1724,7 +1930,23 @@
             document.getElementById('breath-btn').className = 'btn btn-red';
             
             breathInterval = setInterval(() => {
-                updateBreathCycle();
+                updateStandardBreathCycle();
+            }, 100);
+        }
+
+        function startGentleBreathing() {
+            const cycleTime = parseInt(document.getElementById('gentle-cycle').value);
+            const pauseTime = parseInt(document.getElementById('gentle-pause').value);
+            
+            breathPhase = 'gentle-breath';
+            breathPhaseTime = 0;
+            gentleBreathCount = 0;
+            
+            document.getElementById('breath-btn').innerHTML = '⏸️ Stop Buteyko';
+            document.getElementById('breath-btn').className = 'btn btn-red';
+            
+            breathInterval = setInterval(() => {
+                updateGentleBreathCycle();
             }, 100);
         }
 
@@ -1734,6 +1956,9 @@
                 breathInterval = null;
             }
             
+            // Release wake lock
+            releaseWakeLock();
+            
             breathPhase = 'rest';
             updateBreathDisplay();
             updateBreathProgress(0);
@@ -1742,7 +1967,7 @@
             document.getElementById('breath-btn').className = 'btn btn-cyan';
         }
 
-        function updateBreathCycle() {
+        function updateStandardBreathCycle() {
             const inhale = parseInt(document.getElementById('inhale-duration').value);
             const exhale = parseInt(document.getElementById('exhale-duration').value);
             const hold = parseInt(document.getElementById('hold-duration').value);
@@ -1775,6 +2000,43 @@
                     // Complete after 10 cycles
                     if (breathCycleCount >= 10) {
                         stopBreathExercise();
+                        trackSession('buteyko', breathCycleCount * breathCycleDuration);
+                        document.getElementById('breath-complete').classList.remove('hidden');
+                        return;
+                    }
+                }
+            }
+            
+            updateBreathDisplay();
+            updateBreathProgress(Math.min(progress, 100));
+        }
+
+        function updateGentleBreathCycle() {
+            const cycleTime = parseInt(document.getElementById('gentle-cycle').value);
+            const pauseTime = parseInt(document.getElementById('gentle-pause').value);
+            
+            breathPhaseTime += 0.1;
+            let progress = 0;
+            
+            if (breathPhase === 'gentle-breath') {
+                progress = (breathPhaseTime / cycleTime) * 100;
+                if (breathPhaseTime >= cycleTime) {
+                    breathPhase = 'hold';
+                    breathPhaseTime = 0;
+                    gentleBreathCount++;
+                }
+            } else if (breathPhase === 'hold') {
+                progress = (breathPhaseTime / pauseTime) * 100;
+                if (breathPhaseTime >= pauseTime) {
+                    breathPhase = 'gentle-breath';
+                    breathPhaseTime = 0;
+                    breathCycleCount++;
+                    document.getElementById('breath-cycle-counter').textContent = `Cyclus: ${breathCycleCount}`;
+                    
+                    // Complete after 10 cycles
+                    if (breathCycleCount >= 10) {
+                        stopBreathExercise();
+                        trackSession('buteyko', breathCycleCount * (cycleTime + pauseTime));
                         document.getElementById('breath-complete').classList.remove('hidden');
                         return;
                     }
@@ -1801,6 +2063,9 @@
                     break;
                 case 'hold':
                     display.textContent = '⏸️ Pauze';
+                    break;
+                case 'gentle-breath':
+                    display.textContent = `🌬️ Zachte Ademhaling (${gentleBreathCount + 1}/2)`;
                     break;
                 case 'rest':
                 default:
@@ -1966,26 +2231,6 @@
             }
         }
 
-        // Add event listeners for audio controls
-        document.addEventListener('DOMContentLoaded', function() {
-            // Audio volume control
-            const volumeControl = document.getElementById('audio-volume');
-            if (volumeControl) {
-                volumeControl.addEventListener('input', updateAudioSettings);
-            }
-
-            // Speed control (restart audio if playing to apply new speed)
-            const speedControl = document.getElementById('audio-speed');
-            if (speedControl) {
-                speedControl.addEventListener('change', function() {
-                    if (isAudioPlaying) {
-                        stopBilateralAudio();
-                        setTimeout(startBilateralAudio, 100);
-                    }
-                });
-            }
-        });
-
         // Ritual steps
         const ritualSteps = [
             {
@@ -2093,10 +2338,14 @@
 
         // Timer functions
         window.startTimer = function() {
+            // Request wake lock
+            requestWakeLock();
+            
             if (timerInterval) {
                 clearInterval(timerInterval);
                 timerInterval = null;
                 document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+                releaseWakeLock();
                 return;
             }
 
@@ -2116,6 +2365,15 @@
             }, 1000);
         };
 
+        window.skipToNextStep = function() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+            }
+            nextRitualStep();
+        };
+
         function updateTimerDisplay() {
             const minutes = Math.floor(currentTime / 60);
             const seconds = currentTime % 60;
@@ -2128,6 +2386,8 @@
             
             if (ritualStep >= ritualSteps.length) {
                 // Ritual complete
+                releaseWakeLock();
+                trackSession('ritual', ritualSteps.length * 120); // Assume 2 min per step
                 document.getElementById('ritual-complete').classList.remove('hidden');
                 document.querySelector('#ritueel .card:nth-child(2)').style.display = 'none';
                 return;
@@ -2144,6 +2404,8 @@
                 clearInterval(timerInterval);
                 timerInterval = null;
             }
+            
+            releaseWakeLock();
             
             document.getElementById('ritual-complete').classList.add('hidden');
             document.querySelector('#ritueel .card:nth-child(2)').style.display = 'block';
@@ -2173,10 +2435,12 @@
             emdrStep++;
             
             if (emdrStep >= emdrSteps.length) {
-                // EMDR complete - stop audio
+                // EMDR complete - stop audio and track progress
                 if (isAudioPlaying) {
                     stopBilateralAudio();
                 }
+                releaseWakeLock();
+                trackSession('emdr', emdrSteps.length * 300); // Assume 5 min per step
                 document.getElementById('emdr-complete').classList.remove('hidden');
                 document.querySelector('#emdr .card:nth-child(4)').style.display = 'none';
                 return;
@@ -2196,6 +2460,11 @@
             const step = emdrSteps[emdrStep];
             document.getElementById('emdr-title').textContent = step.title;
             document.getElementById('emdr-content').innerHTML = step.content;
+            
+            // Request wake lock when starting EMDR
+            if (emdrStep === 0) {
+                requestWakeLock();
+            }
             
             // Show/hide intensity slider
             if (emdrStep === 1) {
@@ -2217,16 +2486,15 @@
             document.getElementById('emdr-progress').style.width = progress + '%';
         }
 
-        // Cleanup when page is closed or refreshed
-        window.addEventListener('beforeunload', function() {
-            if (isAudioPlaying) {
-                stopBilateralAudio();
-            }
-        });
-
-        // Dagboek functions
+        // Crisis tracking
         window.openDagboekModal = function(technique) {
             currentTechnique = technique;
+            
+            // Track crisis usage
+            if (technique === 'Crisis Hulp Technieken') {
+                trackSession('crisis');
+            }
+            
             document.getElementById('entry-trigger').value = technique ? `Tijdens/na ${technique}` : '';
             document.getElementById('dagboek-modal').classList.add('show');
         };
@@ -2260,7 +2528,17 @@
                     tijdstempel: new Date().toLocaleString('nl-BE')
                 };
 
+                // Show saving state
+                const saveBtn = document.querySelector('#dagboek-modal .btn-primary');
+                const originalText = saveBtn.textContent;
+                saveBtn.textContent = '💾 Opslaan...';
+                saveBtn.disabled = true;
+
                 await saveToFirestore(entry);
+                
+                // Restore button
+                saveBtn.textContent = originalText;
+                saveBtn.disabled = false;
                 
                 closeDagboekModal();
                 
@@ -2271,9 +2549,27 @@
                 alert('✅ Entry opgeslagen!');
                 
             } catch (error) {
-                alert('❌ Fout bij opslaan: ' + error.message);
+                // Restore button on error
+                const saveBtn = document.querySelector('#dagboek-modal .btn-primary');
+                saveBtn.textContent = '📁 Opslaan';
+                saveBtn.disabled = false;
+                
+                console.error('Save error:', error);
+                alert('⚠️ ' + error.message);
+                
+                // Don't close modal on error so user can try again
             }
         };
+
+        // Cleanup when page is closed or refreshed
+        window.addEventListener('beforeunload', function() {
+            if (isAudioPlaying) {
+                stopBilateralAudio();
+            }
+            if (wakeLock) {
+                releaseWakeLock();
+            }
+        });
 
         window.loadDagboekEntries = async function() {
             try {
@@ -2417,6 +2713,9 @@
 
         // Initialize app on load
         document.addEventListener('DOMContentLoaded', function() {
+            // Load progress data
+            loadProgressData();
+            
             // Initialize ritual display
             updateRitualDisplay();
             
@@ -2425,6 +2724,23 @@
 
             // Initialize breath display
             updateBreathDisplay();
+
+            // Audio volume control
+            const volumeControl = document.getElementById('audio-volume');
+            if (volumeControl) {
+                volumeControl.addEventListener('input', updateAudioSettings);
+            }
+
+            // Speed control (restart audio if playing to apply new speed)
+            const speedControl = document.getElementById('audio-speed');
+            if (speedControl) {
+                speedControl.addEventListener('change', function() {
+                    if (isAudioPlaying) {
+                        stopBilateralAudio();
+                        setTimeout(startBilateralAudio, 100);
+                    }
+                });
+            }
         });
 
     </script>

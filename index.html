@@ -946,14 +946,6 @@
                         <button class="btn btn-red" onclick="performLogout()">
                             🚪 Uitloggen
                         </button>
-                        <button class="btn btn-orange" onclick="forceLogout()">
-                            🔧 Force Logout
-                        </button>
-                    </div>
-                    <div style="margin-top: 1rem;">
-                        <button class="btn btn-primary" onclick="testAuthStatus()" style="font-size: 0.8rem;">
-                            🔍 Debug Auth Status
-                        </button>
                     </div>
                 </div>
             </div>
@@ -1470,15 +1462,7 @@
 
         // Enhanced authentication state observer
         onAuthStateChanged(auth, (user) => {
-            console.log('🔄 === AUTH STATE CHANGED ===');
-            console.log('New user state:', user ? 'LOGGED_IN' : 'LOGGED_OUT');
-            if (user) {
-                console.log('User details:', {
-                    uid: user.uid,
-                    email: user.email,
-                    displayName: user.displayName
-                });
-            }
+            console.log('🔄 Auth state changed. User:', user ? 'LOGGED_IN' : 'LOGGED_OUT');
             
             document.getElementById('auth-loading').style.display = 'none';
             
@@ -1493,15 +1477,35 @@
             } else {
                 currentUser = null;
                 console.log('❌ No user, showing login screen');
-                console.log('Calling showLoginScreen...');
                 showLoginScreen();
-                console.log('Login screen should now be visible');
+                resetLoginForm(); // Reset login form after logout
             }
-            
-            console.log('🔄 === AUTH STATE CHANGE COMPLETE ===');
         }, (error) => {
             console.error('❌ Auth state observer error:', error);
         });
+
+        // Function to reset login form and clear any cached values
+        function resetLoginForm() {
+            // Clear form fields
+            const emailField = document.getElementById('login-email');
+            const passwordField = document.getElementById('login-password');
+            const rememberCheckbox = document.getElementById('remember-me');
+            
+            if (emailField) emailField.value = '';
+            if (passwordField) passwordField.value = '';
+            if (rememberCheckbox) rememberCheckbox.checked = true;
+            
+            // Clear any form validation states
+            document.querySelectorAll('.form-input').forEach(input => {
+                input.classList.remove('error', 'success');
+            });
+            
+            // Re-setup form handlers to ensure they work after logout
+            setupLoginFormHandler();
+            setupRegisterFormHandler();
+            
+            console.log('✅ Login form reset and handlers re-initialized');
+        }
 
         function updateAccountInfo(user) {
             const accountInfo = document.getElementById('account-info');
@@ -1514,157 +1518,37 @@
             }
         }
 
-        // Fixed logout functions
+        // Simplified logout function
         window.performLogout = async function() {
-            console.log('🔄 === LOGOUT DEBUG START ===');
-            console.log('Auth object:', auth);
-            console.log('Current user before logout:', auth?.currentUser);
-            console.log('Global currentUser:', currentUser);
-            
             if (!confirm('Weet je zeker dat je wilt uitloggen?')) {
-                console.log('❌ Logout cancelled by user');
                 return;
             }
             
             try {
                 // Stop any running services
-                if (isAudioPlaying) {
-                    console.log('🔇 Stopping audio...');
-                    stopBilateralAudio();
-                }
-                
-                if (wakeLock) {
-                    console.log('💤 Releasing wake lock...');
-                    releaseWakeLock();
-                }
+                if (isAudioPlaying) stopBilateralAudio();
+                if (wakeLock) releaseWakeLock();
                 
                 // Check if auth is available
                 if (!auth) {
-                    console.error('❌ Firebase auth not initialized');
                     alert('Fout: Firebase authenticatie niet beschikbaar');
                     return;
                 }
                 
-                if (!auth.currentUser) {
-                    console.log('⚠️ No user currently signed in, forcing login screen');
-                    showLoginScreen();
-                    return;
-                }
-                
-                console.log('🔄 Attempting Firebase signOut...');
-                console.log('User to sign out:', auth.currentUser.email);
-                
-                // Add a timeout to prevent hanging
-                const signOutPromise = signOut(auth);
-                const timeoutPromise = new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('Timeout na 10 seconden')), 10000)
-                );
-                
-                await Promise.race([signOutPromise, timeoutPromise]);
-                
-                console.log('✅ SignOut promise resolved');
-                console.log('Auth currentUser after signOut:', auth?.currentUser);
-                
-                // Manual state cleanup if auth state doesn't trigger
-                setTimeout(() => {
-                    console.log('🔄 Checking auth state after 2 seconds...');
-                    console.log('Auth currentUser delayed check:', auth?.currentUser);
-                    
-                    if (auth?.currentUser === null || auth?.currentUser === undefined) {
-                        console.log('✅ Auth state is clear, manually triggering login screen');
-                        currentUser = null;
-                        showLoginScreen();
-                    } else {
-                        console.log('⚠️ Auth state still has user, this is the problem!');
-                        console.log('Remaining user:', auth.currentUser);
-                    }
-                }, 2000);
-                
-                console.log('✅ Logout process completed');
+                // Sign out from Firebase
+                await signOut(auth);
+                console.log('✅ Logout successful');
                 
             } catch (error) {
-                console.error('❌ Logout error details:', error);
-                console.error('❌ Error type:', typeof error);
-                console.error('❌ Error message:', error.message);
-                console.error('❌ Error code:', error.code);
+                console.error('❌ Logout error:', error);
+                alert('❌ Uitloggen mislukt: ' + error.message);
                 
-                // Force logout on any error
-                console.log('🔧 Forcing logout due to error...');
-                forceLogout();
-            }
-            
-            console.log('🔄 === LOGOUT DEBUG END ===');
-        };
-
-        window.forceLogout = async function() {
-            console.log('🔄 === FORCE LOGOUT START ===');
-            
-            try {
-                // Stop services
-                if (isAudioPlaying) stopBilateralAudio();
-                if (wakeLock) releaseWakeLock();
-                
-                // Clear global state
+                // Emergency fallback - clear everything and reload
                 currentUser = null;
-                
-                // Clear Firebase auth cache more aggressively
-                if (auth) {
-                    try {
-                        // Try normal signOut first
-                        await signOut(auth);
-                        console.log('✅ Normal signOut during force logout succeeded');
-                    } catch (signOutError) {
-                        console.log('⚠️ Normal signOut failed during force logout:', signOutError.message);
-                    }
-                    
-                    // Force clear auth state (this is more aggressive)
-                    if (auth._delegate) {
-                        auth._delegate._currentUser = null;
-                    }
-                }
-                
-                // Clear all auth-related localStorage
-                const keys = Object.keys(localStorage);
-                keys.forEach(key => {
-                    if (key.includes('firebase') || key.includes('auth') || key.includes('Firebase')) {
-                        console.log('🗑️ Removing localStorage key:', key);
-                        localStorage.removeItem(key);
-                    }
-                });
-                
-                // Clear sessionStorage
-                sessionStorage.clear();
-                
-                // Force show login screen
-                console.log('🔄 Forcing login screen display...');
+                localStorage.removeItem('firebase:authUser:' + firebaseConfig.apiKey + ':[DEFAULT]');
                 showLoginScreen();
-                
-                console.log('✅ Force logout completed');
-                alert('✅ Geforceerd uitgelogd');
-                
-            } catch (error) {
-                console.error('❌ Force logout error:', error);
-                
-                // Last resort - reload page
-                if (confirm('Uitloggen volledig mislukt. Pagina herladen?')) {
-                    location.reload();
-                }
+                resetLoginForm();
             }
-            
-            console.log('🔄 === FORCE LOGOUT END ===');
-        };
-
-        // Add test button for Firebase auth status
-        window.testAuthStatus = function() {
-            console.log('🔍 === FIREBASE AUTH DEBUG ===');
-            console.log('Firebase app:', app);
-            console.log('Firebase auth:', auth);
-            console.log('Auth currentUser:', auth?.currentUser);
-            console.log('Global currentUser:', currentUser);
-            console.log('isFirebaseConnected:', isFirebaseConnected);
-            console.log('Auth state:', auth?.currentUser ? 'LOGGED_IN' : 'LOGGED_OUT');
-            
-            alert('Check browser console (F12) voor auth debug info');
         };
 
         // Helper functies
@@ -1674,27 +1558,24 @@
             statusElement.className = `status-${type}`;
         }
 
-        // Enhanced screen switching with logging
+        // Enhanced screen switching
         function showLoginScreen() {
-            console.log('🔄 showLoginScreen called');
-            console.log('Login screen element:', document.getElementById('login-screen'));
-            console.log('Main app element:', document.getElementById('main-app'));
-            
             const loginScreen = document.getElementById('login-screen');
             const mainApp = document.getElementById('main-app');
             
             if (loginScreen && mainApp) {
                 loginScreen.classList.remove('hidden');
                 mainApp.classList.add('hidden');
-                console.log('✅ Screen switched to login');
                 
-                // Double check after a short delay
+                // Ensure login form is ready for use
                 setTimeout(() => {
-                    console.log('🔍 Login screen visible?', !loginScreen.classList.contains('hidden'));
-                    console.log('🔍 Main app hidden?', mainApp.classList.contains('hidden'));
+                    const emailField = document.getElementById('login-email');
+                    if (emailField) {
+                        emailField.focus(); // Focus on email field for better UX
+                    }
                 }, 100);
-            } else {
-                console.error('❌ Could not find login screen or main app elements');
+                
+                console.log('✅ Switched to login screen');
             }
         }
 
@@ -1785,7 +1666,7 @@
             userInfo.innerHTML = '👋 ' + shortName;
         }
 
-        // Authentication functions
+        // Authentication functions with improved error handling
         window.signInWithGoogle = async function() {
             try {
                 // Set persistence to local (keep signed in)
@@ -1793,23 +1674,29 @@
                 
                 const provider = new GoogleAuthProvider();
                 
-                try {
-                    const result = await signInWithPopup(auth, provider);
-                    console.log('✅ Google sign-in successful:', result.user.email);
-                } catch (popupError) {
-                    // Handle popup blocker
-                    if (popupError.code === 'auth/popup-blocked') {
-                        alert('🚫 Popup geblokkeerd!\n\nKlik opnieuw om in te loggen. Zorg ervoor dat popups toegestaan zijn voor deze site.');
-                        console.log('Popup blocked, user should try again');
-                    } else if (popupError.code === 'auth/popup-closed-by-user') {
-                        console.log('User closed popup');
-                    } else {
-                        throw popupError; // Re-throw other errors
-                    }
-                }
+                // Add popup configuration to avoid cache issues
+                provider.setCustomParameters({
+                    prompt: 'select_account'
+                });
+                
+                const result = await signInWithPopup(auth, provider);
+                console.log('✅ Google sign-in successful:', result.user.email);
+                
             } catch (error) {
                 console.error('❌ Google sign-in error:', error);
-                alert('Google inloggen mislukt: ' + error.message);
+                
+                // Handle specific error cases
+                if (error.code === 'auth/popup-blocked') {
+                    alert('🚫 Popup geblokkeerd!\n\nKlik opnieuw om in te loggen. Zorg ervoor dat popups toegestaan zijn voor deze site.');
+                } else if (error.code === 'auth/popup-closed-by-user') {
+                    // User closed popup - no need to show error
+                    console.log('User closed popup');
+                } else if (error.code === 'auth/cancelled-popup-request') {
+                    // Multiple popup requests - ignore
+                    console.log('Popup request cancelled (multiple attempts)');
+                } else {
+                    alert('Google inloggen mislukt: ' + error.message);
+                }
             }
         };
 
@@ -1823,62 +1710,117 @@
             document.getElementById('register-form').reset();
         };
 
-        // Login form handler
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // Login form handler with improved reliability
+        function setupLoginFormHandler() {
+            const loginForm = document.getElementById('login-form');
+            if (!loginForm) return;
             
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            const rememberMeCheckbox = document.getElementById('remember-me');
-            const rememberMe = rememberMeCheckbox ? rememberMeCheckbox.checked : true;
+            // Remove any existing listeners to prevent duplicates
+            const newForm = loginForm.cloneNode(true);
+            loginForm.parentNode.replaceChild(newForm, loginForm);
             
-            console.log('Login attempt:', { email, rememberMe });
-            
-            try {
-                // Set persistence based on checkbox
-                if (rememberMe) {
-                    console.log('Setting local persistence (stay logged in)');
-                    await setPersistence(auth, browserLocalPersistence);
-                } else {
-                    console.log('Setting session persistence (logout when browser closes)');
-                    await setPersistence(auth, browserSessionPersistence);
+            // Add fresh event listener
+            newForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const email = document.getElementById('login-email').value.trim();
+                const password = document.getElementById('login-password').value;
+                const rememberMeCheckbox = document.getElementById('remember-me');
+                const rememberMe = rememberMeCheckbox ? rememberMeCheckbox.checked : true;
+                
+                if (!email || !password) {
+                    alert('Vul alle velden in');
+                    return;
                 }
                 
-                await signInWithEmailAndPassword(auth, email, password);
-                console.log('✅ Email sign-in successful');
-            } catch (error) {
-                console.error('❌ Email sign-in error:', error);
-                alert('Inloggen mislukt: ' + error.message);
-            }
-        });
+                try {
+                    // Set persistence based on checkbox
+                    if (rememberMe) {
+                        await setPersistence(auth, browserLocalPersistence);
+                    } else {
+                        await setPersistence(auth, browserSessionPersistence);
+                    }
+                    
+                    await signInWithEmailAndPassword(auth, email, password);
+                    console.log('✅ Email sign-in successful');
+                    
+                } catch (error) {
+                    console.error('❌ Email sign-in error:', error);
+                    
+                    // User-friendly error messages
+                    let errorMessage = 'Inloggen mislukt';
+                    if (error.code === 'auth/user-not-found') {
+                        errorMessage = 'Geen account gevonden met dit email';
+                    } else if (error.code === 'auth/wrong-password') {
+                        errorMessage = 'Verkeerd wachtwoord';
+                    } else if (error.code === 'auth/invalid-email') {
+                        errorMessage = 'Ongeldig email adres';
+                    } else {
+                        errorMessage += ': ' + error.message;
+                    }
+                    
+                    alert(errorMessage);
+                }
+            });
+        }
 
-        // Register form handler
-        document.getElementById('register-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
+        // Register form handler with improved reliability  
+        function setupRegisterFormHandler() {
+            const registerForm = document.getElementById('register-form');
+            if (!registerForm) return;
             
-            const name = document.getElementById('register-name').value;
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
+            // Remove any existing listeners
+            const newForm = registerForm.cloneNode(true);
+            registerForm.parentNode.replaceChild(newForm, registerForm);
             
-            try {
-                // Set persistence to local (keep signed in)
-                await setPersistence(auth, browserLocalPersistence);
+            // Add fresh event listener
+            newForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
                 
-                const result = await createUserWithEmailAndPassword(auth, email, password);
+                const name = document.getElementById('register-name').value.trim();
+                const email = document.getElementById('register-email').value.trim();
+                const password = document.getElementById('register-password').value;
                 
-                // Update user profile with name
-                await updateProfile(result.user, {
-                    displayName: name
-                });
+                if (!name || !email || !password) {
+                    alert('Vul alle velden in');
+                    return;
+                }
                 
-                console.log('✅ Account created successfully');
-                closeRegisterModal();
+                if (password.length < 6) {
+                    alert('Wachtwoord moet minimaal 6 karakters zijn');
+                    return;
+                }
                 
-            } catch (error) {
-                console.error('❌ Registration error:', error);
-                alert('Account aanmaken mislukt: ' + error.message);
-            }
-        });
+                try {
+                    // Set persistence to local (keep signed in)
+                    await setPersistence(auth, browserLocalPersistence);
+                    
+                    const result = await createUserWithEmailAndPassword(auth, email, password);
+                    
+                    // Update user profile with name
+                    await updateProfile(result.user, {
+                        displayName: name
+                    });
+                    
+                    console.log('✅ Account created successfully');
+                    closeRegisterModal();
+                    
+                } catch (error) {
+                    console.error('❌ Registration error:', error);
+                    
+                    let errorMessage = 'Account aanmaken mislukt';
+                    if (error.code === 'auth/email-already-in-use') {
+                        errorMessage = 'Dit email adres is al in gebruik';
+                    } else if (error.code === 'auth/weak-password') {
+                        errorMessage = 'Wachtwoord is te zwak';
+                    } else {
+                        errorMessage += ': ' + error.message;
+                    }
+                    
+                    alert(errorMessage);
+                }
+            });
+        }
 
         // Fixed Firebase functions with improved error handling for index issues
         async function saveToFirestore(entry, retryCount = 0) {
@@ -2952,6 +2894,10 @@
 
             // Initialize breath display
             updateBreathDisplay();
+
+            // Setup form handlers
+            setupLoginFormHandler();
+            setupRegisterFormHandler();
 
             // Audio volume control
             const volumeControl = document.getElementById('audio-volume');

@@ -1323,32 +1323,6 @@
             return false; // Don't suppress default handling
         };
     </script>
-        }
-            const mapping = {
-                'zeer-goed': 'Zeer goed',
-                'goed': 'Goed',
-                'matig': 'Matig',
-                'geen-effect': 'Geen effect',
-                'slechter': 'Slechter'
-            };
-            return mapping[resultaat] || resultaat;
-        }
-
-        // Initialize app
-        function init() {
-            updateRitualDisplay();
-            updateEmdrDisplay();
-            loadDagboekEntries();
-            
-            // Simulate checking Google Drive connection
-            setTimeout(() => {
-                document.getElementById('drive-status').innerHTML = '📁 Google Drive: Demo modus (Simuleert opslag)';
-                document.getElementById('drive-status').className = 'status-connected';
-            }, 2000);
-        }
-
-        // Start the app
-        init();
-    </script>
+        
 </body>
 </html>

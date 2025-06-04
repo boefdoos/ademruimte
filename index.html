@@ -915,7 +915,7 @@
                     </div>
                     <div class="technique-card">
                         <h4>Comfortabele Pauze</h4>
-                        <p>De adempauze na uitademing mag nooit geforceerd aanvoelen - stop als het oncomfortabel wordt.</p>
+                        <p>De ademhpauze na uitademing mag nooit geforceerd aanvoelen - stop als het oncomfortabel wordt.</p>
                     </div>
                 </div>
             </div>
@@ -1237,7 +1237,10 @@
             const userInfo = document.getElementById('user-info');
             userInfo.innerHTML = 
                 '<div style="margin-bottom: 0.5rem;">👋 ' + (user.displayName || user.email) + '</div>' +
-                '<button onclick="handleSignOut()">Uitloggen</button>';
+                '<button id="signout-btn">Uitloggen</button>';
+            
+            // Add event listener for sign out button
+            document.getElementById('signout-btn').addEventListener('click', handleSignOut);
         }
 
         function showLoginScreen() {
@@ -1262,15 +1265,16 @@
             }
         };
 
-        window.handleSignOut = async function() {
+        async function handleSignOut() {
             try {
+                console.log('🔄 Attempting to sign out...');
                 await signOut(auth);
-                console.log('✅ User signed out');
+                console.log('✅ User signed out successfully');
             } catch (error) {
                 console.error('❌ Sign out error:', error);
                 alert('Uitloggen mislukt: ' + error.message);
             }
-        };
+        }
 
         window.showRegisterForm = function() {
             document.getElementById('register-modal').classList.add('show');

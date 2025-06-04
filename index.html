@@ -1830,42 +1830,139 @@ window.forceLogout = async function() {
             return { id: entryWithId.id, success: true, source: 'localStorage' };
         }
 
-        async function loadFromFirestore() {
-            if (!isFirebaseConnected || !currentUser) {
-                // Load from localStorage
-                const stored = localStorage.getItem('ademruimte-entries');
-                return stored ? JSON.parse(stored) : [];
-            }
+ // Vervang je huidige loadFromFirestore functie met deze versie die geen index nodig heeft:
 
-            try {
-                const q = query(
-                    collection(db, "dagboekEntries"), 
-                    where("userId", "==", currentUser.uid),
-                    orderBy("timestamp", "desc")
-                );
-                const querySnapshot = await getDocs(q);
-                
-                const entries = [];
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    entries.push({
-                        id: doc.id,
-                        ...data,
-                        tijdstempel: data.timestamp ? data.timestamp.toDate().toLocaleString('nl-BE') : 'Onbekend',
-                        bron: "Cloud"
-                    });
-                });
-                
-                console.log('✅ Loaded', entries.length, 'entries from Firebase for user:', currentUser.email);
-                return entries;
-                
-            } catch (error) {
-                console.error('❌ Error loading from Firestore:', error);
-                // Fallback naar localStorage
-                const stored = localStorage.getItem('ademruimte-entries');
-                return stored ? JSON.parse(stored) : [];
-            }
+async function loadFromFirestore() {
+    if (!isFirebaseConnected || !currentUser) {
+        console.log('📱 Loading from localStorage...');
+        const stored = localStorage.getItem('ademruimte-entries');
+        return stored ? JSON.parse(stored) : [];
+    }
+
+    try {
+        console.log('☁️ Loading entries from Firestore for user:', currentUser.email);
+        
+        // Gebruik een eenvoudigere query zonder orderBy om index problemen te vermijden
+        const q = query(
+            collection(db, "dagboekEntries"), 
+            where("userId", "==", currentUser.uid)
+            // Verwijder orderBy om index requirement te vermijden
+        );
+        
+        const querySnapshot = await getDocs(q);
+        
+        const entries = [];
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            entries.push({
+                id: doc.id,
+                ...data,
+                tijdstempel: data.timestamp ? data.timestamp.toDate().toLocaleString('nl-BE') : 'Onbekend',
+                bron: "Cloud"
+            });
+        });
+        
+        // Sorteer in JavaScript in plaats van Firestore
+        entries.sort((a, b) => {
+            const dateA = data.timestamp ? data.timestamp.toDate() : new Date(0);
+            const dateB = data.timestamp ? data.timestamp.toDate() : new Date(0);
+            return dateB - dateA; // Nieuwste eerst
+        });
+        
+        console.log('✅ Loaded', entries.length, 'entries from Firestore');
+        return entries;
+        
+    } catch (error) {
+        console.error('❌ Firestore query error:', error);
+        console.log('📱 Falling back to localStorage due to Firestore error');
+        
+        // Toon gebruiker dat er een probleem is maar dat lokale data gebruikt wordt
+        if (error.code === 'failed-precondition' || error.message.includes('index')) {
+            console.log('💡 This is a Firestore index error - using localStorage instead');
         }
+        
+        // Fallback naar localStorage
+        const stored = localStorage.getItem('ademruimte-entries');
+        return stored ? JSON.parse(stored) : [];
+    }
+}
+
+// Ook een verbeterde saveToFirestore die beter omgaat met index errors:
+async function saveToFirestore(entry, retryCount = 0) {
+    const maxRetries = 2;
+    
+    if (!isFirebaseConnected) {
+        console.log('❌ Firebase not connected, using localStorage');
+        return saveToLocalStorage(entry, 'Firebase niet verbonden');
+    }
+    
+    if (!currentUser) {
+        console.log('❌ No current user, using localStorage');
+        return saveToLocalStorage(entry, 'Niet ingelogd');
+    }
+
+    try {
+        console.log('☁️ Saving to Firestore...');
+
+        const docRef = await addDoc(collection(db, "dagboekEntries"), {
+            ...entry,
+            timestamp: serverTimestamp(),
+            userId: currentUser.uid,
+            userEmail: currentUser.email
+        });
+        
+        console.log('✅ Entry saved to Firestore with ID:', docRef.id);
+        return { id: docRef.id, success: true, source: 'Firebase' };
+        
+    } catch (error) {
+        console.error(`❌ Firestore save error (attempt ${retryCount + 1}):`, error);
+        
+        // Check for index errors specifically
+        if (error.code === 'failed-precondition' || error.message.includes('index')) {
+            console.log('💡 Firestore index error - falling back to localStorage');
+            return saveToLocalStorage(entry, 'Firestore index niet beschikbaar');
+        }
+        
+        // Check for other retryable errors
+        const retryableErrors = [
+            'unavailable', 
+            'deadline-exceeded',
+            'aborted',
+            'internal'
+        ];
+        
+        const isRetryable = retryableErrors.includes(error.code) || 
+                          error.message.includes('network') ||
+                          error.message.includes('timeout');
+        
+        if (retryCount < maxRetries && isRetryable) {
+            const delay = (retryCount + 1) * 1000;
+            console.log(`🔄 Retrying Firestore save in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            return saveToFirestore(entry, retryCount + 1);
+        }
+        
+        console.log('💾 Firestore failed, falling back to localStorage');
+        return saveToLocalStorage(entry, `Firestore fout: ${error.code || error.message}`);
+    }
+}
+
+// Verbeterde checkForLocalData die rekening houdt met Firestore problemen:
+function checkForLocalData() {
+    const localData = localStorage.getItem('ademruimte-entries');
+    const migrationSection = document.getElementById('migration-section');
+    
+    if (localData && JSON.parse(localData).length > 0) {
+        // Alleen tonen als we Firestore kunnen gebruiken
+        if (isFirebaseConnected && currentUser) {
+            migrationSection.style.display = 'block';
+        } else {
+            migrationSection.style.display = 'none';
+        }
+    } else {
+        migrationSection.style.display = 'none';
+    }
+}
 
         // Data migration function
         window.migrateLocalData = async function() {

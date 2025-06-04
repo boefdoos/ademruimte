@@ -1477,31 +1477,95 @@
                     '</p>';
             }
         }
+// Vervang de huidige performLogout functie met deze versie:
+window.performLogout = async function() {
+    console.log('🔄 performLogout called');
+    
+    if (!confirm('Weet je zeker dat je wilt uitloggen?')) {
+        console.log('❌ Logout cancelled by user');
+        return;
+    }
+    
+    console.log('✅ User confirmed logout');
+    
+    try {
+        // Stop any audio if playing
+        if (isAudioPlaying) {
+            console.log('🔇 Stopping audio...');
+            stopBilateralAudio();
+        }
+        
+        // Release wake lock
+        if (wakeLock) {
+            console.log('💤 Releasing wake lock...');
+            releaseWakeLock();
+        }
+        
+        // Check if auth is available
+        if (!auth) {
+            console.error('❌ Firebase auth not initialized');
+            alert('Fout: Firebase authenticatie niet beschikbaar');
+            return;
+        }
+        
+        console.log('🔄 Attempting Firebase signOut...');
+        
+        // Use the already imported signOut function (remove the dynamic import)
+        await signOut(auth);
+        
+        console.log('✅ Firebase signOut successful');
+        
+    } catch (error) {
+        console.error('❌ Logout error details:', error);
+        alert('❌ Uitloggen mislukt: ' + error.message);
+    }
+};
 
-        // Simple logout function
-        window.performLogout = function() {
-            if (confirm('Weet je zeker dat je wilt uitloggen?')) {
-                console.log('🔄 Performing logout...');
-                
-                // Stop any audio if playing
-                if (isAudioPlaying) {
-                    stopBilateralAudio();
-                }
-                
-                // Release wake lock
-                if (wakeLock) {
-                    releaseWakeLock();
-                }
-                
-                // Sign out using Firebase
-                signOut(auth).then(() => {
-                    console.log('✅ Logout successful');
-                }).catch((error) => {
-                    console.error('❌ Logout error:', error);
-                    alert('Uitloggen mislukt: ' + error.message);
-                });
+// Ook de forceLogout functie kan vereenvoudigd worden:
+window.forceLogout = async function() {
+    console.log('🔄 Force logout initiated...');
+    
+    try {
+        // Stop any running services
+        if (isAudioPlaying) stopBilateralAudio();
+        if (wakeLock) releaseWakeLock();
+        
+        // Clear current user state
+        currentUser = null;
+        
+        // Attempt normal signOut first
+        if (auth) {
+            try {
+                await signOut(auth);
+                console.log('✅ Normal signOut successful');
+                return;
+            } catch (signOutError) {
+                console.log('⚠️ Normal signOut failed, proceeding with force logout');
             }
-        };
+        }
+        
+        // Clear local storage
+        const keys = Object.keys(localStorage);
+        keys.forEach(key => {
+            if (key.includes('firebase') || key.includes('auth')) {
+                localStorage.removeItem(key);
+            }
+        });
+        sessionStorage.clear();
+        
+        // Manually show login screen
+        showLoginScreen();
+        
+        console.log('✅ Force logout completed');
+        alert('✅ Geforceerd uitgelogd');
+        
+    } catch (error) {
+        console.error('❌ Force logout error:', error);
+        if (confirm('Uitloggen mislukt. Pagina herladen?')) {
+            location.reload();
+        }
+    }
+};
 
         // Helper functies
         function updateFirebaseStatus(type, message) {

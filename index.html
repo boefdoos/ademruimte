@@ -1460,31 +1460,10 @@
             }, 3000);
         }
 
-        // Enhanced authentication state observer
-        onAuthStateChanged(auth, (user) => {
-            console.log('🔄 Auth state changed. User:', user ? 'LOGGED_IN' : 'LOGGED_OUT');
-            
-            document.getElementById('auth-loading').style.display = 'none';
-            
-            if (user) {
-                currentUser = user;
-                console.log('✅ Showing main app for user:', user.email);
-                showMainApp();
-                updateUserInfo(user);
-                updateAccountInfo(user);
-                loadDagboekEntries();
-                checkForLocalData();
-            } else {
-                currentUser = null;
-                console.log('❌ No user, showing login screen');
-                showLoginScreen();
-                resetLoginForm(); // Reset login form after logout
-            }
-        }, (error) => {
-            console.error('❌ Auth state observer error:', error);
-        });
+        // Initialize Firebase auth state observer
+        setupAuthStateObserver();
 
-        // Function to reset login form and clear any cached values
+        // Function to reset login form and completely re-initialize handlers
         function resetLoginForm() {
             // Clear form fields
             const emailField = document.getElementById('login-email');
@@ -1500,11 +1479,12 @@
                 input.classList.remove('error', 'success');
             });
             
-            // Re-setup form handlers to ensure they work after logout
-            setupLoginFormHandler();
-            setupRegisterFormHandler();
-            
-            console.log('✅ Login form reset and handlers re-initialized');
+            // Completely re-setup form handlers with a small delay to ensure DOM is ready
+            setTimeout(() => {
+                setupLoginFormHandler();
+                setupRegisterFormHandler();
+                console.log('✅ Login form reset and handlers re-initialized');
+            }, 100);
         }
 
         function updateAccountInfo(user) {
@@ -1518,7 +1498,7 @@
             }
         }
 
-        // Force logout function - immediate cleanup
+        // Force logout with proper Firebase re-initialization
         window.performLogout = async function() {
             if (!confirm('Weet je zeker dat je wilt uitloggen?')) {
                 return;
@@ -1531,14 +1511,13 @@
             // Clear global state
             currentUser = null;
             
-            // Force clear Firebase auth cache
             try {
-                // Quick signOut attempt (don't wait for it)
-                if (auth) {
-                    signOut(auth).catch(() => {}); // Ignore errors
+                // Try proper Firebase signOut first
+                if (auth && auth.currentUser) {
+                    await signOut(auth);
                 }
             } catch (error) {
-                // Ignore signOut errors, we're forcing logout anyway
+                console.log('SignOut error (continuing with force logout):', error);
             }
             
             // Clear all Firebase auth data from localStorage
@@ -1554,12 +1533,50 @@
             // Clear sessionStorage
             sessionStorage.clear();
             
+            // Re-initialize Firebase auth to ensure clean state
+            try {
+                // Get fresh auth instance
+                auth = getAuth(app);
+                
+                // Re-setup auth state observer
+                setupAuthStateObserver();
+                
+            } catch (error) {
+                console.error('Auth re-initialization error:', error);
+            }
+            
             // Force show login screen immediately
             showLoginScreen();
             resetLoginForm();
             
-            console.log('✅ Force logout completed');
+            console.log('✅ Force logout completed with auth re-initialization');
         };
+
+        // Separate function for auth state observer setup
+        function setupAuthStateObserver() {
+            onAuthStateChanged(auth, (user) => {
+                console.log('🔄 Auth state changed. User:', user ? 'LOGGED_IN' : 'LOGGED_OUT');
+                
+                document.getElementById('auth-loading').style.display = 'none';
+                
+                if (user) {
+                    currentUser = user;
+                    console.log('✅ Showing main app for user:', user.email);
+                    showMainApp();
+                    updateUserInfo(user);
+                    updateAccountInfo(user);
+                    loadDagboekEntries();
+                    checkForLocalData();
+                } else {
+                    currentUser = null;
+                    console.log('❌ No user, showing login screen');
+                    showLoginScreen();
+                    resetLoginForm(); // Reset login form after logout
+                }
+            }, (error) => {
+                console.error('❌ Auth state observer error:', error);
+            });
+        }
 
         // Helper functies
         function updateFirebaseStatus(type, message) {
@@ -1679,6 +1696,11 @@
         // Authentication functions with improved error handling
         window.signInWithGoogle = async function() {
             try {
+                // Ensure we have a fresh auth instance
+                if (!auth) {
+                    auth = getAuth(app);
+                }
+                
                 // Set persistence to local (keep signed in)
                 await setPersistence(auth, browserLocalPersistence);
                 
@@ -1723,7 +1745,11 @@
         // Login form handler with improved reliability
         function setupLoginFormHandler() {
             const loginForm = document.getElementById('login-form');
-            if (!loginForm) return;
+            if (!loginForm) {
+                console.log('Login form not found, retrying...');
+                setTimeout(setupLoginFormHandler, 200);
+                return;
+            }
             
             // Remove any existing listeners to prevent duplicates
             const newForm = loginForm.cloneNode(true);
@@ -1743,7 +1769,18 @@
                     return;
                 }
                 
+                // Show loading state
+                const submitBtn = newForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Inloggen...';
+                submitBtn.disabled = true;
+                
                 try {
+                    // Ensure we have a fresh auth instance
+                    if (!auth) {
+                        auth = getAuth(app);
+                    }
+                    
                     // Set persistence based on checkbox
                     if (rememberMe) {
                         await setPersistence(auth, browserLocalPersistence);
@@ -1756,6 +1793,10 @@
                     
                 } catch (error) {
                     console.error('❌ Email sign-in error:', error);
+                    
+                    // Restore button state
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
                     
                     // User-friendly error messages
                     let errorMessage = 'Inloggen mislukt';
@@ -1772,12 +1813,17 @@
                     alert(errorMessage);
                 }
             });
+            
+            console.log('✅ Login form handler setup complete');
         }
 
         // Register form handler with improved reliability  
         function setupRegisterFormHandler() {
             const registerForm = document.getElementById('register-form');
-            if (!registerForm) return;
+            if (!registerForm) {
+                setTimeout(setupRegisterFormHandler, 200);
+                return;
+            }
             
             // Remove any existing listeners
             const newForm = registerForm.cloneNode(true);
@@ -1802,6 +1848,11 @@
                 }
                 
                 try {
+                    // Ensure we have a fresh auth instance
+                    if (!auth) {
+                        auth = getAuth(app);
+                    }
+                    
                     // Set persistence to local (keep signed in)
                     await setPersistence(auth, browserLocalPersistence);
                     

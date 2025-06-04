@@ -813,6 +813,11 @@
                         <input type="password" id="login-password" class="form-input" placeholder="Wachtwoord" required>
                     </div>
 
+                    <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+                        <input type="checkbox" id="remember-me" checked style="width: auto;">
+                        <label for="remember-me" style="font-size: 0.875rem; margin: 0;">Ingelogd blijven</label>
+                    </div>
+
                     <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
                         Inloggen
                     </button>
@@ -928,11 +933,11 @@
                     <strong>💡 Tip van de dag:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.
                 </div>
 
-                <!-- Settings Section (moved to bottom) -->
-                <div class="settings-section">
-                    <h3>⚙️ Account & Data</h3>
+                <!-- Data Migration Section (if needed) -->
+                <div class="settings-section" id="migration-section" style="display: none;">
+                    <h3>📤 Data Migratie</h3>
                     <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 1rem;">
-                        <span id="connection-details">Je entries worden automatisch gesynchroniseerd tussen al je apparaten</span>
+                        Heb je eerder de app gebruikt zonder account? Migreer je lokale data naar je cloud account.
                     </p>
                     <div class="button-group">
                         <button class="btn btn-green" onclick="migrateLocalData()">
@@ -1304,7 +1309,7 @@
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, orderBy, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
         // Firebase configuratie
         const firebaseConfig = {
@@ -1360,12 +1365,11 @@
                 currentUser = user;
                 showMainApp();
                 updateUserInfo(user);
-                updateConnectionDetails('✅ Ingelogd als ' + (user.displayName || user.email) + ' - Data wordt gesynchroniseerd');
                 loadDagboekEntries();
+                checkForLocalData();
             } else {
                 currentUser = null;
                 showLoginScreen();
-                updateConnectionDetails('❌ Niet ingelogd - Log in om je data te synchroniseren');
             }
         });
 
@@ -1376,25 +1380,35 @@
             statusElement.className = `status-${type}`;
         }
 
-        function updateConnectionDetails(html) {
-            document.getElementById('connection-details').innerHTML = html;
+        function checkForLocalData() {
+            const localData = localStorage.getItem('ademruimte-entries');
+            const migrationSection = document.getElementById('migration-section');
+            
+            if (localData && JSON.parse(localData).length > 0) {
+                migrationSection.style.display = 'block';
+            } else {
+                migrationSection.style.display = 'none';
+            }
         }
 
         function updateUserInfo(user) {
             const userInfo = document.getElementById('user-info');
             userInfo.innerHTML = 
                 '<div class="user-name">👋 ' + (user.displayName || user.email) + '</div>' +
-                '<button id="signout-btn">Uitloggen</button>';
-            
-            // Add event listener to signout button
-            const signoutBtn = document.getElementById('signout-btn');
-            if (signoutBtn) {
-                signoutBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    handleSignOut();
-                });
-            }
+                '<button onclick="doSignOut()">Uitloggen</button>';
         }
+
+        // Simpele uitlog functie in global scope
+        window.doSignOut = async function() {
+            try {
+                console.log('🔄 Signing out...');
+                await signOut(auth);
+                console.log('✅ Signed out successfully');
+            } catch (error) {
+                console.error('❌ Sign out error:', error);
+                alert('Uitloggen mislukt: ' + error.message);
+            }
+        };
 
         function showLoginScreen() {
             document.getElementById('login-screen').classList.remove('hidden');
@@ -1409,6 +1423,9 @@
         // Authentication functions
         window.signInWithGoogle = async function() {
             try {
+                // Set persistence to local (keep signed in)
+                await setPersistence(auth, browserLocalPersistence);
+                
                 const provider = new GoogleAuthProvider();
                 const result = await signInWithPopup(auth, provider);
                 console.log('✅ Google sign-in successful:', result.user.email);
@@ -1417,17 +1434,6 @@
                 alert('Google inloggen mislukt: ' + error.message);
             }
         };
-
-        async function handleSignOut() {
-            try {
-                console.log('🔄 Attempting to sign out...');
-                await signOut(auth);
-                console.log('✅ User signed out successfully');
-            } catch (error) {
-                console.error('❌ Sign out error:', error);
-                alert('Uitloggen mislukt: ' + error.message);
-            }
-        }
 
         window.showRegisterForm = function() {
             document.getElementById('register-modal').classList.add('show');
@@ -1445,8 +1451,16 @@
             
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
             
             try {
+                // Set persistence based on checkbox
+                if (rememberMe) {
+                    await setPersistence(auth, browserLocalPersistence);
+                } else {
+                    await setPersistence(auth, browserSessionPersistence);
+                }
+                
                 await signInWithEmailAndPassword(auth, email, password);
                 console.log('✅ Email sign-in successful');
             } catch (error) {
@@ -1464,6 +1478,9 @@
             const password = document.getElementById('register-password').value;
             
             try {
+                // Set persistence to local (keep signed in)
+                await setPersistence(auth, browserLocalPersistence);
+                
                 const result = await createUserWithEmailAndPassword(auth, email, password);
                 
                 // Update user profile with name
@@ -1607,6 +1624,9 @@
                     
                     // Clear local storage after successful migration
                     localStorage.removeItem('ademruimte-entries');
+                    
+                    // Hide migration section
+                    document.getElementById('migration-section').style.display = 'none';
                     
                     // Reload entries
                     await loadDagboekEntries();

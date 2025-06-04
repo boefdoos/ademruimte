@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ademruimte - Hyperventilatie Helper</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f9fafb;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-status {
+            color: #bfdbfe;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #bfdbfe;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .nav-tabs {
+            background: white;
+            border-bottom: 2px solid #e5e7eb;
+            padding: 1rem;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .nav-tabs button {
+            background: none;
+            border: none;
+            padding: 0.75rem 1rem;
+            margin-right: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-tabs button.active {
+            background: #dbeafe;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+        }
+
+        .nav-tabs button:hover:not(:disabled) {
+            background: #f3f4f6;
+        }
+
+        .nav-tabs button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+        }
+
+        .card h2 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .card h3 {
+            color: #374151;
+            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-align: center;
+            display: inline-block;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-primary:hover:not(:disabled) { background: #2563eb; }
+        .btn-green { background: #10b981; color: white; }
+        .btn-green:hover:not(:disabled) { background: #059669; }
+        .btn-orange { background: #f59e0b; color: white; }
+        .btn-orange:hover:not(:disabled) { background: #d97706; }
+        .btn-red { background: #ef4444; color: white; }
+        .btn-red:hover:not(:disabled) { background: #dc2626; }
+        .btn-purple { background: #8b5cf6; color: white; }
+        .btn-purple:hover:not(:disabled) { background: #7c3aed; }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-info { background: #dbeafe; border: 1px solid #bfdbfe; color: #1e40af; }
+        .alert-success { background: #d1fae5; border: 1px solid #a7f3d0; color: #065f46; }
+        .alert-warning { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; }
+        .alert-error { background: #fee2e2; border: 1px solid #fecaca; color: #991b1b; }
+
+        .timer-display {
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            color: #1f2937;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 0.5rem;
+            background: #e5e7eb;
+            border-radius: 0.25rem;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #10b981;
+            border-radius: 0.25rem;
+            transition: width 0.3s ease;
+        }
+
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151; }
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+        .form-textarea { resize: vertical; min-height: 4rem; }
+        .range-input { width: 100%; margin: 0.5rem 0; }
+        .range-value { text-align: center; font-weight: bold; font-size: 1.125rem; color: #3b82f6; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .technique-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .technique-card h4 {
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+        }
+
+        .entry-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .entry-title { font-weight: 600; color: #1f2937; }
+
+        .entry-result { font-size: 0.875rem; font-weight: 500; }
+        .entry-result.zeer-goed { color: #059669; }
+        .entry-result.goed { color: #10b981; }
+        .entry-result.matig { color: #f59e0b; }
+        .entry-result.geen-effect { color: #6b7280; }
+        .entry-result.slechter { color: #ef4444; }
+
+        .intensity-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .hidden { display: none !important; }
+
+        .step-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .step-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .step-list li:before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .auth-required {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #6b7280;
+        }
+
+        .sync-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-left: 0.5rem;
+        }
+
+        .sync-status.syncing { color: #3b82f6; }
+        .sync-status.success { color: #059669; }
+        .sync-status.error { color: #ef4444; }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 1rem; }
+            header h1 { font-size: 1.5rem; }
+            .container { padding: 1rem; }
+            .card { padding: 1rem; }
+            .grid { grid-template-columns: 1fr; }
+            .timer-display { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🫁 Ademruimte</h1>
+        <p>Jouw persoonlijke hyperventilatie helper</p>
+        <div class="auth-status" id="auth-status">
+            <div class="loading"></div>
+            <span>Verbinden met Google Drive...</span>
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="tab-btn active" onclick="showTab('dashboard')" disabled id="dashboard-tab">🏠 Dashboard</button>
+        <button class="tab-btn" onclick="showTab('crisis')" disabled id="crisis-tab">🚨 Crisis</button>
+        <button class="tab-btn" onclick="showTab('ritueel')" disabled id="ritueel-tab">🕐 Ritueel</button>
+        <button class="tab-btn" onclick="showTab('gapen')" disabled id="gapen-tab">🥱 Gapen</button>
+        <button class="tab-btn" onclick="showTab('emdr')" disabled id="emdr-tab">💜 EMDR</button>
+        <button class="tab-btn" onclick="showTab('dagboek')" disabled id="dagboek-tab">📖 Dagboek</button>
+    </nav>
+
+    <div class="container">
+        <!-- Authentication Required -->
+        <div id="auth-required" class="auth-required">
+            <div class="card">
+                <h2>Google Drive Autorisatie Vereist</h2>
+                <p>Om je dagboekgegevens veilig op te slaan, heeft Ademruimte toegang nodig tot je Google Drive.</p>
+                <div style="margin: 2rem 0;">
+                    <button class="btn btn-primary" onclick="handleAuthClick()" id="auth-button">
+                        🔐 Autoriseer Google Drive Toegang
+                    </button>
+                </div>
+                <div class="alert alert-info">
+                    <strong>Privacy garantie:</strong> Ademruimte kan alleen het "Ademruimte Dagboek" document lezen en wijzigen dat het zelf heeft aangemaakt. Andere bestanden in je Google Drive blijven volledig privé.
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="tab-content hidden">
+            <div class="card">
+                <h2>Welkom bij Ademruimte</h2>
+                <p>Jouw persoonlijke hulp voor het omgaan met hyperventilatie en luchthonger-gevoelens.</p>
+                <div class="sync-status" id="drive-status">
+                    <span>📁 Verbonden met Google Drive</span>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>🚨 Crisis Hulp</h3>
+                    <p>Voor wanneer je luchthonger voelt opkomen</p>
+                    <button class="btn btn-red" onclick="showTab('crisis')">Open Crisis Hulp</button>
+                </div>
+
+                <div class="card">
+                    <h3>🕐 Afkoel Ritueel</h3>
+                    <p>Na intensief denkwerk</p>
+                    <button class="btn btn-green" onclick="showTab('ritueel')">Start Ritueel</button>
+                </div>
+
+                <div class="card">
+                    <h3>🥱 Gaap Preventie</h3>
+                    <p>Technieken voor gaapaanvallen</p>
+                    <button class="btn btn-orange" onclick="showTab('gapen')">Bekijk Technieken</button>
+                </div>
+
+                <div class="card">
+                    <h3>💜 EMDR Zelfhulp</h3>
+                    <p>Voor luchthonger-gevoelens</p>
+                    <button class="btn btn-purple" onclick="showTab('emdr')">Start EMDR</button>
+                </div>
+
+                <div class="card">
+                    <h3>📖 Dagboek</h3>
+                    <p>Bijhouden van patronen</p>
+                    <button class="btn btn-primary" onclick="showTab('dagboek')">Open Dagboek</button>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 Tip van de dag:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.
+            </div>
+        </div>
+
+        <!-- Crisis -->
+        <div id="crisis" class="tab-content hidden">
+            <div class="card">
+                <h2>🚨 Crisis Hulp - Luchthonger</h2>
+                <p>Voor wanneer je dat benauwde gevoel voelt opkomen</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>1. Paradoxale Ademhaling</h4>
+                <p>Start met bewust zeer kleine, korte ademhalingen. Na 3-4 van deze mini-ademhalingen, probeer een iets langere uitademing.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>2. Purse-lip Ademhaling</h4>
+                <p>Tuut je lippen bij het uitademen om lichte weerstand te creëren. Dit helpt bij luchthonger en stabiliseert CO2-niveaus.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>3. IJswater Techniek</h4>
+                <p>Breng iets kouds tegen je gezicht (vooral rond wangen en ogen) om de duikreflex te activeren.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>4. Herframing</h4>
+                <p>"Dit is geen echt zuurstoftekort, dit is een sensatie die voorbij zal gaan. Mijn lichaam krijgt genoeg zuurstof."</p>
+            </div>
+
+            <div class="card">
+                <h3>5-4-3-2-1 Grounding</h3>
+                <ul class="step-list">
+                    <li>5 dingen die je ZIET</li>
+                    <li>4 dingen die je VOELT</li>
+                    <li>3 dingen die je HOORT</li>
+                    <li>2 dingen die je RUIKT</li>
+                    <li>1 ding dat je PROEFT</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <button class="btn btn-primary" onclick="openDagboekModal('Crisis Hulp Technieken')">
+                    📝 Dagboek Entry Maken
+                </button>
+            </div>
+        </div>
+
+        <!-- Ritueel -->
+        <div id="ritueel" class="tab-content hidden">
+            <div class="card">
+                <h2>🕐 Afkoel Ritueel</h2>
+                <p>Voor na periodes van intensief denkwerk (5-10 minuten)</p>
+            </div>
+
+            <div class="card">
+                <h3 id="ritual-title">Stap 1: Fysieke Mini-Reset</h3>
+                <div class="timer-display" id="timer-display">2:00</div>
+                
+                <div id="ritual-instructions">
+                    <ul class="step-list">
+                        <li>Sta op en strek je volledig uit</li>
+                        <li>Schud je armen en benen los</li>
+                        <li>Rol je schouders 5x naar achteren</li>
+                        <li>Maak kleine cirkels met je hoofd (5x elke richting)</li>
+                    </ul>
+                </div>
+
+                <div style="margin: 1rem 0;">
+                    <button id="timer-btn" class="btn btn-green" onclick="startTimer()">▶️ Start Timer</button>
+                    <button class="btn btn-primary" onclick="nextRitualStep()" id="next-btn" style="display: none;">Volgende Stap</button>
+                    <button class="btn btn-orange" onclick="resetRitual()">🔄 Reset</button>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="ritual-progress" style="width: 20%"></div>
+                </div>
+
+                <div id="ritual-complete" class="alert alert-success hidden">
+                    <strong>✅ Afkoel Ritueel Voltooid!</strong><br>
+                    Goed gedaan! Je hebt alle stappen doorlopen.
+                    <br><br>
+                    <button class="btn btn-primary" onclick="openDagboekModal('Afkoel Ritueel')">
+                        📝 Dagboek Entry Maken
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gapen -->
+        <div id="gapen" class="tab-content hidden">
+            <div class="card">
+                <h2>🥱 Gaap Preventie Technieken</h2>
+                <p>Voor wanneer je die vervelende gaapaanvallen voelt opkomen</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>Lipremming-techniek</h4>
+                <p>Druk je lippen zachtjes op elkaar wanneer je een gaapneiging voelt. Laat de lucht langzaam door je neus in en uit gaan.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>Mini-ademhalingen</h4>
+                <p>Neem bewust 3-4 zeer kleine, ondiepe ademhalingen door je neus. Hiermee voorkom je de grote 'zucht-ademhaling'.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>Tongpositie veranderen</h4>
+                <p>Plaats je tongpunt tegen je gehemelte (achter je voortanden). Dit vermindert de neiging tot gapen.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>Water drinken</h4>
+                <p>Neem kleine slokjes water wanneer je merkt dat je begint te gapen. Dit doorbreekt het ademhalingspatroon.</p>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 Belangrijk om te onthouden:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Ze geven je de kans om preventief in te grijpen voordat een volledige hyperventilatie-episode begint.
+            </div>
+
+            <div class="card">
+                <h3>Gedachte-Breaking Technieken</h3>
+                <div class="technique-card">
+                    <strong>Paradoxale intentie:</strong> "Oké hersenen, jullie willen dat ik ga gapen? Prima, ik ga nu heel bewust gapen"
+                </div>
+                <div class="technique-card">
+                    <strong>Herframing:</strong> "Mijn brein probeert me te beschermen, maar ik hoef niet te reageren"
+                </div>
+                <div class="technique-card">
+                    <strong>Aandacht verplaatsen:</strong> Tel 5 blauwe dingen die je kunt zien
+                </div>
+            </div>
+
+            <div class="card">
+                <button class="btn btn-primary" onclick="openDagboekModal('Gaap Preventie Technieken')">
+                    📝 Dagboek Entry Maken
+                </button>
+            </div>
+        </div>
+
+        <!-- EMDR -->
+        <div id="emdr" class="tab-content hidden">
+            <div class="card">
+                <h2>💜 EMDR Zelfhulp</h2>
+                <p>Voor luchthonger-gevoelens (dit is ondersteuning, geen vervanging voor professionele EMDR)</p>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ Gebruik dit alleen voor milde tot matige gevoelens. Stop als je je overweldigd voelt.</strong>
+            </div>
+
+            <div class="card">
+                <h3 id="emdr-title">Stap 1: Voorbereiding</h3>
+                <div id="emdr-content">
+                    <p>Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt.</p>
+                </div>
+
+                <div id="emdr-intensity" class="hidden">
+                    <div class="form-group">
+                        <label class="form-label">Intensiteit van luchthonger-gevoel (1-10):</label>
+                        <input type="range" min="1" max="10" value="5" class="range-input" id="emdr-intensity-slider" oninput="updateEmdrIntensity()">
+                        <div class="range-value" id="emdr-intensity-value">5</div>
+                    </div>
+                </div>
+
+                <div style="margin: 1rem 0;">
+                    <button id="emdr-prev-btn" class="btn btn-orange" onclick="prevEmdrStep()" style="display: none;">Vorige</button>
+                    <button id="emdr-next-btn" class="btn btn-purple" onclick="nextEmdrStep()">Volgende</button>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="emdr-progress" style="width: 20%"></div>
+                </div>
+
+                <div id="emdr-complete" class="alert alert-success hidden">
+                    <strong>✅ EMDR Sessie Voltooid!</strong><br>
+                    <button class="btn btn-primary" onclick="openDagboekModal('EMDR Zelfhulp Sessie')">
+                        📝 Dagboek Entry Maken
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dagboek -->
+        <div id="dagboek" class="tab-content hidden">
+            <div class="card">
+                <h2>📖 Dagboek</h2>
+                <p>Overzicht van je sessies en vooruitgang</p>
+                <div style="margin-top: 1rem;">
+                    <button class="btn btn-primary" onclick="openDagboekModal('Handmatige Entry')">
+                        ➕ Nieuwe Entry
+                    </button>
+                    <button class="btn btn-green" onclick="loadDagboekEntries()" style="margin-left: 0.5rem;">
+                        🔄 Vernieuw
+                    </button>
+                    <span class="sync-status" id="dagboek-sync-status"></span>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>📁 Google Drive:</strong> Je dagboekgegevens worden veilig opgeslagen in "Ademruimte Dagboek" in je Google Drive voor toegang op alle apparaten.
+            </div>
+
+            <div id="dagboek-entries"></div>
+
+            <div class="card">
+                <h3>Patronen om naar uit te kijken</h3>
+                <ul class="step-list">
+                    <li>Welke technieken het beste werken voor jou</li>
+                    <li>Tijdstippen waarop klachten vaker voorkomen</li>
+                    <li>Specifieke triggers (werk, stress, bepaalde gedachten)</li>
+                    <li>Verband tussen maagklachten en ademhalingsproblemen</li>
+                    <li>Verbetering in intensiteit scores over tijd</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="dagboek-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📝 Dagboek Entry</h3>
+                <button class="close-btn" onclick="closeDagboekModal()">&times;</button>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Situatie/Trigger:</label>
+                <input type="text" id="entry-trigger" class="form-input" placeholder="Bijv. na intensief werken">
+            </div>
+
+            <div class="grid">
+                <div class="form-group">
+                    <label class="form-label">Intensiteit voor (1-10):</label>
+                    <input type="range" min="1" max="10" value="5" class="range-input" id="entry-before" oninput="updateBeforeValue()">
+                    <div class="range-value" id="entry-before-value">5</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Intensiteit na (1-10):</label>
+                    <input type="range" min="1" max="10" value="5" class="range-input" id="entry-after" oninput="updateAfterValue()">
+                    <div class="range-value" id="entry-after-value">5</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Resultaat:</label>
+                <select id="entry-result" class="form-select">
+                    <option value="">Selecteer resultaat...</option>
+                    <option value="zeer-goed">Zeer goed - volledig opgelost</option>
+                    <option value="goed">Goed - duidelijke verbetering</option>
+                    <option value="matig">Matig - kleine verbetering</option>
+                    <option value="geen-effect">Geen effect</option>
+                    <option value="slechter">Iets slechter</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Notities:</label>
+                <textarea id="entry-notes" class="form-textarea" placeholder="Wat viel je op?"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-primary" onclick="saveDagboekEntry()" id="save-entry-btn">📁 Opslaan</button>
+                <button class="btn btn-orange" onclick="closeDagboekModal()">Annuleren</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>📞 In noodgevallen: contacteer altijd je huisarts of spoeddiensten</p>
+    </footer>
+
+    <!-- Google API -->
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+        // Google API Configuration
+        const API_KEY = 'AIzaSyDKAx-wzqRL4CyLOhPbsb-2AWXjU6FW79k';
+        const CLIENT_ID = '632231969791-ahtnrsfd5bbtvrcv5qr3kikn9da87sf2.apps.googleusercontent.com';
+        const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
+        const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+
+        // Global variables
+        let gapi;
+        let tokenClient;
+        let isSignedIn = false;
+        let currentTab = 'dashboard';
+        let timerInterval = null;
+        let currentTime = 0;
+        let ritualStep = 0;
+        let emdrStep = 0;
+        let currentTechnique = '';
+        let dagboekEntries = [];
+        let dagboekFileId = null;
+
+        // Ritual and EMDR data
+        const ritualSteps = [
+            { title: "Stap 1: Fysieke Mini-Reset", duration: 120, instructions: ["Sta op en strek je volledig uit", "Schud je armen en benen los", "Rol je schouders 5x naar achteren", "Maak kleine cirkels met je hoofd (5x elke richting)"] },
+            { title: "Stap 2: Zintuigelijke Verschuiving", duration: 120, instructions: ["Raak 5 verschillende texturen aan in je omgeving", "Luister bewust naar 3 geluiden die je kunt horen", "Kijk naar iets aangenaams in de verte"] },
+            { title: "Stap 3: Voedings-ankerpunt", duration: 120, instructions: ["Drink een half glas water, langzaam en bewust", "Eet iets kleins met een sterke smaak", "Let op de smaak en textuur in je mond"] },
+            { title: "Stap 4: Mentale Overgang", duration: 120, instructions: ["Schrijf 3 woorden op die samenvatten waar je net aan werkte", "Schrijf daaronder 3 woorden voor wat je nu gaat doen", "Trek een lijn tussen deze sets woorden als symbolische afsluiting"] },
+            { title: "Stap 5: Bewegingsafsluiting", duration: 120, instructions: ["Loop even rond, bij voorkeur buiten of bij een open raam", "Maak 5-10 trage, bewuste stappen", "Eindig met een kleine glimlach"] }
+        ];
+
+        const emdrSteps = [
+            { title: "Stap 1: Voorbereiding", content: "Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt." },
+            { title: "Stap 2: Doelgerichtheid", content: "Denk heel kort aan het gevoel van luchthonger (niet meer dan 5 seconden). Schat de intensiteit en formuleer: 'Ik kan met dit gevoel omgaan'" },
+            { title: "Stap 3: Bilaterale Stimulatie", content: "Kies één optie:<br><br><strong>Oogbewegingen:</strong> Beweeg je ogen langzaam van links naar rechts (15-20x)<br><strong>Butterfly hug:</strong> Kruis je armen en tik afwisselend op je schouders<br><strong>Knie-tikken:</strong> Tik afwisselend op je knieën met je handen" },
+            { title: "Stap 4: Check-in", content: "Hoe voelt het luchthonger-gevoel nu? Welke gedachten komen op? Accepteer wat er komt zonder oordeel." },
+            { title: "Stap 5: Positieve Verankering", content: "Focus op 'Ik kan hiermee omgaan' en doe 10-15 bilaterale bewegingen terwijl je deze gedachte vasthoudt." }
+        ];
+
+        // Initialize Google API
+        async function initializeGoogleAPI() {
+            await new Promise((resolve) => {
+                gapi.load('auth2', resolve);
+            });
+            
+            await gapi.auth2.init({
+                client_id: CLIENT_ID,
+            });
+
+            await new Promise((resolve) => {
+                gapi.load('client', resolve);
+            });
+
+            await gapi.client.init({
+                apiKey: API_KEY,
+                discoveryDocs: [DISCOVERY_DOC],
+            });
+
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                callback: (tokenResponse) => {
+                    if (tokenResponse.access_token) {
+                        onSignIn();
+                    }
+                },
+            });
+
+            // Check if user is already signed in
+            const authInstance = gapi.auth2.getAuthInstance();
+            if (authInstance.isSignedIn.get()) {
+                onSignIn();
+            } else {
+                showAuthRequired();
+            }
+        }
+
+        function showAuthRequired() {
+            document.getElementById('auth-status').innerHTML = '🔐 <span>Autorisatie vereist</span>';
+            document.getElementById('auth-required').classList.remove('hidden');
+            
+            // Hide all tabs content
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.add('hidden'));
+        }
+
+        function handleAuthClick() {
+            tokenClient.requestAccessToken({ prompt: 'consent' });
+        }
+
+        async function onSignIn() {
+            isSignedIn = true;
+            document.getElementById('auth-status').innerHTML = '✅ <span>Verbonden met Google Drive</span>';
+            document.getElementById('auth-required').classList.add('hidden');
+            
+            // Enable navigation tabs
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach(btn => btn.disabled = false);
+            
+            // Show dashboard
+            showTab('dashboard');
+            
+            // Initialize dagboek
+            await initializeDagboek();
+        }
+
+        async function initializeDagboek() {
+            try {
+                setSyncStatus('dagboek-sync-status', 'syncing', 'Zoeken naar dagboek...');
+                
+                // Search for existing dagboek file
+                const response = await gapi.client.drive.files.list({
+                    q: "name='Ademruimte Dagboek.json' and mimeType='application/json'",
+                    spaces: 'drive'
+                });
+
+                if (response.result.files.length > 0) {
+                    dagboekFileId = response.result.files[0].id;
+                    await loadDagboekFromDrive();
+                } else {
+                    // Create new dagboek file
+                    await createDagboekFile();
+                }
+                
+                setSyncStatus('dagboek-sync-status', 'success', 'Gesynchroniseerd');
+            } catch (error) {
+                console.error('Error initializing dagboek:', error);
+                setSyncStatus('dagboek-sync-status', 'error', 'Synchronisatie fout');
+            }
+        }
+
+        async function createDagboekFile() {
+            const fileMetadata = {
+                name: 'Ademruimte Dagboek.json'
+            };
+
+            const initialData = {
+                entries: [],
+                created: new Date().toISOString(),
+                version: '1.0'
+            };
+
+            const media = {
+                mimeType: 'application/json',
+                body: JSON.stringify(initialData, null, 2)
+            };
+
+            const response = await gapi.client.request({
+                path: 'https://www.googleapis.com/upload/drive/v3/files',
+                method: 'POST',
+                params: { uploadType: 'multipart' },
+                headers: { 'Content-Type': 'multipart/related; boundary="boundary123"' },
+                body: createMultipartBody(fileMetadata, media)
+            });
+
+            dagboekFileId = response.result.id;
+            dagboekEntries = [];
+        }
+
+        function createMultipartBody(metadata, media) {
+            const delimiter = 'boundary123';
+            let body = '';
+            
+            body += `--${delimiter}\r\n`;
+            body += 'Content-Type: application/json\r\n\r\n';
+            body += JSON.stringify(metadata) + '\r\n';
+            
+            body += `--${delimiter}\r\n`;
+            body += `Content-Type: ${media.mimeType}\r\n\r\n`;
+            body += media.body + '\r\n';
+            
+            body += `--${delimiter}--`;
+            
+            return body;
+        }
+
+        async function loadDagboekFromDrive() {
+            try {
+                const response = await gapi.client.drive.files.get({
+                    fileId: dagboekFileId,
+                    alt: 'media'
+                });
+
+                const data = JSON.parse(response.body);
+                dagboekEntries = data.entries || [];
+                
+                if (currentTab === 'dagboek') {
+                    displayDagboekEntries();
+                }
+            } catch (error) {
+                console.error('Error loading dagboek:', error);
+                dagboekEntries = [];
+            }
+        }
+
+        async function saveDagboekToDrive() {
+            if (!dagboekFileId) return;
+
+            try {
+                setSyncStatus('dagboek-sync-status', 'syncing', 'Opslaan...');
+                
+                const data = {
+                    entries: dagboekEntries,
+                    lastModified: new Date().toISOString(),
+                    version: '1.0'
+                };
+
+                await gapi.client.request({
+                    path: `https://www.googleapis.com/upload/drive/v3/files/${dagboekFileId}`,
+                    method: 'PATCH',
+                    params: { uploadType: 'media' },
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data, null, 2)
+                });
+
+                setSyncStatus('dagboek-sync-status', 'success', 'Opgeslagen in Google Drive');
+                
+                // Clear status after 3 seconds
+                setTimeout(() => {
+                    setSyncStatus('dagboek-sync-status', '', '');
+                }, 3000);
+                
+            } catch (error) {
+                console.error('Error saving to Drive:', error);
+                setSyncStatus('dagboek-sync-status', 'error', 'Opslaan mislukt');
+            }
+        }
+
+        function setSyncStatus(elementId, type, message) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            element.className = `sync-status ${type}`;
+            
+            let icon = '';
+            switch (type) {
+                case 'syncing': icon = '<div class="loading" style="width: 12px; height: 12px;"></div>'; break;
+                case 'success': icon = '✅'; break;
+                case 'error': icon = '❌'; break;
+                default: icon = '';
+            }
+            
+            element.innerHTML = message ? `${icon} <span>${message}</span>` : '';
+        }
+
+        // Tab switching
+        function showTab(tabName) {
+            if (!isSignedIn && tabName !== 'dashboard') return;
+            
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.add('hidden'));
+            
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.remove('hidden');
+            event.target.classList.add('active');
+            
+            currentTab = tabName;
+
+            if (tabName === 'dagboek' && isSignedIn) {
+                loadDagboekEntries();
+            }
+        }
+
+        // Timer functions
+        function startTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+                return;
+            }
+
+            currentTime = ritualSteps[ritualStep].duration;
+            document.getElementById('timer-btn').innerHTML = '⏸️ Pause Timer';
+            
+            timerInterval = setInterval(() => {
+                currentTime--;
+                updateTimerDisplay();
+                
+                if (currentTime <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+                    document.getElementById('next-btn').style.display = 'inline-block';
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(currentTime / 60);
+            const seconds = currentTime % 60;
+            const display = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+            document.getElementById('timer-display').textContent = display;
+        }
+
+        function nextRitualStep() {
+            ritualStep++;
+            
+            if (ritualStep >= ritualSteps.length) {
+                document.getElementById('ritual-complete').classList.remove('hidden');
+                document.querySelector('#ritueel .card:nth-child(2)').style.display = 'none';
+                return;
+            }
+            
+            updateRitualDisplay();
+            document.getElementById('next-btn').style.display = 'none';
+        }
+
+        function resetRitual() {
+            ritualStep = 0;
+            currentTime = 0;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            
+            document.getElementById('ritual-complete').classList.add('hidden');
+            document.querySelector('#ritueel .card:nth-child(2)').style.display = 'block';
+            document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+            document.getElementById('next-btn').style.display = 'none';
+            
+            updateRitualDisplay();
+        }
+
+        function updateRitualDisplay() {
+            const step = ritualSteps[ritualStep];
+            document.getElementById('ritual-title').textContent = step.title;
+            currentTime = step.duration;
+            updateTimerDisplay();
+            
+            let html = '<ul class="step-list">';
+            step.instructions.forEach(instruction => {
+                html += `<li>${instruction}</li>`;
+            });
+            html += '</ul>';
+            document.getElementById('ritual-instructions').innerHTML = html;
+            
+            const progress = ((ritualStep + 1) / ritualSteps.length) * 100;
+            document.getElementById('ritual-progress').style.width = progress + '%';
+        }
+
+        // EMDR functions
+        function nextEmdrStep() {
+            emdrStep++;
+            
+            if (emdrStep >= emdrSteps.length) {
+                document.getElementById('emdr-complete').classList.remove('hidden');
+                document.querySelector('#emdr .card:nth-child(3)').style.display = 'none';
+                return;
+            }
+            
+            updateEmdrDisplay();
+        }
+
+        function prevEmdrStep() {
+            if (emdrStep > 0) {
+                emdrStep--;
+                updateEmdrDisplay();
+            }
+        }
+
+        function updateEmdrDisplay() {
+            const step = emdrSteps[emdrStep];
+            document.getElementById('emdr-title').textContent = step.title;
+            document.getElementById('emdr-content').innerHTML = step.content;
+            
+            if (emdrStep === 1) {
+                document.getElementById('emdr-intensity').classList.remove('hidden');
+            } else {
+                document.getElementById('emdr-intensity').classList.add('hidden');
+            }
+            
+            document.getElementById('emdr-prev-btn').style.display = emdrStep > 0 ? 'inline-block' : 'none';
+            
+            if (emdrStep >= emdrSteps.length - 1) {
+                document.getElementById('emdr-next-btn').textContent = 'Voltooien';
+            } else {
+                document.getElementById('emdr-next-btn').textContent = 'Volgende';
+            }
+            
+            const progress = ((emdrStep + 1) / emdrSteps.length) * 100;
+            document.getElementById('emdr-progress').style.width = progress + '%';
+        }
+
+        // Range updates
+        function updateEmdrIntensity() {
+            const value = document.getElementById('emdr-intensity-slider').value;
+            document.getElementById('emdr-intensity-value').textContent = value;
+        }
+
+        function updateBeforeValue() {
+            const value = document.getElementById('entry-before').value;
+            document.getElementById('entry-before-value').textContent = value;
+        }
+
+        function updateAfterValue() {
+            const value = document.getElementById('entry-after').value;
+            document.getElementById('entry-after-value').textContent = value;
+        }
+
+        // Dagboek functions
+        function openDagboekModal(technique) {
+            if (!isSignedIn) return;
+            
+            currentTechnique = technique;
+            document.getElementById('entry-trigger').value = technique ? 'Tijdens/na ' + technique : '';
+            document.getElementById('dagboek-modal').classList.add('show');
+        }
+
+        function closeDagboekModal() {
+            document.getElementById('dagboek-modal').classList.remove('show');
+            document.getElementById('entry-trigger').value = '';
+            document.getElementById('entry-before').value = '5';
+            document.getElementById('entry-after').value = '5';
+            document.getElementById('entry-result').value = '';
+            document.getElementById('entry-notes').value = '';
+            document.getElementById('entry-before-value').textContent = '5';
+            document.getElementById('entry-after-value').textContent = '5';
+            currentTechnique = '';
+        }
+
+        async function saveDagboekEntry() {
+            if (!isSignedIn) return;
+            
+            const saveBtn = document.getElementById('save-entry-btn');
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<div class="loading" style="width: 12px; height: 12px; display: inline-block;"></div> Opslaan...';
+            saveBtn.disabled = true;
+            
+            try {
+                const entry = {
+                    id: Date.now(),
+                    techniekGebruikt: currentTechnique || 'Handmatige Entry',
+                    trigger: document.getElementById('entry-trigger').value,
+                    intensiteitVoor: parseInt(document.getElementById('entry-before').value),
+                    intensiteitNa: parseInt(document.getElementById('entry-after').value),
+                    resultaat: document.getElementById('entry-result').value,
+                    notities: document.getElementById('entry-notes').value,
+                    tijdstempel: new Date().toLocaleString('nl-BE')
+                };
+
+                dagboekEntries.unshift(entry);
+                await saveDagboekToDrive();
+                
+                closeDagboekModal();
+                
+                if (currentTab === 'dagboek') {
+                    displayDagboekEntries();
+                }
+                
+            } catch (error) {
+                console.error('Error saving entry:', error);
+                alert('❌ Fout bij opslaan. Probeer opnieuw.');
+            } finally {
+                saveBtn.innerHTML = originalText;
+                saveBtn.disabled = false;
+            }
+        }
+
+        async function loadDagboekEntries() {
+            if (!isSignedIn) return;
+            
+            try {
+                await loadDagboekFromDrive();
+                displayDagboekEntries();
+            } catch (error) {
+                console.error('Error loading entries:', error);
+            }
+        }
+
+        function displayDagboekEntries() {
+            const container = document.getElementById('dagboek-entries');
+            
+            if (dagboekEntries.length === 0) {
+                container.innerHTML = `
+                    <div class="card">
+                        <h3>Nog geen entries</h3>
+                        <p>Maak een dagboekentry na het gebruiken van oefeningen om patronen bij te houden.</p>
+                        <button class="btn btn-primary" onclick="openDagboekModal('Eerste Entry')">Maak je eerste entry</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            dagboekEntries.forEach(entry => {
+                html += `
+                    <div class="entry-card">
+                        <div class="entry-header">
+                            <div>
+                                <div class="entry-title">${entry.techniekGebruikt}</div>
+                                <div style="font-size: 0.875rem; color: #6b7280;">${entry.tijdstempel}</div>
+                            </div>
+                            <div class="entry-result ${entry.resultaat}">${getResultaatText(entry.resultaat)}</div>
+                        </div>
+                        <div class="intensity-grid">
+                            <div style="font-size: 0.875rem;">
+                                <span style="color: #6b7280;">Voor:</span>
+                                <span style="font-weight: 500; margin-left: 0.25rem;">${entry.intensiteitVoor}/10</span>
+                            </div>
+                            <div style="font-size: 0.875rem;">
+                                <span style="color: #6b7280;">Na:</span>
+                                <span style="font-weight: 500; margin-left: 0.25rem;">${entry.intensiteitNa}/10</span>
+                            </div>
+                        </div>
+                        ${entry.trigger ? `<p style="font-size: 0.875rem; margin-bottom: 0.5rem;"><strong>Trigger:</strong> ${entry.trigger}</p>` : ''}
+                        ${entry.notities ? `<p style="font-size: 0.875rem;"><strong>Notities:</strong> ${entry.notities}</p>` : ''}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function getResultaatText(resultaat) {
+            const mapping = {
+                'zeer-goed': 'Zeer goed',
+                'goed': 'Goed',
+                'matig': 'Matig',
+                'geen-effect': 'Geen effect',
+                'slechter': 'Slechter'
+            };
+            return mapping[resultaat] || resultaat;
+        }
+
+        // Initialize
+        function init() {
+            updateRitualDisplay();
+            updateEmdrDisplay();
+        }
+
+        // Load Google API and initialize
+        function loadGoogleAPI() {
+            const script = document.createElement('script');
+            script.src = 'https://accounts.google.com/gsi/client';
+            script.onload = initializeGoogleAPI;
+            document.head.appendChild(script);
+        }
+
+        window.onload = function() {
+            init();
+            loadGoogleAPI();
+        };
+    </script>
+</body>
+</html>

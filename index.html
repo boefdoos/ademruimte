@@ -813,9 +813,9 @@
                         <input type="password" id="login-password" class="form-input" placeholder="Wachtwoord" required>
                     </div>
 
-                    <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
-                        <input type="checkbox" id="remember-me" checked style="width: auto;">
-                        <label for="remember-me" style="font-size: 0.875rem; margin: 0;">Ingelogd blijven</label>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+                        <input type="checkbox" id="remember-me" checked style="width: 20px; height: 20px;">
+                        <label for="remember-me" style="font-size: 0.875rem; margin: 0; cursor: pointer;">Ingelogd blijven</label>
                     </div>
 
                     <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
@@ -1395,20 +1395,24 @@
             const userInfo = document.getElementById('user-info');
             userInfo.innerHTML = 
                 '<div class="user-name">👋 ' + (user.displayName || user.email) + '</div>' +
-                '<button onclick="doSignOut()">Uitloggen</button>';
+                '<button type="button" id="logout-button">Uitloggen</button>';
+            
+            // Direct na het aanmaken van de button, event listener toevoegen
+            setTimeout(() => {
+                const logoutBtn = document.getElementById('logout-button');
+                if (logoutBtn) {
+                    logoutBtn.onclick = function() {
+                        console.log('Logout button clicked');
+                        signOut(auth).then(() => {
+                            console.log('Successfully signed out');
+                        }).catch((error) => {
+                            console.error('Sign out error:', error);
+                            alert('Uitloggen mislukt: ' + error.message);
+                        });
+                    };
+                }
+            }, 100);
         }
-
-        // Simpele uitlog functie in global scope
-        window.doSignOut = async function() {
-            try {
-                console.log('🔄 Signing out...');
-                await signOut(auth);
-                console.log('✅ Signed out successfully');
-            } catch (error) {
-                console.error('❌ Sign out error:', error);
-                alert('Uitloggen mislukt: ' + error.message);
-            }
-        };
 
         function showLoginScreen() {
             document.getElementById('login-screen').classList.remove('hidden');
@@ -1451,13 +1455,18 @@
             
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
-            const rememberMe = document.getElementById('remember-me').checked;
+            const rememberMeCheckbox = document.getElementById('remember-me');
+            const rememberMe = rememberMeCheckbox ? rememberMeCheckbox.checked : true;
+            
+            console.log('Login attempt:', { email, rememberMe });
             
             try {
                 // Set persistence based on checkbox
                 if (rememberMe) {
+                    console.log('Setting local persistence (stay logged in)');
                     await setPersistence(auth, browserLocalPersistence);
                 } else {
+                    console.log('Setting session persistence (logout when browser closes)');
                     await setPersistence(auth, browserSessionPersistence);
                 }
                 

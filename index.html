@@ -1,835 +1,1336 @@
-import React, { useState, useEffect } from 'react';
-import { Activity, Clock, Heart, AlertTriangle, BookOpen, CheckCircle, Play, Pause, RotateCcw } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ademruimte - Hyperventilatie Helper</title>
+    
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-const AdembHelper = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [timer, setTimer] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [sessionData, setSessionData] = useState({
-    intensityBefore: 5,
-    intensityAfter: 5,
-    notes: ''
-  });
-  
-  // Dagboek entries worden bijgehouden in de app tijdens je sessie
-  const [dagboekEntries, setDagboekEntries] = useState([]);
-  const [showDagboekModal, setShowDagboekModal] = useState(false);
-  const [currentOefening, setCurrentOefening] = useState(null);
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f9fafb;
+            line-height: 1.6;
+        }
 
-  // Timer effect
-  useEffect(() => {
-    let interval;
-    if (isRunning && timer > 0) {
-      interval = setInterval(() => {
-        setTimer(timer => timer - 1);
-      }, 1000);
-    } else if (timer === 0) {
-      setIsRunning(false);
-    }
-    return () => clearInterval(interval);
-  }, [isRunning, timer]);
+        header {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
 
-  const startTimer = (seconds) => {
-    setTimer(seconds);
-    setIsRunning(true);
-  };
+        header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
 
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
+        .nav-tabs {
+            background: white;
+            border-bottom: 2px solid #e5e7eb;
+            padding: 1rem;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
 
-  const startDagboekEntry = (oefeningType) => {
-    setCurrentOefening(oefeningType);
-    setShowDagboekModal(true);
-  };
+        .nav-tabs button {
+            background: none;
+            border: none;
+            padding: 0.75rem 1rem;
+            margin-right: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
 
-  const saveDagboekEntry = (entry) => {
-    const newEntry = {
-      ...entry,
-      datum: new Date().toLocaleString('nl-BE'),
-      id: Date.now()
-    };
-    setDagboekEntries([newEntry, ...dagboekEntries]);
-    setShowDagboekModal(false);
-    setCurrentOefening(null);
-  };
+        .nav-tabs button.active {
+            background: #dbeafe;
+            color: #1d4ed8;
+            border: 1px solid #bfdbfe;
+        }
 
-  const afkoelRitueel = [
-    {
-      title: "Fysieke Mini-Reset",
-      duration: 120,
-      instructions: [
-        "Sta op en strek je volledig uit",
-        "Schud je armen en benen los",
-        "Rol je schouders 5x naar achteren",
-        "Maak kleine cirkels met je hoofd (5x elke richting)"
-      ]
-    },
-    {
-      title: "Zintuigelijke Verschuiving", 
-      duration: 120,
-      instructions: [
-        "Raak 5 verschillende texturen aan in je omgeving",
-        "Luister bewust naar 3 geluiden die je kunt horen",
-        "Kijk naar iets aangenaams in de verte"
-      ]
-    },
-    {
-      title: "Voedings-ankerpunt",
-      duration: 120,
-      instructions: [
-        "Drink een half glas water, langzaam en bewust",
-        "Eet iets kleins met een sterke smaak",
-        "Let op de smaak en textuur in je mond"
-      ]
-    },
-    {
-      title: "Mentale Overgang",
-      duration: 120,
-      instructions: [
-        "Schrijf 3 woorden op die samenvatten waar je net aan werkte",
-        "Schrijf daaronder 3 woorden voor wat je nu gaat doen",
-        "Trek een lijn tussen deze sets woorden als symbolische afsluiting"
-      ]
-    },
-    {
-      title: "Bewegingsafsluiting",
-      duration: 120,
-      instructions: [
-        "Loop even rond, bij voorkeur buiten of bij een open raam",
-        "Maak 5-10 trage, bewuste stappen",
-        "Eindig met een kleine glimlach"
-      ]
-    }
-  ];
+        .nav-tabs button:hover {
+            background: #f3f4f6;
+        }
 
-  const DagboekModal = () => {
-    const [dagboekEntry, setDagboekEntry] = useState({
-      trigger: currentOefening ? `Tijdens/na ${currentOefening}` : '',
-      intensiteitVoor: 5,
-      intensiteitNa: 5,
-      techniekGebruikt: currentOefening || '',
-      resultaat: '',
-      notities: ''
-    });
+        .container {
+            max-width: 4xl;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
 
-    if (!showDagboekModal) return null;
+        .card {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+        }
 
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-96 overflow-y-auto">
-          <h3 className="text-lg font-semibold mb-4">📝 Dagboek Entry</h3>
-          
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Situatie/Trigger:
-              </label>
-              <input
-                type="text"
-                value={dagboekEntry.trigger}
-                onChange={(e) => setDagboekEntry({...dagboekEntry, trigger: e.target.value})}
-                className="w-full p-2 border border-gray-300 rounded text-sm"
-              />
-            </div>
+        .card h2 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Intensiteit voor (1-10):
-                </label>
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  value={dagboekEntry.intensiteitVoor}
-                  onChange={(e) => setDagboekEntry({...dagboekEntry, intensiteitVoor: e.target.value})}
-                  className="w-full"
-                />
-                <div className="text-center text-sm font-bold">{dagboekEntry.intensiteitVoor}</div>
-              </div>
+        .card h3 {
+            color: #374151;
+            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
+        }
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Intensiteit na (1-10):
-                </label>
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  value={dagboekEntry.intensiteitNa}
-                  onChange={(e) => setDagboekEntry({...dagboekEntry, intensiteitNa: e.target.value})}
-                  className="w-full"
-                />
-                <div className="text-center text-sm font-bold">{dagboekEntry.intensiteitNa}</div>
-              </div>
-            </div>
+        .grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Resultaat:
-              </label>
-              <select
-                value={dagboekEntry.resultaat}
-                onChange={(e) => setDagboekEntry({...dagboekEntry, resultaat: e.target.value})}
-                className="w-full p-2 border border-gray-300 rounded text-sm"
-              >
-                <option value="">Selecteer resultaat...</option>
-                <option value="zeer-goed">Zeer goed - volledig opgelost</option>
-                <option value="goed">Goed - duidelijke verbetering</option>
-                <option value="matig">Matig - kleine verbetering</option>
-                <option value="geen-effect">Geen effect</option>
-                <option value="slechter">Iets slechter</option>
-              </select>
-            </div>
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-align: center;
+            display: inline-block;
+            text-decoration: none;
+        }
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Notities:
-              </label>
-              <textarea
-                value={dagboekEntry.notities}
-                onChange={(e) => setDagboekEntry({...dagboekEntry, notities: e.target.value})}
-                placeholder="Wat viel je op?"
-                rows="2"
-                className="w-full p-2 border border-gray-300 rounded text-sm"
-              ></textarea>
-            </div>
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
 
-            <div className="flex space-x-2">
-              <button
-                onClick={() => saveDagboekEntry(dagboekEntry)}
-                className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 text-sm"
-              >
-                Opslaan
-              </button>
-              <button
-                onClick={() => setShowDagboekModal(false)}
-                className="flex-1 bg-gray-600 text-white py-2 rounded hover:bg-gray-700 text-sm"
-              >
-                Annuleren
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
+        .btn-primary:hover {
+            background: #2563eb;
+        }
 
-  const gaapTechnieken = [
-    {
-      title: "Lipremming-techniek",
-      description: "Druk je lippen zachtjes op elkaar wanneer je een gaapneiging voelt. Laat de lucht langzaam door je neus in en uit gaan."
-    },
-    {
-      title: "Mini-ademhalingen",
-      description: "Neem bewust 3-4 zeer kleine, ondiepe ademhalingen door je neus. Hiermee voorkom je de grote 'zucht-ademhaling'."
-    },
-    {
-      title: "Tongpositie veranderen",
-      description: "Plaats je tongpunt tegen je gehemelte (achter je voortanden). Dit vermindert de neiging tot gapen."
-    },
-    {
-      title: "Water drinken",
-      description: "Neem kleine slokjes water wanneer je merkt dat je begint te gapen. Dit doorbreekt het ademhalingspatroon."
-    }
-  ];
+        .btn-green {
+            background: #10b981;
+            color: white;
+        }
 
-  const DashboardTab = () => (
-    <div className="p-6 space-y-6">
-      <div className="bg-gradient-to-r from-blue-50 to-green-50 p-6 rounded-lg border border-blue-200">
-        <h2 className="text-2xl font-bold text-blue-800 mb-2">Welkom bij Ademruimte</h2>
-        <p className="text-blue-700">Jouw persoonlijke hulp voor het omgaan met hyperventilatie en luchthonger-gevoelens.</p>
-      </div>
+        .btn-green:hover {
+            background: #059669;
+        }
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <button
-          onClick={() => setActiveTab('crisis')}
-          className="bg-red-50 p-4 rounded-lg border border-red-200 hover:bg-red-100 transition-colors text-left"
-        >
-          <div className="flex items-center space-x-2 mb-2">
-            <AlertTriangle className="h-5 w-5 text-red-600" />
-            <h3 className="font-semibold text-red-800">Crisis Hulp</h3>
-          </div>
-          <p className="text-red-700 text-sm">Voor wanneer je luchthonger voelt opkomen</p>
-        </button>
+        .btn-orange {
+            background: #f59e0b;
+            color: white;
+        }
 
-        <button
-          onClick={() => setActiveTab('ritueel')}
-          className="bg-green-50 p-4 rounded-lg border border-green-200 hover:bg-green-100 transition-colors text-left"
-        >
-          <div className="flex items-center space-x-2 mb-2">
-            <Clock className="h-5 w-5 text-green-600" />
-            <h3 className="font-semibold text-green-800">Afkoel Ritueel</h3>
-          </div>
-          <p className="text-green-700 text-sm">Na intensief denkwerk</p>
-        </button>
+        .btn-orange:hover {
+            background: #d97706;
+        }
 
-        <button
-          onClick={() => setActiveTab('gapen')}
-          className="bg-orange-50 p-4 rounded-lg border border-orange-200 hover:bg-orange-100 transition-colors text-left"
-        >
-          <div className="flex items-center space-x-2 mb-2">
-            <Activity className="h-5 w-5 text-orange-600" />
-            <h3 className="font-semibold text-orange-800">Gaap Preventie</h3>
-          </div>
-          <p className="text-orange-700 text-sm">Technieken voor gaapaanvallen</p>
-        </button>
+        .btn-red {
+            background: #ef4444;
+            color: white;
+        }
 
-        <button
-          onClick={() => setActiveTab('emdr')}
-          className="bg-purple-50 p-4 rounded-lg border border-purple-200 hover:bg-purple-100 transition-colors text-left"
-        >
-          <div className="flex items-center space-x-2 mb-2">
-            <Heart className="h-5 w-5 text-purple-600" />
-            <h3 className="font-semibold text-purple-800">EMDR Zelfhulp</h3>
-          </div>
-          <p className="text-purple-700 text-sm">Voor luchthonger-gevoelens</p>
-        </button>
+        .btn-red:hover {
+            background: #dc2626;
+        }
 
-        <button
-          onClick={() => setActiveTab('dagboek')}
-          className="bg-blue-50 p-4 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors text-left"
-        >
-          <div className="flex items-center space-x-2 mb-2">
-            <BookOpen className="h-5 w-5 text-blue-600" />
-            <h3 className="font-semibold text-blue-800">Dagboek</h3>
-          </div>
-          <p className="text-blue-700 text-sm">Bijhouden van patronen</p>
-        </button>
-      </div>
+        .btn-purple {
+            background: #8b5cf6;
+            color: white;
+        }
 
-      <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-        <h3 className="font-semibold text-yellow-800 mb-2">💡 Tip van de dag</h3>
-        <p className="text-yellow-700">Herinner je: gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.</p>
-      </div>
-    </div>
-  );
+        .btn-purple:hover {
+            background: #7c3aed;
+        }
 
-  const CrisisTab = () => (
-    <div className="p-6 space-y-6">
-      <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-        <h2 className="text-xl font-bold text-red-800 mb-2">🚨 Crisis Hulp - Luchthonger</h2>
-        <p className="text-red-700">Voor wanneer je dat benauwde gevoel voelt opkomen</p>
-      </div>
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
 
-      <div className="bg-white p-4 rounded-lg border border-gray-200">
-        <h3 className="font-semibold mb-3">Directe Hulp Technieken</h3>
-        <div className="space-y-4">
-          <div className="p-3 bg-blue-50 rounded border border-blue-200">
-            <h4 className="font-medium text-blue-800">1. Paradoxale Ademhaling</h4>
-            <p className="text-blue-700 text-sm mt-1">
-              Start met bewust zeer kleine, korte ademhalingen. Na 3-4 van deze mini-ademhalingen, probeer een iets langere uitademing.
-            </p>
-          </div>
-          
-          <div className="p-3 bg-green-50 rounded border border-green-200">
-            <h4 className="font-medium text-green-800">2. Purse-lip Ademhaling</h4>
-            <p className="text-green-700 text-sm mt-1">
-              Tuut je lippen bij het uitademen om lichte weerstand te creëren. Dit helpt bij luchthonger en stabiliseert CO2-niveaus.
-            </p>
-          </div>
+        .alert-info {
+            background: #dbeafe;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+        }
 
-          <div className="p-3 bg-purple-50 rounded border border-purple-200">
-            <h4 className="font-medium text-purple-800">3. IJswater Techniek</h4>
-            <p className="text-purple-700 text-sm mt-1">
-              Breng iets kouds tegen je gezicht (vooral rond wangen en ogen) om de duikreflex te activeren.
-            </p>
-          </div>
+        .alert-success {
+            background: #d1fae5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+        }
 
-          <div className="p-3 bg-orange-50 rounded border border-orange-200">
-            <h4 className="font-medium text-orange-800">4. Herframing</h4>
-            <p className="text-orange-700 text-sm mt-1">
-              "Dit is geen echt zuurstoftekort, dit is een sensatie die voorbij zal gaan. Mijn lichaam krijgt genoeg zuurstof."
-            </p>
-          </div>
-        </div>
-      </div>
+        .alert-warning {
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            color: #92400e;
+        }
 
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <h3 className="font-semibold mb-2">5-4-3-2-1 Grounding</h3>
-        <ul className="text-gray-700 space-y-1 text-sm">
-          <li>• 5 dingen die je ZIET</li>
-          <li>• 4 dingen die je VOELT</li>
-          <li>• 3 dingen die je HOORT</li>
-          <li>• 2 dingen die je RUIKT</li>
-          <li>• 1 ding dat je PROEFT</li>
-        </ul>
-      </div>
+        .alert-danger {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
 
-      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <h3 className="font-semibold text-blue-800 mb-2">✅ Technieken gebruikt?</h3>
-        <p className="text-blue-700 text-sm mb-3">
-          Houd bij hoe de crisis-technieken hebben geholpen door een dagboekentry te maken.
-        </p>
-        <button
-          onClick={() => startDagboekEntry('Crisis Hulp Technieken')}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
-        >
-          📝 Dagboek Entry Maken
-        </button>
-      </div>
-    </div>
-  );
+        .timer-display {
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            color: #1f2937;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+        }
 
-  const RitueelTab = () => (
-    <div className="p-6 space-y-6">
-      <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-        <h2 className="text-xl font-bold text-green-800 mb-2">🕐 Afkoel Ritueel</h2>
-        <p className="text-green-700">Voor na periodes van intensief denkwerk (5-10 minuten)</p>
-      </div>
+        .progress-bar {
+            width: 100%;
+            height: 0.5rem;
+            background: #e5e7eb;
+            border-radius: 0.25rem;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
 
-      {currentStep < afkoelRitueel.length ? (
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">
-              Stap {currentStep + 1}: {afkoelRitueel[currentStep].title}
-            </h3>
-            <div className="text-2xl font-mono bg-gray-100 px-3 py-1 rounded">
-              {formatTime(timer)}
-            </div>
-          </div>
+        .progress-fill {
+            height: 100%;
+            background: #10b981;
+            border-radius: 0.25rem;
+            transition: width 0.3s ease;
+        }
 
-          <div className="space-y-2 mb-4">
-            {afkoelRitueel[currentStep].instructions.map((instruction, index) => (
-              <div key={index} className="flex items-center space-x-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
-                <span className="text-gray-700">{instruction}</span>
-              </div>
-            ))}
-          </div>
+        .form-group {
+            margin-bottom: 1rem;
+        }
 
-          <div className="flex space-x-2">
-            {!isRunning ? (
-              <button
-                onClick={() => startTimer(afkoelRitueel[currentStep].duration)}
-                className="flex items-center space-x-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-              >
-                <Play className="h-4 w-4" />
-                <span>Start Timer</span>
-              </button>
-            ) : (
-              <button
-                onClick={() => setIsRunning(false)}
-                className="flex items-center space-x-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-              >
-                <Pause className="h-4 w-4" />
-                <span>Pause</span>
-              </button>
-            )}
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
 
-            {timer === 0 && currentStep < afkoelRitueel.length - 1 && (
-              <button
-                onClick={() => setCurrentStep(currentStep + 1)}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-              >
-                Volgende Stap
-              </button>
-            )}
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
 
-            <button
-              onClick={() => {
-                setCurrentStep(0);
-                setTimer(0);
-                setIsRunning(false);
-              }}
-              className="flex items-center space-x-2 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-            >
-              <RotateCcw className="h-4 w-4" />
-              <span>Reset</span>
-            </button>
-          </div>
+        .form-textarea {
+            resize: vertical;
+            min-height: 4rem;
+        }
 
-          <div className="mt-4 bg-gray-100 rounded-full h-2">
-            <div
-              className="bg-green-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${((currentStep + 1) / afkoelRitueel.length) * 100}%` }}
-            ></div>
-          </div>
-        </div>
-      ) : (
-        <div className="bg-green-50 p-6 rounded-lg border border-green-200 text-center">
-          <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-3" />
-          <h3 className="text-lg font-semibold text-green-800 mb-2">Afkoel Ritueel Voltooid!</h3>
-          <p className="text-green-700 mb-4">Goed gedaan! Je hebt alle stappen doorlopen.</p>
-          <div className="space-y-2">
-            <button
-              onClick={() => startDagboekEntry('Afkoel Ritueel')}
-              className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mb-2"
-            >
-              📝 Dagboek Entry Maken
-            </button>
-            <button
-              onClick={() => {
-                setCurrentStep(0);
-                setTimer(0);
-                setIsRunning(false);
-              }}
-              className="w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-            >
-              Opnieuw Starten
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+        .range-input {
+            width: 100%;
+            margin: 0.5rem 0;
+        }
 
-  const GapenTab = () => (
-    <div className="p-6 space-y-6">
-      <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-        <h2 className="text-xl font-bold text-orange-800 mb-2">🥱 Gaap Preventie Technieken</h2>
-        <p className="text-orange-700">Voor wanneer je die vervelende gaapaanvallen voelt opkomen</p>
-      </div>
+        .range-value {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.125rem;
+            color: #3b82f6;
+        }
 
-      <div className="space-y-4">
-        {gaapTechnieken.map((techniek, index) => (
-          <div key={index} className="bg-white p-4 rounded-lg border border-gray-200">
-            <h3 className="font-semibold text-gray-800 mb-2">{techniek.title}</h3>
-            <p className="text-gray-700">{techniek.description}</p>
-          </div>
-        ))}
-      </div>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
 
-      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <h3 className="font-semibold text-blue-800 mb-2">💡 Belangrijk om te onthouden</h3>
-        <p className="text-blue-700">
-          Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Ze geven je de kans om preventief in te grijpen 
-          voordat een volledige hyperventilatie-episode begint.
-        </p>
-      </div>
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
 
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <h3 className="font-semibold mb-2">Gedachte-Breaking Technieken</h3>
-        <div className="space-y-2 text-sm text-gray-700">
-          <p><strong>Paradoxale intentie:</strong> "Oké hersenen, jullie willen dat ik ga gapen? Prima, ik ga nu heel bewust gapen"</p>
-          <p><strong>Herframing:</strong> "Mijn brein probeert me te beschermen, maar ik hoef niet te reageren"</p>
-          <p><strong>Aandacht verplaatsen:</strong> Tel 5 blauwe dingen die je kunt zien</p>
-        </div>
-      </div>
+        .modal-content {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
 
-      <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-        <h3 className="font-semibold text-orange-800 mb-2">✅ Technieken geprobeerd?</h3>
-        <p className="text-orange-700 text-sm mb-3">
-          Houd bij welke gaap-preventie technieken hebben geholpen.
-        </p>
-        <button
-          onClick={() => startDagboekEntry('Gaap Preventie Technieken')}
-          className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 text-sm"
-        >
-          📝 Dagboek Entry Maken
-        </button>
-      </div>
-    </div>
-  );
+        .modal-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
 
-  const EmdrTab = () => {
-    const [emdrStep, setEmdrStep] = useState(0);
-    const [intensity, setIntensity] = useState(5);
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            margin-left: auto;
+        }
 
-    const emdrStappen = [
-      {
-        title: "Voorbereiding",
-        content: "Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt."
-      },
-      {
-        title: "Doelgerichtheid",
-        content: "Denk heel kort aan het gevoel van luchthonger (niet meer dan 5 seconden). Schat de intensiteit en formuleer: 'Ik kan met dit gevoel omgaan'"
-      },
-      {
-        title: "Bilaterale Stimulatie",
-        content: "Kies één optie: Oogbewegingen (langzaam links-rechts), Butterfly hug (tik afwisselend op schouders), of Knie-tikken"
-      },
-      {
-        title: "Check-in",
-        content: "Hoe voelt het luchthonger-gevoel nu? Welke gedachten komen op? Accepteer wat er komt zonder oordeel."
-      },
-      {
-        title: "Positieve Verankering",
-        content: "Focus op 'Ik kan hiermee omgaan' en doe 10-15 bilaterale bewegingen terwijl je deze gedachte vasthoudt."
-      }
-    ];
+        .technique-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
 
-    return (
-      <div className="p-6 space-y-6">
-        <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-          <h2 className="text-xl font-bold text-purple-800 mb-2">💜 EMDR Zelfhulp</h2>
-          <p className="text-purple-700">Voor luchthonger-gevoelens (dit is ondersteuning, geen vervanging voor professionele EMDR)</p>
-        </div>
+        .technique-card h4 {
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+        }
 
-        <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-200">
-          <p className="text-yellow-800 text-sm">
-            ⚠️ Gebruik dit alleen voor milde tot matige gevoelens. Stop als je je overweldigd voelt.
-          </p>
-        </div>
+        .entry-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
 
-        <div className="bg-white p-6 rounded-lg border border-gray-200">
-          <h3 className="text-lg font-semibold mb-4">
-            Stap {emdrStep + 1}: {emdrStappen[emdrStep].title}
-          </h3>
-          
-          <p className="text-gray-700 mb-4">{emdrStappen[emdrStep].content}</p>
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
 
-          {emdrStep === 1 && (
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Intensiteit van luchthonger-gevoel (1-10):
-              </label>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value={intensity}
-                onChange={(e) => setIntensity(e.target.value)}
-                className="w-full"
-              />
-              <div className="text-center mt-1 text-lg font-bold text-purple-600">{intensity}</div>
-            </div>
-          )}
+        .entry-title {
+            font-weight: 600;
+            color: #1f2937;
+        }
 
-          {emdrStep === 2 && (
-            <div className="space-y-2 mb-4">
-              <div className="p-2 bg-gray-50 rounded text-sm">
-                <strong>Oogbewegingen:</strong> Beweeg je ogen langzaam van links naar rechts (15-20x)
-              </div>
-              <div className="p-2 bg-gray-50 rounded text-sm">
-                <strong>Butterfly hug:</strong> Kruis je armen en tik afwisselend op je schouders
-              </div>
-              <div className="p-2 bg-gray-50 rounded text-sm">
-                <strong>Knie-tikken:</strong> Tik afwisselend op je knieën met je handen
-              </div>
-            </div>
-          )}
+        .entry-result {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
 
-          <div className="flex space-x-2">
-            {emdrStep > 0 && (
-              <button
-                onClick={() => setEmdrStep(emdrStep - 1)}
-                className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-              >
-                Vorige
-              </button>
-            )}
+        .entry-result.zeer-goed { color: #059669; }
+        .entry-result.goed { color: #10b981; }
+        .entry-result.matig { color: #f59e0b; }
+        .entry-result.geen-effect { color: #6b7280; }
+        .entry-result.slechter { color: #ef4444; }
+
+        .intensity-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid #f3f4f6;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-connected {
+            color: #059669;
+            font-size: 0.75rem;
+        }
+
+        .status-disconnected {
+            color: #f59e0b;
+            font-size: 0.75rem;
+        }
+
+        .step-list {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .step-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .step-list li:before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
             
-            {emdrStep < emdrStappen.length - 1 ? (
-              <button
-                onClick={() => setEmdrStep(emdrStep + 1)}
-                className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
-              >
-                Volgende
-              </button>
-            ) : (
-              <div className="space-x-2">
-                <button
-                  onClick={() => startDagboekEntry('EMDR Zelfhulp Sessie')}
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                >
-                  📝 Dagboek Entry
-                </button>
-                <button
-                  onClick={() => setEmdrStep(0)}
-                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                >
-                  Opnieuw
-                </button>
-              </div>
-            )}
-          </div>
-
-          <div className="mt-4 bg-gray-100 rounded-full h-2">
-            <div
-              className="bg-purple-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${((emdrStep + 1) / emdrStappen.length) * 100}%` }}
-            ></div>
-          </div>
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .card {
+                padding: 1rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .timer-display {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🫁 Ademruimte</h1>
+        <p>Jouw persoonlijke hyperventilatie helper</p>
+        <div id="drive-status" class="status-disconnected">
+            🔥 Firebase: Initialiseren...
         </div>
-      </div>
-    );
-  };
+    </header>
 
-  const DagboekTab = () => {
-    const getResultaatColor = (resultaat) => {
-      switch(resultaat) {
-        case 'zeer-goed': return 'text-green-600';
-        case 'goed': return 'text-green-500';
-        case 'matig': return 'text-yellow-600';
-        case 'geen-effect': return 'text-gray-600';
-        case 'slechter': return 'text-red-600';
-        default: return 'text-gray-600';
-      }
-    };
-
-    const getResultaatText = (resultaat) => {
-      switch(resultaat) {
-        case 'zeer-goed': return 'Zeer goed';
-        case 'goed': return 'Goed';
-        case 'matig': return 'Matig';
-        case 'geen-effect': return 'Geen effect';
-        case 'slechter': return 'Slechter';
-        default: return resultaat;
-      }
-    };
-
-    return (
-      <div className="p-6 space-y-6">
-        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-          <h2 className="text-xl font-bold text-blue-800 mb-2">📖 Dagboek</h2>
-          <p className="text-blue-700">Overzicht van je sessies en vooruitgang</p>
-        </div>
-
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">Recente Entries ({dagboekEntries.length})</h3>
-          <button
-            onClick={() => startDagboekEntry('Handmatige Entry')}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
-          >
-            ➕ Nieuwe Entry
-          </button>
-        </div>
-
-        {dagboekEntries.length === 0 ? (
-          <div className="bg-gray-50 p-8 rounded-lg text-center">
-            <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-            <h3 className="text-gray-600 font-medium mb-2">Nog geen entries</h3>
-            <p className="text-gray-500 text-sm mb-4">
-              Maak een dagboekentry na het gebruiken van oefeningen om patronen bij te houden.
-            </p>
-            <button
-              onClick={() => startDagboekEntry('Eerste Entry')}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm"
-            >
-              Maak je eerste entry
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {dagboekEntries.map((entry) => (
-              <div key={entry.id} className="bg-white p-4 rounded-lg border border-gray-200">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h4 className="font-medium text-gray-800">{entry.techniekGebruikt}</h4>
-                    <p className="text-sm text-gray-600">{entry.datum}</p>
-                  </div>
-                  <span className={`text-sm font-medium ${getResultaatColor(entry.resultaat)}`}>
-                    {getResultaatText(entry.resultaat)}
-                  </span>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4 mb-2">
-                  <div className="text-sm">
-                    <span className="text-gray-600">Voor:</span> 
-                    <span className="font-medium ml-1">{entry.intensiteitVoor}/10</span>
-                  </div>
-                  <div className="text-sm">
-                    <span className="text-gray-600">Na:</span> 
-                    <span className="font-medium ml-1">{entry.intensiteitNa}/10</span>
-                  </div>
-                </div>
-
-                {entry.trigger && (
-                  <p className="text-sm text-gray-700 mb-1">
-                    <strong>Trigger:</strong> {entry.trigger}
-                  </p>
-                )}
-
-                {entry.notities && (
-                  <p className="text-sm text-gray-700">
-                    <strong>Notities:</strong> {entry.notities}
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-          <h3 className="font-semibold text-yellow-800 mb-2">💡 Data Opslag</h3>
-          <p className="text-yellow-700 text-sm">
-            <strong>Let op:</strong> Je dagboekentries worden alleen opgeslagen tijdens deze browsersessie. 
-            Voor permanente opslag kun je belangrijke inzichten kopiëren naar je eigen notities of dokter.
-          </p>
-        </div>
-
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="font-semibold mb-2">Patronen om naar uit te kijken</h3>
-          <ul className="text-gray-700 space-y-1 text-sm">
-            <li>• Welke technieken het beste werken voor jou</li>
-            <li>• Tijdstippen waarop klachten vaker voorkomen</li>
-            <li>• Specifieke triggers (werk, stress, bepaalde gedachten)</li>
-            <li>• Verband tussen maagklachten en ademhalingsproblemen</li>
-            <li>• Verbetering in intensiteit scores over tijd</li>
-          </ul>
-        </div>
-      </div>
-    );
-  };
-
-  const Navigation = () => (
-    <nav className="bg-white border-b border-gray-200 p-4">
-      <div className="flex space-x-1 overflow-x-auto">
-        {[
-          { id: 'dashboard', label: 'Dashboard', icon: Activity },
-          { id: 'crisis', label: 'Crisis', icon: AlertTriangle },
-          { id: 'ritueel', label: 'Ritueel', icon: Clock },
-          { id: 'gapen', label: 'Gapen', icon: Activity },
-          { id: 'emdr', label: 'EMDR', icon: Heart },
-          { id: 'dagboek', label: 'Dagboek', icon: BookOpen }
-        ].map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            onClick={() => setActiveTab(id)}
-            className={`flex items-center space-x-2 px-3 py-2 rounded transition-colors whitespace-nowrap ${
-              activeTab === id
-                ? 'bg-blue-100 text-blue-800 border border-blue-200'
-                : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
-            }`}
-          >
-            <Icon className="h-4 w-4" />
-            <span className="text-sm font-medium">{label}</span>
-          </button>
-        ))}
-      </div>
+    <nav class="nav-tabs">
+        <button class="tab-btn active" data-tab="dashboard">🏠 Dashboard</button>
+        <button class="tab-btn" data-tab="crisis">🚨 Crisis</button>
+        <button class="tab-btn" data-tab="ritueel">🕐 Ritueel</button>
+        <button class="tab-btn" data-tab="gapen">🥱 Gapen</button>
+        <button class="tab-btn" data-tab="emdr">💜 EMDR</button>
+        <button class="tab-btn" data-tab="dagboek">📖 Dagboek</button>
     </nav>
-  );
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-blue-600 text-white p-6">
-        <h1 className="text-2xl font-bold">Ademruimte</h1>
-        <p className="text-blue-100">Jouw persoonlijke hyperventilatie helper</p>
-      </header>
+    <div class="container">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content">
+            <div class="card">
+                <h2>Welkom bij Ademruimte</h2>
+                <p>Jouw persoonlijke hulp voor het omgaan met hyperventilatie en luchthonger-gevoelens.</p>
+            </div>
 
-      <Navigation />
+            <div class="alert alert-warning">
+                <strong>🔥 Firebase Cloud Opslag</strong><br>
+                Deze app kan je dagboekgegevens opslaan in Firebase Cloud. Zet <code>isFirebaseEnabled = true</code> in de code om cloud opslag te activeren.
+                <br><br>
+                <button class="btn btn-primary" onclick="connectGoogleDrive()" style="margin-top: 0.5rem;">
+                    🔗 Test Firebase Connectie
+                </button>
+            </div>
 
-      <main className="max-w-4xl mx-auto">
-        {activeTab === 'dashboard' && <DashboardTab />}
-        {activeTab === 'crisis' && <CrisisTab />}
-        {activeTab === 'ritueel' && <RitueelTab />}
-        {activeTab === 'gapen' && <GapenTab />}
-        {activeTab === 'emdr' && <EmdrTab />}
-        {activeTab === 'dagboek' && <DagboekTab />}
-      </main>
+            <div class="grid">
+                <div class="card">
+                    <h3>🚨 Crisis Hulp</h3>
+                    <p>Voor wanneer je luchthonger voelt opkomen</p>
+                    <button class="btn btn-red" onclick="showTab('crisis')">Open Crisis Hulp</button>
+                </div>
 
-      <footer className="mt-12 p-4 text-center text-gray-500 text-sm">
-        <p>📞 In noodgevallen: contacteer altijd je huisarts of spoeddiensten</p>
-      </footer>
+                <div class="card">
+                    <h3>🕐 Afkoel Ritueel</h3>
+                    <p>Na intensief denkwerk</p>
+                    <button class="btn btn-green" onclick="showTab('ritueel')">Start Ritueel</button>
+                </div>
 
-      <DagboekModal />
-          // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyBd7qyX8x12QA93xygMX9oKenJJvlQBIIw",
-  authDomain: "my-helper-14982.firebaseapp.com",
-  projectId: "my-helper-14982",
-  storageBucket: "my-helper-14982.firebasestorage.app",
-  messagingSenderId: "179439366636",
-  appId: "1:179439366636:web:dd30f99dcd549ac31950c9",
-  measurementId: "G-GYN5X778B4"
-};
+                <div class="card">
+                    <h3>🥱 Gaap Preventie</h3>
+                    <p>Technieken voor gaapaanvallen</p>
+                    <button class="btn btn-orange" onclick="showTab('gapen')">Bekijk Technieken</button>
+                </div>
+
+                <div class="card">
+                    <h3>💜 EMDR Zelfhulp</h3>
+                    <p>Voor luchthonger-gevoelens</p>
+                    <button class="btn btn-purple" onclick="showTab('emdr')">Start EMDR</button>
+                </div>
+
+                <div class="card">
+                    <h3>📖 Dagboek</h3>
+                    <p>Bijhouden van patronen</p>
+                    <button class="btn btn-primary" onclick="showTab('dagboek')">Open Dagboek</button>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 Tip van de dag:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.
+            </div>
+        </div>
+
+        <!-- Crisis Tab -->
+        <div id="crisis" class="tab-content hidden">
+            <div class="card">
+                <h2>🚨 Crisis Hulp - Luchthonger</h2>
+                <p>Voor wanneer je dat benauwde gevoel voelt opkomen</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>1. Paradoxale Ademhaling</h4>
+                <p>Start met bewust zeer kleine, korte ademhalingen. Na 3-4 van deze mini-ademhalingen, probeer een iets langere uitademing.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>2. Purse-lip Ademhaling</h4>
+                <p>Tuut je lippen bij het uitademen om lichte weerstand te creëren. Dit helpt bij luchthonger en stabiliseert CO2-niveaus.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>3. IJswater Techniek</h4>
+                <p>Breng iets kouds tegen je gezicht (vooral rond wangen en ogen) om de duikreflex te activeren.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>4. Herframing</h4>
+                <p>"Dit is geen echt zuurstoftekort, dit is een sensatie die voorbij zal gaan. Mijn lichaam krijgt genoeg zuurstof."</p>
+            </div>
+
+            <div class="card">
+                <h3>5-4-3-2-1 Grounding</h3>
+                <ul class="step-list">
+                    <li>5 dingen die je ZIET</li>
+                    <li>4 dingen die je VOELT</li>
+                    <li>3 dingen die je HOORT</li>
+                    <li>2 dingen die je RUIKT</li>
+                    <li>1 ding dat je PROEFT</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <button class="btn btn-primary" onclick="openDagboekModal('Crisis Hulp Technieken')">
+                    📝 Dagboek Entry Maken
+                </button>
+            </div>
+        </div>
+
+        <!-- Ritueel Tab -->
+        <div id="ritueel" class="tab-content hidden">
+            <div class="card">
+                <h2>🕐 Afkoel Ritueel</h2>
+                <p>Voor na periodes van intensief denkwerk (5-10 minuten)</p>
+            </div>
+
+            <div class="card">
+                <h3 id="ritual-title">Stap 1: Fysieke Mini-Reset</h3>
+                <div class="timer-display" id="timer-display">2:00</div>
+                
+                <div id="ritual-instructions">
+                    <ul class="step-list">
+                        <li>Sta op en strek je volledig uit</li>
+                        <li>Schud je armen en benen los</li>
+                        <li>Rol je schouders 5x naar achteren</li>
+                        <li>Maak kleine cirkels met je hoofd (5x elke richting)</li>
+                    </ul>
+                </div>
+
+                <div style="margin: 1rem 0;">
+                    <button id="timer-btn" class="btn btn-green" onclick="startTimer()">▶️ Start Timer</button>
+                    <button class="btn btn-primary" onclick="nextRitualStep()" id="next-btn" style="display: none;">Volgende Stap</button>
+                    <button class="btn btn-orange" onclick="resetRitual()">🔄 Reset</button>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="ritual-progress" style="width: 20%"></div>
+                </div>
+
+                <div id="ritual-complete" class="alert alert-success hidden">
+                    <strong>✅ Afkoel Ritueel Voltooid!</strong><br>
+                    Goed gedaan! Je hebt alle stappen doorlopen.
+                    <br><br>
+                    <button class="btn btn-primary" onclick="openDagboekModal('Afkoel Ritueel')">
+                        📝 Dagboek Entry Maken
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gapen Tab -->
+        <div id="gapen" class="tab-content hidden">
+            <div class="card">
+                <h2>🥱 Gaap Preventie Technieken</h2>
+                <p>Voor wanneer je die vervelende gaapaanvallen voelt opkomen</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>Lipremming-techniek</h4>
+                <p>Druk je lippen zachtjes op elkaar wanneer je een gaapneiging voelt. Laat de lucht langzaam door je neus in en uit gaan.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>Mini-ademhalingen</h4>
+                <p>Neem bewust 3-4 zeer kleine, ondiepe ademhalingen door je neus. Hiermee voorkom je de grote 'zucht-ademhaling'.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>Tongpositie veranderen</h4>
+                <p>Plaats je tongpunt tegen je gehemelte (achter je voortanden). Dit vermindert de neiging tot gapen.</p>
+            </div>
+
+            <div class="technique-card">
+                <h4>Water drinken</h4>
+                <p>Neem kleine slokjes water wanneer je merkt dat je begint te gapen. Dit doorbreekt het ademhalingspatroon.</p>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 Belangrijk om te onthouden:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Ze geven je de kans om preventief in te grijpen voordat een volledige hyperventilatie-episode begint.
+            </div>
+
+            <div class="card">
+                <h3>Gedachte-Breaking Technieken</h3>
+                <div class="technique-card">
+                    <strong>Paradoxale intentie:</strong> "Oké hersenen, jullie willen dat ik ga gapen? Prima, ik ga nu heel bewust gapen"
+                </div>
+                <div class="technique-card">
+                    <strong>Herframing:</strong> "Mijn brein probeert me te beschermen, maar ik hoef niet te reageren"
+                </div>
+                <div class="technique-card">
+                    <strong>Aandacht verplaatsen:</strong> Tel 5 blauwe dingen die je kunt zien
+                </div>
+            </div>
+
+            <div class="card">
+                <button class="btn btn-primary" onclick="openDagboekModal('Gaap Preventie Technieken')">
+                    📝 Dagboek Entry Maken
+                </button>
+            </div>
+        </div>
+
+        <!-- EMDR Tab -->
+        <div id="emdr" class="tab-content hidden">
+            <div class="card">
+                <h2>💜 EMDR Zelfhulp</h2>
+                <p>Voor luchthonger-gevoelens (dit is ondersteuning, geen vervanging voor professionele EMDR)</p>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ Gebruik dit alleen voor milde tot matige gevoelens. Stop als je je overweldigd voelt.</strong>
+            </div>
+
+            <div class="card">
+                <h3 id="emdr-title">Stap 1: Voorbereiding</h3>
+                <div id="emdr-content">
+                    <p>Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt.</p>
+                </div>
+
+                <div id="emdr-intensity" class="hidden">
+                    <div class="form-group">
+                        <label class="form-label">Intensiteit van luchthonger-gevoel (1-10):</label>
+                        <input type="range" min="1" max="10" value="5" class="range-input" id="emdr-intensity-slider">
+                        <div class="range-value" id="emdr-intensity-value">5</div>
+                    </div>
+                </div>
+
+                <div style="margin: 1rem 0;">
+                    <button id="emdr-prev-btn" class="btn btn-orange" onclick="prevEmdrStep()" style="display: none;">Vorige</button>
+                    <button id="emdr-next-btn" class="btn btn-purple" onclick="nextEmdrStep()">Volgende</button>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="emdr-progress" style="width: 20%"></div>
+                </div>
+
+                <div id="emdr-complete" class="alert alert-success hidden">
+                    <strong>✅ EMDR Sessie Voltooid!</strong><br>
+                    <button class="btn btn-primary" onclick="openDagboekModal('EMDR Zelfhulp Sessie')">
+                        📝 Dagboek Entry Maken
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dagboek Tab -->
+        <div id="dagboek" class="tab-content hidden">
+            <div class="card">
+                <h2>📖 Dagboek</h2>
+                <p>Overzicht van je sessies en vooruitgang</p>
+                <div style="margin-top: 1rem;">
+                    <button class="btn btn-primary" onclick="openDagboekModal('Handmatige Entry')">
+                        ➕ Nieuwe Entry
+                    </button>
+                    <button class="btn btn-green" onclick="loadDagboekEntries()" style="margin-left: 0.5rem;">
+                        🔄 Vernieuw
+                    </button>
+                    <button class="btn btn-orange" onclick="exportDagboek()" style="margin-left: 0.5rem;">
+                        📥 Export Dagboek
+                    </button>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>🔥 Firebase Cloud Opslag:</strong> Je entries kunnen worden opgeslagen in Firebase Cloud voor permanente opslag en toegang op alle apparaten. Zet <code>isFirebaseEnabled = true</code> om cloud opslag te activeren.
+                <br><br>
+                <button class="btn btn-primary" onclick="connectGoogleDrive()" style="margin-top: 0.5rem;">
+                    🔗 Test Firebase Connectie
+                </button>
+            </div>
+
+            <div id="dagboek-entries">
+                <!-- Entries worden hier geladen -->
+            </div>
+
+            <div class="card">
+                <h3>Patronen om naar uit te kijken</h3>
+                <ul class="step-list">
+                    <li>Welke technieken het beste werken voor jou</li>
+                    <li>Tijdstippen waarop klachten vaker voorkomen</li>
+                    <li>Specifieke triggers (werk, stress, bepaalde gedachten)</li>
+                    <li>Verband tussen maagklachten en ademhalingsproblemen</li>
+                    <li>Verbetering in intensiteit scores over tijd</li>
+                </ul>
+            </div>
+        </div>
     </div>
-  );
-};
 
-export default AdembHelper;
+    <!-- Dagboek Modal -->
+    <div id="dagboek-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📝 Dagboek Entry</h3>
+                <button class="close-btn" onclick="closeDagboekModal()">&times;</button>
+            </div>
+            
+            <form id="dagboek-form">
+                <div class="form-group">
+                    <label class="form-label">Situatie/Trigger:</label>
+                    <input type="text" id="entry-trigger" class="form-input" placeholder="Bijv. na intensief werken">
+                </div>
+
+                <div class="grid">
+                    <div class="form-group">
+                        <label class="form-label">Intensiteit voor (1-10):</label>
+                        <input type="range" min="1" max="10" value="5" class="range-input" id="entry-before">
+                        <div class="range-value" id="entry-before-value">5</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Intensiteit na (1-10):</label>
+                        <input type="range" min="1" max="10" value="5" class="range-input" id="entry-after">
+                        <div class="range-value" id="entry-after-value">5</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Resultaat:</label>
+                    <select id="entry-result" class="form-select">
+                        <option value="">Selecteer resultaat...</option>
+                        <option value="zeer-goed">Zeer goed - volledig opgelost</option>
+                        <option value="goed">Goed - duidelijke verbetering</option>
+                        <option value="matig">Matig - kleine verbetering</option>
+                        <option value="geen-effect">Geen effect</option>
+                        <option value="slechter">Iets slechter</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Notities:</label>
+                    <textarea id="entry-notes" class="form-textarea" placeholder="Wat viel je op?"></textarea>
+                </div>
+
+                <div style="display: flex; gap: 0.5rem;">
+                    <button type="button" class="btn btn-primary" onclick="saveDagboekEntry()">
+                        📁 Opslaan
+                    </button>
+                    <button type="button" class="btn btn-orange" onclick="closeDagboekModal()">
+                        Annuleren
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>📞 In noodgevallen: contacteer altijd je huisarts of spoeddiensten</p>
+        <p style="margin-top: 0.5rem; font-size: 0.75rem;">📁 Deze demo simuleert Google Drive opslag voor dagboekgegevens</p>
+    </footer>
+
+    <script>
+        // Global variables
+        let currentTab = 'dashboard';
+        let timerInterval = null;
+        let currentTime = 0;
+        let ritualStep = 0;
+        let emdrStep = 0;
+        let currentTechnique = '';
+        let dagboekEntries = [];
+
+        // Ritual steps
+        const ritualSteps = [
+            {
+                title: "Stap 1: Fysieke Mini-Reset",
+                duration: 120,
+                instructions: [
+                    "Sta op en strek je volledig uit",
+                    "Schud je armen en benen los", 
+                    "Rol je schouders 5x naar achteren",
+                    "Maak kleine cirkels met je hoofd (5x elke richting)"
+                ]
+            },
+            {
+                title: "Stap 2: Zintuigelijke Verschuiving",
+                duration: 120,
+                instructions: [
+                    "Raak 5 verschillende texturen aan in je omgeving",
+                    "Luister bewust naar 3 geluiden die je kunt horen",
+                    "Kijk naar iets aangenaams in de verte"
+                ]
+            },
+            {
+                title: "Stap 3: Voedings-ankerpunt",
+                duration: 120,
+                instructions: [
+                    "Drink een half glas water, langzaam en bewust",
+                    "Eet iets kleins met een sterke smaak",
+                    "Let op de smaak en textuur in je mond"
+                ]
+            },
+            {
+                title: "Stap 4: Mentale Overgang",
+                duration: 120,
+                instructions: [
+                    "Schrijf 3 woorden op die samenvatten waar je net aan werkte",
+                    "Schrijf daaronder 3 woorden voor wat je nu gaat doen",
+                    "Trek een lijn tussen deze sets woorden als symbolische afsluiting"
+                ]
+            },
+            {
+                title: "Stap 5: Bewegingsafsluiting",
+                duration: 120,
+                instructions: [
+                    "Loop even rond, bij voorkeur buiten of bij een open raam",
+                    "Maak 5-10 trage, bewuste stappen",
+                    "Eindig met een kleine glimlach"
+                ]
+            }
+        ];
+
+        // ===== FIREBASE FUNCTIONS =====
+        function saveToFirebase(entry) {
+            return new Promise(function(resolve, reject) {
+                if (!isFirebaseEnabled) {
+                    // Fallback to localStorage
+                    resolve({ id: Date.now().toString() });
+                    return;
+                }
+                
+                db.collection("dagboekEntries").add({
+                    ...entry,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    userId: "user-placeholder" // Add real user ID when you implement auth
+                }).then(function(docRef) {
+                    console.log("✅ Firebase: Entry saved with ID:", docRef.id);
+                    resolve({ id: docRef.id });
+                }).catch(function(error) {
+                    console.error("❌ Firebase save error:", error);
+                    reject(error);
+                });
+            });
+        }
+
+        function loadFromFirebase() {
+            return new Promise(function(resolve, reject) {
+                if (!isFirebaseEnabled) {
+                    // Fallback to localStorage
+                    var stored = localStorage.getItem('ademruimte-entries');
+                    resolve(stored ? JSON.parse(stored) : []);
+                    return;
+                }
+                
+                db.collection("dagboekEntries")
+                    .orderBy("timestamp", "desc")
+                    .get()
+                    .then(function(querySnapshot) {
+                        var entries = [];
+                        querySnapshot.forEach(function(doc) {
+                            var data = doc.data();
+                            entries.push({
+                                id: doc.id,
+                                ...data,
+                                tijdstempel: data.timestamp ? data.timestamp.toDate().toLocaleString('nl-BE') : data.tijdstempel,
+                                bron: "Firebase"
+                            });
+                        });
+                        console.log("✅ Firebase: Loaded", entries.length, "entries");
+                        resolve(entries);
+                    })
+                    .catch(function(error) {
+                        console.error("❌ Firebase load error:", error);
+                        reject(error);
+                    });
+            });
+        }
+        // ===== END FIREBASE FUNCTIONS =====
+
+        // EMDR steps
+        const emdrSteps = [
+            {
+                title: "Stap 1: Voorbereiding",
+                content: "Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt."
+            },
+            {
+                title: "Stap 2: Doelgerichtheid", 
+                content: "Denk heel kort aan het gevoel van luchthonger (niet meer dan 5 seconden). Schat de intensiteit en formuleer: 'Ik kan met dit gevoel omgaan'"
+            },
+            {
+                title: "Stap 3: Bilaterale Stimulatie",
+                content: "Kies één optie:<br><br><strong>Oogbewegingen:</strong> Beweeg je ogen langzaam van links naar rechts (15-20x)<br><strong>Butterfly hug:</strong> Kruis je armen en tik afwisselend op je schouders<br><strong>Knie-tikken:</strong> Tik afwisselend op je knieën met je handen"
+            },
+            {
+                title: "Stap 4: Check-in",
+                content: "Hoe voelt het luchthonger-gevoel nu? Welke gedachten komen op? Accepteer wat er komt zonder oordeel."
+            },
+            {
+                title: "Stap 5: Positieve Verankering",
+                content: "Focus op 'Ik kan hiermee omgaan' en doe 10-15 bilaterale bewegingen terwijl je deze gedachte vasthoudt."
+            }
+        ];
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.getAttribute('data-tab');
+                showTab(tab);
+            });
+        });
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.remove('hidden');
+            
+            // Set active button
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            
+            currentTab = tabName;
+
+            // Load content if needed
+            if (tabName === 'dagboek') {
+                loadDagboekEntries();
+            }
+        }
+
+        // Timer functions
+        function startTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+                return;
+            }
+
+            currentTime = ritualSteps[ritualStep].duration;
+            document.getElementById('timer-btn').innerHTML = '⏸️ Pause Timer';
+            
+            timerInterval = setInterval(() => {
+                currentTime--;
+                updateTimerDisplay();
+                
+                if (currentTime <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+                    document.getElementById('next-btn').style.display = 'inline-block';
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(currentTime / 60);
+            const seconds = currentTime % 60;
+            const display = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+            document.getElementById('timer-display').textContent = display;
+        }
+
+        function nextRitualStep() {
+            ritualStep++;
+            
+            if (ritualStep >= ritualSteps.length) {
+                // Ritual complete
+                document.getElementById('ritual-complete').classList.remove('hidden');
+                document.querySelector('#ritueel .card:nth-child(2)').style.display = 'none';
+                return;
+            }
+            
+            updateRitualDisplay();
+            document.getElementById('next-btn').style.display = 'none';
+        }
+
+        function resetRitual() {
+            ritualStep = 0;
+            currentTime = 0;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            
+            document.getElementById('ritual-complete').classList.add('hidden');
+            document.querySelector('#ritueel .card:nth-child(2)').style.display = 'block';
+            document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+            document.getElementById('next-btn').style.display = 'none';
+            
+            updateRitualDisplay();
+        }
+
+        function updateRitualDisplay() {
+            const step = ritualSteps[ritualStep];
+            document.getElementById('ritual-title').textContent = step.title;
+            currentTime = step.duration;
+            updateTimerDisplay();
+            
+            const instructionsHtml = step.instructions.map(function(inst) {
+                return '<li>' + inst + '</li>';
+            }).join('');
+            document.getElementById('ritual-instructions').innerHTML = '<ul class="step-list">' + instructionsHtml + '</ul>';
+            
+            const progress = ((ritualStep + 1) / ritualSteps.length) * 100;
+            document.getElementById('ritual-progress').style.width = progress + '%';
+        }
+
+        // EMDR functions
+        function nextEmdrStep() {
+            emdrStep++;
+            
+            if (emdrStep >= emdrSteps.length) {
+                // EMDR complete
+                document.getElementById('emdr-complete').classList.remove('hidden');
+                document.querySelector('#emdr .card:nth-child(3)').style.display = 'none';
+                return;
+            }
+            
+            updateEmdrDisplay();
+        }
+
+        function prevEmdrStep() {
+            if (emdrStep > 0) {
+                emdrStep--;
+                updateEmdrDisplay();
+            }
+        }
+
+        function updateEmdrDisplay() {
+            const step = emdrSteps[emdrStep];
+            document.getElementById('emdr-title').textContent = step.title;
+            document.getElementById('emdr-content').innerHTML = step.content;
+            
+            // Show/hide intensity slider
+            if (emdrStep === 1) {
+                document.getElementById('emdr-intensity').classList.remove('hidden');
+            } else {
+                document.getElementById('emdr-intensity').classList.add('hidden');
+            }
+            
+            // Show/hide navigation buttons
+            document.getElementById('emdr-prev-btn').style.display = emdrStep > 0 ? 'inline-block' : 'none';
+            
+            if (emdrStep >= emdrSteps.length - 1) {
+                document.getElementById('emdr-next-btn').textContent = 'Voltooien';
+            } else {
+                document.getElementById('emdr-next-btn').textContent = 'Volgende';
+            }
+            
+            const progress = ((emdrStep + 1) / emdrSteps.length) * 100;
+            document.getElementById('emdr-progress').style.width = progress + '%';
+        }
+
+        // Range slider updates
+        document.getElementById('emdr-intensity-slider').addEventListener('input', function() {
+            document.getElementById('emdr-intensity-value').textContent = this.value;
+        });
+
+        document.getElementById('entry-before').addEventListener('input', function() {
+            document.getElementById('entry-before-value').textContent = this.value;
+        });
+
+        document.getElementById('entry-after').addEventListener('input', function() {
+            document.getElementById('entry-after-value').textContent = this.value;
+        });
+
+        // Dagboek functions
+        function openDagboekModal(technique) {
+            currentTechnique = technique;
+            document.getElementById('entry-trigger').value = technique ? `Tijdens/na ${technique}` : '';
+            document.getElementById('dagboek-modal').classList.add('show');
+        }
+
+        function closeDagboekModal() {
+            document.getElementById('dagboek-modal').classList.remove('show');
+            
+            // Reset form fields
+            document.getElementById('entry-trigger').value = '';
+            document.getElementById('entry-before').value = '5';
+            document.getElementById('entry-after').value = '5';
+            document.getElementById('entry-result').value = '';
+            document.getElementById('entry-notes').value = '';
+            
+            // Reset range displays
+            document.getElementById('entry-before-value').textContent = '5';
+            document.getElementById('entry-after-value').textContent = '5';
+            
+            currentTechnique = '';
+        }
+
+        function saveDagboekEntry() {
+            const entry = {
+                id: Date.now(),
+                techniekGebruikt: currentTechnique || 'Handmatige Entry',
+                trigger: document.getElementById('entry-trigger').value,
+                intensiteitVoor: parseInt(document.getElementById('entry-before').value),
+                intensiteitNa: parseInt(document.getElementById('entry-after').value),
+                resultaat: document.getElementById('entry-result').value,
+                notities: document.getElementById('entry-notes').value,
+                tijdstempel: new Date().toLocaleString('nl-BE'),
+                bron: 'Demo'
+            };
+
+            // Simulate saving to Google Drive
+            console.log('📁 Simulating save to Google Drive:', entry);
+            
+            // Add to local storage for demo
+            dagboekEntries.unshift(entry);
+            localStorage.setItem('ademruimte-entries', JSON.stringify(dagboekEntries));
+            
+            closeDagboekModal();
+            
+            if (currentTab === 'dagboek') {
+                loadDagboekEntries();
+            }
+            
+            alert('✅ Entry opgeslagen! (Demo modus - opgeslagen in browser)');
+        }
+
+        function loadDagboekEntries() {
+            // Load from localStorage for demo
+            const stored = localStorage.getItem('ademruimte-entries');
+            if (stored) {
+                dagboekEntries = JSON.parse(stored);
+            } else {
+                // Add some demo entries
+                dagboekEntries = [
+                    {
+                        id: 1,
+                        techniekGebruikt: "Crisis Hulp Technieken",
+                        trigger: "Luchthonger na stressmoment",
+                        intensiteitVoor: 9,
+                        intensiteitNa: 5,
+                        resultaat: "goed",
+                        notities: "Purse-lip ademhaling en grounding werkten goed samen",
+                        tijdstempel: new Date(Date.now() - 86400000).toLocaleString('nl-BE'),
+                        bron: "Google Drive Demo"
+                    },
+                    {
+                        id: 2,
+                        techniekGebruikt: "Afkoel Ritueel",
+                        trigger: "Na 4 uur intensief programmeren",
+                        intensiteitVoor: 7,
+                        intensiteitNa: 3,
+                        resultaat: "zeer-goed",
+                        notities: "Alle 5 stappen doorlopen, fysieke reset hielp het meest",
+                        tijdstempel: new Date(Date.now() - 172800000).toLocaleString('nl-BE'),
+                        bron: "Google Drive Demo"
+                    }
+                ];
+            }
+            
+            displayDagboekEntries();
+        }
+
+        function displayDagboekEntries() {
+            const container = document.getElementById('dagboek-entries');
+            
+            if (dagboekEntries.length === 0) {
+                container.innerHTML = 
+                    '<div class="card">' +
+                        '<h3>Nog geen entries</h3>' +
+                        '<p>Maak een dagboekentry na het gebruiken van oefeningen om patronen bij te houden.</p>' +
+                        '<button class="btn btn-primary" onclick="openDagboekModal(\'Eerste Entry\')">' +
+                            'Maak je eerste entry' +
+                        '</button>' +
+                    '</div>';
+                return;
+            }
+            
+            const entriesHtml = dagboekEntries.map(entry => {
+                return '<div class="entry-card">' +
+                    '<div class="entry-header">' +
+                        '<div>' +
+                            '<div class="entry-title">' + entry.techniekGebruikt + ' 📁</div>' +
+                            '<div style="font-size: 0.875rem; color: #6b7280;">' +
+                                entry.tijdstempel +
+                                '<span style="color: #3b82f6; font-size: 0.75rem;">' + entry.bron + '</span>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="entry-result ' + entry.resultaat + '">' +
+                            getResultaatText(entry.resultaat) +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="intensity-grid">' +
+                        '<div style="font-size: 0.875rem;">' +
+                            '<span style="color: #6b7280;">Voor:</span>' +
+                            '<span style="font-weight: 500; margin-left: 0.25rem;">' + entry.intensiteitVoor + '/10</span>' +
+                        '</div>' +
+                        '<div style="font-size: 0.875rem;">' +
+                            '<span style="color: #6b7280;">Na:</span>' +
+                            '<span style="font-weight: 500; margin-left: 0.25rem;">' + entry.intensiteitNa + '/10</span>' +
+                        '</div>' +
+                    '</div>' +
+                    (entry.trigger ? '<p style="font-size: 0.875rem; margin-bottom: 0.5rem;"><strong>Trigger:</strong> ' + entry.trigger + '</p>' : '') +
+                    (entry.notities ? '<p style="font-size: 0.875rem;"><strong>Notities:</strong> ' + entry.notities + '</p>' : '') +
+                '</div>';
+            }).join('');
+            
+            container.innerHTML = entriesHtml;
+        }
+
+        // Firebase connection test
+        function connectGoogleDrive() {
+            if (isFirebaseEnabled) {
+                // Test Firebase connection
+                db.collection("test").add({
+                    test: true,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(function(docRef) {
+                    alert('🔥 Firebase Connectie Succesvol!\n\nTest document aangemaakt met ID: ' + docRef.id + '\n\nJe entries worden nu opgeslagen in de cloud.');
+                    
+                    // Delete test document
+                    docRef.delete();
+                    
+                    // Update status
+                    document.getElementById('drive-status').innerHTML = '🔥 Firebase: Verbonden en getest';
+                    document.getElementById('drive-status').className = 'status-connected';
+                    
+                }).catch(function(error) {
+                    alert('❌ Firebase Connectie Error:\n\n' + error.message + '\n\nCheck je Firebase configuratie en Firestore regels.');
+                    console.error("Firebase test error:", error);
+                });
+            } else {
+                alert('🔧 Firebase Demo Modus\n\nOm echte Firebase opslag in te schakelen:\n\n1. Zet isFirebaseEnabled = true\n2. Check je Firebase configuratie\n3. Zorg dat Firestore Database actief is\n\nVoor nu worden entries lokaal opgeslagen.');
+                
+                // Update status
+                document.getElementById('drive-status').innerHTML = '📁 Demo: Firebase uitgeschakeld (Lokale opslag)';
+                document.getElementById('drive-status').className = 'status-disconnected';
+            }
+        }
+
+        function exportDagboek() {
+            if (dagboekEntries.length === 0) {
+                alert('📝 Geen entries om te exporteren');
+                return;
+            }
+            
+            var exportText = 'ADEMRUIMTE DAGBOEK EXPORT\n';
+            exportText += '================================\n\n';
+            
+            for (var i = 0; i < dagboekEntries.length; i++) {
+                var entry = dagboekEntries[i];
+                exportText += 'ENTRY ' + (i + 1) + '\n';
+                exportText += 'Datum: ' + entry.tijdstempel + '\n';
+                exportText += 'Techniek: ' + entry.techniekGebruikt + '\n';
+                exportText += 'Trigger: ' + (entry.trigger || 'Geen') + '\n';
+                exportText += 'Intensiteit voor: ' + entry.intensiteitVoor + '/10\n';
+                exportText += 'Intensiteit na: ' + entry.intensiteitNa + '/10\n';
+                exportText += 'Resultaat: ' + getResultaatText(entry.resultaat) + '\n';
+                exportText += 'Notities: ' + (entry.notities || 'Geen') + '\n';
+                exportText += '\n---\n\n';
+            }
+            
+            // Create downloadable file
+            var blob = new Blob([exportText], { type: 'text/plain' });
+            var url = window.URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'ademruimte-dagboek-' + new Date().toLocaleDateString('nl-BE') + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            alert('📁 Dagboek geëxporteerd als tekstbestand!');
+        }
+
+        function getResultaatText(resultaat) {
+            var mapping = {
+                'zeer-goed': 'Zeer goed',
+                'goed': 'Goed',
+                'matig': 'Matig',
+                'geen-effect': 'Geen effect',
+                'slechter': 'Slechter'
+            };
+            return mapping[resultaat] || resultaat;
+        }
+        }
+            const mapping = {
+                'zeer-goed': 'Zeer goed',
+                'goed': 'Goed',
+                'matig': 'Matig',
+                'geen-effect': 'Geen effect',
+                'slechter': 'Slechter'
+            };
+            return mapping[resultaat] || resultaat;
+        }
+
+        // Initialize app
+        function init() {
+            updateRitualDisplay();
+            updateEmdrDisplay();
+            loadDagboekEntries();
+            
+            // Simulate checking Google Drive connection
+            setTimeout(() => {
+                document.getElementById('drive-status').innerHTML = '📁 Google Drive: Demo modus (Simuleert opslag)';
+                document.getElementById('drive-status').className = 'status-connected';
+            }, 2000);
+        }
+
+        // Start the app
+        init();
+    </script>
+</body>
+</html>

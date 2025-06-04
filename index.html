@@ -25,7 +25,7 @@
             color: white;
             padding: 1.5rem 1rem;
             text-align: center;
-            position: relative;
+            position: relative; /* Keep relative for potential absolute children */
         }
 
         header h1 {
@@ -703,31 +703,49 @@
                 grid-template-columns: 1fr 1fr 1fr;
             }
 
-            /* Adjust user-info for larger screens back to absolute */
             .user-info {
                 position: absolute;
                 top: 1rem;
                 right: 1rem;
                 text-align: right;
-                margin-top: 0; /* Override any mobile specific margin */
+                margin-top: 0;
             }
         }
 
-        /* Large screen optimizations - no specific changes needed, but keeping media query */
+        /* Large screen optimizations */
         @media (min-width: 1024px) {
-            /* .user-info already absolute from 768px */
+            .user-info {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+                text-align: right;
+                margin-top: 0;
+            }
         }
 
-        /* Mobile optimizations (default styles are mostly for mobile, but add explicit for header) */
+        /* Smartphone optimizations (header) */
         @media (max-width: 767px) {
-            .user-info {
-                position: static; /* Let user-info flow naturally in the document flow */
-                text-align: center;
-                margin-top: 1rem; /* Add some space below the main header text */
+            header {
+                padding: 1rem; /* Slightly reduced padding for smaller screens */
+            }
+            
+            header h1 {
+                font-size: 1.5rem; /* Smaller heading on small screens */
+                margin-bottom: 0.25rem;
             }
 
+            /* Make user-info flow naturally on smaller screens */
+            .user-info {
+                position: static;
+                text-align: center;
+                margin-top: 1rem; /* Add some space below the header text */
+                right: auto; /* Remove absolute positioning attributes */
+                top: auto;
+            }
+
+            /* Adjust header padding if user-info is static to avoid large gaps */
             header {
-                padding-bottom: 1rem; /* Adjust padding if user-info is static */
+                padding-bottom: 1rem; 
             }
         }
 
@@ -915,3 +933,1089 @@
                     </div>
 
                     <div class="card">
+                        <h3>🥱 Gaap Preventie</h3>
+                        <p>Technieken voor gaapaanvallen</p>
+                        <button class="btn btn-orange" onclick="showTab('gapen')">Bekijk Technieken</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>💜 EMDR Zelfhulp</h3>
+                        <p>Voor luchthonger-gevoelens</p>
+                        <button class="btn btn-purple" onclick="showTab('emdr')">Start EMDR</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>📖 Dagboek</h3>
+                        <p>Bijhouden van patronen</p>
+                        <button class="btn btn-primary" onclick="showTab('dagboek')">Open Dagboek</button>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>💡 Tip van de dag:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.
+                </div>
+
+            <div id="crisis" class="tab-content hidden">
+                <div class="card">
+                    <h2>🚨 Crisis Hulp - Luchthonger</h2>
+                    <p>Voor wanneer je dat benauwde gevoel voelt opkomen</p>
+                </div>
+
+                <div class="technique-card">
+                    <h4>1. Paradoxale Ademhaling</h4>
+                    <p>Start met bewust zeer kleine, korte ademhalingen. Na 3-4 van deze mini-ademhalingen, probeer een iets langere uitademing.</p>
+                </div>
+
+                <div class="technique-card">
+                    <h4>2. Purse-lip Ademhaling</h4>
+                    <p>Tuut je lippen bij het uitademen om lichte weerstand te creëren. Dit helpt bij luchthonger en stabiliseert CO2-niveaus.</p>
+                </div>
+
+                <div class="technique-card">
+                    <h4>3. IJswater Techniek</h4>
+                    <p>Breng iets kouds tegen je gezicht (vooral rond wangen en ogen) om de duikreflex te activeren.</p>
+                </div>
+
+                <div class="technique-card">
+                    <h4>4. Herframing</h4>
+                    <p>"Dit is geen echt zuurstoftekort, dit is een sensatie die voorbij zal gaan. Mijn lichaam krijgt genoeg zuurstof."</p>
+                </div>
+
+                <div class="card">
+                    <h3>5-4-3-2-1 Grounding</h3>
+                    <ul class="step-list">
+                        <li>5 dingen die je ZIET</li>
+                        <li>4 dingen die je VOELT</li>
+                        <li>3 dingen die je HOORT</li>
+                        <li>2 dingen die je RUIKT</li>
+                        <li>1 ding dat je PROEFT</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <button class="btn btn-primary" onclick="openDagboekModal('Crisis Hulp Technieken')">
+                        📝 Dagboek Entry Maken
+                    </button>
+                </div>
+            </div>
+
+            <div id="buteyko" class="tab-content hidden">
+                <div class="card">
+                    <h2>🌬️ Buteyko Ademhaling</h2>
+                    <p>Verbeter je CO2 tolerantie en verminder hyperventilatie neiging</p>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>💡 Hoe het werkt:</strong> Buteyko ademhaling helpt je lichaam wennen aan hogere CO2 niveaus, wat hyperventilatie-episodes kan verminderen.
+                </div>
+
+                <div class="card">
+                    <h3>Ademhaling Instellingen</h3>
+                    <div class="breath-controls">
+                        <div class="breath-setting">
+                            <label>Inademen (sec)</label>
+                            <input type="number" id="inhale-duration" value="4" min="2" max="10">
+                        </div>
+                        <div class="breath-setting">
+                            <label>Uitademen (sec)</label>
+                            <input type="number" id="exhale-duration" value="6" min="3" max="15">
+                        </div>
+                        <div class="breath-setting">
+                            <label>Pauze (sec)</label>
+                            <input type="number" id="hold-duration" value="3" min="1" max="20">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="breath-display rest" id="breath-display">
+                        Klik op start om te beginnen
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="breath-progress" id="breath-progress" style="width: 0%"></div>
+                    </div>
+
+                    <div style="text-align: center; margin: 1rem 0;">
+                        <div id="breath-cycle-counter" style="font-size: 1.125rem; color: #6b7280; margin-bottom: 1rem;">
+                            Cyclus: 0
+                        </div>
+                        
+                        <div class="button-group">
+                            <button id="breath-btn" class="btn btn-cyan" onclick="toggleBreathExercise()">
+                                ▶️ Start Buteyko
+                            </button>
+                            <button class="btn btn-orange" onclick="resetBreathExercise()">
+                                🔄 Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="breath-complete" class="alert alert-success hidden">
+                        <strong>✅ Buteyko Sessie Voltooid!</strong><br>
+                        Goed gedaan! Je hebt een volledige ademhalingssessie afgerond.
+                        <br><br>
+                        <button class="btn btn-primary" onclick="openDagboekModal('Buteyko Ademhaling')">
+                            📝 Dagboek Entry Maken
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Buteyko Principes</h3>
+                    <div class="technique-card">
+                        <h4>Zachte Ademhaling</h4>
+                        <p>Adem zo zacht mogelijk - stel je voor dat je een veertje voor je neus niet wilt laten bewegen.</p>
+                    </div>
+                    <div class="technique-card">
+                        <h4>Langere Uitademing</h4>
+                        <p>De uitademing is langer dan de inademing om CO2 te behouden en het autonome zenuwstelsel te kalmeren.</p>
+                    </div>
+                    <div class="technique-card">
+                        <h4>Comfortabele Pauze</h4>
+                        <p>De ademhpauze na uitademing mag nooit geforceerd aanvoelen - stop als het oncomfortabel wordt.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ritueel" class="tab-content hidden">
+                <div class="card">
+                    <h2>🕐 Afkoel Ritueel</h2>
+                    <p>Voor na periodes van intensief denkwerk (5-10 minuten)</p>
+                </div>
+
+                <div class="card">
+                    <h3 id="ritual-title">Stap 1: Fysieke Mini-Reset</h3>
+                    <div class="timer-display" id="timer-display">2:00</div>
+                    
+                    <div id="ritual-instructions">
+                        <ul class="step-list">
+                            <li>Sta op en strek je volledig uit</li>
+                            <li>Schud je armen en benen los</li>
+                            <li>Rol je schouders 5x naar achteren</li>
+                            <li>Maak kleine cirkels met je hoofd (5x elke richting)</li>
+                        </ul>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="timer-btn" class="btn btn-green" onclick="startTimer()">▶️ Start Timer</button>
+                        <button class="btn btn-primary" onclick="nextRitualStep()" id="next-btn" style="display: none;">Volgende Stap</button>
+                        <button class="btn btn-orange" onclick="resetRitual()">🔄 Reset</button>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="ritual-progress" style="width: 20%"></div>
+                    </div>
+
+                    <div id="ritual-complete" class="alert alert-success hidden">
+                        <strong>✅ Afkoel Ritueel Voltooid!</strong><br>
+                        Goed gedaan! Je hebt alle stappen doorlopen.
+                        <br><br>
+                        <button class="btn btn-primary" onclick="openDagboekModal('Afkoel Ritueel')">
+                            📝 Dagboek Entry Maken
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gapen" class="tab-content hidden">
+                <div class="card">
+                    <h2>🥱 Gaap Preventie Technieken</h2>
+                    <p>Voor wanneer je die vervelende gaapaanvallen voelt opkomen</p>
+                </div>
+
+                <div class="technique-card">
+                    <h4>Lipremming-techniek</h4>
+                    <p>Druk je lippen zachtjes op elkaar wanneer je een gaapneiging voelt. Laat de lucht langzaam door je neus in en uit gaan.</p>
+                </div>
+
+                <div class="technique-card">
+                    <h4>Mini-ademhalingen</h4>
+                    <p>Neem bewust 3-4 zeer kleine, ondiepe ademhalingen door je neus. Hiermee voorkom je de grote 'zucht-ademhaling'.</p>
+                </div>
+
+                <div class="technique-card">
+                    <h4>Tongpositie veranderen</h4>
+                    <p>Plaats je tongpunt tegen je gehemelte (achter je voortanden). Dit vermindert de neiging tot gapen.</p>
+                </div>
+
+                <div class="technique-card">
+                    <h4>Water drinken</h4>
+                    <p>Neem kleine slokjes water wanneer je merkt dat je begint te gapen. Dit doorbreekt het ademhalingspatroon.</p>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>💡 Belangrijk om te onthouden:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Ze geven je de kans om preventief in te grijpen voordat een volledige hyperventilatie-episode begint.
+                </div>
+
+                <div class="card">
+                    <h3>Gedachte-Breaking Technieken</h3>
+                    <div class="technique-card">
+                        <strong>Paradoxale intentie:</strong> "Oké hersenen, jullie willen dat ik ga gapen? Prima, ik ga nu heel bewust gapen"
+                    </div>
+                    <div class="technique-card">
+                        <strong>Herframing:</strong> "Mijn brein probeert me te beschermen, maar ik hoef niet te reageren"
+                    </div>
+                    <div class="technique-card">
+                        <strong>Aandacht verplaatsen:</strong> Tel 5 blauwe dingen die je kunt zien
+                    </div>
+                </div>
+
+                <div class="card">
+                    <button class="btn btn-primary" onclick="openDagboekModal('Gaap Preventie Technieken')">
+                        📝 Dagboek Entry Maken
+                    </button>
+                </div>
+            </div>
+
+            <div id="emdr" class="tab-content hidden">
+                <div class="card">
+                    <h2>💜 EMDR Zelfhulp</h2>
+                    <p>Voor luchthonger-gevoelens (dit is ondersteuning, geen vervanging voor professionele EMDR)</p>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ Gebruik dit alleen voor milde tot matige gevoelens. Stop als je je overweldigd voelt.</strong>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>🎧 Bilaterale Audio:</strong> Voor de beste ervaring, gebruik koptelefoon of oortjes. Zet het volume op een comfortabel niveau voordat je begint.
+                </div>
+
+                <div class="card">
+                    <h3>🔊 Bilaterale Audio Stimulatie</h3>
+                    <p style="margin-bottom: 1rem;">Een 880Hz toon die van links naar rechts beweegt om bilaterale hersenstimulatie te ondersteunen.</p>
+                    
+                    <div class="breath-controls">
+                        <div class="breath-setting">
+                            <label>Volume (%)</label>
+                            <input type="number" id="audio-volume" value="30" min="10" max="100" step="10">
+                        </div>
+                        <div class="breath-setting">
+                            <label>Snelheid (sec)</label>
+                            <input type="number" id="audio-speed" value="2" min="1" max="5" step="0.5">
+                        </div>
+                        <div class="breath-setting">
+                            <label>Status</label>
+                            <div id="audio-status" style="font-weight: bold; color: #6b7280; margin-top: 0.5rem;">Gestopt</div>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="audio-btn" class="btn btn-purple" onclick="toggleBilateralAudio()">
+                            🔊 Start Audio
+                        </button>
+                        <button class="btn btn-orange" onclick="stopBilateralAudio()">
+                            🔇 Stop Audio
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 id="emdr-title">Stap 1: Voorbereiding</h3>
+                    <div id="emdr-content">
+                        <p>Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt.</p>
+                    </div>
+
+                    <div id="emdr-intensity" class="hidden">
+                        <div class="form-group">
+                            <label class="form-label">Intensiteit van luchthonger-gevoel (1-10):</label>
+                            <input type="range" min="1" max="10" value="5" class="range-input" id="emdr-intensity-slider">
+                            <div class="range-value" id="emdr-intensity-value">5</div>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="emdr-prev-btn" class="btn btn-orange" onclick="prevEmdrStep()" style="display: none;">Vorige</button>
+                        <button id="emdr-next-btn" class="btn btn-purple" onclick="nextEmdrStep()">Volgende</button>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="emdr-progress" style="width: 20%"></div>
+                    </div>
+
+                    <div id="emdr-complete" class="alert alert-success hidden">
+                        <strong>✅ EMDR Sessie Voltooid!</strong><br>
+                        <button class="btn btn-primary" onclick="openDagboekModal('EMDR Zelfhulp Sessie')">
+                            📝 Dagboek Entry Maken
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dagboek" class="tab-content hidden">
+                <div class="card">
+                    <h2>📖 Dagboek</h2>
+                    <p>Overzicht van je sessies en vooruitgang</p>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="openDagboekModal('Handmatige Entry')">
+                            ➕ Nieuwe Entry
+                        </button>
+                        <button class="btn btn-green" onclick="loadDagboekEntries()">
+                            🔄 Vernieuw
+                        </button>
+                        <button class="btn btn-orange" onclick="exportDagboek()">
+                            📥 Export Dagboek
+                        </button>
+                    </div>
+                </div>
+
+                <div id="dagboek-entries">
+                    </div>
+
+                <div class="card">
+                    <h3>Patronen om naar uit te kijken</h3>
+                    <ul class="step-list">
+                        <li>Welke technieken het beste werken voor jou</li>
+                        <li>Tijdstippen waarop klachten vaker voorkomen</li>
+                        <li>Specifieke triggers (werk, stress, bepaalde gedachten)</li>
+                        <li>Verband tussen maagklachten en ademhalingsproblemen</li>
+                        <li>Verbetering in intensiteit scores over tijd</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dagboek-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📝 Dagboek Entry</h3>
+                <button class="close-btn" onclick="closeDagboekModal()">&times;</button>
+            </div>
+            
+            <form id="dagboek-form">
+                <div class="form-group">
+                    <label class="form-label">Situatie/Trigger:</label>
+                    <input type="text" id="entry-trigger" class="form-input" placeholder="Bijv. na intensief werken">
+                </div>
+
+                <div class="grid">
+                    <div class="form-group">
+                        <label class="form-label">Intensiteit voor (1-10):</label>
+                        <input type="range" min="1" max="10" value="5" class="range-input" id="entry-before">
+                        <div class="range-value" id="entry-before-value">5</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Intensiteit na (1-10):</label>
+                        <input type="range" min="1" max="10" value="5" class="range-input" id="entry-after">
+                        <div class="range-value" id="entry-after-value">5</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Resultaat:</label>
+                    <select id="entry-result" class="form-select">
+                        <option value="">Selecteer resultaat...</option>
+                        <option value="zeer-goed">Zeer goed - volledig opgelost</option>
+                        <option value="goed">Goed - duidelijke verbetering</option>
+                        <option value="matig">Matig - kleine verbetering</option>
+                        <option value="geen-effect">Geen effect</option>
+                        <option value="slechter">Iets slechter</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Notities:</label>
+                    <textarea id="entry-notes" class="form-textarea" placeholder="Wat viel je op?"></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn btn-primary" onclick="saveDagboekEntry()">
+                        📁 Opslaan
+                    </button>
+                    <button type="button" class="btn btn-orange" onclick="closeDagboekModal()">
+                        Annuleren
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>📞 In noodgevallen: contacteer altijd je huisarts of spoeddiensten</p>
+    </footer>
+
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, orderBy, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+        // Firebase configuratie
+        const firebaseConfig = {
+            apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
+            authDomain: "ademruimte-12c09.firebaseapp.com",
+            projectId: "ademruimte-12c09",
+            storageBucket: "ademruimte-12c09.firebasestorage.app",
+            messagingSenderId: "744941871331",
+            appId: "1:744941871331:web:c3ce24d814fe41314d25d6",
+            measurementId: "G-SD2ZEYNMNY"
+        };
+
+        // Global variables
+        let app, db, auth;
+        let currentUser = null;
+        let isFirebaseConnected = false;
+        let currentTab = 'dashboard';
+        let timerInterval = null;
+        let currentTime = 0;
+        let ritualStep = 0;
+        let emdrStep = 0;
+        let currentTechnique = '';
+        let dagboekEntries = [];
+
+        // Breath exercise variables
+        let breathInterval = null;
+        let breathPhase = 'rest'; // 'inhale', 'exhale', 'hold', 'rest'
+        let breathCycleCount = 0;
+        let breathPhaseTime = 0;
+        let breathCycleDuration = 0;
+
+        // Audio variables for EMDR
+        let audioContext = null;
+        let oscillator = null;
+        let gainNode = null;
+        let pannerNode = null;
+        let audioInterval = null;
+        let isAudioPlaying = false;
+        let panPosition = -1; // Start left (-1), move to right (1)
+
+        // Initialize Firebase
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            isFirebaseConnected = true;
+            
+            updateFirebaseStatus('connected', '🔥 Firebase: Verbonden');
+            
+            console.log('✅ Firebase successfully initialized');
+            
+        } catch (error) {
+            console.error('❌ Firebase initialization error:', error);
+            updateFirebaseStatus('error', '🔥 Firebase: Fout. Controleer console.'); // More specific error message
+        }
+
+        // Authentication state observer
+        onAuthStateChanged(auth, (user) => {
+            document.getElementById('auth-loading').style.display = 'none';
+            
+            if (user) {
+                currentUser = user;
+                showMainApp();
+                updateUserInfo(user);
+                loadDagboekEntries();
+                checkForLocalData();
+            } else {
+                currentUser = null;
+                showLoginScreen();
+            }
+        });
+
+        // Helper functies
+        function updateFirebaseStatus(type, message) {
+            const statusElement = document.getElementById('firebase-status');
+            statusElement.textContent = message;
+            statusElement.className = `status-${type}`;
+        }
+
+        function checkForLocalData() {
+            const localData = localStorage.getItem('ademruimte-entries');
+            // This section assumes a 'migration-section' HTML element.
+            // If it doesn't exist in your HTML, this part won't have a visible effect.
+            // For this specific HTML, there is no 'migration-section'.
+            // const migrationSection = document.getElementById('migration-section');
+            
+            if (localData && JSON.parse(localData).length > 0) {
+                // if (migrationSection) migrationSection.style.display = 'block';
+                console.warn('Local data found. Consider adding a UI element for migration if not present.'); // Added warning
+            } else {
+                // if (migrationSection) migrationSection.style.display = 'none';
+            }
+        }
+
+        function updateUserInfo(user) {
+            const userInfo = document.getElementById('user-info');
+            userInfo.innerHTML = 
+                '<div class="user-name">👋 ' + (user.displayName || user.email) + '</div>' +
+                '<button type="button" id="logout-button">Uitloggen</button>';
+            
+            // Fix: Attach event listener with a small delay to ensure element is rendered
+            setTimeout(() => {
+                const logoutBtn = document.getElementById('logout-button');
+                if (logoutBtn) {
+                    // Changed from directly assigning onclick to addEventListener for better practice and reliability
+                    logoutBtn.addEventListener('click', function() { 
+                        console.log('Logout button clicked');
+                        signOut(auth).then(() => {
+                            console.log('Successfully signed out');
+                            // After signOut, onAuthStateChanged will handle showLoginScreen()
+                        }).catch((error) => {
+                            console.error('Sign out error:', error);
+                            alert('Uitloggen mislukt: ' + error.message);
+                        });
+                    });
+                } else {
+                    console.error("Logout button not found after updateUserInfo. Possible timing issue.");
+                }
+            }, 100); // Small delay to allow DOM to update
+        }
+
+        function showLoginScreen() {
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('main-app').classList.add('hidden');
+        }
+
+        function showMainApp() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+        }
+
+        // Authentication functions
+        window.signInWithGoogle = async function() {
+            try {
+                // Set persistence to local (keep signed in)
+                await setPersistence(auth, browserLocalPersistence);
+                
+                const provider = new GoogleAuthProvider();
+                const result = await signInWithPopup(auth, provider);
+                console.log('✅ Google sign-in successful:', result.user.email);
+            } catch (error) {
+                console.error('❌ Google sign-in error:', error);
+                if (error.code === 'auth/popup-blocked') {
+                    alert('Inloggen met Google mislukt: Popup geblokkeerd. Sta pop-ups toe voor deze site en probeer opnieuw.');
+                } else if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/web-storage-unsupported') {
+                    // Specific message for user cancellation or storage issues
+                    alert('Inloggen met Google geannuleerd of mislukt. Probeer het opnieuw.');
+                }
+                else {
+                    alert('Google inloggen mislukt: ' + error.message);
+                }
+            }
+        };
+
+        window.showRegisterForm = function() {
+            document.getElementById('register-modal').classList.add('show');
+        };
+
+        window.closeRegisterModal = function() {
+            document.getElementById('register-modal').classList.remove('show');
+            // Reset form
+            document.getElementById('register-form').reset();
+        };
+
+        // Login form handler
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const rememberMeCheckbox = document.getElementById('remember-me');
+            const rememberMe = rememberMeCheckbox ? rememberMeCheckbox.checked : true;
+            
+            console.log('Login attempt:', { email, rememberMe });
+            
+            try {
+                // Set persistence based on checkbox
+                if (rememberMe) {
+                    console.log('Setting local persistence (stay logged in)');
+                    await setPersistence(auth, browserLocalPersistence);
+                } else {
+                    console.log('Setting session persistence (logout when browser closes)');
+                    await setPersistence(auth, browserSessionPersistence);
+                }
+                
+                await signInWithEmailAndPassword(auth, email, password);
+                console.log('✅ Email sign-in successful');
+            } catch (error) {
+                console.error('❌ Email sign-in error:', error);
+                alert('Inloggen mislukt: ' + error.message);
+            }
+        });
+
+        // Register form handler
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            
+            try {
+                // Set persistence to local (keep signed in)
+                await setPersistence(auth, browserLocalPersistence);
+                
+                const result = await createUserWithEmailAndPassword(auth, email, password);
+                
+                // Update user profile with name
+                await updateProfile(result.user, {
+                    displayName: name
+                });
+                
+                console.log('✅ Account created successfully');
+                closeRegisterModal();
+                
+            } catch (error) {
+                console.error('❌ Registration error:', error);
+                alert('Account aanmaken mislukt: ' + error.message);
+            }
+        });
+
+        // Firebase functies
+        async function saveToFirestore(entry) {
+            if (!isFirebaseConnected || !currentUser) {
+                // Fallback naar localStorage
+                const stored = JSON.parse(localStorage.getItem('ademruimte-entries') || '[]');
+                const entryWithId = { ...entry, id: Date.now().toString(), bron: 'Lokaal', userId: 'local' };
+                stored.unshift(entryWithId);
+                localStorage.setItem('ademruimte-entries', JSON.stringify(stored));
+                console.log('✅ Entry saved to localStorage (Firebase not connected or no user).');
+                return { id: entryWithId.id, success: true };
+            }
+
+            try {
+                const docRef = await addDoc(collection(db, "dagboekEntries"), {
+                    ...entry,
+                    timestamp: serverTimestamp(),
+                    userId: currentUser.uid,
+                    userEmail: currentUser.email
+                });
+                
+                console.log('✅ Entry saved to Firebase with ID:', docRef.id);
+                return { id: docRef.id, success: true };
+                
+            } catch (error) {
+                console.error('❌ Error saving to Firestore:', error);
+                // Fallback naar localStorage and display Firebase error message to user
+                const stored = JSON.parse(localStorage.getItem('ademruimte-entries') || '[]');
+                const entryWithId = { ...entry, id: Date.now().toString(), bron: `Lokaal (Firebase fout: ${error.message.substring(0, 50)}...)`, userId: currentUser?.uid || 'local' }; // Truncate error message
+                stored.unshift(entryWithId);
+                localStorage.setItem('ademruimte-entries', JSON.stringify(stored));
+                alert(`Fout bij opslaan in Firebase: ${error.message}. Gegevens lokaal opgeslagen.`); // Alert user about the specific error
+                return { id: entryWithId.id, success: false, error: error.message };
+            }
+        }
+
+        async function loadFromFirestore() {
+            if (!isFirebaseConnected || !currentUser) {
+                // Load from localStorage
+                const stored = localStorage.getItem('ademruimte-entries');
+                console.log('✅ Loaded from localStorage (Firebase not connected or no user).');
+                return stored ? JSON.parse(stored) : [];
+            }
+
+            try {
+                const q = query(
+                    collection(db, "dagboekEntries"), 
+                    where("userId", "==", currentUser.uid),
+                    orderBy("timestamp", "desc")
+                );
+                const querySnapshot = await getDocs(q);
+                
+                const entries = [];
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    entries.push({
+                        id: doc.id,
+                        ...data,
+                        tijdstempel: data.timestamp ? data.timestamp.toDate().toLocaleString('nl-BE') : 'Onbekend',
+                        bron: "Cloud"
+                    });
+                });
+                
+                console.log('✅ Loaded', entries.length, 'entries from Firebase for user:', currentUser.email);
+                return entries;
+                
+            } catch (error) {
+                console.error('❌ Error loading from Firestore:', error);
+                // Fallback naar localStorage
+                const stored = localStorage.getItem('ademruimte-entries');
+                alert(`Fout bij laden vanuit Firebase: ${error.message}. Lokale gegevens worden geladen.`); // Alert user about the specific error
+                return stored ? JSON.parse(stored) : [];
+            }
+        }
+
+        // Data migration function
+        window.migrateLocalData = async function() {
+            if (!currentUser) {
+                alert('❌ Je moet ingelogd zijn om data te migreren');
+                return;
+            }
+
+            const localData = localStorage.getItem('ademruimte-entries');
+            if (!localData) {
+                alert('📝 Geen lokale data gevonden om te migreren');
+                return;
+            }
+
+            const entries = JSON.parse(localData);
+            if (entries.length === 0) {
+                alert('📝 Geen entries gevonden om te migreren');
+                return;
+            }
+
+            const confirmMigration = confirm(
+                `🔄 Data Migratie\n\n` +
+                `Er zijn ${entries.length} lokale entries gevonden.\n` +
+                `Wil je deze migreren naar je cloud account?\n\n` +
+                `Dit zal ze toevoegen aan je cloud opslag.`
+            );
+
+            if (!confirmMigration) return;
+
+            try {
+                let migratedCount = 0;
+                
+                for (const entry of entries) {
+                    // Skip entries that are already marked as cloud entries or belong to the current user (if user ID is present)
+                    if (entry.bron === 'Cloud' || (entry.userId && entry.userId === currentUser.uid)) {
+                        continue;
+                    }
+
+                    // Clean entry for migration - ensure only necessary fields are sent
+                    const cleanEntry = {
+                        techniekGebruikt: entry.techniekGebruikt,
+                        trigger: entry.trigger,
+                        intensiteitVoor: entry.intensiteitVoor,
+                        intensiteitNa: entry.intensiteitNa,
+                        resultaat: entry.resultaat,
+                        notities: entry.notities,
+                        // Do not include 'tijdstempel' from local storage directly if using serverTimestamp in Firestore
+                        // Firebase will set its own timestamp. If you want to preserve the client-side timestamp, store it in another field.
+                        // For simplicity, we'll let Firestore set it here.
+                    };
+
+                    const result = await saveToFirestore(cleanEntry); // Use the existing save function
+                    if (result.success) {
+                        migratedCount++;
+                    } else {
+                        console.warn('Skipped migration of an entry due to Firebase error:', result.error);
+                    }
+                }
+
+                if (migratedCount > 0) {
+                    alert(`✅ Migratie Voltooid!\n\n${migratedCount} entries zijn succesvol gemigreerd naar je cloud account.`);
+                    
+                    // Clear local storage after successful migration
+                    localStorage.removeItem('ademruimte-entries');
+                    
+                    // Hide migration section (if it exists, though not in this HTML)
+                    // const migrationSection = document.getElementById('migration-section');
+                    // if (migrationSection) migrationSection.style.display = 'none';
+                    
+                    // Reload entries
+                    await loadDagboekEntries();
+                } else {
+                    alert('📝 Geen nieuwe entries gevonden om te migreren of al gemigreerd.');
+                }
+                
+            } catch (error) {
+                console.error('❌ Migration error:', error);
+                alert('❌ Migratie mislukt: ' + error.message);
+            }
+        };
+
+        // Buteyko breathing exercise functions
+        window.toggleBreathExercise = function() {
+            if (breathInterval) {
+                stopBreathExercise();
+            } else {
+                startBreathExercise();
+            }
+        };
+
+        window.resetBreathExercise = function() {
+            stopBreathExercise();
+            breathCycleCount = 0;
+            breathPhase = 'rest';
+            updateBreathDisplay();
+            updateBreathProgress(0);
+            document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 0';
+            document.getElementById('breath-complete').classList.add('hidden');
+        };
+
+        function startBreathExercise() {
+            const inhale = parseInt(document.getElementById('inhale-duration').value);
+            const exhale = parseInt(document.getElementById('exhale-duration').value);
+            const hold = parseInt(document.getElementById('hold-duration').value);
+            
+            breathCycleDuration = inhale + exhale + hold;
+            breathPhase = 'inhale';
+            breathPhaseTime = 0;
+            
+            document.getElementById('breath-btn').innerHTML = '⏸️ Stop Buteyko';
+            document.getElementById('breath-btn').className = 'btn btn-red';
+            
+            breathInterval = setInterval(() => {
+                updateBreathCycle();
+            }, 100);
+        }
+
+        function stopBreathExercise() {
+            if (breathInterval) {
+                clearInterval(breathInterval);
+                breathInterval = null;
+            }
+            
+            breathPhase = 'rest';
+            updateBreathDisplay();
+            updateBreathProgress(0);
+            
+            document.getElementById('breath-btn').innerHTML = '▶️ Start Buteyko';
+            document.getElementById('breath-btn').className = 'btn btn-cyan';
+        }
+
+        function updateBreathCycle() {
+            const inhale = parseInt(document.getElementById('inhale-duration').value);
+            const exhale = parseInt(document.getElementById('exhale-duration').value);
+            const hold = parseInt(document.getElementById('hold-duration').value);
+            
+            breathPhaseTime += 0.1;
+            
+            // Update phase based on timing
+            let progress = 0;
+            
+            if (breathPhase === 'inhale') {
+                progress = (breathPhaseTime / inhale) * 100;
+                if (breathPhaseTime >= inhale) {
+                    breathPhase = 'exhale';
+                    breathPhaseTime = 0;
+                }
+            } else if (breathPhase === 'exhale') {
+                progress = (breathPhaseTime / exhale) * 100;
+                if (breathPhaseTime >= exhale) {
+                    breathPhase = 'hold';
+                    breathPhaseTime = 0;
+                }
+            } else if (breathPhase === 'hold') {
+                progress = (breathPhaseTime / hold) * 100;
+                if (breathPhaseTime >= hold) {
+                    breathPhase = 'inhale';
+                    breathPhaseTime = 0;
+                    breathCycleCount++;
+                    document.getElementById('breath-cycle-counter').textContent = `Cyclus: ${breathCycleCount}`;
+                    
+                    // Complete after 10 cycles
+                    if (breathCycleCount >= 10) {
+                        stopBreathExercise();
+                        document.getElementById('breath-complete').classList.remove('hidden');
+                        return;
+                    }
+                }
+            }
+            
+            updateBreathDisplay();
+            updateBreathProgress(Math.min(progress, 100));
+        }
+
+        function updateBreathDisplay() {
+            const display = document.getElementById('breath-display');
+            const progressBar = document.getElementById('breath-progress');
+            
+            display.className = `breath-display ${breathPhase}`;
+            progressBar.className = `breath-progress ${breathPhase}`;
+            
+            switch (breathPhase) {
+                case 'inhale':
+                    display.textContent = '🌬️ Inademen';
+                    break;
+                case 'exhale':
+                    display.textContent = '💨 Uitademen';
+                    break;
+                case 'hold':
+                    display.textContent = '⏸️ Pauze';
+                    break;
+                case 'rest':
+                default:
+                    display.textContent = 'Klik op start om te beginnen';
+                    break;
+            }
+        }
+
+        function updateBreathProgress(percentage) {
+            document.getElementById('breath-progress').style.width = percentage + '%';
+        }
+
+        // Bilateral audio functions for EMDR
+        function initAudioContext() {
+            if (!audioContext) {
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    console.log('✅ Audio context initialized');
+                } catch (error) {
+                    console.error('❌ Audio context initialization failed:', error);
+                    alert('Je browser ondersteunt geen Web Audio API. Probeer een moderne browser.');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        window.toggleBilateralAudio = function() {
+            if (isAudioPlaying) {
+                stopBilateralAudio();
+            } else {
+                startBilateralAudio();
+            }
+        };
+
+        function startBilateralAudio() {
+            if (!initAudioContext()) return;
+
+            try {
+                // Resume audio context if suspended (required by some browsers)
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+
+                // Create oscillator for 880Hz tone
+                oscillator = audioContext.createOscillator();
+                oscillator.frequency.setValueAtTime(880, audioContext.currentTime); // A5 note
+                oscillator.type = 'sine'; // Smooth sine wave
+
+                // Create gain node for volume control
+                gainNode = audioContext.createGain();
+                const volume = parseInt(document.getElementById('audio-volume').value) / 100;
+                gainNode.gain.setValueAtTime(volume * 0.3, audioContext.currentTime); // Keep it gentle
+
+                // Create stereo panner for left-right movement
+                pannerNode = audioContext.createStereoPanner();
+                pannerNode.pan.setValueAtTime(-1, audioContext.currentTime); // Start left
+
+                // Connect audio nodes
+                oscillator.connect(gainNode);
+                gainNode.connect(pannerNode);
+                pannerNode.connect(audioContext.destination);
+
+                // Start oscillator
+                oscillator.start();
+
+                // Start panning animation
+                startPanning();
+
+                isAudioPlaying = true;
+                document.getElementById('audio-btn').innerHTML = '⏸️ Pause Audio';
+                document.getElementById('audio-btn').className = 'btn btn-red';
+                document.getElementById('audio-status').textContent = 'Actief - Links naar Rechts';
+                document.getElementById('audio-status').style.color = '#059669';
+
+                console.log('✅ Bilateral audio started');
+
+            } catch (error) {
+                console.error('❌ Error starting bilateral audio:', error);
+                alert('Fout bij starten audio: ' + error.message);
+            }
+        }
+
+        function stopBilateralAudio() {
+            try {
+                if (oscillator) {
+                    oscillator.stop();
+                    oscillator.disconnect();
+                    oscillator = null;
+                }
+
+                if (gainNode) {
+                    gainNode.disconnect();
+                    gainNode = null;
+                }
+
+                if (pannerNode) {
+                    pannerNode.disconnect();
+                    pannerNode = null;
+                }
+
+                if (audioInterval) {
+                    clearInterval(audioInterval);
+                    audioInterval = null;
+                }
+
+                isAudioPlaying = false;
+                panPosition = -1; // Reset to left
+                
+                document.getElementById('audio-btn').innerHTML = '🔊 Start Audio';
+                document.getElementById('audio-btn').className = 'btn btn-purple';
+                document.getElementById('audio-status').textContent = 'Gestopt';
+                document.getElementById('audio-status').style.color = '#6b7280';
+
+                console.log('✅ Bilateral audio stopped');
+
+            } catch (error) {
+                console.error('❌ Error stopping bilateral audio:', error);
+            }
+        }
+
+        function startPanning() {
+            const speed = parseFloat(document.getElementById('audio-speed').value) * 1000; // Convert to milliseconds
+            const updateInterval = 50; // Update every 50ms for smooth movement
+            const steps = speed / updateInterval;
+            const panStep = 2 / steps; // Move from -1 to 1 in calculated steps
+
+            panPosition = -1; // Start left
+            let direction = 1; // 1 = right, -1 = left
+
+            audioInterval = setInterval(() => {
+                if (!isAudioPlaying || !pannerNode) {
+                    clearInterval(audioInterval);
+                    return;
+                }
+
+                panPosition += (panStep * direction);
+
+                // Reverse direction at extremes
+                if (panPosition >= 1) {
+                    panPosition = 1;
+                    direction = -1;
+                } else if (panPosition <= -1) {
+                    panPosition = -1;
+                    direction = 1;
+                }
+
+                // Update panner
+                pannerNode.pan.setValueAtTime(panPosition, audioContext.currentTime);
+
+                // Update status
+                const side = panPosition < -0.3 ? 'Links' : panPosition > 0.3 ? 'Rechts' : 'Midden';
+                document.getElementById('audio-status').textContent = `Actief - ${side}`;
+
+            }, updateInterval);
+        }
+
+        // Update audio settings while playing
+        function updateAudioSettings() {
+            if (isAudioPlaying && gainNode) {
+                const volume = parseInt(document.getElementById('audio-volume').value) / 100;
+                gainNode.gain.setValueAtTime(volume * 0.3, audioContext.currentTime);
+            }
+        }
+
+        // Add event listeners for audio controls
+        document.addEventListener('DOMContentLoaded', function() {
+            // Audio volume control
+            const volumeControl = document.getElementById('audio-volume');
+            if (volumeControl) {
+                volumeControl.addEventListener('input', updateAudioSettings);
+            }
+
+            // Speed control (restart audio if playing to apply new speed)
+            const speedControl = document.getElementById('audio-speed');
+            if (speedControl) {
+                speedControl.addEventListener('change', function() {
+                    if (isAudioPlaying) {
+                        stopBilateralAudio();
+                        setTimeout(startBilateralAudio, 100);
+                    }
+                });
+            }
+        });
+
+        // Ritual steps
+        const ritualSteps = [
+            {
+                title: "Stap 1: Fysieke Mini-Reset",
+                duration: 120,
+                instructions: [
+                    "Sta op en strek je volledig uit",
+                    "Schud je armen en benen los",

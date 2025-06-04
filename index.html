@@ -1175,6 +1175,40 @@
                     <strong>⚠️ Gebruik dit alleen voor milde tot matige gevoelens. Stop als je je overweldigd voelt.</strong>
                 </div>
 
+                <div class="alert alert-info">
+                    <strong>🎧 Bilaterale Audio:</strong> Voor de beste ervaring, gebruik koptelefoon of oortjes. Zet het volume op een comfortabel niveau voordat je begint.
+                </div>
+
+                <!-- Audio Controls -->
+                <div class="card">
+                    <h3>🔊 Bilaterale Audio Stimulatie</h3>
+                    <p style="margin-bottom: 1rem;">Een 880Hz toon die van links naar rechts beweegt om bilaterale hersenstimulatie te ondersteunen.</p>
+                    
+                    <div class="breath-controls">
+                        <div class="breath-setting">
+                            <label>Volume (%)</label>
+                            <input type="number" id="audio-volume" value="30" min="10" max="100" step="10">
+                        </div>
+                        <div class="breath-setting">
+                            <label>Snelheid (sec)</label>
+                            <input type="number" id="audio-speed" value="2" min="1" max="5" step="0.5">
+                        </div>
+                        <div class="breath-setting">
+                            <label>Status</label>
+                            <div id="audio-status" style="font-weight: bold; color: #6b7280; margin-top: 0.5rem;">Gestopt</div>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="audio-btn" class="btn btn-purple" onclick="toggleBilateralAudio()">
+                            🔊 Start Audio
+                        </button>
+                        <button class="btn btn-orange" onclick="stopBilateralAudio()">
+                            🔇 Stop Audio
+                        </button>
+                    </div>
+                </div>
+
                 <div class="card">
                     <h3 id="emdr-title">Stap 1: Voorbereiding</h3>
                     <div id="emdr-content">
@@ -1340,6 +1374,15 @@
         let breathCycleCount = 0;
         let breathPhaseTime = 0;
         let breathCycleDuration = 0;
+
+        // Audio variables for EMDR
+        let audioContext = null;
+        let oscillator = null;
+        let gainNode = null;
+        let pannerNode = null;
+        let audioInterval = null;
+        let isAudioPlaying = false;
+        let panPosition = -1; // Start left (-1), move to right (1)
 
         // Initialize Firebase
         try {
@@ -1770,6 +1813,179 @@
             document.getElementById('breath-progress').style.width = percentage + '%';
         }
 
+        // Bilateral audio functions for EMDR
+        function initAudioContext() {
+            if (!audioContext) {
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    console.log('✅ Audio context initialized');
+                } catch (error) {
+                    console.error('❌ Audio context initialization failed:', error);
+                    alert('Je browser ondersteunt geen Web Audio API. Probeer een moderne browser.');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        window.toggleBilateralAudio = function() {
+            if (isAudioPlaying) {
+                stopBilateralAudio();
+            } else {
+                startBilateralAudio();
+            }
+        };
+
+        function startBilateralAudio() {
+            if (!initAudioContext()) return;
+
+            try {
+                // Resume audio context if suspended (required by some browsers)
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+
+                // Create oscillator for 880Hz tone
+                oscillator = audioContext.createOscillator();
+                oscillator.frequency.setValueAtTime(880, audioContext.currentTime); // A5 note
+                oscillator.type = 'sine'; // Smooth sine wave
+
+                // Create gain node for volume control
+                gainNode = audioContext.createGain();
+                const volume = parseInt(document.getElementById('audio-volume').value) / 100;
+                gainNode.gain.setValueAtTime(volume * 0.3, audioContext.currentTime); // Keep it gentle
+
+                // Create stereo panner for left-right movement
+                pannerNode = audioContext.createStereoPanner();
+                pannerNode.pan.setValueAtTime(-1, audioContext.currentTime); // Start left
+
+                // Connect audio nodes
+                oscillator.connect(gainNode);
+                gainNode.connect(pannerNode);
+                pannerNode.connect(audioContext.destination);
+
+                // Start oscillator
+                oscillator.start();
+
+                // Start panning animation
+                startPanning();
+
+                isAudioPlaying = true;
+                document.getElementById('audio-btn').innerHTML = '⏸️ Pause Audio';
+                document.getElementById('audio-btn').className = 'btn btn-red';
+                document.getElementById('audio-status').textContent = 'Actief - Links naar Rechts';
+                document.getElementById('audio-status').style.color = '#059669';
+
+                console.log('✅ Bilateral audio started');
+
+            } catch (error) {
+                console.error('❌ Error starting bilateral audio:', error);
+                alert('Fout bij starten audio: ' + error.message);
+            }
+        }
+
+        function stopBilateralAudio() {
+            try {
+                if (oscillator) {
+                    oscillator.stop();
+                    oscillator.disconnect();
+                    oscillator = null;
+                }
+
+                if (gainNode) {
+                    gainNode.disconnect();
+                    gainNode = null;
+                }
+
+                if (pannerNode) {
+                    pannerNode.disconnect();
+                    pannerNode = null;
+                }
+
+                if (audioInterval) {
+                    clearInterval(audioInterval);
+                    audioInterval = null;
+                }
+
+                isAudioPlaying = false;
+                panPosition = -1; // Reset to left
+                
+                document.getElementById('audio-btn').innerHTML = '🔊 Start Audio';
+                document.getElementById('audio-btn').className = 'btn btn-purple';
+                document.getElementById('audio-status').textContent = 'Gestopt';
+                document.getElementById('audio-status').style.color = '#6b7280';
+
+                console.log('✅ Bilateral audio stopped');
+
+            } catch (error) {
+                console.error('❌ Error stopping bilateral audio:', error);
+            }
+        }
+
+        function startPanning() {
+            const speed = parseFloat(document.getElementById('audio-speed').value) * 1000; // Convert to milliseconds
+            const updateInterval = 50; // Update every 50ms for smooth movement
+            const steps = speed / updateInterval;
+            const panStep = 2 / steps; // Move from -1 to 1 in calculated steps
+
+            panPosition = -1; // Start left
+            let direction = 1; // 1 = right, -1 = left
+
+            audioInterval = setInterval(() => {
+                if (!isAudioPlaying || !pannerNode) {
+                    clearInterval(audioInterval);
+                    return;
+                }
+
+                panPosition += (panStep * direction);
+
+                // Reverse direction at extremes
+                if (panPosition >= 1) {
+                    panPosition = 1;
+                    direction = -1;
+                } else if (panPosition <= -1) {
+                    panPosition = -1;
+                    direction = 1;
+                }
+
+                // Update panner
+                pannerNode.pan.setValueAtTime(panPosition, audioContext.currentTime);
+
+                // Update status
+                const side = panPosition < -0.3 ? 'Links' : panPosition > 0.3 ? 'Rechts' : 'Midden';
+                document.getElementById('audio-status').textContent = `Actief - ${side}`;
+
+            }, updateInterval);
+        }
+
+        // Update audio settings while playing
+        function updateAudioSettings() {
+            if (isAudioPlaying && gainNode) {
+                const volume = parseInt(document.getElementById('audio-volume').value) / 100;
+                gainNode.gain.setValueAtTime(volume * 0.3, audioContext.currentTime);
+            }
+        }
+
+        // Add event listeners for audio controls
+        document.addEventListener('DOMContentLoaded', function() {
+            // Audio volume control
+            const volumeControl = document.getElementById('audio-volume');
+            if (volumeControl) {
+                volumeControl.addEventListener('input', updateAudioSettings);
+            }
+
+            // Speed control (restart audio if playing to apply new speed)
+            const speedControl = document.getElementById('audio-speed');
+            if (speedControl) {
+                speedControl.addEventListener('change', function() {
+                    if (isAudioPlaying) {
+                        stopBilateralAudio();
+                        setTimeout(startBilateralAudio, 100);
+                    }
+                });
+            }
+        });
+
         // Ritual steps
         const ritualSteps = [
             {
@@ -1820,32 +2036,37 @@
             }
         ];
 
-        // EMDR steps
+        // EMDR steps (updated with audio integration)
         const emdrSteps = [
             {
                 title: "Stap 1: Voorbereiding",
-                content: "Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt."
+                content: "Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt.<br><br><strong>💡 Tip:</strong> Je kunt de bilaterale audio bovenaan starten voor extra ondersteuning."
             },
             {
                 title: "Stap 2: Doelgerichtheid", 
-                content: "Denk heel kort aan het gevoel van luchthonger (niet meer dan 5 seconden). Schat de intensiteit en formuleer: 'Ik kan met dit gevoel omgaan'"
+                content: "Denk heel kort aan het gevoel van luchthonger (niet meer dan 5 seconden). Schat de intensiteit en formuleer: 'Ik kan met dit gevoel omgaan'<br><br><strong>🎧 Optioneel:</strong> Start nu de bilaterale audio als je koptelefoon draagt."
             },
             {
                 title: "Stap 3: Bilaterale Stimulatie",
-                content: "Kies één optie:<br><br><strong>Oogbewegingen:</strong> Beweeg je ogen langzaam van links naar rechts (15-20x)<br><strong>Butterfly hug:</strong> Kruis je armen en tik afwisselend op je schouders<br><strong>Knie-tikken:</strong> Tik afwisselend op je knieën met je handen"
+                content: "Kies één of meerdere opties:<br><br><strong>🔊 Bilaterale Audio:</strong> Luister naar de 880Hz toon die van links naar rechts beweegt<br><strong>👀 Oogbewegingen:</strong> Beweeg je ogen langzaam van links naar rechts (15-20x)<br><strong>🤗 Butterfly hug:</strong> Kruis je armen en tik afwisselend op je schouders<br><strong>🦵 Knie-tikken:</strong> Tik afwisselend op je knieën met je handen"
             },
             {
                 title: "Stap 4: Check-in",
-                content: "Hoe voelt het luchthonger-gevoel nu? Welke gedachten komen op? Accepteer wat er komt zonder oordeel."
+                content: "Hoe voelt het luchthonger-gevoel nu? Welke gedachten komen op? Accepteer wat er komt zonder oordeel.<br><br><em>Je kunt de bilaterale stimulatie voortzetten tijdens deze reflectie.</em>"
             },
             {
                 title: "Stap 5: Positieve Verankering",
-                content: "Focus op 'Ik kan hiermee omgaan' en doe 10-15 bilaterale bewegingen terwijl je deze gedachte vasthoudt."
+                content: "Focus op 'Ik kan hiermee omgaan' en doe 10-15 bilaterale bewegingen of luister naar de audio terwijl je deze gedachte vasthoudt.<br><br><strong>🔇 Tip:</strong> Stop de audio als je klaar bent met de sessie."
             }
         ];
 
         // Tab switching
         window.showTab = function(tabName) {
+            // Stop audio when leaving EMDR tab
+            if (currentTab === 'emdr' && tabName !== 'emdr' && isAudioPlaying) {
+                stopBilateralAudio();
+            }
+
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.add('hidden');
@@ -1952,9 +2173,12 @@
             emdrStep++;
             
             if (emdrStep >= emdrSteps.length) {
-                // EMDR complete
+                // EMDR complete - stop audio
+                if (isAudioPlaying) {
+                    stopBilateralAudio();
+                }
                 document.getElementById('emdr-complete').classList.remove('hidden');
-                document.querySelector('#emdr .card:nth-child(3)').style.display = 'none';
+                document.querySelector('#emdr .card:nth-child(4)').style.display = 'none';
                 return;
             }
             
@@ -1992,6 +2216,13 @@
             const progress = ((emdrStep + 1) / emdrSteps.length) * 100;
             document.getElementById('emdr-progress').style.width = progress + '%';
         }
+
+        // Cleanup when page is closed or refreshed
+        window.addEventListener('beforeunload', function() {
+            if (isAudioPlaying) {
+                stopBilateralAudio();
+            }
+        });
 
         // Dagboek functions
         window.openDagboekModal = function(technique) {

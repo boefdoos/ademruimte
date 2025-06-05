@@ -3246,38 +3246,95 @@
                 return;
             }
 
+            // Calculate chart dimensions and positions
+            const chartWidth = 280;  // Fixed width for consistent mobile rendering
+            const chartHeight = 180;
+            const marginLeft = 30;
+            const sessionWidth = chartData.length > 1 ? (chartWidth - 20) / (chartData.length - 1) : chartWidth / 2;
+            
+            // Prepare SVG path data for lines
+            let voorLinePoints = [];
+            let naLinePoints = [];
+            
             // Create chart HTML
             let chartHTML = '<div class="chart-container">';
             chartHTML += '<h4 style="margin: 0 0 1rem 0; color: #1f2937; font-size: 0.9rem; font-weight: 600;">Intensiteit Evolutie (Voor/Na)</h4>';
-            chartHTML += '<div style="position: relative;">';
+            chartHTML += '<div style="position: relative; width: 100%; overflow-x: auto;">';
             
             // Y-axis labels
-            chartHTML += '<div class="chart-y-axis">';
+            chartHTML += '<div class="chart-y-axis" style="position: absolute; left: 0; top: 2rem; height: 180px; display: flex; flex-direction: column-reverse; justify-content: space-between; font-size: 0.7rem; color: #6b7280; width: 25px; z-index: 2;">';
             for (let i = 0; i <= 10; i += 2) {
-                chartHTML += `<div>${i}</div>`;
+                chartHTML += `<div style="text-align: right; padding-right: 5px;">${i}</div>`;
             }
             chartHTML += '</div>';
             
-            // Line chart
-            chartHTML += '<div class="line-chart">';
+            // Chart container with SVG overlay
+            chartHTML += `<div style="margin-left: ${marginLeft}px; position: relative; width: ${chartWidth}px; height: ${chartHeight}px; border-left: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb;">`;
             
+            // SVG for connecting lines
+            chartHTML += `<svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1;" viewBox="0 0 ${chartWidth} ${chartHeight}">`;
+            chartHTML += '<defs><style>.line-voor { stroke: #ef4444; stroke-width: 2; fill: none; stroke-dasharray: 3,3; } .line-na { stroke: #10b981; stroke-width: 2; fill: none; }</style></defs>';
+            
+            // Calculate line coordinates and create paths
             chartData.forEach((entry, index) => {
-                const voorHeight = ((entry.intensiteitVoor || 0) / 10) * 180;
-                const naHeight = ((entry.intensiteitNa || 0) / 10) * 180;
+                const x = index * sessionWidth + 10;
+                const voorY = chartHeight - ((entry.intensiteitVoor || 0) / 10) * chartHeight;
+                const naY = chartHeight - ((entry.intensiteitNa || 0) / 10) * chartHeight;
                 
-                chartHTML += '<div class="chart-session">';
-                chartHTML += `<div class="chart-point voor" style="margin-bottom: ${voorHeight}px;" title="Voor: ${entry.intensiteitVoor}/10"></div>`;
-                chartHTML += `<div class="chart-point na" style="margin-bottom: ${naHeight}px; margin-top: -8px;" title="Na: ${entry.intensiteitNa}/10"></div>`;
-                chartHTML += `<div class="chart-session-label">#${index + 1}</div>`;
+                voorLinePoints.push(`${x},${voorY}`);
+                naLinePoints.push(`${x},${naY}`);
+            });
+            
+            // Add SVG paths for lines
+            if (voorLinePoints.length > 1) {
+                chartHTML += `<polyline class="line-voor" points="${voorLinePoints.join(' ')}" />`;
+            }
+            if (naLinePoints.length > 1) {
+                chartHTML += `<polyline class="line-na" points="${naLinePoints.join(' ')}" />`;
+            }
+            
+            chartHTML += '</svg>';
+            
+            // Data points and labels
+            chartData.forEach((entry, index) => {
+                const x = index * sessionWidth;
+                const voorY = chartHeight - ((entry.intensiteitVoor || 0) / 10) * chartHeight - 4; // -4 for dot radius
+                const naY = chartHeight - ((entry.intensiteitNa || 0) / 10) * chartHeight - 4;
+                
+                // Extract date from timestamp 
+                let dateLabel = `#${index + 1}`;
+                if (entry.tijdstempel) {
+                    const datePart = entry.tijdstempel.split(' ')[0]; // Get date part
+                    if (datePart) {
+                        const parts = datePart.split('/');
+                        if (parts.length >= 2) {
+                            dateLabel = `${parts[0]}/${parts[1]}`; // DD/MM format
+                        }
+                    }
+                }
+                
+                chartHTML += `<div style="position: absolute; left: ${x}px; top: 0; width: 20px; height: 100%; display: flex; flex-direction: column; align-items: center;">`;
+                
+                // Voor point
+                chartHTML += `<div class="chart-point voor" style="position: absolute; top: ${voorY}px; width: 8px; height: 8px; border-radius: 50%; background: #ef4444; border: 2px solid #dc2626; z-index: 3; cursor: pointer;" title="Voor: ${entry.intensiteitVoor}/10 (${entry.tijdstempel})"></div>`;
+                
+                // Na point  
+                chartHTML += `<div class="chart-point na" style="position: absolute; top: ${naY}px; width: 8px; height: 8px; border-radius: 50%; background: #10b981; border: 2px solid #059669; z-index: 3; cursor: pointer;" title="Na: ${entry.intensiteitNa}/10 (${entry.tijdstempel})"></div>`;
+                
+                // Date label
+                chartHTML += `<div style="position: absolute; bottom: -25px; font-size: 0.65rem; color: #6b7280; white-space: nowrap; text-align: center; transform: translateX(-50%); max-width: 40px; overflow: hidden; text-overflow: ellipsis;">${dateLabel}</div>`;
+                
                 chartHTML += '</div>';
             });
             
-            chartHTML += '</div>';
+            chartHTML += '</div>'; // Close chart container
             
             // Legend
-            chartHTML += '<div class="chart-legend">';
-            chartHTML += '<div class="legend-item"><div class="legend-dot voor"></div><span>Voor sessie</span></div>';
-            chartHTML += '<div class="legend-item"><div class="legend-dot na"></div><span>Na sessie</span></div>';
+            chartHTML += '<div style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; font-size: 0.8rem; flex-wrap: wrap;">';
+            chartHTML += '<div style="display: flex; align-items: center; gap: 0.5rem;"><div style="width: 12px; height: 12px; border-radius: 50%; background: #ef4444;"></div><span>Voor sessie</span></div>';
+            chartHTML += '<div style="display: flex; align-items: center; gap: 0.5rem;"><div style="width: 12px; height: 12px; border-radius: 50%; background: #10b981;"></div><span>Na sessie</span></div>';
+            chartHTML += '<div style="display: flex; align-items: center; gap: 0.5rem;"><div style="width: 20px; height: 2px; background: #ef4444; opacity: 0.6; border-radius: 1px;"></div><span style="font-size: 0.7rem;">Voor lijn</span></div>';
+            chartHTML += '<div style="display: flex; align-items: center; gap: 0.5rem;"><div style="width: 20px; height: 2px; background: #10b981; border-radius: 1px;"></div><span style="font-size: 0.7rem;">Na lijn</span></div>';
             chartHTML += '</div>';
             
             chartHTML += '</div></div>';

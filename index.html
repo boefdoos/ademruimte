@@ -14,14 +14,15 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f9fafb;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
 
         header {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 1rem;
             text-align: center;
@@ -30,18 +31,21 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+            backdrop-filter: blur(10px);
         }
 
         header h1 {
             font-size: 1.4rem;
-            font-weight: 600;
+            font-weight: 700;
             margin: 0;
             letter-spacing: -0.02em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         header p {
             font-size: 0.75rem;
-            opacity: 0.85;
+            opacity: 0.9;
             margin: 0.25rem 0 0 0;
         }
 
@@ -57,12 +61,14 @@
         }
 
         .nav-tabs {
-            background: white;
-            border-bottom: 2px solid #e5e7eb;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid rgba(102, 126, 234, 0.2);
             padding: 0.5rem;
             overflow-x: auto;
             white-space: nowrap;
             -webkit-overflow-scrolling: touch;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
 
         .nav-tabs button {
@@ -70,126 +76,201 @@
             border: none;
             padding: 0.75rem 1rem;
             margin-right: 0.25rem;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.2s;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
             white-space: nowrap;
             min-height: 44px;
             touch-action: manipulation;
+            color: #6b7280;
         }
 
         .nav-tabs button.active {
-            background: #dbeafe;
-            color: #1d4ed8;
-            border: 1px solid #bfdbfe;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transform: translateY(-1px);
         }
 
-        .nav-tabs button:hover {
-            background: #f3f4f6;
+        .nav-tabs button:hover:not(.active) {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
         }
 
         .container {
             max-width: 100%;
             margin: 0 auto;
             padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            min-height: calc(100vh - 120px);
         }
 
         .card {
-            background: white;
-            border-radius: 0.75rem;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid #e5e7eb;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
 
         .card h2 {
             color: #1f2937;
             margin-bottom: 1rem;
-            font-size: 1.375rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .card h3 {
             color: #374151;
             margin-bottom: 0.75rem;
-            font-size: 1.125rem;
+            font-size: 1.25rem;
+            font-weight: 600;
         }
 
         .grid {
             display: grid;
-            gap: 1rem;
+            gap: 1.5rem;
             grid-template-columns: 1fr;
         }
 
+        .grid .card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+            border-radius: 1.2rem;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .grid .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 1.2rem 1.2rem 0 0;
+        }
+
+        .grid .card h3 {
+            font-size: 1.375rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .grid .card p {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
         .btn {
-            padding: 0.875rem 1.25rem;
+            padding: 1rem 1.5rem;
             border: none;
-            border-radius: 0.5rem;
+            border-radius: 0.75rem;
             cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.2s;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
             text-align: center;
             display: inline-block;
             text-decoration: none;
             min-height: 48px;
             touch-action: manipulation;
             user-select: none;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
 
         .btn-primary {
-            background: #3b82f6;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
 
         .btn-primary:hover {
-            background: #2563eb;
+            background: linear-gradient(135deg, #5a6fd8, #6a4190);
         }
 
         .btn-green {
-            background: #10b981;
+            background: linear-gradient(135deg, #10b981, #059669);
             color: white;
         }
 
         .btn-green:hover {
-            background: #059669;
+            background: linear-gradient(135deg, #0ea370, #047857);
         }
 
         .btn-orange {
-            background: #f59e0b;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
             color: white;
         }
 
         .btn-orange:hover {
-            background: #d97706;
+            background: linear-gradient(135deg, #e08e0b, #c76506);
         }
 
         .btn-red {
-            background: #ef4444;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
             color: white;
         }
 
         .btn-red:hover {
-            background: #dc2626;
+            background: linear-gradient(135deg, #e53935, #c62828);
         }
 
         .btn-purple {
-            background: #8b5cf6;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
             color: white;
         }
 
         .btn-purple:hover {
-            background: #7c3aed;
+            background: linear-gradient(135deg, #7c4ee4, #6d28d9);
         }
 
         .btn-cyan {
-            background: #06b6d4;
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
             color: white;
         }
 
         .btn-cyan:hover {
-            background: #0891b2;
+            background: linear-gradient(135deg, #0ea5c7, #0e7490);
         }
 
         .alert {
@@ -413,23 +494,66 @@
             min-height: 40px;
         }
 
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
         .technique-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
-            padding: 1rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
             margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .technique-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
         }
 
         .technique-card h4 {
-            color: #1e40af;
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
+            color: #667eea;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+            font-weight: 600;
         }
 
         .technique-card p {
-            font-size: 0.9rem;
-            line-height: 1.5;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #4b5563;
         }
 
         .entry-card {
@@ -1286,6 +1410,47 @@
                     </div>
                 </div>
 
+                <!-- Analytics Section -->
+                <div id="analytics-section" class="card" style="display: none;">
+                    <h3>📊 Jouw Vooruitgang</h3>
+                    
+                    <!-- Chart Container -->
+                    <div style="margin-bottom: 2rem;">
+                        <h4 style="margin-bottom: 1rem; color: #6b7280; font-size: 0.9rem;">Intensiteit Evolutie</h4>
+                        <div id="intensity-chart" style="width: 100%; height: 300px; background: rgba(255,255,255,0.5); border-radius: 0.75rem; padding: 1rem;">
+                            <!-- Chart will be rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- Technique Effectiveness -->
+                    <div style="margin-bottom: 2rem;">
+                        <h4 style="margin-bottom: 1rem; color: #6b7280; font-size: 0.9rem;">Effectiviteit per Techniek</h4>
+                        <div id="technique-chart" style="width: 100%; height: 250px; background: rgba(255,255,255,0.5); border-radius: 0.75rem; padding: 1rem;">
+                            <!-- Chart will be rendered here -->
+                        </div>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="total-sessions">0</div>
+                            <div class="stat-label">Totaal Sessies</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="avg-improvement">0%</div>
+                            <div class="stat-label">Gem. Verbetering</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="best-technique">-</div>
+                            <div class="stat-label">Beste Techniek</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="streak-days">0</div>
+                            <div class="stat-label">Dagen Streak</div>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="dagboek-entries">
                     <!-- Entries worden hier geladen -->
                 </div>
@@ -1366,6 +1531,9 @@
     </footer>
 
     <!-- Firebase en App JavaScript -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.8.0/umd/Recharts.js"></script>
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
@@ -1552,27 +1720,31 @@
             console.log('✅ Force logout completed with auth re-initialization');
         };
 
-        // Separate function for auth state observer setup
+        // Separate function for auth state observer setup (backup only)
         function setupAuthStateObserver() {
             onAuthStateChanged(auth, (user) => {
-                console.log('🔄 Auth state changed. User:', user ? 'LOGGED_IN' : 'LOGGED_OUT');
+                console.log('🔄 Auth state observer - User:', user ? 'LOGGED_IN' : 'LOGGED_OUT');
                 
                 document.getElementById('auth-loading').style.display = 'none';
                 
-                if (user) {
+                // Only handle logout case - login is handled explicitly by login functions
+                if (!user && currentUser) {
+                    // User was logged out
+                    currentUser = null;
+                    console.log('❌ User logged out, showing login screen');
+                    showLoginScreen();
+                    resetLoginForm();
+                } else if (user && !currentUser) {
+                    // This handles initial page load with existing auth
                     currentUser = user;
-                    console.log('✅ Showing main app for user:', user.email);
+                    console.log('✅ Initial auth state - showing main app');
                     showMainApp();
                     updateUserInfo(user);
                     updateAccountInfo(user);
                     loadDagboekEntries();
                     checkForLocalData();
-                } else {
-                    currentUser = null;
-                    console.log('❌ No user, showing login screen');
-                    showLoginScreen();
-                    resetLoginForm(); // Reset login form after logout
                 }
+                // If user exists and currentUser exists, do nothing (login functions handle this)
             }, (error) => {
                 console.error('❌ Auth state observer error:', error);
             });
@@ -2841,6 +3013,11 @@
                 const entries = await loadFromFirestore();
                 displayDagboekEntries(entries);
                 
+                // Show analytics if there are entries
+                if (entries && entries.length > 0) {
+                    showAnalytics(entries);
+                }
+                
             } catch (error) {
                 console.error('Load entries failed:', error);
                 document.getElementById('dagboek-entries').innerHTML = 
@@ -2850,6 +3027,212 @@
                     '</div>';
             }
         };
+
+        // Analytics and charting functions
+        function showAnalytics(entries) {
+            const analyticsSection = document.getElementById('analytics-section');
+            analyticsSection.style.display = 'block';
+            
+            // Calculate analytics
+            const stats = calculateAnalytics(entries);
+            
+            // Update stat cards
+            document.getElementById('total-sessions').textContent = stats.totalSessions;
+            document.getElementById('avg-improvement').textContent = stats.avgImprovement + '%';
+            document.getElementById('best-technique').textContent = stats.bestTechnique;
+            document.getElementById('streak-days').textContent = stats.streakDays;
+            
+            // Render charts
+            renderIntensityChart(entries);
+            renderTechniqueChart(entries);
+        }
+
+        function calculateAnalytics(entries) {
+            const totalSessions = entries.length;
+            
+            // Calculate average improvement
+            let totalImprovement = 0;
+            let validEntries = 0;
+            
+            entries.forEach(entry => {
+                if (entry.intensiteitVoor && entry.intensiteitNa) {
+                    const improvement = ((entry.intensiteitVoor - entry.intensiteitNa) / entry.intensiteitVoor) * 100;
+                    totalImprovement += improvement;
+                    validEntries++;
+                }
+            });
+            
+            const avgImprovement = validEntries > 0 ? Math.round(totalImprovement / validEntries) : 0;
+            
+            // Find best technique
+            const techniqueStats = {};
+            entries.forEach(entry => {
+                if (entry.techniekGebruikt && entry.intensiteitVoor && entry.intensiteitNa) {
+                    if (!techniqueStats[entry.techniekGebruikt]) {
+                        techniqueStats[entry.techniekGebruikt] = { total: 0, count: 0 };
+                    }
+                    const improvement = entry.intensiteitVoor - entry.intensiteitNa;
+                    techniqueStats[entry.techniekGebruikt].total += improvement;
+                    techniqueStats[entry.techniekGebruikt].count++;
+                }
+            });
+            
+            let bestTechnique = '-';
+            let bestAvg = -10;
+            Object.keys(techniqueStats).forEach(technique => {
+                const avg = techniqueStats[technique].total / techniqueStats[technique].count;
+                if (avg > bestAvg) {
+                    bestAvg = avg;
+                    bestTechnique = technique.substring(0, 15) + (technique.length > 15 ? '...' : '');
+                }
+            });
+            
+            // Calculate streak (simplified - consecutive days with entries)
+            const streakDays = Math.min(7, totalSessions); // Simple approximation
+            
+            return {
+                totalSessions,
+                avgImprovement,
+                bestTechnique,
+                streakDays
+            };
+        }
+
+        function renderIntensityChart(entries) {
+            // Prepare data for line chart
+            const chartData = entries.slice(-10).reverse().map((entry, index) => ({
+                sessie: `#${index + 1}`,
+                voor: entry.intensiteitVoor || 0,
+                na: entry.intensiteitNa || 0,
+                datum: entry.tijdstempel ? entry.tijdstempel.split(' ')[0] : ''
+            }));
+
+            const chartContainer = document.getElementById('intensity-chart');
+            
+            // Use React to render Recharts component
+            const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
+            
+            const chart = React.createElement(ResponsiveContainer, { width: '100%', height: '100%' },
+                React.createElement(LineChart, { data: chartData },
+                    React.createElement(CartesianGrid, { strokeDasharray: '3 3', stroke: '#e0e7ff' }),
+                    React.createElement(XAxis, { dataKey: 'sessie', fontSize: 12 }),
+                    React.createElement(YAxis, { domain: [0, 10], fontSize: 12 }),
+                    React.createElement(Tooltip, { 
+                        contentStyle: { 
+                            background: 'rgba(255,255,255,0.95)', 
+                            border: '1px solid #667eea',
+                            borderRadius: '8px',
+                            backdropFilter: 'blur(10px)'
+                        }
+                    }),
+                    React.createElement(Legend),
+                    React.createElement(Line, { 
+                        type: 'monotone', 
+                        dataKey: 'voor', 
+                        stroke: '#ef4444', 
+                        strokeWidth: 3,
+                        name: 'Voor',
+                        dot: { fill: '#ef4444', strokeWidth: 2, r: 4 }
+                    }),
+                    React.createElement(Line, { 
+                        type: 'monotone', 
+                        dataKey: 'na', 
+                        stroke: '#10b981', 
+                        strokeWidth: 3,
+                        name: 'Na',
+                        dot: { fill: '#10b981', strokeWidth: 2, r: 4 }
+                    })
+                )
+            );
+            
+            // Render the chart
+            try {
+                if (ReactDOM.createRoot) {
+                    const root = ReactDOM.createRoot(chartContainer);
+                    root.render(chart);
+                } else {
+                    ReactDOM.render(chart, chartContainer);
+                }
+            } catch (error) {
+                console.error('Chart rendering error:', error);
+                chartContainer.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #6b7280;">📊 Grafiek wordt geladen...</div>';
+            }
+        }
+
+        function renderTechniqueChart(entries) {
+            // Calculate technique effectiveness
+            const techniqueStats = {};
+            entries.forEach(entry => {
+                if (entry.techniekGebruikt && entry.intensiteitVoor && entry.intensiteitNa) {
+                    if (!techniqueStats[entry.techniekGebruikt]) {
+                        techniqueStats[entry.techniekGebruikt] = { improvements: [], count: 0 };
+                    }
+                    const improvement = entry.intensiteitVoor - entry.intensiteitNa;
+                    techniqueStats[entry.techniekGebruikt].improvements.push(improvement);
+                    techniqueStats[entry.techniekGebruikt].count++;
+                }
+            });
+
+            const chartData = Object.keys(techniqueStats).map(technique => {
+                const stats = techniqueStats[technique];
+                const avgImprovement = stats.improvements.reduce((a, b) => a + b, 0) / stats.count;
+                return {
+                    techniek: technique.length > 15 ? technique.substring(0, 13) + '...' : technique,
+                    verbetering: Math.round(avgImprovement * 10) / 10,
+                    sessies: stats.count
+                };
+            }).sort((a, b) => b.verbetering - a.verbetering).slice(0, 5);
+
+            const chartContainer = document.getElementById('technique-chart');
+            
+            const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+            
+            const chart = React.createElement(ResponsiveContainer, { width: '100%', height: '100%' },
+                React.createElement(BarChart, { data: chartData },
+                    React.createElement(CartesianGrid, { strokeDasharray: '3 3', stroke: '#e0e7ff' }),
+                    React.createElement(XAxis, { 
+                        dataKey: 'techniek', 
+                        fontSize: 10,
+                        angle: -45,
+                        textAnchor: 'end',
+                        height: 60
+                    }),
+                    React.createElement(YAxis, { fontSize: 12 }),
+                    React.createElement(Tooltip, { 
+                        contentStyle: { 
+                            background: 'rgba(255,255,255,0.95)', 
+                            border: '1px solid #667eea',
+                            borderRadius: '8px',
+                            backdropFilter: 'blur(10px)'
+                        }
+                    }),
+                    React.createElement(Bar, { 
+                        dataKey: 'verbetering', 
+                        fill: 'url(#gradient)',
+                        radius: [4, 4, 0, 0]
+                    }),
+                    React.createElement('defs', {},
+                        React.createElement('linearGradient', { id: 'gradient', x1: '0', y1: '0', x2: '0', y2: '1' },
+                            React.createElement('stop', { offset: '0%', stopColor: '#667eea' }),
+                            React.createElement('stop', { offset: '100%', stopColor: '#764ba2' })
+                        )
+                    )
+                )
+            );
+            
+            // Render the chart
+            try {
+                if (ReactDOM.createRoot) {
+                    const root = ReactDOM.createRoot(chartContainer);
+                    root.render(chart);
+                } else {
+                    ReactDOM.render(chart, chartContainer);
+                }
+            } catch (error) {
+                console.error('Chart rendering error:', error);
+                chartContainer.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #6b7280;">📊 Grafiek wordt geladen...</div>';
+            }
+        }
 
         window.exportDagboek = async function() {
             try {

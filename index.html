@@ -118,12 +118,6 @@
             margin-bottom: 1.5rem;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
 
         .card h2 {
@@ -144,52 +138,6 @@
             font-weight: 600;
         }
 
-        .grid .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #06b6d4, #10b981);
-            border-radius: 1.2rem 1.2rem 0 0;
-        }
-
-        .grid .card h3 {
-            font-size: 1.375rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
-            color: #1f2937;
-        }
-
-        .grid .card p {
-            color: #4b5563;
-            margin-bottom: 1.5rem;
-            font-size: 0.95rem;
-        }
-
-        /* Remove hover effects from non-interactive elements */
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: none; /* Remove hover animation */
-        }
-
-        /* Only interactive cards should have hover effects */
-        .grid .card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .grid .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-        }
-
         .grid {
             display: grid;
             gap: 1.5rem;
@@ -203,6 +151,12 @@
             text-align: center;
             position: relative;
             overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .grid .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
 
         .grid .card::before {
@@ -828,6 +782,156 @@
             padding: 2rem 1rem;
             color: #6b7280;
             font-size: 0.8rem;
+        }
+
+        /* CSS Chart Styles */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .chart-y-axis {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 40px;
+            width: 30px;
+            display: flex;
+            flex-direction: column-reverse;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .line-chart {
+            position: absolute;
+            left: 40px;
+            right: 0;
+            top: 10px;
+            bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-left: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0 10px 10px 10px;
+        }
+
+        .chart-session {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            flex: 1;
+            max-width: 60px;
+        }
+
+        .chart-point {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .chart-point.voor {
+            background: #ef4444;
+            border: 2px solid #dc2626;
+        }
+
+        .chart-point.na {
+            background: #10b981;
+            border: 2px solid #059669;
+        }
+
+        .chart-session-label {
+            position: absolute;
+            bottom: -25px;
+            font-size: 0.7rem;
+            color: #6b7280;
+            text-align: center;
+            width: 100%;
+        }
+
+        .chart-legend {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.voor {
+            background: #ef4444;
+        }
+
+        .legend-dot.na {
+            background: #10b981;
+        }
+
+        .bar-chart {
+            height: 180px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            border-left: 1px solid #e5e7eb;
+        }
+
+        .bar {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 4px 4px 0 0;
+            min-width: 40px;
+            max-width: 60px;
+            flex: 1;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .bar:hover {
+            opacity: 0.8;
+            transform: translateY(-2px);
+        }
+
+        .bar-value {
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.25rem;
+            text-align: center;
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            font-size: 0.7rem;
+            color: #6b7280;
+            text-align: center;
+            width: 100%;
+            word-break: break-word;
+            line-height: 1.1;
         }
 
         /* Desktop optimizations */
@@ -1579,12 +1683,10 @@
         <p>📞 In noodgevallen: contacteer altijd je huisarts of spoeddiensten</p>
     </footer>
 
-    <!-- External Libraries (alleen React voor eventuele toekomstige uitbreidingen) -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
     <!-- Firebase en App JavaScript -->
     <script type="module">
+        console.log('🚀 Starting Ademruimte app - Fixed version');
+
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
@@ -1600,64 +1702,8 @@
             appId: "1:744941871331:web:c3ce24d814fe41314d25d6",
             measurementId: "G-SD2ZEYNMNY"
         };
-
-        console.log('🚀 Starting Ademruimte app - CSS Charts only, no external chart libraries');
-        // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-
-        // Firebase configuratie
-        const firebaseConfig = {
-            apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
-            authDomain: "ademruimte-12c09.firebaseapp.com",
-            projectId: "ademruimte-12c09",
-            storageBucket: "ademruimte-12c09.firebasestorage.app",
-            messagingSenderId: "744941871331",
-            appId: "1:744941871331:web:c3ce24d814fe41314d25d6",
-            measurementId: "G-SD2ZEYNMNY"
-        };
-
-        console.log('🚀 Starting Ademruimte app - CSS Charts only, no external chart libraries');
 
         // Global variables
-        let app, db, auth;
-        let currentUser = null;
-        let isFirebaseConnected = false;
-        let currentTab = 'dashboard';
-        let timerInterval = null;
-        let currentTime = 0;
-        let ritualStep = 0;
-        let emdrStep = 0;
-        let currentTechnique = '';
-        let dagboekEntries = [];
-
-        // Breath exercise variables
-        let breathInterval = null;
-        let breathPhase = 'rest'; // 'inhale', 'exhale', 'hold', 'rest'
-        let breathCycleCount = 0;
-        let breathPhaseTime = 0;
-        let breathCycleDuration = 0;
-
-        // Audio variables for EMDR
-        let audioContext = null;
-        let oscillator = null;
-        let gainNode = null;
-        let pannerNode = null;
-        let audioInterval = null;
-        let isAudioPlaying = false;
-        let panPosition = -1; // Start left (-1), move to right (1)
-
-        // Wake lock for keeping screen on
-        let wakeLock = null;
-
-        // Progress tracking
-        let progressData = {
-            buteyko: { sessions: 0, totalTime: 0, lastSession: null },
-            ritual: { sessions: 0, totalTime: 0, lastSession: null },
-            emdr: { sessions: 0, totalTime: 0, lastSession: null },
-            crisis: { sessions: 0, lastSession: null }
-        };
         let app, db, auth;
         let currentUser = null;
         let isFirebaseConnected = false;
@@ -1986,14 +2032,9 @@
             userInfo.innerHTML = '👋 ' + shortName;
         }
 
-        // Authentication functions with explicit navigation
+        // FIXED Authentication functions with correct Firebase v9+ imports
         window.signInWithGoogle = async function() {
             try {
-                // Ensure we have a fresh auth instance
-                if (!auth) {
-                    auth = getAuth(app);
-                }
-                
                 // Set persistence to local (keep signed in)
                 await setPersistence(auth, browserLocalPersistence);
                 
@@ -2045,7 +2086,7 @@
             document.getElementById('register-form').reset();
         };
 
-        // Login form handler with explicit navigation after login
+        // FIXED Login form handler with correct Firebase v9+ imports
         function setupLoginFormHandler() {
             const loginForm = document.getElementById('login-form');
             if (!loginForm) {
@@ -2079,11 +2120,6 @@
                 submitBtn.disabled = true;
                 
                 try {
-                    // Ensure we have a fresh auth instance
-                    if (!auth) {
-                        auth = getAuth(app);
-                    }
-                    
                     // Set persistence based on checkbox
                     if (rememberMe) {
                         await setPersistence(auth, browserLocalPersistence);
@@ -2134,7 +2170,7 @@
             console.log('✅ Login form handler setup complete');
         }
 
-        // Register form handler with explicit navigation
+        // FIXED Register form handler with correct Firebase v9+ imports
         function setupRegisterFormHandler() {
             const registerForm = document.getElementById('register-form');
             if (!registerForm) {
@@ -2165,11 +2201,6 @@
                 }
                 
                 try {
-                    // Ensure we have a fresh auth instance
-                    if (!auth) {
-                        auth = getAuth(app);
-                    }
-                    
                     // Set persistence to local (keep signed in)
                     await setPersistence(auth, browserLocalPersistence);
                     
@@ -2210,1450 +2241,14 @@
             });
         }
 
-        // Fixed Firebase functions with improved error handling for index issues
-        async function saveToFirestore(entry, retryCount = 0) {
-            const maxRetries = 2;
-            
-            if (!isFirebaseConnected) {
-                console.log('❌ Firebase not connected, using localStorage');
-                return saveToLocalStorage(entry, 'Firebase niet verbonden');
-            }
-            
-            if (!currentUser) {
-                console.log('❌ No current user, using localStorage');
-                return saveToLocalStorage(entry, 'Niet ingelogd');
-            }
-
-            try {
-                console.log('☁️ Saving to Firestore...');
-
-                const docRef = await addDoc(collection(db, "dagboekEntries"), {
-                    ...entry,
-                    timestamp: serverTimestamp(),
-                    userId: currentUser.uid,
-                    userEmail: currentUser.email
-                });
-                
-                console.log('✅ Entry saved to Firestore with ID:', docRef.id);
-                return { id: docRef.id, success: true, source: 'Firebase' };
-                
-            } catch (error) {
-                console.error(`❌ Firestore save error (attempt ${retryCount + 1}):`, error);
-                
-                // Check for index errors specifically
-                if (error.code === 'failed-precondition' || error.message.includes('index')) {
-                    console.log('💡 Firestore index error - falling back to localStorage');
-                    return saveToLocalStorage(entry, 'Firestore index niet beschikbaar');
-                }
-                
-                // Check for other retryable errors
-                const retryableErrors = [
-                    'unavailable', 
-                    'deadline-exceeded',
-                    'aborted',
-                    'internal'
-                ];
-                
-                const isRetryable = retryableErrors.includes(error.code) || 
-                                  error.message.includes('network') ||
-                                  error.message.includes('timeout');
-                
-                if (retryCount < maxRetries && isRetryable) {
-                    const delay = (retryCount + 1) * 1000;
-                    console.log(`🔄 Retrying Firestore save in ${delay}ms...`);
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    return saveToFirestore(entry, retryCount + 1);
-                }
-                
-                console.log('💾 Firestore failed, falling back to localStorage');
-                return saveToLocalStorage(entry, `Firestore fout: ${error.code || error.message}`);
-            }
-        }
-
-        function saveToLocalStorage(entry, reason) {
-            const stored = JSON.parse(localStorage.getItem('ademruimte-entries') || '[]');
-            const entryWithId = { 
-                ...entry, 
-                id: Date.now().toString(), 
-                bron: 'Lokaal',
-                reden: reason,
-                userId: currentUser?.uid || 'local'
-            };
-            stored.unshift(entryWithId);
-            localStorage.setItem('ademruimte-entries', JSON.stringify(stored));
-            
-            console.log('💾 Entry saved to localStorage:', entryWithId);
-            return { id: entryWithId.id, success: true, source: 'localStorage' };
-        }
-
-        // Fixed loadFromFirestore - removes orderBy to avoid index requirements
-        async function loadFromFirestore() {
-            if (!isFirebaseConnected || !currentUser) {
-                console.log('📱 Loading from localStorage...');
-                const stored = localStorage.getItem('ademruimte-entries');
-                return stored ? JSON.parse(stored) : [];
-            }
-
-            try {
-                console.log('☁️ Loading entries from Firestore for user:', currentUser.email);
-                
-                // Use a simpler query without orderBy to avoid index requirements
-                const q = query(
-                    collection(db, "dagboekEntries"), 
-                    where("userId", "==", currentUser.uid)
-                    // Remove orderBy to avoid index requirement
-                );
-                
-                const querySnapshot = await getDocs(q);
-                
-                const entries = [];
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    entries.push({
-                        id: doc.id,
-                        ...data,
-                        tijdstempel: data.timestamp ? data.timestamp.toDate().toLocaleString('nl-BE') : 'Onbekend',
-                        bron: "Cloud"
-                    });
-                });
-                
-                // Sort in JavaScript instead of Firestore
-                entries.sort((a, b) => {
-                    const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
-                    const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
-                    return dateB - dateA; // Newest first
-                });
-                
-                console.log('✅ Loaded', entries.length, 'entries from Firestore');
-                return entries;
-                
-            } catch (error) {
-                console.error('❌ Firestore query error:', error);
-                console.log('📱 Falling back to localStorage due to Firestore error');
-                
-                // Show user that there's an issue but local data is used
-                if (error.code === 'failed-precondition' || error.message.includes('index')) {
-                    console.log('💡 This is a Firestore index error - using localStorage instead');
-                }
-                
-                // Fallback to localStorage
-                const stored = localStorage.getItem('ademruimte-entries');
-                return stored ? JSON.parse(stored) : [];
-            }
-        }
-
-        // Data migration function
-        window.migrateLocalData = async function() {
-            if (!currentUser) {
-                alert('❌ Je moet ingelogd zijn om data te migreren');
-                return;
-            }
-
-            const localData = localStorage.getItem('ademruimte-entries');
-            if (!localData) {
-                alert('📝 Geen lokale data gevonden om te migreren');
-                return;
-            }
-
-            const entries = JSON.parse(localData);
-            if (entries.length === 0) {
-                alert('📝 Geen entries gevonden om te migreren');
-                return;
-            }
-
-            const confirmMigration = confirm(
-                `🔄 Data Migratie\n\n` +
-                `Er zijn ${entries.length} lokale entries gevonden.\n` +
-                `Wil je deze migreren naar je cloud account?\n\n` +
-                `Dit zal ze toevoegen aan je cloud opslag.`
-            );
-
-            if (!confirmMigration) return;
-
-            try {
-                let migratedCount = 0;
-                
-                for (const entry of entries) {
-                    // Skip entries that are already marked as cloud entries
-                    if (entry.bron === 'Cloud' || entry.userId === currentUser.uid) {
-                        continue;
-                    }
-
-                    // Clean entry for migration
-                    const cleanEntry = {
-                        techniekGebruikt: entry.techniekGebruikt,
-                        trigger: entry.trigger,
-                        intensiteitVoor: entry.intensiteitVoor,
-                        intensiteitNa: entry.intensiteitNa,
-                        resultaat: entry.resultaat,
-                        notities: entry.notities,
-                        tijdstempel: entry.tijdstempel
-                    };
-
-                    await saveToFirestore(cleanEntry);
-                    migratedCount++;
-                }
-
-                if (migratedCount > 0) {
-                    alert(`✅ Migratie Voltooid!\n\n${migratedCount} entries zijn succesvol gemigreerd naar je cloud account.`);
-                    
-                    // Clear local storage after successful migration
-                    localStorage.removeItem('ademruimte-entries');
-                    
-                    // Hide migration section
-                    document.getElementById('migration-section').style.display = 'none';
-                    
-                    // Reload entries
-                    await loadDagboekEntries();
-                } else {
-                    alert('📝 Geen nieuwe entries gevonden om te migreren');
-                }
-                
-            } catch (error) {
-                console.error('❌ Migration error:', error);
-                alert('❌ Migratie mislukt: ' + error.message);
-            }
-        };
-
-        // Buteyko breathing exercise functions
-        let breathingPattern = 'standard';
-        let gentleBreathCount = 0;
-
-        window.updateBreathingPattern = function() {
-            breathingPattern = document.getElementById('breathing-pattern').value;
-            const standardControls = document.getElementById('standard-controls');
-            const gentleControls = document.getElementById('gentle-controls');
-            
-            if (breathingPattern === 'gentle') {
-                standardControls.classList.add('hidden');
-                gentleControls.classList.remove('hidden');
-            } else {
-                standardControls.classList.remove('hidden');
-                gentleControls.classList.add('hidden');
-            }
-            
-            // Reset if currently running
-            if (breathInterval) {
-                resetBreathExercise();
-            }
-        };
-
-        window.toggleBreathExercise = function() {
-            if (breathInterval) {
-                stopBreathExercise();
-            } else {
-                startBreathExercise();
-            }
-        };
-
-        window.resetBreathExercise = function() {
-            stopBreathExercise();
-            breathCycleCount = 0;
-            gentleBreathCount = 0;
-            breathPhase = 'rest';
-            updateBreathDisplay();
-            updateBreathProgress(0);
-            document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 0';
-            document.getElementById('breath-complete').classList.add('hidden');
-        };
-
-        function startBreathExercise() {
-            // Request wake lock to keep screen on
-            requestWakeLock();
-            
-            if (breathingPattern === 'gentle') {
-                startGentleBreathing();
-            } else {
-                startStandardBreathing();
-            }
-        }
-
-        function startStandardBreathing() {
-            const inhale = parseInt(document.getElementById('inhale-duration').value);
-            const exhale = parseInt(document.getElementById('exhale-duration').value);
-            const hold = parseInt(document.getElementById('hold-duration').value);
-            
-            breathCycleDuration = inhale + exhale + hold;
-            breathPhase = 'inhale';
-            breathPhaseTime = 0;
-            
-            document.getElementById('breath-btn').innerHTML = '⏸️ Stop Buteyko';
-            document.getElementById('breath-btn').className = 'btn btn-red';
-            
-            breathInterval = setInterval(() => {
-                updateStandardBreathCycle();
-            }, 100);
-        }
-
-        function startGentleBreathing() {
-            const cycleTime = parseInt(document.getElementById('gentle-cycle').value);
-            const pauseTime = parseInt(document.getElementById('gentle-pause').value);
-            
-            breathPhase = 'gentle-breath';
-            breathPhaseTime = 0;
-            gentleBreathCount = 0;
-            
-            document.getElementById('breath-btn').innerHTML = '⏸️ Stop Buteyko';
-            document.getElementById('breath-btn').className = 'btn btn-red';
-            
-            breathInterval = setInterval(() => {
-                updateGentleBreathCycle();
-            }, 100);
-        }
-
-        function stopBreathExercise() {
-            if (breathInterval) {
-                clearInterval(breathInterval);
-                breathInterval = null;
-            }
-            
-            // Release wake lock
-            releaseWakeLock();
-            
-            breathPhase = 'rest';
-            updateBreathDisplay();
-            updateBreathProgress(0);
-            
-            document.getElementById('breath-btn').innerHTML = '▶️ Start Buteyko';
-            document.getElementById('breath-btn').className = 'btn btn-cyan';
-        }
-
-        function updateStandardBreathCycle() {
-            const inhale = parseInt(document.getElementById('inhale-duration').value);
-            const exhale = parseInt(document.getElementById('exhale-duration').value);
-            const hold = parseInt(document.getElementById('hold-duration').value);
-            
-            breathPhaseTime += 0.1;
-            
-            // Update phase based on timing
-            let progress = 0;
-            
-            if (breathPhase === 'inhale') {
-                progress = (breathPhaseTime / inhale) * 100;
-                if (breathPhaseTime >= inhale) {
-                    breathPhase = 'exhale';
-                    breathPhaseTime = 0;
-                }
-            } else if (breathPhase === 'exhale') {
-                progress = (breathPhaseTime / exhale) * 100;
-                if (breathPhaseTime >= exhale) {
-                    breathPhase = 'hold';
-                    breathPhaseTime = 0;
-                }
-            } else if (breathPhase === 'hold') {
-                progress = (breathPhaseTime / hold) * 100;
-                if (breathPhaseTime >= hold) {
-                    breathPhase = 'inhale';
-                    breathPhaseTime = 0;
-                    breathCycleCount++;
-                    document.getElementById('breath-cycle-counter').textContent = `Cyclus: ${breathCycleCount}`;
-                    
-                    // Complete after 10 cycles
-                    if (breathCycleCount >= 10) {
-                        stopBreathExercise();
-                        trackSession('buteyko', breathCycleCount * breathCycleDuration);
-                        document.getElementById('breath-complete').classList.remove('hidden');
-                        return;
-                    }
-                }
-            }
-            
-            updateBreathDisplay();
-            updateBreathProgress(Math.min(progress, 100));
-        }
-
-        function updateGentleBreathCycle() {
-            const cycleTime = parseInt(document.getElementById('gentle-cycle').value);
-            const pauseTime = parseInt(document.getElementById('gentle-pause').value);
-            
-            breathPhaseTime += 0.1;
-            let progress = 0;
-            
-            if (breathPhase === 'gentle-breath') {
-                progress = (breathPhaseTime / cycleTime) * 100;
-                if (breathPhaseTime >= cycleTime) {
-                    breathPhase = 'hold';
-                    breathPhaseTime = 0;
-                    gentleBreathCount++;
-                }
-            } else if (breathPhase === 'hold') {
-                progress = (breathPhaseTime / pauseTime) * 100;
-                if (breathPhaseTime >= pauseTime) {
-                    breathPhase = 'gentle-breath';
-                    breathPhaseTime = 0;
-                    breathCycleCount++;
-                    document.getElementById('breath-cycle-counter').textContent = `Cyclus: ${breathCycleCount}`;
-                    
-                    // Complete after 10 cycles
-                    if (breathCycleCount >= 10) {
-                        stopBreathExercise();
-                        trackSession('buteyko', breathCycleCount * (cycleTime + pauseTime));
-                        document.getElementById('breath-complete').classList.remove('hidden');
-                        return;
-                    }
-                }
-            }
-            
-            updateBreathDisplay();
-            updateBreathProgress(Math.min(progress, 100));
-        }
-
-        function updateBreathDisplay() {
-            const display = document.getElementById('breath-display');
-            const progressBar = document.getElementById('breath-progress');
-            
-            display.className = `breath-display ${breathPhase}`;
-            progressBar.className = `breath-progress ${breathPhase}`;
-            
-            switch (breathPhase) {
-                case 'inhale':
-                    display.textContent = '🌬️ Inademen';
-                    break;
-                case 'exhale':
-                    display.textContent = '💨 Uitademen';
-                    break;
-                case 'hold':
-                    display.textContent = '⏸️ Pauze';
-                    break;
-                case 'gentle-breath':
-                    display.textContent = `🌬️ Zachte Ademhaling (${gentleBreathCount + 1}/2)`;
-                    break;
-                case 'rest':
-                default:
-                    display.textContent = 'Klik op start om te beginnen';
-                    break;
-            }
-        }
-
-        function updateBreathProgress(percentage) {
-            document.getElementById('breath-progress').style.width = percentage + '%';
-        }
-
-        // Bilateral audio functions for EMDR
-        function initAudioContext() {
-            if (!audioContext) {
-                try {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    console.log('✅ Audio context initialized');
-                } catch (error) {
-                    console.error('❌ Audio context initialization failed:', error);
-                    alert('Je browser ondersteunt geen Web Audio API. Probeer een moderne browser.');
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        window.toggleBilateralAudio = function() {
-            if (isAudioPlaying) {
-                stopBilateralAudio();
-            } else {
-                startBilateralAudio();
-            }
-        };
-
-        function startBilateralAudio() {
-            if (!initAudioContext()) return;
-
-            try {
-                // Resume audio context if suspended (required by some browsers)
-                if (audioContext.state === 'suspended') {
-                    audioContext.resume();
-                }
-
-                // Create oscillator for 880Hz tone
-                oscillator = audioContext.createOscillator();
-                oscillator.frequency.setValueAtTime(880, audioContext.currentTime); // A5 note
-                oscillator.type = 'sine'; // Smooth sine wave
-
-                // Create gain node for volume control
-                gainNode = audioContext.createGain();
-                const volume = parseInt(document.getElementById('audio-volume').value) / 100;
-                gainNode.gain.setValueAtTime(volume * 0.3, audioContext.currentTime); // Keep it gentle
-
-                // Create stereo panner for left-right movement
-                pannerNode = audioContext.createStereoPanner();
-                pannerNode.pan.setValueAtTime(-1, audioContext.currentTime); // Start left
-
-                // Connect audio nodes
-                oscillator.connect(gainNode);
-                gainNode.connect(pannerNode);
-                pannerNode.connect(audioContext.destination);
-
-                // Start oscillator
-                oscillator.start();
-
-                // Start panning animation
-                startPanning();
-
-                isAudioPlaying = true;
-                document.getElementById('audio-btn').innerHTML = '⏸️ Pause Audio';
-                document.getElementById('audio-btn').className = 'btn btn-red';
-                document.getElementById('audio-status').textContent = 'Actief - Links naar Rechts';
-                document.getElementById('audio-status').style.color = '#059669';
-
-                console.log('✅ Bilateral audio started');
-
-            } catch (error) {
-                console.error('❌ Error starting bilateral audio:', error);
-                alert('Fout bij starten audio: ' + error.message);
-            }
-        }
-
-        function stopBilateralAudio() {
-            try {
-                if (oscillator) {
-                    oscillator.stop();
-                    oscillator.disconnect();
-                    oscillator = null;
-                }
-
-                if (gainNode) {
-                    gainNode.disconnect();
-                    gainNode = null;
-                }
-
-                if (pannerNode) {
-                    pannerNode.disconnect();
-                    pannerNode = null;
-                }
-
-                if (audioInterval) {
-                    clearInterval(audioInterval);
-                    audioInterval = null;
-                }
-
-                isAudioPlaying = false;
-                panPosition = -1; // Reset to left
-                
-                document.getElementById('audio-btn').innerHTML = '🔊 Start Audio';
-                document.getElementById('audio-btn').className = 'btn btn-purple';
-                document.getElementById('audio-status').textContent = 'Gestopt';
-                document.getElementById('audio-status').style.color = '#6b7280';
-
-                console.log('✅ Bilateral audio stopped');
-
-            } catch (error) {
-                console.error('❌ Error stopping bilateral audio:', error);
-            }
-        }
-
-        function startPanning() {
-            const speed = parseFloat(document.getElementById('audio-speed').value) * 1000; // Convert to milliseconds
-            const updateInterval = 50; // Update every 50ms for smooth movement
-            const steps = speed / updateInterval;
-            const panStep = 2 / steps; // Move from -1 to 1 in calculated steps
-
-            panPosition = -1; // Start left
-            let direction = 1; // 1 = right, -1 = left
-
-            audioInterval = setInterval(() => {
-                if (!isAudioPlaying || !pannerNode) {
-                    clearInterval(audioInterval);
-                    return;
-                }
-
-                panPosition += (panStep * direction);
-
-                // Reverse direction at extremes
-                if (panPosition >= 1) {
-                    panPosition = 1;
-                    direction = -1;
-                } else if (panPosition <= -1) {
-                    panPosition = -1;
-                    direction = 1;
-                }
-
-                // Update panner
-                pannerNode.pan.setValueAtTime(panPosition, audioContext.currentTime);
-
-                // Update status
-                const side = panPosition < -0.3 ? 'Links' : panPosition > 0.3 ? 'Rechts' : 'Midden';
-                document.getElementById('audio-status').textContent = `Actief - ${side}`;
-
-            }, updateInterval);
-        }
-
-        // Update audio settings while playing
-        function updateAudioSettings() {
-            if (isAudioPlaying && gainNode) {
-                const volume = parseInt(document.getElementById('audio-volume').value) / 100;
-                gainNode.gain.setValueAtTime(volume * 0.3, audioContext.currentTime);
-            }
-        }
-
-        // Ritual steps
-        const ritualSteps = [
-            {
-                title: "Stap 1: Fysieke Mini-Reset",
-                duration: 120,
-                instructions: [
-                    "Sta op en strek je volledig uit",
-                    "Schud je armen en benen los", 
-                    "Rol je schouders 5x naar achteren",
-                    "Maak kleine cirkels met je hoofd (5x elke richting)"
-                ]
-            },
-            {
-                title: "Stap 2: Zintuigelijke Verschuiving",
-                duration: 120,
-                instructions: [
-                    "Raak 5 verschillende texturen aan in je omgeving",
-                    "Luister bewust naar 3 geluiden die je kunt horen",
-                    "Kijk naar iets aangenaams in de verte"
-                ]
-            },
-            {
-                title: "Stap 3: Voedings-ankerpunt",
-                duration: 120,
-                instructions: [
-                    "Drink een half glas water, langzaam en bewust",
-                    "Eet iets kleins met een sterke smaak",
-                    "Let op de smaak en textuur in je mond"
-                ]
-            },
-            {
-                title: "Stap 4: Mentale Overgang",
-                duration: 120,
-                instructions: [
-                    "Schrijf 3 woorden op die samenvatten waar je net aan werkte",
-                    "Schrijf daaronder 3 woorden voor wat je nu gaat doen",
-                    "Trek een lijn tussen deze sets woorden als symbolische afsluiting"
-                ]
-            },
-            {
-                title: "Stap 5: Bewegingsafsluiting",
-                duration: 120,
-                instructions: [
-                    "Loop even rond, bij voorkeur buiten of bij een open raam",
-                    "Maak 5-10 trage, bewuste stappen",
-                    "Eindig met een kleine glimlach"
-                ]
-            }
-        ];
-
-        // EMDR steps (updated with audio integration)
-        const emdrSteps = [
-            {
-                title: "Stap 1: Voorbereiding",
-                content: "Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt.<br><br><strong>💡 Tip:</strong> Je kunt de bilaterale audio bovenaan starten voor extra ondersteuning."
-            },
-            {
-                title: "Stap 2: Doelgerichtheid", 
-                content: "Denk heel kort aan het gevoel van luchthonger (niet meer dan 5 seconden). Schat de intensiteit en formuleer: 'Ik kan met dit gevoel omgaan'<br><br><strong>🎧 Optioneel:</strong> Start nu de bilaterale audio als je koptelefoon draagt."
-            },
-            {
-                title: "Stap 3: Bilaterale Stimulatie",
-                content: "Kies één of meerdere opties:<br><br><strong>🔊 Bilaterale Audio:</strong> Luister naar de 880Hz toon die van links naar rechts beweegt<br><strong>👀 Oogbewegingen:</strong> Beweeg je ogen langzaam van links naar rechts (15-20x)<br><strong>🤗 Butterfly hug:</strong> Kruis je armen en tik afwisselend op je schouders<br><strong>🦵 Knie-tikken:</strong> Tik afwisselend op je knieën met je handen"
-            },
-            {
-                title: "Stap 4: Check-in",
-                content: "Hoe voelt het luchthonger-gevoel nu? Welke gedachten komen op? Accepteer wat er komt zonder oordeel.<br><br><em>Je kunt de bilaterale stimulatie voortzetten tijdens deze reflectie.</em>"
-            },
-            {
-                title: "Stap 5: Positieve Verankering",
-                content: "Focus op 'Ik kan hiermee omgaan' en doe 10-15 bilaterale bewegingen of luister naar de audio terwijl je deze gedachte vasthoudt.<br><br><strong>🔇 Tip:</strong> Stop de audio als je klaar bent met de sessie."
-            }
-        ];
-
-        // Tab switching
-        window.showTab = function(tabName) {
-            // Stop audio when leaving EMDR tab
-            if (currentTab === 'emdr' && tabName !== 'emdr' && isAudioPlaying) {
-                stopBilateralAudio();
-            }
-
-            // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.add('hidden');
-            });
-            
-            // Remove active from all buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Show selected tab
-            document.getElementById(tabName).classList.remove('hidden');
-            
-            // Set active button
-            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-            
-            currentTab = tabName;
-
-            // Load content if needed
-            if (tabName === 'dagboek') {
-                loadDagboekEntries();
-            }
-        };
-
-        // Timer functions
-        window.startTimer = function() {
-            // Request wake lock
-            requestWakeLock();
-            
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
-                releaseWakeLock();
-                return;
-            }
-
-            currentTime = ritualSteps[ritualStep].duration;
-            document.getElementById('timer-btn').innerHTML = '⏸️ Pause Timer';
-            
-            timerInterval = setInterval(() => {
-                currentTime--;
-                updateTimerDisplay();
-                
-                if (currentTime <= 0) {
-                    clearInterval(timerInterval);
-                    timerInterval = null;
-                    document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
-                    document.getElementById('next-btn').style.display = 'inline-block';
-                }
-            }, 1000);
-        };
-
-        window.skipToNextStep = function() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
-            }
-            nextRitualStep();
-        };
-
-        function updateTimerDisplay() {
-            const minutes = Math.floor(currentTime / 60);
-            const seconds = currentTime % 60;
-            const display = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
-            document.getElementById('timer-display').textContent = display;
-        }
-
-        window.nextRitualStep = function() {
-            ritualStep++;
-            
-            if (ritualStep >= ritualSteps.length) {
-                // Ritual complete
-                releaseWakeLock();
-                trackSession('ritual', ritualSteps.length * 120); // Assume 2 min per step
-                document.getElementById('ritual-complete').classList.remove('hidden');
-                document.querySelector('#ritueel .card:nth-child(2)').style.display = 'none';
-                return;
-            }
-            
-            updateRitualDisplay();
-            document.getElementById('next-btn').style.display = 'none';
-        };
-
-        window.resetRitual = function() {
-            ritualStep = 0;
-            currentTime = 0;
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
-            
-            releaseWakeLock();
-            
-            document.getElementById('ritual-complete').classList.add('hidden');
-            document.querySelector('#ritueel .card:nth-child(2)').style.display = 'block';
-            document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
-            document.getElementById('next-btn').style.display = 'none';
-            
-            updateRitualDisplay();
-        };
-
-        function updateRitualDisplay() {
-            const step = ritualSteps[ritualStep];
-            document.getElementById('ritual-title').textContent = step.title;
-            currentTime = step.duration;
-            updateTimerDisplay();
-            
-            const instructionsHtml = step.instructions.map(function(inst) {
-                return '<li>' + inst + '</li>';
-            }).join('');
-            document.getElementById('ritual-instructions').innerHTML = '<ul class="step-list">' + instructionsHtml + '</ul>';
-            
-            const progress = ((ritualStep + 1) / ritualSteps.length) * 100;
-            document.getElementById('ritual-progress').style.width = progress + '%';
-        }
-
-        // EMDR functions
-        window.nextEmdrStep = function() {
-            emdrStep++;
-            
-            if (emdrStep >= emdrSteps.length) {
-                // EMDR complete - stop audio and track progress
-                if (isAudioPlaying) {
-                    stopBilateralAudio();
-                }
-                releaseWakeLock();
-                trackSession('emdr', emdrSteps.length * 300); // Assume 5 min per step
-                document.getElementById('emdr-complete').classList.remove('hidden');
-                document.querySelector('#emdr .card:nth-child(4)').style.display = 'none';
-                return;
-            }
-            
-            updateEmdrDisplay();
-        };
-
-        window.prevEmdrStep = function() {
-            if (emdrStep > 0) {
-                emdrStep--;
-                updateEmdrDisplay();
-            }
-        };
-
-        function updateEmdrDisplay() {
-            const step = emdrSteps[emdrStep];
-            document.getElementById('emdr-title').textContent = step.title;
-            document.getElementById('emdr-content').innerHTML = step.content;
-            
-            // Request wake lock when starting EMDR
-            if (emdrStep === 0) {
-                requestWakeLock();
-            }
-            
-            // Show/hide intensity slider
-            if (emdrStep === 1) {
-                document.getElementById('emdr-intensity').classList.remove('hidden');
-            } else {
-                document.getElementById('emdr-intensity').classList.add('hidden');
-            }
-            
-            // Show/hide navigation buttons
-            document.getElementById('emdr-prev-btn').style.display = emdrStep > 0 ? 'inline-block' : 'none';
-            
-            if (emdrStep >= emdrSteps.length - 1) {
-                document.getElementById('emdr-next-btn').textContent = 'Voltooien';
-            } else {
-                document.getElementById('emdr-next-btn').textContent = 'Volgende';
-            }
-            
-            const progress = ((emdrStep + 1) / emdrSteps.length) * 100;
-            document.getElementById('emdr-progress').style.width = progress + '%';
-        }
-
-        // Crisis tracking
-        window.openDagboekModal = function(technique) {
-            currentTechnique = technique;
-            
-            // Track crisis usage
-            if (technique === 'Crisis Hulp Technieken') {
-                trackSession('crisis');
-            }
-            
-            document.getElementById('entry-trigger').value = technique ? `Tijdens/na ${technique}` : '';
-            document.getElementById('dagboek-modal').classList.add('show');
-        };
-
-        window.closeDagboekModal = function() {
-            document.getElementById('dagboek-modal').classList.remove('show');
-            
-            // Reset form fields
-            document.getElementById('entry-trigger').value = '';
-            document.getElementById('entry-before').value = '5';
-            document.getElementById('entry-after').value = '5';
-            document.getElementById('entry-result').value = '';
-            document.getElementById('entry-notes').value = '';
-            
-            // Reset range displays
-            document.getElementById('entry-before-value').textContent = '5';
-            document.getElementById('entry-after-value').textContent = '5';
-            
-            currentTechnique = '';
-        };
-
-        window.saveDagboekEntry = async function() {
-            try {
-                const entry = {
-                    techniekGebruikt: currentTechnique || 'Handmatige Entry',
-                    trigger: document.getElementById('entry-trigger').value,
-                    intensiteitVoor: parseInt(document.getElementById('entry-before').value),
-                    intensiteitNa: parseInt(document.getElementById('entry-after').value),
-                    resultaat: document.getElementById('entry-result').value,
-                    notities: document.getElementById('entry-notes').value,
-                    tijdstempel: new Date().toLocaleString('nl-BE')
-                };
-
-                // Show saving state
-                const saveBtn = document.querySelector('#dagboek-modal .btn-primary');
-                const originalText = saveBtn.textContent;
-                saveBtn.textContent = '💾 Opslaan...';
-                saveBtn.disabled = true;
-
-                const result = await saveToFirestore(entry);
-                
-                // Restore button
-                saveBtn.textContent = originalText;
-                saveBtn.disabled = false;
-                
-                closeDagboekModal();
-                
-                if (currentTab === 'dagboek') {
-                    await loadDagboekEntries();
-                }
-                
-                // Show appropriate success message
-                if (result.source === 'Firebase') {
-                    alert('✅ Entry opgeslagen in cloud!');
-                } else {
-                    alert('⚠️ Entry lokaal opgeslagen\n\n' + 
-                          'Reden: ' + result.reden + '\n' +
-                          'De entry is veilig bewaard op dit apparaat.');
-                }
-                
-            } catch (error) {
-                // Restore button on error
-                const saveBtn = document.querySelector('#dagboek-modal .btn-primary');
-                saveBtn.textContent = '📁 Opslaan';
-                saveBtn.disabled = false;
-                
-                console.error('Save error:', error);
-                alert('❌ Opslaan mislukt: ' + error.message);
-                
-                // Don't close modal on error so user can try again
-            }
-        };
-
-        // Cleanup when page is closed or refreshed
-        window.addEventListener('beforeunload', function() {
-            if (isAudioPlaying) {
-                stopBilateralAudio();
-            }
-            if (wakeLock) {
-                releaseWakeLock();
-            }
-        });
-
-        window.loadDagboekEntries = async function() {
-            try {
-                const entries = await loadFromFirestore();
-                displayDagboekEntries(entries);
-                
-                // Show analytics if there are entries
-                if (entries && entries.length > 0) {
-                    showAnalytics(entries);
-                }
-                
-            } catch (error) {
-                console.error('Load entries failed:', error);
-                document.getElementById('dagboek-entries').innerHTML = 
-                    '<div class="alert alert-danger">' +
-                        '<strong>❌ Fout bij laden entries:</strong><br>' + 
-                        error.message +
-                    '</div>';
-            }
-        };
-
-        // Analytics and charting functions (CSS-based, no external dependencies)
-        function showAnalytics(entries) {
-            const analyticsSection = document.getElementById('analytics-section');
-            analyticsSection.style.display = 'block';
-            
-            // Calculate analytics
-            const stats = calculateAnalytics(entries);
-            
-            // Update stat cards
-            document.getElementById('total-sessions').textContent = stats.totalSessions;
-            document.getElementById('avg-improvement').textContent = stats.avgImprovement + '%';
-            document.getElementById('best-technique').textContent = stats.bestTechnique;
-            document.getElementById('streak-days').textContent = stats.streakDays;
-            
-            // Render CSS-based charts
-            try {
-                renderCSSIntensityChart(entries);
-                renderCSSTechniqueChart(entries);
-                console.log('✅ CSS charts rendered successfully');
-            } catch (error) {
-                console.error('❌ Chart rendering error:', error);
-            }
-        }
-
-        function renderCSSIntensityChart(entries) {
-            const chartContainer = document.getElementById('intensity-chart');
-            
-            // Prepare data - last 8 sessions for better readability
-            const chartData = entries.slice(-8).reverse();
-            
-            if (chartData.length === 0) {
-                chartContainer.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #6b7280; flex-direction: column;"><div style="font-size: 3rem; margin-bottom: 1rem;">📊</div><div>Nog geen data voor grafiek</div><div style="font-size: 0.8rem; margin-top: 0.5rem;">Maak een paar dagboek entries</div></div>';
-                return;
-            }
-
-            // Create chart HTML
-            let chartHTML = '<div class="chart-container">';
-            chartHTML += '<h4 style="margin: 0 0 1rem 0; color: #1f2937; font-size: 0.9rem; font-weight: 600;">Intensiteit Evolutie (Voor/Na)</h4>';
-            chartHTML += '<div style="position: relative;">';
-            
-            // Y-axis labels
-            chartHTML += '<div class="chart-y-axis">';
-            for (let i = 0; i <= 10; i += 2) {
-                chartHTML += `<div>${i}</div>`;
-            }
-            chartHTML += '</div>';
-            
-            // Line chart
-            chartHTML += '<div class="line-chart">';
-            
-            chartData.forEach((entry, index) => {
-                const voorHeight = ((entry.intensiteitVoor || 0) / 10) * 180;
-                const naHeight = ((entry.intensiteitNa || 0) / 10) * 180;
-                
-                chartHTML += '<div class="chart-session">';
-                chartHTML += `<div class="chart-point voor" style="margin-bottom: ${voorHeight}px;" title="Voor: ${entry.intensiteitVoor}/10"></div>`;
-                chartHTML += `<div class="chart-point na" style="margin-bottom: ${naHeight}px; margin-top: -8px;" title="Na: ${entry.intensiteitNa}/10"></div>`;
-                chartHTML += `<div class="chart-session-label">#${index + 1}</div>`;
-                chartHTML += '</div>';
-            });
-            
-            chartHTML += '</div>';
-            
-            // Legend
-            chartHTML += '<div class="chart-legend">';
-            chartHTML += '<div class="legend-item"><div class="legend-dot voor"></div><span>Voor sessie</span></div>';
-            chartHTML += '<div class="legend-item"><div class="legend-dot na"></div><span>Na sessie</span></div>';
-            chartHTML += '</div>';
-            
-            chartHTML += '</div></div>';
-            
-            chartContainer.innerHTML = chartHTML;
-        }
-
-        function renderCSSTechniqueChart(entries) {
-            const chartContainer = document.getElementById('technique-chart');
-            
-            // Calculate technique effectiveness
-            const techniqueStats = {};
-            entries.forEach(entry => {
-                if (entry.techniekGebruikt && entry.intensiteitVoor && entry.intensiteitNa) {
-                    if (!techniqueStats[entry.techniekGebruikt]) {
-                        techniqueStats[entry.techniekGebruikt] = { improvements: [], count: 0 };
-                    }
-                    const improvement = entry.intensiteitVoor - entry.intensiteitNa;
-                    techniqueStats[entry.techniekGebruikt].improvements.push(improvement);
-                    techniqueStats[entry.techniekGebruikt].count++;
-                }
-            });
-
-            const chartData = Object.keys(techniqueStats).map(technique => {
-                const stats = techniqueStats[technique];
-                const avgImprovement = stats.improvements.reduce((a, b) => a + b, 0) / stats.count;
-                return {
-                    techniek: technique.length > 12 ? technique.substring(0, 10) + '...' : technique,
-                    verbetering: Math.round(avgImprovement * 10) / 10,
-                    sessies: stats.count
-                };
-            }).sort((a, b) => b.verbetering - a.verbetering).slice(0, 5);
-
-            if (chartData.length === 0) {
-                chartContainer.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #6b7280; flex-direction: column;"><div style="font-size: 3rem; margin-bottom: 1rem;">📈</div><div>Nog geen techniek data</div></div>';
-                return;
-            }
-
-            // Find max value for scaling
-            const maxValue = Math.max(...chartData.map(d => d.verbetering));
-            const scale = maxValue > 0 ? 160 / maxValue : 1;
-
-            // Create bar chart HTML
-            let chartHTML = '<div class="chart-container">';
-            chartHTML += '<h4 style="margin: 0 0 1rem 0; color: #1f2937; font-size: 0.9rem; font-weight: 600;">Top 5 Effectiefste Technieken</h4>';
-            chartHTML += '<div class="bar-chart">';
-            
-            chartData.forEach(item => {
-                const height = Math.max(20, item.verbetering * scale);
-                chartHTML += `<div class="bar" style="height: ${height}px;" title="${item.techniek}: ${item.verbetering} punten verbetering">`;
-                chartHTML += `<div class="bar-value">+${item.verbetering}</div>`;
-                chartHTML += `<div class="bar-label">${item.techniek}</div>`;
-                chartHTML += '</div>';
-            });
-            
-            chartHTML += '</div></div>';
-            
-            chartContainer.innerHTML = chartHTML;
-        }
-
-        function calculateAnalytics(entries) {
-            const totalSessions = entries.length;
-            
-            // Calculate average improvement
-            let totalImprovement = 0;
-            let validEntries = 0;
-            
-            entries.forEach(entry => {
-                if (entry.intensiteitVoor && entry.intensiteitNa) {
-                    const improvement = ((entry.intensiteitVoor - entry.intensiteitNa) / entry.intensiteitVoor) * 100;
-                    totalImprovement += improvement;
-                    validEntries++;
-                }
-            });
-            
-            const avgImprovement = validEntries > 0 ? Math.round(totalImprovement / validEntries) : 0;
-            
-            // Find best technique
-            const techniqueStats = {};
-            entries.forEach(entry => {
-                if (entry.techniekGebruikt && entry.intensiteitVoor && entry.intensiteitNa) {
-                    if (!techniqueStats[entry.techniekGebruikt]) {
-                        techniqueStats[entry.techniekGebruikt] = { total: 0, count: 0 };
-                    }
-                    const improvement = entry.intensiteitVoor - entry.intensiteitNa;
-                    techniqueStats[entry.techniekGebruikt].total += improvement;
-                    techniqueStats[entry.techniekGebruikt].count++;
-                }
-            });
-            
-            let bestTechnique = '-';
-            let bestAvg = -10;
-            Object.keys(techniqueStats).forEach(technique => {
-                const avg = techniqueStats[technique].total / techniqueStats[technique].count;
-                if (avg > bestAvg) {
-                    bestAvg = avg;
-                    bestTechnique = technique.substring(0, 15) + (technique.length > 15 ? '...' : '');
-                }
-            });
-            
-            // Calculate streak (simplified - consecutive days with entries)
-            const streakDays = Math.min(7, totalSessions); // Simple approximation
-            
-            return {
-                totalSessions,
-                avgImprovement,
-                bestTechnique,
-                streakDays
-            };
-        }
-
-        function renderIntensityChart(entries) {
-            // Prepare data for line chart
-            const chartData = entries.slice(-10).reverse().map((entry, index) => ({
-                sessie: `#${index + 1}`,
-                voor: entry.intensiteitVoor || 0,
-                na: entry.intensiteitNa || 0,
-                datum: entry.tijdstempel ? entry.tijdstempel.split(' ')[0] : ''
-            }));
-
-            const chartContainer = document.getElementById('intensity-chart');
-            
-            // Use React to render Recharts component
-            const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
-            
-            const chart = React.createElement(ResponsiveContainer, { width: '100%', height: '100%' },
-                React.createElement(LineChart, { data: chartData },
-                    React.createElement(CartesianGrid, { strokeDasharray: '3 3', stroke: '#e0e7ff' }),
-                    React.createElement(XAxis, { dataKey: 'sessie', fontSize: 12 }),
-                    React.createElement(YAxis, { domain: [0, 10], fontSize: 12 }),
-                    React.createElement(Tooltip, { 
-                        contentStyle: { 
-                            background: 'rgba(255,255,255,0.95)', 
-                            border: '1px solid #667eea',
-                            borderRadius: '8px',
-                            backdropFilter: 'blur(10px)'
-                        }
-                    }),
-                    React.createElement(Legend),
-                    React.createElement(Line, { 
-                        type: 'monotone', 
-                        dataKey: 'voor', 
-                        stroke: '#ef4444', 
-                        strokeWidth: 3,
-                        name: 'Voor',
-                        dot: { fill: '#ef4444', strokeWidth: 2, r: 4 }
-                    }),
-                    React.createElement(Line, { 
-                        type: 'monotone', 
-                        dataKey: 'na', 
-                        stroke: '#10b981', 
-                        strokeWidth: 3,
-                        name: 'Na',
-                        dot: { fill: '#10b981', strokeWidth: 2, r: 4 }
-                    })
-                )
-            );
-            
-            // Render the chart
-            try {
-                if (ReactDOM.createRoot) {
-                    const root = ReactDOM.createRoot(chartContainer);
-                    root.render(chart);
-                } else {
-                    ReactDOM.render(chart, chartContainer);
-                }
-            } catch (error) {
-                console.error('Chart rendering error:', error);
-                chartContainer.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #6b7280;">📊 Grafiek wordt geladen...</div>';
-            }
-        }
-
-        function renderTechniqueChart(entries) {
-            // Calculate technique effectiveness
-            const techniqueStats = {};
-            entries.forEach(entry => {
-                if (entry.techniekGebruikt && entry.intensiteitVoor && entry.intensiteitNa) {
-                    if (!techniqueStats[entry.techniekGebruikt]) {
-                        techniqueStats[entry.techniekGebruikt] = { improvements: [], count: 0 };
-                    }
-                    const improvement = entry.intensiteitVoor - entry.intensiteitNa;
-                    techniqueStats[entry.techniekGebruikt].improvements.push(improvement);
-                    techniqueStats[entry.techniekGebruikt].count++;
-                }
-            });
-
-            const chartData = Object.keys(techniqueStats).map(technique => {
-                const stats = techniqueStats[technique];
-                const avgImprovement = stats.improvements.reduce((a, b) => a + b, 0) / stats.count;
-                return {
-                    techniek: technique.length > 15 ? technique.substring(0, 13) + '...' : technique,
-                    verbetering: Math.round(avgImprovement * 10) / 10,
-                    sessies: stats.count
-                };
-            }).sort((a, b) => b.verbetering - a.verbetering).slice(0, 5);
-
-            const chartContainer = document.getElementById('technique-chart');
-            
-            const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
-            
-            const chart = React.createElement(ResponsiveContainer, { width: '100%', height: '100%' },
-                React.createElement(BarChart, { data: chartData },
-                    React.createElement(CartesianGrid, { strokeDasharray: '3 3', stroke: '#e0e7ff' }),
-                    React.createElement(XAxis, { 
-                        dataKey: 'techniek', 
-                        fontSize: 10,
-                        angle: -45,
-                        textAnchor: 'end',
-                        height: 60
-                    }),
-                    React.createElement(YAxis, { fontSize: 12 }),
-                    React.createElement(Tooltip, { 
-                        contentStyle: { 
-                            background: 'rgba(255,255,255,0.95)', 
-                            border: '1px solid #667eea',
-                            borderRadius: '8px',
-                            backdropFilter: 'blur(10px)'
-                        }
-                    }),
-                    React.createElement(Bar, { 
-                        dataKey: 'verbetering', 
-                        fill: 'url(#gradient)',
-                        radius: [4, 4, 0, 0]
-                    }),
-                    React.createElement('defs', {},
-                        React.createElement('linearGradient', { id: 'gradient', x1: '0', y1: '0', x2: '0', y2: '1' },
-                            React.createElement('stop', { offset: '0%', stopColor: '#667eea' }),
-                            React.createElement('stop', { offset: '100%', stopColor: '#764ba2' })
-                        )
-                    )
-                )
-            );
-            
-            // Render the chart
-            try {
-                if (ReactDOM.createRoot) {
-                    const root = ReactDOM.createRoot(chartContainer);
-                    root.render(chart);
-                } else {
-                    ReactDOM.render(chart, chartContainer);
-                }
-            } catch (error) {
-                console.error('Chart rendering error:', error);
-                chartContainer.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #6b7280;">📊 Grafiek wordt geladen...</div>';
-            }
-        }
-
-        window.exportDagboek = async function() {
-            try {
-                const entries = await loadFromFirestore();
-                
-                if (!entries || entries.length === 0) {
-                    alert('📝 Geen entries om te exporteren');
-                    return;
-                }
-                
-                let exportText = 'ADEMRUIMTE DAGBOEK EXPORT\n';
-                exportText += '================================\n';
-                exportText += 'Gebruiker: ' + (currentUser ? (currentUser.displayName || currentUser.email) : 'Onbekend') + '\n';
-                exportText += 'Export datum: ' + new Date().toLocaleString('nl-BE') + '\n\n';
-                
-                for (let i = 0; i < entries.length; i++) {
-                    const entry = entries[i];
-                    exportText += 'ENTRY ' + (i + 1) + '\n';
-                    exportText += 'Datum: ' + entry.tijdstempel + '\n';
-                    exportText += 'Techniek: ' + entry.techniekGebruikt + '\n';
-                    exportText += 'Trigger: ' + (entry.trigger || 'Geen') + '\n';
-                    exportText += 'Intensiteit voor: ' + entry.intensiteitVoor + '/10\n';
-                    exportText += 'Intensiteit na: ' + entry.intensiteitNa + '/10\n';
-                    exportText += 'Resultaat: ' + getResultaatText(entry.resultaat) + '\n';
-                    exportText += 'Notities: ' + (entry.notities || 'Geen') + '\n';
-                    exportText += 'Bron: ' + (entry.bron || 'Onbekend') + '\n';
-                    exportText += '\n---\n\n';
-                }
-                
-                // Create downloadable file
-                const blob = new Blob([exportText], { type: 'text/plain' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'ademruimte-dagboek-' + new Date().toLocaleDateString('nl-BE') + '.txt';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                window.URL.revokeObjectURL(url);
-                
-                alert('📁 Dagboek geëxporteerd als tekstbestand!');
-                
-            } catch (error) {
-                alert('❌ Fout bij exporteren: ' + error.message);
-            }
-        };
-
-        function displayDagboekEntries(entries) {
-            const container = document.getElementById('dagboek-entries');
-            
-            if (!entries || entries.length === 0) {
-                container.innerHTML = 
-                    '<div class="card">' +
-                        '<h3>Nog geen entries</h3>' +
-                        '<p>Maak een dagboekentry na het gebruiken van oefeningen om patronen bij te houden.</p>' +
-                        '<button class="btn btn-primary" onclick="openDagboekModal(\'Eerste Entry\')">' +
-                            'Maak je eerste entry' +
-                        '</button>' +
-                    '</div>';
-                return;
-            }
-            
-            // Add a header for the entries list
-            let entriesHtml = '<div class="card"><h3>📝 Alle Dagboek Entries</h3><p style="color: #6b7280; margin-bottom: 1.5rem;">Chronologisch overzicht van je sessies</p></div>';
-            
-            entriesHtml += entries.map(entry => {
-                return '<div class="entry-card">' +
-                    '<div class="entry-header">' +
-                        '<div>' +
-                            '<div class="entry-title">' + entry.techniekGebruikt + '</div>' +
-                            '<div style="font-size: 0.8rem; color: #6b7280;">' +
-                                entry.tijdstempel + ' • ' +
-                                '<span style="color: #0891b2; font-size: 0.75rem;">' + (entry.bron || 'Onbekend') + '</span>' +
-                            '</div>' +
-                        '</div>' +
-                        '<div class="entry-result ' + entry.resultaat + '">' +
-                            getResultaatText(entry.resultaat) +
-                        '</div>' +
-                    '</div>' +
-                    '<div class="intensity-grid">' +
-                        '<div style="font-size: 0.85rem;">' +
-                            '<span style="color: #6b7280;">Voor:</span>' +
-                            '<span style="font-weight: 500; margin-left: 0.25rem; color: #1f2937;">' + entry.intensiteitVoor + '/10</span>' +
-                        '</div>' +
-                        '<div style="font-size: 0.85rem;">' +
-                            '<span style="color: #6b7280;">Na:</span>' +
-                            '<span style="font-weight: 500; margin-left: 0.25rem; color: #1f2937;">' + entry.intensiteitNa + '/10</span>' +
-                        '</div>' +
-                    '</div>' +
-                    (entry.trigger ? '<p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: #1f2937;"><strong>Trigger:</strong> ' + entry.trigger + '</p>' : '') +
-                    (entry.notities ? '<p style="font-size: 0.85rem; color: #1f2937;"><strong>Notities:</strong> ' + entry.notities + '</p>' : '') +
-                '</div>';
-            }).join('');
-            
-            container.innerHTML = entriesHtml;
-        }
-
-        function getResultaatText(resultaat) {
-            const mapping = {
-                'zeer-goed': 'Zeer goed',
-                'goed': 'Goed',
-                'matig': 'Matig',
-                'geen-effect': 'Geen effect',
-                'slechter': 'Slechter'
-            };
-            return mapping[resultaat] || resultaat;
-        }
-
-        // Range slider updates
-        document.getElementById('emdr-intensity-slider').addEventListener('input', function() {
-            document.getElementById('emdr-intensity-value').textContent = this.value;
-        });
-
-        document.getElementById('entry-before').addEventListener('input', function() {
-            document.getElementById('entry-before-value').textContent = this.value;
-        });
-
-        document.getElementById('entry-after').addEventListener('input', function() {
-            document.getElementById('entry-after-value').textContent = this.value;
-        });
-
-        // Tab switching event listeners
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const tab = btn.getAttribute('data-tab');
-                showTab(tab);
-            });
-        });
-
-        // Initialize app on load
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 App initializing...');
-            
-            // Load progress data
-            loadProgressData();
-            
-            // Set random tip of the day
-            setRandomTip();
-            
-            // Setup tip refresh button
-            const tipRefreshBtn = document.getElementById('tip-refresh-btn');
-            if (tipRefreshBtn) {
-                tipRefreshBtn.addEventListener('click', function() {
-                    console.log('🔄 Tip refresh button clicked');
-                    getNewTip();
-                });
-                console.log('✅ Tip refresh button listener added');
-            } else {
-                console.log('⚠️ Tip refresh button not found yet');
-                // Try again after a short delay
-                setTimeout(() => {
-                    const btn = document.getElementById('tip-refresh-btn');
-                    if (btn) {
-                        btn.addEventListener('click', getNewTip);
-                        console.log('✅ Tip refresh button listener added (delayed)');
-                    }
-                }, 1000);
-            }
-            
-            // Initialize ritual display
-            updateRitualDisplay();
-            
-            // Initialize EMDR display  
-            updateEmdrDisplay();
-
-            // Initialize breath display
-            updateBreathDisplay();
-
-            // Setup form handlers
-            setupLoginFormHandler();
-            setupRegisterFormHandler();
-
-            // Audio volume control
-            const volumeControl = document.getElementById('audio-volume');
-            if (volumeControl) {
-                volumeControl.addEventListener('input', updateAudioSettings);
-            }
-
-            // Speed control (restart audio if playing to apply new speed)
-            const speedControl = document.getElementById('audio-speed');
-            if (speedControl) {
-                speedControl.addEventListener('change', function() {
-                    if (isAudioPlaying) {
-                        stopBilateralAudio();
-                        setTimeout(startBilateralAudio, 100);
-                    }
-                });
-            }
-            
-            console.log('✅ App initialization complete');
-        });
-
-    </script>
-</body>
-</html>
+        // Tips functionaliteit
+        const tips = [
+            "Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.",
+            "Bij luchthonger: onthoud dat je lichaam genoeg zuurstof heeft. Het gevoel ligt niet aan een tekort.",
+            "De Buteyko-methode helpt je CO2-tolerantie verhogen, wat hyperventilatie kan verminderen.",
+            "Een korte wandeling na intensief denkwerk helpt je lichaam 'omschakelen' van werk naar rust.",
+            "Als je merkt dat je gaat gapen: probeer je lippen op elkaar te houden en door je neus te ademen.",
+            "EMDR-zelfhulp is ondersteunend, maar bij ernstige klachten zoek je best professionele hulp.",
+            "Bijhouden van patronen in je dagboek helpt om je triggers te herkennen.",
+            "Het gevoel van luchthonger gaat altijd vorbij - geef het tijd en gebruik je technieken.",
+            "

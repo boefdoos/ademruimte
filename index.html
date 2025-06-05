@@ -1093,7 +1093,7 @@
 
                 <div class="alert alert-info">
                     <strong>💡 Tip van de dag:</strong> <span id="daily-tip">Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.</span>
-                    <button onclick="getNewTip()" style="background: none; border: none; color: #0891b2; cursor: pointer; margin-left: 0.5rem; font-weight: 600;">🔄</button>
+                    <button id="tip-refresh-btn" style="background: none; border: none; color: #0891b2; cursor: pointer; margin-left: 0.5rem; font-weight: 600; font-size: 1rem; transition: all 0.3s ease; padding: 0.25rem; border-radius: 0.25rem;" onmouseover="this.style.background='rgba(8,145,178,0.1)'; this.style.transform='scale(1.1)'" onmouseout="this.style.background='none'; this.style.transform='scale(1)'" title="Nieuwe tip">🔄</button>
                 </div>
 
                 <!-- Data Migration Section (if needed) -->
@@ -1579,10 +1579,9 @@
         <p>📞 In noodgevallen: contacteer altijd je huisarts of spoeddiensten</p>
     </footer>
 
-    <!-- External Libraries -->
+    <!-- External Libraries (alleen React voor eventuele toekomstige uitbreidingen) -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/recharts@2.8.0/umd/Recharts.js"></script>
     
     <!-- Firebase en App JavaScript -->
     <script type="module">
@@ -1602,7 +1601,63 @@
             measurementId: "G-SD2ZEYNMNY"
         };
 
+        console.log('🚀 Starting Ademruimte app - CSS Charts only, no external chart libraries');
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, updateProfile, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+        // Firebase configuratie
+        const firebaseConfig = {
+            apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
+            authDomain: "ademruimte-12c09.firebaseapp.com",
+            projectId: "ademruimte-12c09",
+            storageBucket: "ademruimte-12c09.firebasestorage.app",
+            messagingSenderId: "744941871331",
+            appId: "1:744941871331:web:c3ce24d814fe41314d25d6",
+            measurementId: "G-SD2ZEYNMNY"
+        };
+
+        console.log('🚀 Starting Ademruimte app - CSS Charts only, no external chart libraries');
+
         // Global variables
+        let app, db, auth;
+        let currentUser = null;
+        let isFirebaseConnected = false;
+        let currentTab = 'dashboard';
+        let timerInterval = null;
+        let currentTime = 0;
+        let ritualStep = 0;
+        let emdrStep = 0;
+        let currentTechnique = '';
+        let dagboekEntries = [];
+
+        // Breath exercise variables
+        let breathInterval = null;
+        let breathPhase = 'rest'; // 'inhale', 'exhale', 'hold', 'rest'
+        let breathCycleCount = 0;
+        let breathPhaseTime = 0;
+        let breathCycleDuration = 0;
+
+        // Audio variables for EMDR
+        let audioContext = null;
+        let oscillator = null;
+        let gainNode = null;
+        let pannerNode = null;
+        let audioInterval = null;
+        let isAudioPlaying = false;
+        let panPosition = -1; // Start left (-1), move to right (1)
+
+        // Wake lock for keeping screen on
+        let wakeLock = null;
+
+        // Progress tracking
+        let progressData = {
+            buteyko: { sessions: 0, totalTime: 0, lastSession: null },
+            ritual: { sessions: 0, totalTime: 0, lastSession: null },
+            emdr: { sessions: 0, totalTime: 0, lastSession: null },
+            crisis: { sessions: 0, lastSession: null }
+        };
         let app, db, auth;
         let currentUser = null;
         let isFirebaseConnected = false;
@@ -1832,6 +1887,22 @@
         function showMainApp() {
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
+            
+            // Setup tip refresh button after main app is shown
+            setTimeout(() => {
+                const tipRefreshBtn = document.getElementById('tip-refresh-btn');
+                if (tipRefreshBtn) {
+                    // Remove any existing listeners
+                    tipRefreshBtn.removeEventListener('click', getNewTip);
+                    // Add fresh listener
+                    tipRefreshBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        console.log('🔄 Tip refresh clicked in main app');
+                        getNewTip();
+                    });
+                    console.log('✅ Tip refresh button activated in main app');
+                }
+            }, 100);
         }
 
         // Fixed checkForLocalData that handles Firestore issues
@@ -3079,7 +3150,7 @@
             }
         };
 
-        // Analytics and charting functions
+        // Analytics and charting functions (CSS-based, no external dependencies)
         function showAnalytics(entries) {
             const analyticsSection = document.getElementById('analytics-section');
             analyticsSection.style.display = 'block';
@@ -3093,9 +3164,117 @@
             document.getElementById('best-technique').textContent = stats.bestTechnique;
             document.getElementById('streak-days').textContent = stats.streakDays;
             
-            // Render charts
-            renderIntensityChart(entries);
-            renderTechniqueChart(entries);
+            // Render CSS-based charts
+            try {
+                renderCSSIntensityChart(entries);
+                renderCSSTechniqueChart(entries);
+                console.log('✅ CSS charts rendered successfully');
+            } catch (error) {
+                console.error('❌ Chart rendering error:', error);
+            }
+        }
+
+        function renderCSSIntensityChart(entries) {
+            const chartContainer = document.getElementById('intensity-chart');
+            
+            // Prepare data - last 8 sessions for better readability
+            const chartData = entries.slice(-8).reverse();
+            
+            if (chartData.length === 0) {
+                chartContainer.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #6b7280; flex-direction: column;"><div style="font-size: 3rem; margin-bottom: 1rem;">📊</div><div>Nog geen data voor grafiek</div><div style="font-size: 0.8rem; margin-top: 0.5rem;">Maak een paar dagboek entries</div></div>';
+                return;
+            }
+
+            // Create chart HTML
+            let chartHTML = '<div class="chart-container">';
+            chartHTML += '<h4 style="margin: 0 0 1rem 0; color: #1f2937; font-size: 0.9rem; font-weight: 600;">Intensiteit Evolutie (Voor/Na)</h4>';
+            chartHTML += '<div style="position: relative;">';
+            
+            // Y-axis labels
+            chartHTML += '<div class="chart-y-axis">';
+            for (let i = 0; i <= 10; i += 2) {
+                chartHTML += `<div>${i}</div>`;
+            }
+            chartHTML += '</div>';
+            
+            // Line chart
+            chartHTML += '<div class="line-chart">';
+            
+            chartData.forEach((entry, index) => {
+                const voorHeight = ((entry.intensiteitVoor || 0) / 10) * 180;
+                const naHeight = ((entry.intensiteitNa || 0) / 10) * 180;
+                
+                chartHTML += '<div class="chart-session">';
+                chartHTML += `<div class="chart-point voor" style="margin-bottom: ${voorHeight}px;" title="Voor: ${entry.intensiteitVoor}/10"></div>`;
+                chartHTML += `<div class="chart-point na" style="margin-bottom: ${naHeight}px; margin-top: -8px;" title="Na: ${entry.intensiteitNa}/10"></div>`;
+                chartHTML += `<div class="chart-session-label">#${index + 1}</div>`;
+                chartHTML += '</div>';
+            });
+            
+            chartHTML += '</div>';
+            
+            // Legend
+            chartHTML += '<div class="chart-legend">';
+            chartHTML += '<div class="legend-item"><div class="legend-dot voor"></div><span>Voor sessie</span></div>';
+            chartHTML += '<div class="legend-item"><div class="legend-dot na"></div><span>Na sessie</span></div>';
+            chartHTML += '</div>';
+            
+            chartHTML += '</div></div>';
+            
+            chartContainer.innerHTML = chartHTML;
+        }
+
+        function renderCSSTechniqueChart(entries) {
+            const chartContainer = document.getElementById('technique-chart');
+            
+            // Calculate technique effectiveness
+            const techniqueStats = {};
+            entries.forEach(entry => {
+                if (entry.techniekGebruikt && entry.intensiteitVoor && entry.intensiteitNa) {
+                    if (!techniqueStats[entry.techniekGebruikt]) {
+                        techniqueStats[entry.techniekGebruikt] = { improvements: [], count: 0 };
+                    }
+                    const improvement = entry.intensiteitVoor - entry.intensiteitNa;
+                    techniqueStats[entry.techniekGebruikt].improvements.push(improvement);
+                    techniqueStats[entry.techniekGebruikt].count++;
+                }
+            });
+
+            const chartData = Object.keys(techniqueStats).map(technique => {
+                const stats = techniqueStats[technique];
+                const avgImprovement = stats.improvements.reduce((a, b) => a + b, 0) / stats.count;
+                return {
+                    techniek: technique.length > 12 ? technique.substring(0, 10) + '...' : technique,
+                    verbetering: Math.round(avgImprovement * 10) / 10,
+                    sessies: stats.count
+                };
+            }).sort((a, b) => b.verbetering - a.verbetering).slice(0, 5);
+
+            if (chartData.length === 0) {
+                chartContainer.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #6b7280; flex-direction: column;"><div style="font-size: 3rem; margin-bottom: 1rem;">📈</div><div>Nog geen techniek data</div></div>';
+                return;
+            }
+
+            // Find max value for scaling
+            const maxValue = Math.max(...chartData.map(d => d.verbetering));
+            const scale = maxValue > 0 ? 160 / maxValue : 1;
+
+            // Create bar chart HTML
+            let chartHTML = '<div class="chart-container">';
+            chartHTML += '<h4 style="margin: 0 0 1rem 0; color: #1f2937; font-size: 0.9rem; font-weight: 600;">Top 5 Effectiefste Technieken</h4>';
+            chartHTML += '<div class="bar-chart">';
+            
+            chartData.forEach(item => {
+                const height = Math.max(20, item.verbetering * scale);
+                chartHTML += `<div class="bar" style="height: ${height}px;" title="${item.techniek}: ${item.verbetering} punten verbetering">`;
+                chartHTML += `<div class="bar-value">+${item.verbetering}</div>`;
+                chartHTML += `<div class="bar-label">${item.techniek}</div>`;
+                chartHTML += '</div>';
+            });
+            
+            chartHTML += '</div></div>';
+            
+            chartContainer.innerHTML = chartHTML;
         }
 
         function calculateAnalytics(entries) {
@@ -3415,11 +3594,33 @@
 
         // Initialize app on load
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 App initializing...');
+            
             // Load progress data
             loadProgressData();
             
             // Set random tip of the day
             setRandomTip();
+            
+            // Setup tip refresh button
+            const tipRefreshBtn = document.getElementById('tip-refresh-btn');
+            if (tipRefreshBtn) {
+                tipRefreshBtn.addEventListener('click', function() {
+                    console.log('🔄 Tip refresh button clicked');
+                    getNewTip();
+                });
+                console.log('✅ Tip refresh button listener added');
+            } else {
+                console.log('⚠️ Tip refresh button not found yet');
+                // Try again after a short delay
+                setTimeout(() => {
+                    const btn = document.getElementById('tip-refresh-btn');
+                    if (btn) {
+                        btn.addEventListener('click', getNewTip);
+                        console.log('✅ Tip refresh button listener added (delayed)');
+                    }
+                }, 1000);
+            }
             
             // Initialize ritual display
             updateRitualDisplay();
@@ -3450,6 +3651,8 @@
                     }
                 });
             }
+            
+            console.log('✅ App initialization complete');
         });
 
     </script>

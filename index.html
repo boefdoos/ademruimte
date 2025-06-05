@@ -1693,7 +1693,7 @@
             userInfo.innerHTML = '👋 ' + shortName;
         }
 
-        // Authentication functions with improved error handling
+        // Authentication functions with explicit navigation
         window.signInWithGoogle = async function() {
             try {
                 // Ensure we have a fresh auth instance
@@ -1713,6 +1713,16 @@
                 
                 const result = await signInWithPopup(auth, provider);
                 console.log('✅ Google sign-in successful:', result.user.email);
+                
+                // Update global state
+                currentUser = result.user;
+                
+                // Immediately switch to main app
+                showMainApp();
+                updateUserInfo(result.user);
+                updateAccountInfo(result.user);
+                loadDagboekEntries();
+                checkForLocalData();
                 
             } catch (error) {
                 console.error('❌ Google sign-in error:', error);
@@ -1742,7 +1752,7 @@
             document.getElementById('register-form').reset();
         };
 
-        // Login form handler with improved reliability
+        // Login form handler with explicit navigation after login
         function setupLoginFormHandler() {
             const loginForm = document.getElementById('login-form');
             if (!loginForm) {
@@ -1788,8 +1798,22 @@
                         await setPersistence(auth, browserSessionPersistence);
                     }
                     
-                    await signInWithEmailAndPassword(auth, email, password);
+                    const result = await signInWithEmailAndPassword(auth, email, password);
                     console.log('✅ Email sign-in successful');
+                    
+                    // Update global state
+                    currentUser = result.user;
+                    
+                    // Immediately switch to main app
+                    showMainApp();
+                    updateUserInfo(result.user);
+                    updateAccountInfo(result.user);
+                    loadDagboekEntries();
+                    checkForLocalData();
+                    
+                    // Restore button state
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
                     
                 } catch (error) {
                     console.error('❌ Email sign-in error:', error);
@@ -1817,7 +1841,7 @@
             console.log('✅ Login form handler setup complete');
         }
 
-        // Register form handler with improved reliability  
+        // Register form handler with explicit navigation
         function setupRegisterFormHandler() {
             const registerForm = document.getElementById('register-form');
             if (!registerForm) {
@@ -1864,7 +1888,17 @@
                     });
                     
                     console.log('✅ Account created successfully');
+                    
+                    // Update global state
+                    currentUser = result.user;
+                    
+                    // Close modal and switch to main app
                     closeRegisterModal();
+                    showMainApp();
+                    updateUserInfo(result.user);
+                    updateAccountInfo(result.user);
+                    loadDagboekEntries();
+                    checkForLocalData();
                     
                 } catch (error) {
                     console.error('❌ Registration error:', error);

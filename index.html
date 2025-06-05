@@ -1921,14 +1921,14 @@
             collection(db, "test");
             
             isFirebaseConnected = true;
-            updateFirebaseStatus('connected', '🔥 Firebase: Actief');
+            updateFirebaseStatus('connected', 'Firebase: Actief');
             
             console.log('✅ Firebase successfully initialized and connected');
             
         } catch (error) {
             console.error('❌ Firebase initialization error:', error);
             isFirebaseConnected = false;
-            updateFirebaseStatus('error', '🔥 Firebase: Offline');
+            updateFirebaseStatus('error', 'Firebase: Offline');
             
             // Show user that they can still use the app
             setTimeout(() => {

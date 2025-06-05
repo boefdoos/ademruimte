@@ -14,7 +14,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #3b82f6 100%);
             min-height: 100vh;
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
@@ -22,7 +22,7 @@
         }
 
         header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #06b6d4, #10b981);
             color: white;
             padding: 1rem;
             text-align: center;
@@ -31,7 +31,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 8px 32px rgba(6, 182, 212, 0.3);
             backdrop-filter: blur(10px);
         }
 
@@ -41,12 +41,14 @@
             margin: 0;
             letter-spacing: -0.02em;
             text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            color: white;
         }
 
         header p {
             font-size: 0.75rem;
-            opacity: 0.9;
+            opacity: 0.95;
             margin: 0.25rem 0 0 0;
+            color: rgba(255,255,255,0.95);
         }
 
         .user-info {
@@ -129,17 +131,63 @@
             margin-bottom: 1rem;
             font-size: 1.5rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #06b6d4, #10b981);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .card h3 {
-            color: #374151;
+            color: #1f2937;
             margin-bottom: 0.75rem;
             font-size: 1.25rem;
             font-weight: 600;
+        }
+
+        .grid .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #06b6d4, #10b981);
+            border-radius: 1.2rem 1.2rem 0 0;
+        }
+
+        .grid .card h3 {
+            font-size: 1.375rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .grid .card p {
+            color: #4b5563;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        /* Remove hover effects from non-interactive elements */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: none; /* Remove hover animation */
+        }
+
+        /* Only interactive cards should have hover effects */
+        .grid .card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .grid .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
 
         .grid {
@@ -1044,7 +1092,8 @@
                 </div>
 
                 <div class="alert alert-info">
-                    <strong>💡 Tip van de dag:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.
+                    <strong>💡 Tip van de dag:</strong> <span id="daily-tip">Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.</span>
+                    <button onclick="getNewTip()" style="background: none; border: none; color: #0891b2; cursor: pointer; margin-left: 0.5rem; font-weight: 600;">🔄</button>
                 </div>
 
                 <!-- Data Migration Section (if needed) -->
@@ -1530,10 +1579,12 @@
         <p>📞 In noodgevallen: contacteer altijd je huisarts of spoeddiensten</p>
     </footer>
 
-    <!-- Firebase en App JavaScript -->
+    <!-- External Libraries -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/recharts@2.8.0/umd/Recharts.js"></script>
+    
+    <!-- Firebase en App JavaScript -->
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
@@ -3295,14 +3346,17 @@
                 return;
             }
             
-            const entriesHtml = entries.map(entry => {
+            // Add a header for the entries list
+            let entriesHtml = '<div class="card"><h3>📝 Alle Dagboek Entries</h3><p style="color: #6b7280; margin-bottom: 1.5rem;">Chronologisch overzicht van je sessies</p></div>';
+            
+            entriesHtml += entries.map(entry => {
                 return '<div class="entry-card">' +
                     '<div class="entry-header">' +
                         '<div>' +
                             '<div class="entry-title">' + entry.techniekGebruikt + '</div>' +
                             '<div style="font-size: 0.8rem; color: #6b7280;">' +
                                 entry.tijdstempel + ' • ' +
-                                '<span style="color: #3b82f6; font-size: 0.75rem;">' + (entry.bron || 'Onbekend') + '</span>' +
+                                '<span style="color: #0891b2; font-size: 0.75rem;">' + (entry.bron || 'Onbekend') + '</span>' +
                             '</div>' +
                         '</div>' +
                         '<div class="entry-result ' + entry.resultaat + '">' +
@@ -3312,15 +3366,15 @@
                     '<div class="intensity-grid">' +
                         '<div style="font-size: 0.85rem;">' +
                             '<span style="color: #6b7280;">Voor:</span>' +
-                            '<span style="font-weight: 500; margin-left: 0.25rem;">' + entry.intensiteitVoor + '/10</span>' +
+                            '<span style="font-weight: 500; margin-left: 0.25rem; color: #1f2937;">' + entry.intensiteitVoor + '/10</span>' +
                         '</div>' +
                         '<div style="font-size: 0.85rem;">' +
                             '<span style="color: #6b7280;">Na:</span>' +
-                            '<span style="font-weight: 500; margin-left: 0.25rem;">' + entry.intensiteitNa + '/10</span>' +
+                            '<span style="font-weight: 500; margin-left: 0.25rem; color: #1f2937;">' + entry.intensiteitNa + '/10</span>' +
                         '</div>' +
                     '</div>' +
-                    (entry.trigger ? '<p style="font-size: 0.85rem; margin-bottom: 0.5rem;"><strong>Trigger:</strong> ' + entry.trigger + '</p>' : '') +
-                    (entry.notities ? '<p style="font-size: 0.85rem;"><strong>Notities:</strong> ' + entry.notities + '</p>' : '') +
+                    (entry.trigger ? '<p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: #1f2937;"><strong>Trigger:</strong> ' + entry.trigger + '</p>' : '') +
+                    (entry.notities ? '<p style="font-size: 0.85rem; color: #1f2937;"><strong>Notities:</strong> ' + entry.notities + '</p>' : '') +
                 '</div>';
             }).join('');
             
@@ -3363,6 +3417,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Load progress data
             loadProgressData();
+            
+            // Set random tip of the day
+            setRandomTip();
             
             // Initialize ritual display
             updateRitualDisplay();

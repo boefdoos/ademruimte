@@ -772,18 +772,24 @@
         }
 
         .status-connected {
-            color: #059669;
-            font-size: 0.7rem;
+            background: #059669 !important;
+            opacity: 0.8 !important;
         }
 
         .status-disconnected {
-            color: #f59e0b;
-            font-size: 0.7rem;
+            background: #f59e0b !important;
+            opacity: 0.6 !important;
         }
 
         .status-error {
-            color: #ef4444;
-            font-size: 0.7rem;
+            background: #ef4444 !important;
+            opacity: 0.7 !important;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
         }
 
         /* CSS Charts Styles - Updated */
@@ -1031,15 +1037,15 @@
             <div class="spinner" id="auth-loading"></div>
         </div>
         
-        <!-- Ademruimte Logo - New Integrated Design -->
+        <!-- Ademruimte Logo - Dominant Header Version -->
         <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
-            <svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="height: 50px; width: auto; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15));">
+            <svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="height: 120px; width: auto; filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25));">
               <defs>
                 <!-- Coral to teal gradient -->
                 <radialGradient id="breathingGradient" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" style="stop-color:#FFE0E6;stop-opacity:0.8"/>
-                  <stop offset="50%" style="stop-color:#FF7F7F;stop-opacity:0.5"/>
-                  <stop offset="100%" style="stop-color:#26A69A;stop-opacity:0.3"/>
+                  <stop offset="0%" style="stop-color:#FFE0E6;stop-opacity:0.9"/>
+                  <stop offset="50%" style="stop-color:#FF7F7F;stop-opacity:0.6"/>
+                  <stop offset="100%" style="stop-color:#26A69A;stop-opacity:0.4"/>
                 </radialGradient>
                 
                 <!-- Text gradient coral to teal -->
@@ -1051,90 +1057,84 @@
                 
                 <!-- Subtle flow gradient -->
                 <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style="stop-color:#26A69A;stop-opacity:0.8"/>
-                  <stop offset="50%" style="stop-color:#4DB6AC;stop-opacity:0.4"/>
-                  <stop offset="100%" style="stop-color:#FF7F7F;stop-opacity:0.2"/>
+                  <stop offset="0%" style="stop-color:#26A69A;stop-opacity:0.9"/>
+                  <stop offset="50%" style="stop-color:#4DB6AC;stop-opacity:0.5"/>
+                  <stop offset="100%" style="stop-color:#FF7F7F;stop-opacity:0.3"/>
                 </linearGradient>
               </defs>
               
               <!-- Gentle breathing circle - minimal expansion representing controlled breathing -->
-              <circle cx="60" cy="60" r="30" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1" opacity="0.6">
-                <animate attributeName="r" values="30;32;30" dur="8s" repeatCount="indefinite"/>
-                <animate attributeName="opacity" values="0.4;0.7;0.4" dur="8s" repeatCount="indefinite"/>
+              <circle cx="60" cy="60" r="30" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" opacity="0.7">
+                <animate attributeName="r" values="30;33;30" dur="8s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.5;0.8;0.5" dur="8s" repeatCount="indefinite"/>
+                <animate attributeName="stroke-width" values="1.5;2;1.5" dur="8s" repeatCount="indefinite"/>
               </circle>
               
               <!-- Inner calm circle -->
-              <circle cx="60" cy="60" r="20" fill="url(#breathingGradient)" opacity="0.7">
-                <animate attributeName="r" values="20;21;20" dur="8s" repeatCount="indefinite"/>
-                <animate attributeName="opacity" values="0.6;0.8;0.6" dur="8s" repeatCount="indefinite"/>
+              <circle cx="60" cy="60" r="20" fill="url(#breathingGradient)" opacity="0.8">
+                <animate attributeName="r" values="20;22;20" dur="8s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.7;0.9;0.7" dur="8s" repeatCount="indefinite"/>
               </circle>
               
               <!-- Central focus point - representing mindful awareness -->
-              <circle cx="60" cy="60" r="4" fill="#FF6B6B" opacity="0.9">
-                <animate attributeName="r" values="4;5;4" dur="8s" repeatCount="indefinite"/>
-                <animate attributeName="opacity" values="0.8;1;0.8" dur="8s" repeatCount="indefinite"/>
+              <circle cx="60" cy="60" r="4" fill="#FF6B6B" opacity="1">
+                <animate attributeName="r" values="4;6;4" dur="8s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.9;1;0.9" dur="8s" repeatCount="indefinite"/>
               </circle>
               
               <!-- Subtle airflow streams - representing gentle, controlled breath -->
               <g transform="translate(60,60)">
                 <!-- Curved breath paths - minimal, zen-like -->
                 <path d="M-25,0 Q-15,-10 0,-8 Q15,-10 25,0" 
-                      stroke="url(#flowGradient)" stroke-width="1.5" fill="none" opacity="0.6">
-                  <animate attributeName="opacity" values="0.4;0.8;0.4" dur="12s" repeatCount="indefinite"/>
+                      stroke="url(#flowGradient)" stroke-width="2" fill="none" opacity="0.7">
+                  <animate attributeName="opacity" values="0.5;0.9;0.5" dur="12s" repeatCount="indefinite"/>
                   <animateTransform attributeName="transform" type="rotate" values="0;360" dur="60s" repeatCount="indefinite"/>
                 </path>
                 
                 <path d="M0,-25 Q10,-15 8,0 Q10,15 0,25" 
-                      stroke="url(#flowGradient)" stroke-width="1.5" fill="none" opacity="0.5">
-                  <animate attributeName="opacity" values="0.3;0.7;0.3" dur="10s" repeatCount="indefinite"/>
+                      stroke="url(#flowGradient)" stroke-width="2" fill="none" opacity="0.6">
+                  <animate attributeName="opacity" values="0.4;0.8;0.4" dur="10s" repeatCount="indefinite"/>
                   <animateTransform attributeName="transform" type="rotate" values="90;450" dur="60s" repeatCount="indefinite"/>
                 </path>
                 
                 <!-- Gentle flow particles -->
-                <circle cx="15" cy="-5" r="1" fill="rgba(255,255,255,0.8)" opacity="0.7">
-                  <animate attributeName="opacity" values="0.4;0.9;0.4" dur="6s" repeatCount="indefinite"/>
+                <circle cx="15" cy="-5" r="1.2" fill="rgba(255,255,255,0.9)" opacity="0.8">
+                  <animate attributeName="opacity" values="0.5;1;0.5" dur="6s" repeatCount="indefinite"/>
                   <animateTransform attributeName="transform" type="rotate" values="0;360" dur="45s" repeatCount="indefinite"/>
                 </circle>
                 
-                <circle cx="-8" cy="12" r="0.8" fill="#FF7F7F" opacity="0.6">
-                  <animate attributeName="opacity" values="0.3;0.8;0.3" dur="7s" repeatCount="indefinite"/>
+                <circle cx="-8" cy="12" r="1" fill="#FF7F7F" opacity="0.7">
+                  <animate attributeName="opacity" values="0.4;0.9;0.4" dur="7s" repeatCount="indefinite"/>
                   <animateTransform attributeName="transform" type="rotate" values="180;540" dur="45s" repeatCount="indefinite"/>
                 </circle>
               </g>
               
-              <!-- App name -->
-              <text x="140" y="45" font-family="Arial, sans-serif" font-size="24" font-weight="300" fill="url(#textGradient)">
+              <!-- App name - larger -->
+              <text x="140" y="45" font-family="Arial, sans-serif" font-size="28" font-weight="300" fill="url(#textGradient)">
                 ademruimte
               </text>
               
-              <!-- Tagline -->
-              <text x="140" y="65" font-family="Arial, sans-serif" font-size="12" fill="rgba(255,255,255,0.8)" opacity="0.9">
-                jouw persoonlijke
-              </text>
-              <text x="140" y="80" font-family="Arial, sans-serif" font-size="12" fill="rgba(255,255,255,0.8)" opacity="0.9">
-                hyperventilatie helper
+              <!-- New Tagline -->
+              <text x="140" y="72" font-family="Arial, sans-serif" font-size="13" fill="rgba(255,255,255,0.9)" opacity="0.95">
+                your safe breathing space
               </text>
               
               <!-- Zen-like floating elements representing controlled breath -->
-              <g opacity="0.5">
-                <circle cx="270" cy="25" r="2" fill="rgba(255,255,255,0.7)">
+              <g opacity="0.6">
+                <circle cx="270" cy="25" r="2.5" fill="rgba(255,255,255,0.8)">
                   <animate attributeName="cy" values="25;20;25" dur="9s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" values="0.3;0.8;0.3" dur="9s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" values="0.4;0.9;0.4" dur="9s" repeatCount="indefinite"/>
                 </circle>
-                <circle cx="280" cy="35" r="1.5" fill="#FF7F7F">
+                <circle cx="280" cy="35" r="2" fill="#FF7F7F">
                   <animate attributeName="cy" values="35;30;35" dur="11s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" values="0.4;0.8;0.4" dur="11s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" values="0.5;0.9;0.5" dur="11s" repeatCount="indefinite"/>
                 </circle>
-                <circle cx="275" cy="55" r="1.8" fill="rgba(255,255,255,0.6)">
+                <circle cx="275" cy="55" r="2.2" fill="rgba(255,255,255,0.7)">
                   <animate attributeName="cy" values="55;50;55" dur="13s" repeatCount="indefinite"/>
-                  <animate attributeName="opacity" values="0.3;0.6;0.3" dur="13s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" values="0.4;0.7;0.4" dur="13s" repeatCount="indefinite"/>
                 </circle>
               </g>
             </svg>
-        </div>
-        
-        <div id="firebase-status" class="status-disconnected">
-            🔥 Firebase: Initialiseren...
         </div>
     </header>
 
@@ -1325,12 +1325,9 @@
                         ademruimte
                       </text>
                       
-                      <!-- Tagline -->
-                      <text x="140" y="68" font-family="Arial, sans-serif" font-size="14" fill="#666" opacity="0.9">
-                        jouw persoonlijke
-                      </text>
-                      <text x="140" y="85" font-family="Arial, sans-serif" font-size="14" fill="#666" opacity="0.9">
-                        hyperventilatie helper
+                      <!-- New Tagline -->
+                      <text x="140" y="72" font-family="Arial, sans-serif" font-size="14" fill="#666" opacity="0.9">
+                        your safe breathing space
                       </text>
                       
                       <!-- Zen-like floating elements representing controlled breath -->
@@ -1884,7 +1881,14 @@
     </div>
 
     <footer>
-        <p>📞 In noodgevallen: contacteer altijd je huisarts of spoeddiensten</p>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1rem;">
+            <p>📞 In noodgevallen: contacteer altijd je huisarts of spoeddiensten</p>
+            
+            <!-- Subtle Firebase Status Indicator -->
+            <div style="display: flex; align-items: center; gap: 0.25rem;">
+                <div id="firebase-status-dot" class="status-disconnected" style="width: 6px; height: 6px; border-radius: 50%; background: #f59e0b; transition: all 0.3s ease; opacity: 0.6;" title="Firebase verbinding status"></div>
+            </div>
+        </div>
     </footer>
 
     <!-- External Libraries -->
@@ -1988,29 +1992,38 @@
             collection(db, "test");
             
             isFirebaseConnected = true;
-            updateFirebaseStatus('connected', '🔥 Firebase: Actief');
+            updateFirebaseStatus('connected', 'Firebase: Verbonden');
             
             console.log('✅ Firebase successfully initialized and connected');
             
         } catch (error) {
             console.error('❌ Firebase initialization error:', error);
             isFirebaseConnected = false;
-            updateFirebaseStatus('error', '🔥 Firebase: Offline');
+            updateFirebaseStatus('error', 'Firebase: Fout');
             
             // Show user that they can still use the app
             setTimeout(() => {
-                updateFirebaseStatus('disconnected', '📱 Lokale modus actief');
+                updateFirebaseStatus('disconnected', 'Firebase: Offline - Lokale modus');
             }, 3000);
         }
 
         // Initialize Firebase auth state observer
         setupAuthStateObserver();
 
+        // Set initial status
+        updateFirebaseStatus('disconnected', 'Firebase: Initialiseren...');
+
         // Helper functies
         function updateFirebaseStatus(type, message) {
-            const statusElement = document.getElementById('firebase-status');
-            statusElement.textContent = message;
-            statusElement.className = `status-${type}`;
+            const statusDot = document.getElementById('firebase-status-dot');
+            if (statusDot) {
+                statusDot.className = `status-${type}`;
+                statusDot.title = message;
+                statusDot.style.width = '6px';
+                statusDot.style.height = '6px';
+                statusDot.style.borderRadius = '50%';
+                statusDot.style.transition = 'all 0.3s ease';
+            }
         }
 
         // Tips functionaliteit

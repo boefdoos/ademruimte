@@ -1591,14 +1591,19 @@
                         <div class="progress-fill" id="ritual-progress" style="width: 20%"></div>
                     </div>
 
-                    <div id="ritual-complete" class="alert alert-success hidden">
-                        <strong>✅ Afkoel Ritueel Voltooid!</strong><br>
-                        Fantastisch! Je hebt alle 5 stappen van het afkoel ritueel doorlopen.
-                        <br><br>
-                        <button class="btn btn-primary" onclick="openDagboekModal('Afkoel Ritueel - 5 Stappen Voltooid')">
-                            📝 Maak Dagboek Entry
-                        </button>
-                    </div>
+<div id="ritual-complete" class="alert alert-success hidden">
+    <strong>✅ Afkoel Ritueel Voltooid!</strong><br>
+    Fantastisch! Je hebt alle 5 stappen van het afkoel ritueel doorlopen.
+    <br><br>
+    <div class="button-group">
+        <button class="btn btn-primary" onclick="openDagboekModal('Afkoel Ritueel - 5 Stappen Voltooid')">
+            📝 Maak Dagboek Entry
+        </button>
+        <button class="btn btn-orange" onclick="skipRitualDagboek()">
+            ⏭️ Overslaan
+        </button>
+    </div>
+</div>
                 </div>
             </div>
 

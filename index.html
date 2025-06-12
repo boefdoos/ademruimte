@@ -1528,14 +1528,20 @@
                 </div>
 
                 <!-- Completion bericht buiten de hoofdkaart -->
-                <div id="breath-complete" class="alert alert-success hidden">
-                    <strong>✅ Buteyko Sessie Voltooid!</strong><br>
-                    Geweldig! Je hebt 10 ademhalingscycli succesvol afgerond.
-                    <br><br>
-                    <button class="btn btn-primary" onclick="openDagboekModal('Buteyko Ademhaling - 10 Cycli Voltooid')">
-                        📝 Maak Dagboek Entry
-                    </button>
-                </div>
+               <!-- Completion bericht buiten de hoofdkaart -->
+<div id="breath-complete" class="alert alert-success hidden">
+    <strong>✅ Buteyko Sessie Voltooid!</strong><br>
+    Geweldig! Je hebt 10 ademhalingscycli succesvol afgerond.
+    <br><br>
+    <div class="button-group">
+        <button class="btn btn-primary" onclick="openDagboekModal('Buteyko Ademhaling - 10 Cycli Voltooid')">
+            📝 Maak Dagboek Entry
+        </button>
+        <button class="btn btn-orange" onclick="skipButeykoDagboek()">
+            ⏭️ Overslaan
+        </button>
+    </div>
+</div>
 
                 <div class="card">
                     <h3>Buteyko Principes</h3>

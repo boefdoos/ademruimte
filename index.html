@@ -1405,8 +1405,12 @@
                       </g>
                     </svg>
                     
+                    <h2 id="dashboard-greeting" style="font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 1rem; background: linear-gradient(135deg, #06b6d4, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                        Welkom bij Ademruimte
+                    </h2>
+                    
                     <p style="color: var(--text-light); font-size: 1rem; margin-top: 0.5rem; max-width: 600px; margin-left: auto; margin-right: auto;">
-                        Welkom bij je persoonlijke ruimte voor ademhalingsoefeningen en hyperventilatie begeleiding. 
+                        Je persoonlijke ruimte voor ademhalingsoefeningen en hyperventilatie begeleiding. 
                         Neem de tijd om te ontspannen en ontdek welke technieken het beste voor jou werken.
                     </p>
                 </div>
@@ -1541,9 +1545,9 @@
                 </div>
 
                 <div class="card">
-                    <h3>Ademhaling Instellingen</h3>
+                    <h3>Ademhalingsinstellingen</h3>
                     <div style="margin-bottom: 1rem;">
-                        <label style="font-weight: 500; margin-bottom: 0.5rem; display: block;">Ademhaling Patroon:</label>
+                        <label style="font-weight: 500; margin-bottom: 0.5rem; display: block;">Ademhalingspatroon:</label>
                         <select id="breathing-pattern" class="form-select" onchange="updateBreathingPattern()">
                             <option value="standard">Standaard (4-6-3)</option>
                             <option value="gentle">Zacht (2x ademhaling + pauze)</option>
@@ -1592,7 +1596,7 @@
 
                     <div style="text-align: center; margin: 1rem 0;">
                         <div id="breath-cycle-counter" style="font-size: 1.125rem; color: var(--text-light); margin-bottom: 1rem;">
-                            Cyclus: 0
+                            Cyclus: 0/10
                         </div>
                         
                         <div class="button-group">
@@ -1607,10 +1611,10 @@
 
                     <div id="breath-complete" class="alert alert-success hidden">
                         <strong>✅ Buteyko Sessie Voltooid!</strong><br>
-                        Goed gedaan! Je hebt een volledige ademhalingssessie afgerond.
+                        Geweldig! Je hebt 10 ademhalingscycli succesvol afgerond.
                         <br><br>
-                        <button class="btn btn-primary" onclick="openDagboekModal('Buteyko Ademhaling')">
-                            📝 Dagboek Entry Maken
+                        <button class="btn btn-primary" onclick="openDagboekModal('Buteyko Ademhaling - 10 Cycli Voltooid')">
+                            📝 Maak Dagboek Entry
                         </button>
                     </div>
                 </div>
@@ -1627,7 +1631,7 @@
                     </div>
                     <div class="technique-card">
                         <h4>Comfortabele Pauze</h4>
-                        <p>De ademhpauze na uitademing mag nooit geforceerd aanvoelen - stop als het oncomfortabel wordt.</p>
+                        <p>De adempauze na uitademing mag nooit geforceerd aanvoelen - stop als het oncomfortabel wordt.</p>
                     </div>
                 </div>
             </div>
@@ -1665,10 +1669,10 @@
 
                     <div id="ritual-complete" class="alert alert-success hidden">
                         <strong>✅ Afkoel Ritueel Voltooid!</strong><br>
-                        Goed gedaan! Je hebt alle stappen doorlopen.
+                        Fantastisch! Je hebt alle 5 stappen van het afkoel ritueel doorlopen.
                         <br><br>
-                        <button class="btn btn-primary" onclick="openDagboekModal('Afkoel Ritueel')">
-                            📝 Dagboek Entry Maken
+                        <button class="btn btn-primary" onclick="openDagboekModal('Afkoel Ritueel - 5 Stappen Voltooid')">
+                            📝 Maak Dagboek Entry
                         </button>
                     </div>
                 </div>
@@ -1769,9 +1773,6 @@
                         <button id="audio-btn" class="btn btn-purple" onclick="toggleBilateralAudio()">
                             🔊 Start Audio
                         </button>
-                        <button class="btn btn-orange" onclick="stopBilateralAudio()">
-                            🔇 Stop Audio
-                        </button>
                     </div>
                 </div>
 
@@ -1799,9 +1800,11 @@
                     </div>
 
                     <div id="emdr-complete" class="alert alert-success hidden">
-                        <strong>✅ EMDR Sessie Voltooid!</strong><br>
-                        <button class="btn btn-primary" onclick="openDagboekModal('EMDR Zelfhulp Sessie')">
-                            📝 Dagboek Entry Maken
+                        <strong>✅ EMDR Zelfhulp Sessie Voltooid!</strong><br>
+                        Goed gedaan! Je hebt alle 5 stappen van de EMDR zelfhulp doorlopen.
+                        <br><br>
+                        <button class="btn btn-primary" onclick="openDagboekModal('EMDR Zelfhulp - 5 Stappen Voltooid')">
+                            📝 Maak Dagboek Entry
                         </button>
                     </div>
                 </div>
@@ -1831,7 +1834,7 @@
                     
                     <!-- Chart Container -->
                     <div style="margin-bottom: 2rem;">
-                        <h4 style="margin-bottom: 1rem; color: var(--text-light); font-size: 0.9rem;">Intensiteit Evolutie</h4>
+                        <h4 style="margin-bottom: 1rem; color: var(--text-light); font-size: 0.9rem;">Intensiteitsontwikkeling</h4>
                         <div id="intensity-chart" style="width: 100%; height: 300px; background: rgba(255,255,255,0.5); border-radius: 0.75rem; padding: 1rem;">
                             <!-- Chart will be rendered here -->
                         </div>
@@ -1853,7 +1856,7 @@
                         </div>
                         <div class="stat-card">
                             <div class="stat-number" id="avg-improvement">0%</div>
-                            <div class="stat-label">Gem. Verbetering</div>
+                            <div class="stat-label">Gemiddelde Verbetering</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-number" id="best-technique">-</div>
@@ -1900,13 +1903,13 @@
 
                 <div class="grid">
                     <div class="form-group">
-                        <label class="form-label" for="entry-before">Intensiteit voor (1-10):</label>
+                        <label class="form-label" for="entry-before">Intensiteit vóór oefening (1-10):</label>
                         <input type="range" min="1" max="10" value="5" class="range-input" id="entry-before">
                         <div class="range-value" id="entry-before-value">5</div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="entry-after">Intensiteit na (1-10):</label>
+                        <label class="form-label" for="entry-after">Intensiteit ná oefening (1-10):</label>
                         <input type="range" min="1" max="10" value="5" class="range-input" id="entry-after">
                         <div class="range-value" id="entry-after-value">5</div>
                     </div>
@@ -2009,7 +2012,7 @@
             if (this.currentUser && userInfo) {
                 const displayName = this.currentUser.displayName || this.currentUser.email;
                 const shortName = displayName.length > 15 ? displayName.substring(0, 13) + '...' : displayName;
-                userInfo.innerHTML = '👋 ' + shortName;
+                userInfo.innerHTML = shortName;
             }
 
             if (this.currentUser && accountInfo) {
@@ -2019,6 +2022,25 @@
                     (this.currentUser.displayName || this.currentUser.email) + 
                     '</p>';
             }
+            
+            // Update dashboard greeting
+            this.updateDashboardGreeting();
+        }
+
+        updateDashboardGreeting() {
+            const greetingElement = document.getElementById('dashboard-greeting');
+            if (greetingElement && this.currentUser) {
+                const firstName = this.getFirstName();
+                const timeOfDay = this.getTimeOfDay();
+                greetingElement.textContent = `${timeOfDay}, ${firstName}!`;
+            }
+        }
+
+        getTimeOfDay() {
+            const hour = new Date().getHours();
+            if (hour < 12) return 'Goedemorgen';
+            if (hour < 18) return 'Goedemiddag';
+            return 'Goedenavond';
         }
 
         updateConnectionDisplay() {
@@ -2039,6 +2061,26 @@
 
         getRandomTip() {
             return this.tips[Math.floor(Math.random() * this.tips.length)];
+        }
+
+        getFirstName() {
+            if (!this.currentUser) return '';
+            
+            const displayName = this.currentUser.displayName;
+            if (displayName) {
+                // Extract first name (everything before first space)
+                return displayName.split(' ')[0];
+            }
+            
+            // Fallback to email local part
+            const email = this.currentUser.email;
+            if (email) {
+                const localPart = email.split('@')[0];
+                // Capitalize first letter
+                return localPart.charAt(0).toUpperCase() + localPart.slice(1);
+            }
+            
+            return 'Gebruiker';
         }
     }
 
@@ -2118,6 +2160,11 @@
                     showMainApp();
                     loadDagboekEntries();
                     checkForLocalData();
+                    
+                    // Update dashboard greeting after a brief delay to ensure DOM is ready
+                    setTimeout(() => {
+                        appState.updateDashboardGreeting();
+                    }, 100);
                 } else if (!user && appState.currentUser) {
                     log('INFO', 'User logged out');
                     appState.setUser(null);
@@ -2159,6 +2206,11 @@
             loginScreen.classList.add('hidden');
             mainApp.classList.remove('hidden');
             
+            // Update dashboard greeting
+            setTimeout(() => {
+                appState.updateDashboardGreeting();
+            }, 100);
+            
             // Focus management
             const dashboard = document.querySelector('[data-tab="dashboard"]');
             if (dashboard) dashboard.focus();
@@ -2180,6 +2232,11 @@
             const result = await signInWithPopup(auth, provider);
             log('SUCCESS', 'Google sign-in successful', result.user.email);
             
+            // Update dashboard greeting after login
+            setTimeout(() => {
+                appState.updateDashboardGreeting();
+            }, 200);
+            
         } catch (error) {
             log('ERROR', 'Google sign-in failed', error);
             
@@ -2200,7 +2257,7 @@
         }
         
         // Stop any running services
-        if (isAudioPlaying) stopBilateralAudio();
+        if (isAudioPlaying) toggleBilateralAudio();
         if (wakeLock) releaseWakeLock();
         if (timerInterval) clearInterval(timerInterval);
         if (breathInterval) {
@@ -2229,7 +2286,7 @@
     window.showTab = function(tabName) {
         // Stop audio when leaving EMDR tab
         if (appState.currentTab === 'emdr' && tabName !== 'emdr' && isAudioPlaying) {
-            stopBilateralAudio();
+            toggleBilateralAudio();
         }
 
         // Hide all tabs
@@ -2334,6 +2391,11 @@
             
             log('SUCCESS', 'Email sign-in successful');
             
+            // Update dashboard greeting after login
+            setTimeout(() => {
+                appState.updateDashboardGreeting();
+            }, 200);
+            
         } catch (error) {
             log('ERROR', 'Email sign-in failed', error);
             
@@ -2384,6 +2446,11 @@
             log('SUCCESS', 'Account created successfully');
             closeRegisterModal();
             showUserMessage('Account succesvol aangemaakt!', 'success');
+            
+            // Update dashboard greeting after registration
+            setTimeout(() => {
+                appState.updateDashboardGreeting();
+            }, 200);
             
         } catch (error) {
             log('ERROR', 'Registration failed', error);
@@ -2518,7 +2585,7 @@
         breathPhase = 'rest';
         updateBreathDisplay();
         updateBreathProgress(0);
-        document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 0';
+        document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 0/10';
         document.getElementById('breath-complete').classList.add('hidden');
     };
 
@@ -2611,7 +2678,7 @@
                 breathPhase = 'inhale';
                 breathPhaseTime = 0;
                 breathCycleCount++;
-                document.getElementById('breath-cycle-counter').textContent = `Cyclus: ${breathCycleCount}`;
+                document.getElementById('breath-cycle-counter').textContent = `Cyclus: ${breathCycleCount}/10`;
                 
                 // Complete after 10 cycles
                 if (breathCycleCount >= 10) {
@@ -2627,7 +2694,7 @@
                         breathPhase = 'rest';
                         updateBreathDisplay();
                         updateBreathProgress(0);
-                        document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 0';
+                        document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 0/10';
                         log('SUCCESS', 'Buteyko auto-reset completed - ready for next session');
                     }, 3000);
                     
@@ -2660,7 +2727,7 @@
                 breathPhase = 'gentle-breath';
                 breathPhaseTime = 0;
                 breathCycleCount++;
-                document.getElementById('breath-cycle-counter').textContent = `Cyclus: ${breathCycleCount}`;
+                document.getElementById('breath-cycle-counter').textContent = `Cyclus: ${breathCycleCount}/10`;
                 
                 // Complete after 10 cycles
                 if (breathCycleCount >= 10) {
@@ -2779,7 +2846,7 @@
             startPanning();
 
             isAudioPlaying = true;
-            document.getElementById('audio-btn').innerHTML = '⏸️ Pause Audio';
+            document.getElementById('audio-btn').innerHTML = '⏸️ Stop Audio';
             document.getElementById('audio-btn').className = 'btn btn-red';
             document.getElementById('audio-status').textContent = `Actief - ${frequency}Hz - Links naar Rechts`;
             document.getElementById('audio-status').style.color = '#059669';
@@ -3061,7 +3128,7 @@
         if (emdrStep >= emdrSteps.length) {
             // EMDR complete - stop audio and track progress
             if (isAudioPlaying) {
-                stopBilateralAudio();
+                toggleBilateralAudio();
             }
             releaseWakeLock();
             trackSession('emdr', emdrSteps.length * 300); // Assume 5 min per step
@@ -3119,13 +3186,44 @@
             trackSession('crisis');
         }
         
-        document.getElementById('entry-trigger').value = technique ? `Tijdens/na ${technique}` : '';
+        // Set pre-filled values based on technique
+        let triggerText = '';
+        if (technique) {
+            if (technique.includes('Buteyko')) {
+                triggerText = 'Na voltooiing van Buteyko ademhalingsoefening (10 cycli)';
+            } else if (technique.includes('Afkoel Ritueel')) {
+                triggerText = 'Na voltooiing van Afkoel Ritueel (5 stappen)';
+            } else if (technique.includes('EMDR')) {
+                triggerText = 'Na voltooiing van EMDR zelfhulp sessie (5 stappen)';
+            } else if (technique.includes('Crisis Hulp')) {
+                triggerText = 'Tijdens/na gebruik van crisis hulp technieken';
+            } else {
+                triggerText = `Tijdens/na ${technique}`;
+            }
+        }
+        
+        document.getElementById('entry-trigger').value = triggerText;
+        
+        // Set default values for completed exercises (suggesting improvement)
+        if (technique && (technique.includes('Voltooid') || technique.includes('Crisis Hulp'))) {
+            document.getElementById('entry-before').value = '7';
+            document.getElementById('entry-before-value').textContent = '7';
+            document.getElementById('entry-after').value = '3';
+            document.getElementById('entry-after-value').textContent = '3';
+        } else {
+            // Reset to default values for manual entries
+            document.getElementById('entry-before').value = '5';
+            document.getElementById('entry-before-value').textContent = '5';
+            document.getElementById('entry-after').value = '5';
+            document.getElementById('entry-after-value').textContent = '5';
+        }
+        
         document.getElementById('dagboek-modal').classList.add('show');
         
-        // Focus management
+        // Focus management - focus on intensiteit voor slider
         setTimeout(() => {
-            const triggerField = document.getElementById('entry-trigger');
-            if (triggerField) triggerField.focus();
+            const beforeSlider = document.getElementById('entry-before');
+            if (beforeSlider) beforeSlider.focus();
         }, 100);
     };
 
@@ -3378,11 +3476,11 @@
                 '</div>' +
                 '<div class="intensity-grid">' +
                     '<div style="font-size: 0.85rem;">' +
-                        '<span style="color: var(--text-light);">Voor:</span>' +
+                        '<span style="color: var(--text-light);">Vóór:</span>' +
                         '<span style="font-weight: 500; margin-left: 0.25rem; color: var(--text-dark);">' + entry.intensiteitVoor + '/10</span>' +
                     '</div>' +
                     '<div style="font-size: 0.85rem;">' +
-                        '<span style="color: var(--text-light);">Na:</span>' +
+                        '<span style="color: var(--text-light);">Ná:</span>' +
                         '<span style="font-weight: 500; margin-left: 0.25rem; color: var(--text-dark);">' + entry.intensiteitNa + '/10</span>' +
                     '</div>' +
                 '</div>' +
@@ -3452,7 +3550,7 @@
         
         // Create chart HTML
         let chartHTML = '<div class="chart-container">';
-        chartHTML += '<h4 style="margin: 0 0 1rem 0; color: var(--text-dark); font-size: 0.9rem; font-weight: 600;">Intensiteit Evolutie (Voor/Na)</h4>';
+        chartHTML += '<h4 style="margin: 0 0 1rem 0; color: var(--text-dark); font-size: 0.9rem; font-weight: 600;">Intensiteitsontwikkeling (Voor/Na)</h4>';
         chartHTML += '<div style="position: relative; width: 100%; overflow-x: auto;">';
         
         // Y-axis labels
@@ -3510,10 +3608,10 @@
             chartHTML += `<div style="position: absolute; left: ${x}px; top: 0; width: 20px; height: 100%; display: flex; flex-direction: column; align-items: center;">`;
             
             // Voor point
-            chartHTML += `<div class="chart-point voor" style="position: absolute; top: ${voorY}px; width: 8px; height: 8px; border-radius: 50%; background: #ef4444; border: 2px solid #dc2626; z-index: 3; cursor: pointer;" title="Voor: ${entry.intensiteitVoor}/10 (${entry.tijdstempel})"></div>`;
+            chartHTML += `<div class="chart-point voor" style="position: absolute; top: ${voorY}px; width: 8px; height: 8px; border-radius: 50%; background: #ef4444; border: 2px solid #dc2626; z-index: 3; cursor: pointer;" title="Vóór: ${entry.intensiteitVoor}/10 (${entry.tijdstempel})"></div>`;
             
             // Na point  
-            chartHTML += `<div class="chart-point na" style="position: absolute; top: ${naY}px; width: 8px; height: 8px; border-radius: 50%; background: #10b981; border: 2px solid #059669; z-index: 3; cursor: pointer;" title="Na: ${entry.intensiteitNa}/10 (${entry.tijdstempel})"></div>`;
+            chartHTML += `<div class="chart-point na" style="position: absolute; top: ${naY}px; width: 8px; height: 8px; border-radius: 50%; background: #10b981; border: 2px solid #059669; z-index: 3; cursor: pointer;" title="Ná: ${entry.intensiteitNa}/10 (${entry.tijdstempel})"></div>`;
             
             // Date label
             chartHTML += `<div style="position: absolute; bottom: -25px; font-size: 0.65rem; color: var(--text-light); white-space: nowrap; text-align: center; transform: translateX(-50%); max-width: 40px; overflow: hidden; text-overflow: ellipsis;">${dateLabel}</div>`;
@@ -3525,10 +3623,10 @@
         
         // Legend
         chartHTML += '<div style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; font-size: 0.8rem; flex-wrap: wrap;">';
-        chartHTML += '<div style="display: flex; align-items: center; gap: 0.5rem;"><div style="width: 12px; height: 12px; border-radius: 50%; background: #ef4444;"></div><span>Voor sessie</span></div>';
-        chartHTML += '<div style="display: flex; align-items: center; gap: 0.5rem;"><div style="width: 12px; height: 12px; border-radius: 50%; background: #10b981;"></div><span>Na sessie</span></div>';
-        chartHTML += '<div style="display: flex; align-items: center; gap: 0.5rem;"><div style="width: 20px; height: 2px; background: #ef4444; opacity: 0.6; border-radius: 1px;"></div><span style="font-size: 0.7rem;">Voor lijn</span></div>';
-        chartHTML += '<div style="display: flex; align-items: center; gap: 0.5rem;"><div style="width: 20px; height: 2px; background: #10b981; border-radius: 1px;"></div><span style="font-size: 0.7rem;">Na lijn</span></div>';
+        chartHTML += '<div style="display: flex; align-items: center; gap: 0.5rem;"><div style="width: 12px; height: 12px; border-radius: 50%; background: #ef4444;"></div><span>Vóór sessie</span></div>';
+        chartHTML += '<div style="display: flex; align-items: center; gap: 0.5rem;"><div style="width: 12px; height: 12px; border-radius: 50%; background: #10b981;"></div><span>Ná sessie</span></div>';
+        chartHTML += '<div style="display: flex; align-items: center; gap: 0.5rem;"><div style="width: 20px; height: 2px; background: #ef4444; opacity: 0.6; border-radius: 1px;"></div><span style="font-size: 0.7rem;">Vóór lijn</span></div>';
+        chartHTML += '<div style="display: flex; align-items: center; gap: 0.5rem;"><div style="width: 20px; height: 2px; background: #10b981; border-radius: 1px;"></div><span style="font-size: 0.7rem;">Ná lijn</span></div>';
         chartHTML += '</div>';
         
         chartHTML += '</div></div>';
@@ -3660,8 +3758,8 @@
                 exportText += 'Datum: ' + entry.tijdstempel + '\n';
                 exportText += 'Techniek: ' + entry.techniekGebruikt + '\n';
                 exportText += 'Trigger: ' + (entry.trigger || 'Geen') + '\n';
-                exportText += 'Intensiteit voor: ' + entry.intensiteitVoor + '/10\n';
-                exportText += 'Intensiteit na: ' + entry.intensiteitNa + '/10\n';
+                exportText += 'Intensiteit vóór: ' + entry.intensiteitVoor + '/10\n';
+                exportText += 'Intensiteit ná: ' + entry.intensiteitNa + '/10\n';
                 exportText += 'Resultaat: ' + getResultaatText(entry.resultaat) + '\n';
                 exportText += 'Notities: ' + (entry.notities || 'Geen') + '\n';
                 exportText += 'Bron: ' + (entry.bron || 'Onbekend') + '\n';
@@ -3909,8 +4007,8 @@
             if (speedControl) {
                 speedControl.addEventListener('change', function() {
                     if (isAudioPlaying) {
-                        stopBilateralAudio();
-                        setTimeout(startBilateralAudio, 100);
+                        toggleBilateralAudio();
+                        setTimeout(() => toggleBilateralAudio(), 100);
                     }
                 });
             }
@@ -3928,7 +4026,7 @@
 
     // Cleanup on page unload
     window.addEventListener('beforeunload', () => {
-        if (isAudioPlaying) stopBilateralAudio();
+        if (isAudioPlaying) toggleBilateralAudio();
         if (wakeLock) releaseWakeLock();
         if (timerInterval) clearInterval(timerInterval);
         if (breathInterval) clearInterval(breathInterval);

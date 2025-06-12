@@ -1320,91 +1320,8 @@
         <main id="main-content" class="container">
             <!-- Dashboard Tab -->
             <div id="dashboard" class="tab-content" role="tabpanel" aria-labelledby="dashboard-tab">
-                <!-- Hero Logo Section -->
+                <!-- Hero Greeting Section -->
                 <div class="card" style="text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85)); margin-bottom: 2rem;">
-                    <svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="height: 80px; width: auto; margin-bottom: 1rem; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.1));">
-                      <defs>
-                        <radialGradient id="dashboardBreathingGradient" cx="50%" cy="50%" r="50%">
-                          <stop offset="0%" style="stop-color:#FFE0E6;stop-opacity:0.9"/>
-                          <stop offset="50%" style="stop-color:#FF7F7F;stop-opacity:0.6"/>
-                          <stop offset="100%" style="stop-color:#26A69A;stop-opacity:0.4"/>
-                        </radialGradient>
-                        
-                        <linearGradient id="dashboardTextGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                          <stop offset="0%" style="stop-color:#FF6B6B"/>
-                          <stop offset="100%" style="stop-color:#26A69A"/>
-                        </linearGradient>
-                        
-                        <linearGradient id="dashboardFlowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" style="stop-color:#26A69A;stop-opacity:0.9"/>
-                          <stop offset="50%" style="stop-color:#4DB6AC;stop-opacity:0.5"/>
-                          <stop offset="100%" style="stop-color:#FF7F7F;stop-opacity:0.3"/>
-                        </linearGradient>
-                      </defs>
-                      
-                      <circle cx="60" cy="60" r="30" fill="none" stroke="#26A69A" stroke-width="1.5" opacity="0.7">
-                        <animate attributeName="r" values="30;33;30" dur="8s" repeatCount="indefinite"/>
-                        <animate attributeName="opacity" values="0.5;0.8;0.5" dur="8s" repeatCount="indefinite"/>
-                      </circle>
-                      
-                      <circle cx="60" cy="60" r="20" fill="url(#dashboardBreathingGradient)" opacity="0.8">
-                        <animate attributeName="r" values="20;22;20" dur="8s" repeatCount="indefinite"/>
-                        <animate attributeName="opacity" values="0.7;0.9;0.7" dur="8s" repeatCount="indefinite"/>
-                      </circle>
-                      
-                      <circle cx="60" cy="60" r="4" fill="#FF6B6B" opacity="1">
-                        <animate attributeName="r" values="4;6;4" dur="8s" repeatCount="indefinite"/>
-                        <animate attributeName="opacity" values="0.8;1;0.8" dur="8s" repeatCount="indefinite"/>
-                      </circle>
-                      
-                      <g transform="translate(60,60)">
-                        <path d="M-25,0 Q-15,-10 0,-8 Q15,-10 25,0" 
-                              stroke="url(#dashboardFlowGradient)" stroke-width="2" fill="none" opacity="0.7">
-                          <animate attributeName="opacity" values="0.5;0.9;0.5" dur="12s" repeatCount="indefinite"/>
-                          <animateTransform attributeName="transform" type="rotate" values="0;360" dur="60s" repeatCount="indefinite"/>
-                        </path>
-                        
-                        <path d="M0,-25 Q10,-15 8,0 Q10,15 0,25" 
-                              stroke="url(#dashboardFlowGradient)" stroke-width="2" fill="none" opacity="0.6">
-                          <animate attributeName="opacity" values="0.4;0.8;0.4" dur="10s" repeatCount="indefinite"/>
-                          <animateTransform attributeName="transform" type="rotate" values="90;450" dur="60s" repeatCount="indefinite"/>
-                        </path>
-                        
-                        <circle cx="15" cy="-5" r="1.2" fill="#26A69A" opacity="0.8">
-                          <animate attributeName="opacity" values="0.5;1;0.5" dur="6s" repeatCount="indefinite"/>
-                          <animateTransform attributeName="transform" type="rotate" values="0;360" dur="45s" repeatCount="indefinite"/>
-                        </circle>
-                        
-                        <circle cx="-8" cy="12" r="1" fill="#FF7F7F" opacity="0.7">
-                          <animate attributeName="opacity" values="0.4;0.9;0.4" dur="7s" repeatCount="indefinite"/>
-                          <animateTransform attributeName="transform" type="rotate" values="180;540" dur="45s" repeatCount="indefinite"/>
-                        </circle>
-                      </g>
-                      
-                      <text x="140" y="45" font-family="Arial, sans-serif" font-size="28" font-weight="300" fill="url(#dashboardTextGradient)">
-                        ademruimte
-                      </text>
-                      
-                      <text x="140" y="72" font-family="Arial, sans-serif" font-size="14" fill="#666" opacity="0.9">
-                        your safe breathing space
-                      </text>
-                      
-                      <g opacity="0.6">
-                        <circle cx="270" cy="25" r="2.5" fill="#26A69A">
-                          <animate attributeName="cy" values="25;20;25" dur="9s" repeatCount="indefinite"/>
-                          <animate attributeName="opacity" values="0.4;0.8;0.4" dur="9s" repeatCount="indefinite"/>
-                        </circle>
-                        <circle cx="280" cy="35" r="2" fill="#FF7F7F">
-                          <animate attributeName="cy" values="35;30;35" dur="11s" repeatCount="indefinite"/>
-                          <animate attributeName="opacity" values="0.5;0.9;0.5" dur="11s" repeatCount="indefinite"/>
-                        </circle>
-                        <circle cx="275" cy="55" r="2.2" fill="#4DB6AC">
-                          <animate attributeName="cy" values="55;50;55" dur="13s" repeatCount="indefinite"/>
-                          <animate attributeName="opacity" values="0.3;0.7;0.3" dur="13s" repeatCount="indefinite"/>
-                        </circle>
-                      </g>
-                    </svg>
-                    
                     <h2 id="dashboard-greeting" style="font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 1rem; background: linear-gradient(135deg, #06b6d4, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
                         Welkom bij Ademruimte
                     </h2>
@@ -1596,7 +1513,7 @@
 
                     <div style="text-align: center; margin: 1rem 0;">
                         <div id="breath-cycle-counter" style="font-size: 1.125rem; color: var(--text-light); margin-bottom: 1rem;">
-                            Cyclus: 0/10
+                            Cyclus: 1/10
                         </div>
                         
                         <div class="button-group">
@@ -1608,15 +1525,16 @@
                             </button>
                         </div>
                     </div>
+                </div>
 
-                    <div id="breath-complete" class="alert alert-success hidden">
-                        <strong>✅ Buteyko Sessie Voltooid!</strong><br>
-                        Geweldig! Je hebt 10 ademhalingscycli succesvol afgerond.
-                        <br><br>
-                        <button class="btn btn-primary" onclick="openDagboekModal('Buteyko Ademhaling - 10 Cycli Voltooid')">
-                            📝 Maak Dagboek Entry
-                        </button>
-                    </div>
+                <!-- Completion bericht buiten de hoofdkaart -->
+                <div id="breath-complete" class="alert alert-success hidden">
+                    <strong>✅ Buteyko Sessie Voltooid!</strong><br>
+                    Geweldig! Je hebt 10 ademhalingscycli succesvol afgerond.
+                    <br><br>
+                    <button class="btn btn-primary" onclick="openDagboekModal('Buteyko Ademhaling - 10 Cycli Voltooid')">
+                        📝 Maak Dagboek Entry
+                    </button>
                 </div>
 
                 <div class="card">
@@ -2098,7 +2016,7 @@
     // Breath exercise variables
     let breathInterval = null;
     let breathPhase = 'rest';
-    let breathCycleCount = 0;
+    let breathCycleCount = 1;
     let breathPhaseTime = 0;
     let breathCycleDuration = 0;
     let breathingPattern = 'standard';
@@ -2580,18 +2498,22 @@
 
     window.resetBreathExercise = function() {
         stopBreathExercise();
-        breathCycleCount = 0;
+        breathCycleCount = 1;
         gentleBreathCount = 0;
         breathPhase = 'rest';
         updateBreathDisplay();
         updateBreathProgress(0);
-        document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 0/10';
+        document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 1/10';
         document.getElementById('breath-complete').classList.add('hidden');
     };
 
     function startBreathExercise() {
         // Request wake lock to keep screen on
         requestWakeLock();
+        
+        // Initialize at cyclus 1
+        breathCycleCount = 1;
+        document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 1/10';
         
         if (breathingPattern === 'gentle') {
             startGentleBreathing();
@@ -2694,7 +2616,7 @@
                         breathPhase = 'rest';
                         updateBreathDisplay();
                         updateBreathProgress(0);
-                        document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 0/10';
+                        document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 1/10';
                         log('SUCCESS', 'Buteyko auto-reset completed - ready for next session');
                     }, 3000);
                     
@@ -2774,7 +2696,7 @@
                 display.textContent = '⏸️ Pauze';
                 break;
             case 'gentle-breath':
-                display.textContent = `🌬️ Zachte Ademhaling (${gentleBreathCount + 1}/2)`;
+                display.textContent = `🌬️ Zachte Ademhaling`;
                 break;
             case 'rest':
             default:

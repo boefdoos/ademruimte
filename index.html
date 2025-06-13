@@ -2184,23 +2184,28 @@
             // Set persistence
             await setPersistence(auth, browserLocalPersistence);
 
-            // Setup auth state observer
+            // Setup auth state observer with improved logic
             onAuthStateChanged(auth, (user) => {
                 document.getElementById('auth-loading').style.display = 'none';
                 
-                if (user && !appState.currentUser) {
-                    log('SUCCESS', 'User authenticated', user.email);
-                    appState.setUser(user);
-                    showMainApp();
-                    loadDagboekEntries();
-                    checkForLocalData();
-                    
-                    // Update dashboard greeting after a brief delay to ensure DOM is ready
-                    setTimeout(() => {
-                        appState.updateDashboardGreeting();
-                    }, 100);
-                } else if (!user && appState.currentUser) {
-                    log('INFO', 'User logged out');
+                if (user) {
+                    // User is logged in
+                    if (!appState.currentUser || appState.currentUser.uid !== user.uid) {
+                        log('SUCCESS', 'User authenticated', user.email);
+                        appState.setUser(user);
+                        showMainApp();
+                        loadDagboekEntries();
+                        
+                        // Update dashboard greeting after a brief delay to ensure DOM is ready
+                        setTimeout(() => {
+                            appState.updateDashboardGreeting();
+                        }, 100);
+                    }
+                } else {
+                    // User is logged out
+                    if (appState.currentUser) {
+                        log('INFO', 'User logged out - auth state changed');
+                    }
                     appState.setUser(null);
                     showLoginScreen();
                 }
@@ -2266,10 +2271,15 @@
             const result = await signInWithPopup(auth, provider);
             log('SUCCESS', 'Google sign-in successful', result.user.email);
             
-            // Update dashboard greeting after login
+            // Force immediate UI update
+            appState.setUser(result.user);
+            showMainApp();
+            loadDagboekEntries();
+            
+            // Update dashboard greeting
             setTimeout(() => {
                 appState.updateDashboardGreeting();
-            }, 200);
+            }, 100);
             
         } catch (error) {
             log('ERROR', 'Google sign-in failed', error);
@@ -2299,10 +2309,6 @@
             breathInterval = null;
         }
         
-        // Clear user state immediately for instant UI update
-        appState.setUser(null);
-        showLoginScreen();
-        
         try {
             if (auth && auth.currentUser) {
                 const { signOut } = await import("https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js");
@@ -2311,8 +2317,11 @@
             }
         } catch (error) {
             log('ERROR', 'Logout failed', error);
-            // UI is already updated, so this is just for cleanup
         }
+        
+        // Force UI update for immediate feedback
+        appState.setUser(null);
+        showLoginScreen();
     };
 
     // Enhanced tab management with accessibility
@@ -2420,14 +2429,19 @@
             }
             
             const { signInWithEmailAndPassword } = await import("https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js");
-            await signInWithEmailAndPassword(auth, email, password);
+            const result = await signInWithEmailAndPassword(auth, email, password);
             
             log('SUCCESS', 'Email sign-in successful');
             
-            // Update dashboard greeting after login
+            // Force immediate UI update
+            appState.setUser(result.user);
+            showMainApp();
+            loadDagboekEntries();
+            
+            // Update dashboard greeting
             setTimeout(() => {
                 appState.updateDashboardGreeting();
-            }, 200);
+            }, 100);
             
         } catch (error) {
             log('ERROR', 'Email sign-in failed', error);
@@ -2480,10 +2494,16 @@
             closeRegisterModal();
             showUserMessage('Account succesvol aangemaakt!', 'success');
             
-            // Update dashboard greeting after registration
+            // Force immediate UI update with updated user info
+            const updatedUser = { ...result.user, displayName: name };
+            appState.setUser(updatedUser);
+            showMainApp();
+            loadDagboekEntries();
+            
+            // Update dashboard greeting
             setTimeout(() => {
                 appState.updateDashboardGreeting();
-            }, 200);
+            }, 100);
             
         } catch (error) {
             log('ERROR', 'Registration failed', error);
@@ -3346,18 +3366,16 @@
         appState.currentTechnique = '';
     };
 
-    // Firebase functions with improved error handling for index issues
+    // Firebase functions with improved error handling
     async function saveToFirestore(entry, retryCount = 0) {
         const maxRetries = 2;
         
         if (!appState.isFirebaseConnected) {
-            log('WARNING', 'Firebase not connected, using localStorage');
-            return saveToLocalStorage(entry, 'Firebase niet verbonden');
+            throw new Error('Firebase niet verbonden. Controleer je internetverbinding.');
         }
         
         if (!appState.currentUser) {
-            log('WARNING', 'No current user, using localStorage');
-            return saveToLocalStorage(entry, 'Niet ingelogd');
+            throw new Error('Je moet ingelogd zijn om entries op te slaan.');
         }
 
         try {
@@ -3378,13 +3396,7 @@
         } catch (error) {
             log('ERROR', `Firestore save error (attempt ${retryCount + 1}):`, error);
             
-            // Check for index errors specifically
-            if (error.code === 'failed-precondition' || error.message.includes('index')) {
-                log('INFO', 'Firestore index error - falling back to localStorage');
-                return saveToLocalStorage(entry, 'Firestore index niet beschikbaar');
-            }
-            
-            // Check for other retryable errors
+            // Check for retryable errors
             const retryableErrors = [
                 'unavailable', 
                 'deadline-exceeded',
@@ -3403,33 +3415,15 @@
                 return saveToFirestore(entry, retryCount + 1);
             }
             
-            log('INFO', 'Firestore failed, falling back to localStorage');
-            return saveToLocalStorage(entry, `Firestore fout: ${error.code || error.message}`);
+            // Re-throw error to be handled by caller
+            throw error;
         }
     }
 
-    function saveToLocalStorage(entry, reason) {
-        const stored = JSON.parse(localStorage.getItem('ademruimte-entries') || '[]');
-        const entryWithId = { 
-            ...entry, 
-            id: Date.now().toString(), 
-            bron: 'Lokaal',
-            reden: reason,
-            userId: appState.currentUser?.uid || 'local'
-        };
-        stored.unshift(entryWithId);
-        localStorage.setItem('ademruimte-entries', JSON.stringify(stored));
-        
-        log('SUCCESS', 'Entry saved to localStorage:', entryWithId);
-        return { id: entryWithId.id, success: true, source: 'localStorage' };
-    }
-
-    // Load entries from Firestore - removes orderBy to avoid index requirements
+    // Load entries from Firestore
     async function loadFromFirestore() {
         if (!appState.isFirebaseConnected || !appState.currentUser) {
-            log('INFO', 'Loading from localStorage...');
-            const stored = localStorage.getItem('ademruimte-entries');
-            return stored ? JSON.parse(stored) : [];
+            throw new Error('Je moet ingelogd zijn en verbonden met internet om entries te laden.');
         }
 
         try {
@@ -3468,11 +3462,7 @@
             
         } catch (error) {
             log('ERROR', 'Firestore query error:', error);
-            log('INFO', 'Falling back to localStorage due to Firestore error');
-            
-            // Fallback to localStorage
-            const stored = localStorage.getItem('ademruimte-entries');
-            return stored ? JSON.parse(stored) : [];
+            throw new Error('Fout bij laden van entries. Controleer je internetverbinding.');
         }
     }
 
@@ -3517,12 +3507,7 @@
                 await loadDagboekEntries();
             }
             
-            // Show appropriate success message
-            if (result.source === 'Firebase') {
-                showUserMessage('✅ Entry opgeslagen in cloud!', 'success');
-            } else {
-                showUserMessage('⚠️ Entry lokaal opgeslagen\n\nReden: ' + result.reden + '\nDe entry is veilig bewaard op dit apparaat.', 'warning');
-            }
+            showUserMessage('✅ Entry succesvol opgeslagen!', 'success');
             
         } catch (error) {
             // Restore button on error
@@ -3894,95 +3879,6 @@
             
         } catch (error) {
             showUserMessage('❌ Fout bij exporteren: ' + error.message, 'error');
-        }
-    };
-
-    // Data migration function
-    function checkForLocalData() {
-        const localData = localStorage.getItem('ademruimte-entries');
-        const migrationSection = document.getElementById('migration-section');
-        
-        if (localData && JSON.parse(localData).length > 0) {
-            // Only show if we can use Firestore
-            if (appState.isFirebaseConnected && appState.currentUser) {
-                migrationSection.style.display = 'block';
-            } else {
-                migrationSection.style.display = 'none';
-            }
-        } else {
-            migrationSection.style.display = 'none';
-        }
-    }
-
-    window.migrateLocalData = async function() {
-        if (!appState.currentUser) {
-            showUserMessage('❌ Je moet ingelogd zijn om data te migreren', 'error');
-            return;
-        }
-
-        const localData = localStorage.getItem('ademruimte-entries');
-        if (!localData) {
-            showUserMessage('📝 Geen lokale data gevonden om te migreren', 'warning');
-            return;
-        }
-
-        const entries = JSON.parse(localData);
-        if (entries.length === 0) {
-            showUserMessage('📝 Geen entries gevonden om te migreren', 'warning');
-            return;
-        }
-
-        const confirmMigration = confirm(
-            `🔄 Data Migratie\n\n` +
-            `Er zijn ${entries.length} lokale entries gevonden.\n` +
-            `Wil je deze migreren naar je cloud account?\n\n` +
-            `Dit zal ze toevoegen aan je cloud opslag.`
-        );
-
-        if (!confirmMigration) return;
-
-        try {
-            let migratedCount = 0;
-            
-            for (const entry of entries) {
-                // Skip entries that are already marked as cloud entries
-                if (entry.bron === 'Cloud' || entry.userId === appState.currentUser.uid) {
-                    continue;
-                }
-
-                // Clean entry for migration
-                const cleanEntry = {
-                    techniekGebruikt: entry.techniekGebruikt,
-                    trigger: entry.trigger,
-                    intensiteitVoor: entry.intensiteitVoor,
-                    intensiteitNa: entry.intensiteitNa,
-                    resultaat: entry.resultaat,
-                    notities: entry.notities,
-                    tijdstempel: entry.tijdstempel
-                };
-
-                await saveToFirestore(cleanEntry);
-                migratedCount++;
-            }
-
-            if (migratedCount > 0) {
-                showUserMessage(`✅ Migratie Voltooid!\n\n${migratedCount} entries zijn succesvol gemigreerd naar je cloud account.`, 'success');
-                
-                // Clear local storage after successful migration
-                localStorage.removeItem('ademruimte-entries');
-                
-                // Hide migration section
-                document.getElementById('migration-section').style.display = 'none';
-                
-                // Reload entries
-                await loadDagboekEntries();
-            } else {
-                showUserMessage('📝 Geen nieuwe entries gevonden om te migreren', 'warning');
-            }
-            
-        } catch (error) {
-            log('ERROR', 'Migration error:', error);
-            showUserMessage('❌ Migratie mislukt: ' + error.message, 'error');
         }
     };
 

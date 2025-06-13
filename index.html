@@ -2,9 +2,9 @@
 <html lang="nl">
 <head>
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="manifest" href="/site.webmanifest">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#06b6d4">
@@ -1493,19 +1493,6 @@
                             aria-label="Nieuwe tip laden">🔄</button>
                 </div>
 
-                <!-- Data Migration Section -->
-                <div class="settings-section" id="migration-section" style="display: none;">
-                    <h3>📤 Data Migratie</h3>
-                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">
-                        Heb je eerder de app gebruikt zonder account? Migreer je lokale data naar je cloud account.
-                    </p>
-                    <div class="button-group">
-                        <button class="btn btn-green" onclick="migrateLocalData()">
-                            📤 Migreer Lokale Data
-                        </button>
-                    </div>
-                </div>
-
                 <!-- Account Settings -->
                 <div class="settings-section">
                     <h3>👤 Account</h3>
@@ -2303,7 +2290,7 @@
             return;
         }
         
-        // Stop any running services
+        // Stop any running services immediately
         if (isAudioPlaying) toggleBilateralAudio();
         if (wakeLock) releaseWakeLock();
         if (timerInterval) clearInterval(timerInterval);
@@ -2312,20 +2299,19 @@
             breathInterval = null;
         }
         
+        // Clear user state immediately for instant UI update
+        appState.setUser(null);
+        showLoginScreen();
+        
         try {
             if (auth && auth.currentUser) {
                 const { signOut } = await import("https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js");
                 await signOut(auth);
+                log('SUCCESS', 'User logged out successfully');
             }
-            
-            appState.setUser(null);
-            log('SUCCESS', 'User logged out successfully');
-            
         } catch (error) {
             log('ERROR', 'Logout failed', error);
-            // Force logout anyway
-            appState.setUser(null);
-            showLoginScreen();
+            // UI is already updated, so this is just for cleanup
         }
     };
 

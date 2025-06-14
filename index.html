@@ -2084,6 +2084,13 @@
             <span style="font-size: 0.7rem; opacity: 0.7;">Status</span>
         </div>
     </div>
+    
+    <!-- Developer Credit -->
+    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+        <p style="margin: 0; font-size: 0.75rem; opacity: 0.8; color: rgba(255,255,255,0.9);">
+            Ontwikkeld door <strong>Thomas Van Troostenberghe</strong>
+        </p>
+    </div>
 </footer>
 
 <!-- External Libraries -->
@@ -2315,6 +2322,7 @@
         } catch (error) {
             log('ERROR', 'Firebase initialization failed', error);
             appState.setConnectionStatus(false);
+            showUserMessage('Firebase initialisatie mislukt. Sommige functies werken mogelijk niet.', 'warning');
         }
     }
 
@@ -2333,6 +2341,8 @@
                 if (emailField) emailField.focus();
             }, 100);
         }
+        
+        log('INFO', 'Switched to login screen');
     }
 
     function showMainApp() {
@@ -2352,6 +2362,8 @@
             const dashboard = document.querySelector('[data-tab="dashboard"]');
             if (dashboard) dashboard.focus();
         }
+        
+        log('INFO', 'Switched to main app');
     }
 
     // Enhanced authentication functions
@@ -4171,6 +4183,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     log('INFO', 'Starting Ademruimte app initialization');
     
     try {
+// Initialize app
+document.addEventListener('DOMContentLoaded', async function() {
+    log('INFO', 'Starting Ademruimte app initialization');
+    
+    try {
         // Initialize components
         await initializeFirebase();
         setupForms();
@@ -4245,7 +4262,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         
     } catch (error) {
         log('ERROR', 'App initialization failed', error);
-        showUserMessage('Er is een fout opgetreden bij het laden van de app', 'error');
+        showUserMessage('Er is een fout opgetreden bij het laden van de app: ' + error.message, 'error');
     }
 });
 

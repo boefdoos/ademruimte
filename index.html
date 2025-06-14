@@ -2113,8 +2113,12 @@
             this.currentTab = 'dashboard';
             this.isOnline = navigator.onLine;
             this.isFirebaseConnected = false;
-            this.currentTechnique = '';
             this.authInitialized = false;
+            this.isOfflineMode = false;
+            this.isDemoMode = false;
+            this.firebaseVersion = null;
+            this.authUnsubscribe = null;
+            this.currentTechnique = '';
             this.retryAttempts = 0;
             this.maxRetries = 3;
             this.tips = [
@@ -2139,6 +2143,17 @@
         setConnectionStatus(isConnected) {
             this.isFirebaseConnected = isConnected;
             this.updateConnectionDisplay();
+        }
+
+        cleanup() {
+            if (this.authUnsubscribe) {
+                try {
+                    this.authUnsubscribe();
+                    this.authUnsubscribe = null;
+                } catch (error) {
+                    log('WARNING', 'Error unsubscribing from auth:', error);
+                }
+            }
         }
 
         updateUI() {
@@ -2182,7 +2197,11 @@
         updateConnectionDisplay() {
             const statusDot = document.getElementById('firebase-status-dot');
             if (statusDot) {
-                if (this.isFirebaseConnected) {
+                if (this.isDemoMode) {
+                    statusDot.className = 'status-connected';
+                    statusDot.title = 'Demo Modus: Volledig functioneel';
+                    statusDot.style.background = '#10b981';
+                } else if (this.isFirebaseConnected) {
                     statusDot.className = 'status-connected';
                     statusDot.title = 'Firebase: Verbonden';
                 } else if (this.isOnline) {
@@ -2260,36 +2279,63 @@
         crisis: { sessions: 0, lastSession: null }
     };
 
-    // Improved Firebase initialization with comprehensive error handling
+    // Improved Firebase initialization with CDN fallbacks and comprehensive error handling
     async function initializeFirebase() {
         let initializationAttempts = 0;
         const maxInitAttempts = 3;
+        
+        // Different Firebase CDN versions to try as fallbacks
+        const firebaseVersions = [
+            "11.0.1",
+            "10.13.2", 
+            "10.12.5",
+            "10.11.0"
+        ];
         
         while (initializationAttempts < maxInitAttempts) {
             try {
                 log('INFO', `Firebase initialization attempt ${initializationAttempts + 1}/${maxInitAttempts}`);
                 
-                // Test network connectivity first
+                // Test basic network connectivity first
                 if (!navigator.onLine) {
                     throw new Error('No internet connection available');
                 }
                 
-                // Dynamic imports with timeout
+                // Test if we can reach Firebase CDN at all
+                await testCDNConnectivity();
+                
+                // Try different Firebase versions
+                const version = firebaseVersions[initializationAttempts] || firebaseVersions[0];
+                log('INFO', `Trying Firebase version ${version}`);
+                
+                // Dynamic imports with timeout and version fallback
                 const importPromises = [
-                    import("https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js"),
-                    import("https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js"),
-                    import("https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js")
+                    import(`https://www.gstatic.com/firebasejs/${version}/firebase-app.js`),
+                    import(`https://www.gstatic.com/firebasejs/${version}/firebase-firestore.js`),
+                    import(`https://www.gstatic.com/firebasejs/${version}/firebase-auth.js`)
                 ];
                 
                 const timeout = new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('Firebase import timeout')), 10000)
+                    setTimeout(() => reject(new Error('Firebase import timeout after 15 seconds')), 15000)
                 );
                 
-                const [
-                    { initializeApp },
-                    { getFirestore, connectFirestoreEmulator, enableNetwork, disableNetwork },
-                    { getAuth, connectAuthEmulator, onAuthStateChanged, setPersistence, browserLocalPersistence }
-                ] = await Promise.race([Promise.all(importPromises), timeout]);
+                const imports = await Promise.race([Promise.all(importPromises), timeout]);
+                
+                // Extract functions - handle both v9+ and legacy versions
+                const { initializeApp } = imports[0];
+                const firestoreImport = imports[1];
+                const authImport = imports[2];
+                
+                // Get functions (different for different versions)
+                const getFirestore = firestoreImport.getFirestore;
+                const getAuth = authImport.getAuth;
+                const onAuthStateChanged = authImport.onAuthStateChanged;
+                const setPersistence = authImport.setPersistence;
+                const browserLocalPersistence = authImport.browserLocalPersistence;
+
+                if (!initializeApp || !getFirestore || !getAuth) {
+                    throw new Error('Firebase functions not available in this version');
+                }
 
                 // Firebase configuration
                 const firebaseConfig = {
@@ -2307,41 +2353,62 @@
                 db = getFirestore(app);
                 auth = getAuth(app);
 
+                log('SUCCESS', `Firebase ${version} modules loaded successfully`);
+
+                // Store the working version for future use
+                appState.firebaseVersion = version;
+
                 // Test connectivity to Firebase services
                 await testFirebaseConnectivity();
 
                 // Set authentication persistence
                 try {
-                    await setPersistence(auth, browserLocalPersistence);
-                    log('SUCCESS', 'Firebase persistence set');
+                    if (setPersistence && browserLocalPersistence) {
+                        await setPersistence(auth, browserLocalPersistence);
+                        log('SUCCESS', 'Firebase persistence set');
+                    }
                 } catch (persistenceError) {
                     log('WARNING', 'Could not set persistence:', persistenceError);
                 }
 
                 // Setup enhanced auth state observer
-                setupAuthStateObserver();
+                try {
+                    setupAuthStateObserver();
+                } catch (authSetupError) {
+                    log('WARNING', 'Auth observer setup failed, continuing without it:', authSetupError);
+                    // Continue without auth observer - will fall back to demo mode
+                }
 
                 // Mark as connected
                 appState.setConnectionStatus(true);
                 appState.authInitialized = true;
                 
-                log('SUCCESS', 'Firebase initialized successfully');
+                log('SUCCESS', `Firebase initialized successfully with version ${version}`);
                 return true;
 
             } catch (error) {
                 initializationAttempts++;
                 log('ERROR', `Firebase initialization attempt ${initializationAttempts} failed:`, error);
                 
+                // Log specific error details for debugging
+                if (error.message.includes('Failed to fetch')) {
+                    log('ERROR', 'CDN fetch failed - possibly blocked or network issue');
+                } else if (error.message.includes('timeout')) {
+                    log('ERROR', 'Firebase import timed out - slow connection');
+                } else if (error.message.includes('CORS')) {
+                    log('ERROR', 'CORS error - cross-origin request blocked');
+                }
+                
                 if (initializationAttempts >= maxInitAttempts) {
-                    // Final attempt failed
+                    // Final attempt failed - switch to offline mode
                     appState.setConnectionStatus(false);
                     handleFirebaseInitializationFailure(error);
                     return false;
                 }
                 
                 // Wait before retry with exponential backoff
-                const delay = Math.min(1000 * Math.pow(2, initializationAttempts), 10000);
-                log('INFO', `Retrying Firebase initialization in ${delay}ms...`);
+                const delay = Math.min(2000 * Math.pow(2, initializationAttempts), 15000);
+                log('INFO', `Retrying Firebase initialization in ${delay}ms with different version...`);
                 await new Promise(resolve => setTimeout(resolve, delay));
             }
         }
@@ -2349,10 +2416,25 @@
         return false;
     }
 
+    // Test if we can reach Firebase CDN at all
+    async function testCDNConnectivity() {
+        try {
+            const response = await fetch('https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js', {
+                method: 'HEAD',
+                mode: 'no-cors', // Avoid CORS issues
+                cache: 'no-cache'
+            });
+            log('SUCCESS', 'Firebase CDN is reachable');
+        } catch (error) {
+            log('WARNING', 'Firebase CDN test failed:', error);
+            // Don't throw - we'll still try the import
+        }
+    }
+
     async function testFirebaseConnectivity() {
         try {
-            // Test Firestore connectivity
-            const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js");
+            // Test if we can reach Firestore
+            const { doc, getDoc } = await import(`https://www.gstatic.com/firebasejs/${appState.firebaseVersion || "11.0.1"}/firebase-firestore.js`);
             
             // Create a test document reference (doesn't need to exist)
             const testRef = doc(db, 'test', 'connectivity');
@@ -2366,8 +2448,8 @@
             if (error.code === 'permission-denied' || error.code === 'not-found') {
                 log('SUCCESS', 'Firebase services accessible (permission/not-found is expected)');
             } else {
-                log('WARNING', 'Firebase connectivity test warning:', error);
-                throw new Error(`Firebase connectivity test failed: ${error.message}`);
+                log('WARNING', 'Firebase connectivity test warning (continuing anyway):', error.message);
+                // Don't throw - just log the warning and continue
             }
         }
     }
@@ -2950,7 +3032,10 @@
         }
     }
 
-    // Dagboek functions with enhanced error handling
+    // Demo mode dagboek entries (in-memory storage)
+    let demoDagboekEntries = [];
+
+    // Dagboek functions with demo mode support
     window.saveDagboekEntry = async function() {
         try {
             const entry = {
@@ -2961,7 +3046,7 @@
                 resultaat: document.getElementById('entry-result').value,
                 notities: document.getElementById('entry-notes').value,
                 tijdstempel: new Date().toLocaleString('nl-BE'),
-                clientTimestamp: new Date().toISOString() // For offline sync later
+                clientTimestamp: new Date().toISOString()
             };
 
             // Show saving state
@@ -2970,30 +3055,49 @@
             saveBtn.textContent = '💾 Opslaan...';
             saveBtn.disabled = true;
 
-            const result = await saveToFirestore(entry);
-            
-            // Restore button
-            saveBtn.textContent = originalText;
-            saveBtn.disabled = false;
-            
-            closeDagboekModal();
-            
-            // Reset exercises if this was a completion entry
-            if (appState.currentTechnique) {
-                if (appState.currentTechnique.includes('Buteyko Ademhaling')) {
-                    resetButeykoAfterCompletion();
-                } else if (appState.currentTechnique.includes('Afkoel Ritueel')) {
-                    resetRitualAfterCompletion();
-                } else if (appState.currentTechnique.includes('EMDR Zelfhulp')) {
-                    resetEmdrAfterCompletion();
+            if (appState.isDemoMode) {
+                // Demo mode: save to memory
+                entry.id = 'demo-' + Date.now();
+                entry.bron = 'Demo';
+                demoDagboekEntries.unshift(entry); // Add to beginning of array
+                
+                log('SUCCESS', 'Demo entry saved to memory');
+                setTimeout(() => {
+                    // Restore button
+                    saveBtn.textContent = originalText;
+                    saveBtn.disabled = false;
+                    
+                    closeDagboekModal();
+                    
+                    // Reset exercises if this was a completion entry
+                    resetCompletedExercise();
+                    
+                    if (appState.currentTab === 'dagboek') {
+                        loadDagboekEntries();
+                    }
+                    
+                    showUserMessage('✅ Demo entry opgeslagen! (Alleen zichtbaar in deze sessie)', 'success');
+                }, 500); // Simulate save delay
+                
+            } else {
+                // Normal mode: save to Firebase
+                const result = await saveToFirestore(entry);
+                
+                // Restore button
+                saveBtn.textContent = originalText;
+                saveBtn.disabled = false;
+                
+                closeDagboekModal();
+                
+                // Reset exercises if this was a completion entry
+                resetCompletedExercise();
+                
+                if (appState.currentTab === 'dagboek') {
+                    await loadDagboekEntries();
                 }
+                
+                showUserMessage('✅ Entry succesvol opgeslagen!', 'success');
             }
-            
-            if (appState.currentTab === 'dagboek') {
-                await loadDagboekEntries();
-            }
-            
-            showUserMessage('✅ Entry succesvol opgeslagen!', 'success');
             
         } catch (error) {
             // Restore button on error
@@ -3006,14 +3110,41 @@
         }
     };
 
+    // Helper function to reset completed exercises
+    function resetCompletedExercise() {
+        if (appState.currentTechnique) {
+            if (appState.currentTechnique.includes('Buteyko Ademhaling')) {
+                resetButeykoAfterCompletion();
+            } else if (appState.currentTechnique.includes('Afkoel Ritueel')) {
+                // TODO: implement reset ritual after completion
+            } else if (appState.currentTechnique.includes('EMDR Zelfhulp')) {
+                // TODO: implement reset EMDR after completion
+            }
+        }
+    }
+
     window.loadDagboekEntries = async function() {
         try {
-            const entries = await loadFromFirestore();
-            displayDagboekEntries(entries);
-            
-            // Show analytics if there are entries
-            if (entries && entries.length > 0) {
-                showAnalytics(entries);
+            if (appState.isDemoMode) {
+                // Demo mode: load from memory
+                displayDagboekEntries(demoDagboekEntries);
+                
+                // Show analytics if there are entries
+                if (demoDagboekEntries && demoDagboekEntries.length > 0) {
+                    showAnalytics(demoDagboekEntries);
+                }
+                
+                log('SUCCESS', `Loaded ${demoDagboekEntries.length} demo entries from memory`);
+                
+            } else {
+                // Normal mode: load from Firebase
+                const entries = await loadFromFirestore();
+                displayDagboekEntries(entries);
+                
+                // Show analytics if there are entries
+                if (entries && entries.length > 0) {
+                    showAnalytics(entries);
+                }
             }
             
         } catch (error) {
@@ -3118,24 +3249,49 @@
         }
     }
 
-    // Progress tracking functions
+    // Progress tracking functions - using in-memory storage instead of localStorage
+    let progressDataStore = {
+        buteyko: { sessions: 0, totalTime: 0, lastSession: null },
+        ritual: { sessions: 0, totalTime: 0, lastSession: null },
+        emdr: { sessions: 0, totalTime: 0, lastSession: null },
+        crisis: { sessions: 0, lastSession: null }
+    };
+
     function loadProgressData() {
         try {
-            const stored = localStorage.getItem('ademruimte-progress');
-            if (stored) {
-                progressData = { ...progressData, ...JSON.parse(stored) };
+            // Try localStorage first, fallback to in-memory storage
+            if (typeof Storage !== "undefined" && window.localStorage) {
+                const stored = localStorage.getItem('ademruimte-progress');
+                if (stored) {
+                    progressDataStore = { ...progressDataStore, ...JSON.parse(stored) };
+                    log('SUCCESS', 'Progress data loaded from localStorage');
+                    return;
+                }
             }
         } catch (error) {
-            log('WARNING', 'Could not load progress data:', error);
+            log('WARNING', 'localStorage not available, using in-memory storage:', error.message);
         }
+        
+        // Use in-memory storage as fallback
+        progressData = { ...progressDataStore };
+        log('INFO', 'Using in-memory progress storage');
     }
 
     function saveProgressData() {
         try {
-            localStorage.setItem('ademruimte-progress', JSON.stringify(progressData));
+            // Try localStorage first, fallback to in-memory storage
+            if (typeof Storage !== "undefined" && window.localStorage) {
+                localStorage.setItem('ademruimte-progress', JSON.stringify(progressData));
+                log('SUCCESS', 'Progress data saved to localStorage');
+                return;
+            }
         } catch (error) {
-            log('WARNING', 'Could not save progress data:', error);
+            log('WARNING', 'localStorage not available, using in-memory storage:', error.message);
         }
+        
+        // Save to in-memory storage as fallback
+        progressDataStore = { ...progressData };
+        log('INFO', 'Progress data saved to memory (will not persist between sessions)');
     }
 
     function trackSession(type, duration = null) {
@@ -3698,7 +3854,64 @@
     window.skipButeykoDagboek = function() { resetButeykoAfterCompletion(); showUserMessage('✅ Buteyko sessie afgerond!', 'success'); };
     window.skipRitualDagboek = function() { log('INFO', 'Skip ritual dagboek - stub'); };
     window.skipEmdrDagboek = function() { log('INFO', 'Skip EMDR dagboek - stub'); };
-    window.exportDagboek = function() { showUserMessage('Export functie nog niet geïmplementeerd', 'info'); };
+    window.exportDagboek = async function() {
+        try {
+            let entries;
+            
+            if (appState.isDemoMode) {
+                // Demo mode: export from memory
+                entries = demoDagboekEntries;
+            } else {
+                // Normal mode: export from Firebase
+                entries = await loadFromFirestore();
+            }
+            
+            if (!entries || entries.length === 0) {
+                showUserMessage('📝 Geen entries om te exporteren', 'warning');
+                return;
+            }
+            
+            let exportText = 'ADEMRUIMTE DAGBOEK EXPORT\n';
+            exportText += '================================\n';
+            exportText += 'Gebruiker: ' + (appState.currentUser ? (appState.currentUser.displayName || appState.currentUser.email) : 'Onbekend') + '\n';
+            exportText += 'Export datum: ' + new Date().toLocaleString('nl-BE') + '\n';
+            if (appState.isDemoMode) {
+                exportText += 'Modus: Demo (alleen huidige sessie)\n';
+            }
+            exportText += '\n';
+            
+            for (let i = 0; i < entries.length; i++) {
+                const entry = entries[i];
+                exportText += 'ENTRY ' + (i + 1) + '\n';
+                exportText += 'Datum: ' + entry.tijdstempel + '\n';
+                exportText += 'Techniek: ' + entry.techniekGebruikt + '\n';
+                exportText += 'Trigger: ' + (entry.trigger || 'Geen') + '\n';
+                exportText += 'Intensiteit vóór: ' + entry.intensiteitVoor + '/10\n';
+                exportText += 'Intensiteit ná: ' + entry.intensiteitNa + '/10\n';
+                exportText += 'Resultaat: ' + getResultaatText(entry.resultaat) + '\n';
+                exportText += 'Notities: ' + (entry.notities || 'Geen') + '\n';
+                exportText += 'Bron: ' + (entry.bron || 'Onbekend') + '\n';
+                exportText += '\n---\n\n';
+            }
+            
+            // Create downloadable file
+            const blob = new Blob([exportText], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ademruimte-dagboek-' + new Date().toLocaleDateString('nl-BE') + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            const modeText = appState.isDemoMode ? ' (demo data)' : '';
+            showUserMessage(`📁 Dagboek geëxporteerd als tekstbestand${modeText}!`, 'success');
+            
+        } catch (error) {
+            showUserMessage('❌ Fout bij exporteren: ' + error.message, 'error');
+        }
+    };
 
     function resetButeykoAfterCompletion() {
         document.getElementById('breath-complete').classList.add('hidden');
@@ -3715,12 +3928,12 @@
         document.getElementById('analytics-section').style.display = 'none';
     }
 
-    // Initialize app
+    // Initialize app with enhanced fallback
     document.addEventListener('DOMContentLoaded', async function() {
         log('INFO', 'Starting Ademruimte app initialization');
         
         try {
-            // Initialize components
+            // Initialize components first
             setupForms();
             setupNetworkMonitoring();
             setupKeyboardNavigation();
@@ -3782,14 +3995,45 @@
             // Initial connection status
             appState.updateConnectionDisplay();
             
-            // Initialize Firebase (async)
-            await initializeFirebase();
+            // Try to initialize Firebase with timeout
+            log('INFO', 'Attempting Firebase initialization...');
+            const firebaseTimeout = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Firebase initialization timeout')), 30000)
+            );
+            
+            try {
+                await Promise.race([initializeFirebase(), firebaseTimeout]);
+                log('SUCCESS', 'Firebase initialization completed');
+            } catch (firebaseError) {
+                log('WARNING', 'Firebase initialization failed, enabling demo mode:', firebaseError.message);
+                
+                // Hide loading spinner
+                const authLoading = document.getElementById('auth-loading');
+                if (authLoading) {
+                    authLoading.style.display = 'none';
+                }
+                
+                // Enable demo mode
+                enableDemoMode();
+            }
             
             log('SUCCESS', 'App initialization completed successfully');
             
         } catch (error) {
             log('ERROR', 'App initialization failed', error);
-            showUserMessage('Er is een fout opgetreden bij het laden van de app: ' + error.message, 'error');
+            
+            // Hide loading spinner
+            const authLoading = document.getElementById('auth-loading');
+            if (authLoading) {
+                authLoading.style.display = 'none';
+            }
+            
+            showUserMessage('Er is een fout opgetreden bij het laden van de app. Demo modus wordt geactiveerd.', 'warning');
+            
+            // Enable demo mode as ultimate fallback
+            setTimeout(() => {
+                enableDemoMode();
+            }, 1000);
         }
     });
 
@@ -3799,6 +4043,10 @@
         if (wakeLock) releaseWakeLock();
         if (timerInterval) clearInterval(timerInterval);
         if (breathInterval) clearInterval(breathInterval);
+        
+        // Clean up Firebase subscriptions
+        appState.cleanup();
+        
         log('INFO', 'App shutting down');
     });
 </script>

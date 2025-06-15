@@ -947,6 +947,21 @@
         50% { opacity: 1; }
     }
 
+    /* Chart styling */
+    .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .chart-legend {
+        padding: 0.75rem;
+        background: #f8fafc;
+        border-radius: 0.5rem;
+        border: 1px solid #e2e8f0;
+    }
+
     /* Utility classes */
     .hidden {
         display: none !important;
@@ -1819,6 +1834,34 @@
                         <button class="btn btn-orange" onclick="exportDagboek()">
                             📥 Export Dagboek
                         </button>
+                    </div>
+                </div>
+
+                <!-- Vooruitgang Grafiek -->
+                <div class="card">
+                    <h3>📊 Je Vooruitgang</h3>
+                    <p style="color: var(--text-light); margin-bottom: 1rem;">Intensiteit scores over tijd - lagere scores betekenen meer verbetering</p>
+                    
+                    <div class="chart-container" style="position: relative; height: 300px; margin: 1rem 0;">
+                        <canvas id="progress-chart" style="max-height: 300px;"></canvas>
+                    </div>
+                    
+                    <div id="chart-legend" class="chart-legend" style="display: none; margin-top: 1rem;">
+                        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; font-size: 0.85rem;">
+                            <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                <div style="width: 12px; height: 12px; background: #ef4444; border-radius: 2px;"></div>
+                                <span>Vóór oefening</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                <div style="width: 12px; height: 12px; background: #10b981; border-radius: 2px;"></div>
+                                <span>Ná oefening</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="chart-empty" class="alert alert-info" style="text-align: center;">
+                        <strong>📈 Geen data beschikbaar</strong><br>
+                        Maak een paar dagboek entries om je vooruitgang te zien!
                     </div>
                 </div>
 
@@ -2777,8 +2820,190 @@
             '</div>';
         }).join('');
         
-        container.innerHTML = entriesHtml;
+    // Timer functionality
+    window.startTimer = function() {
+        const timerDisplay = document.getElementById('timer-display');
+        const timerBtn = document.getElementById('timer-btn');
+        const nextBtn = document.getElementById('next-btn');
+        
+        if (timerInterval) {
+            // Stop timer
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerBtn.innerHTML = '▶️ Start Timer';
+            timerBtn.className = 'btn btn-green';
+            nextBtn.style.display = 'block';
+            log('INFO', 'Timer stopped manually');
+            return;
+        }
+        
+        // Start timer
+        currentTime = 120; // 2 minutes
+        timerBtn.innerHTML = '⏸️ Stop Timer';
+        timerBtn.className = 'btn btn-red';
+        nextBtn.style.display = 'none';
+        
+        timerInterval = setInterval(() => {
+            currentTime--;
+            const minutes = Math.floor(currentTime / 60);
+            const seconds = currentTime % 60;
+            timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (currentTime <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                timerBtn.innerHTML = '▶️ Start Timer';
+                timerBtn.className = 'btn btn-green';
+                nextBtn.style.display = 'block';
+                showUserMessage('⏰ Timer afgelopen! Tijd voor de volgende stap.', 'success');
+                log('SUCCESS', 'Timer completed');
+            }
+        }, 1000);
+    };
+
+    // Ritual step management
+    const ritualSteps = [
+        {
+            title: "Stap 1: Fysieke Mini-Reset",
+            duration: 120, // 2 minutes
+            instructions: [
+                "Sta op en strek je volledig uit",
+                "Schud je armen en benen los", 
+                "Rol je schouders 5x naar achteren",
+                "Maak kleine cirkels met je hoofd (5x elke richting)"
+            ]
+        },
+        {
+            title: "Stap 2: Ademhaling Reset",
+            duration: 90, // 1.5 minutes
+            instructions: [
+                "Ga comfortabel zitten of staan",
+                "Adem 5x heel diep in door je neus",
+                "Adem langzaam uit door je mond",
+                "Let op de vertraging tussen gedachte en lichaam"
+            ]
+        },
+        {
+            title: "Stap 3: Mentale Overgang",
+            duration: 120, // 2 minutes
+            instructions: [
+                "Zeg hardop: 'Ik ben klaar met intensief denken'",
+                "Denk aan 3 dingen waar je dankbaar voor bent",
+                "Visualiseer je volgende activiteit",
+                "Geef jezelf toestemming om te ontspannen"
+            ]
+        },
+        {
+            title: "Stap 4: Zintuiglijke Reset",
+            duration: 90, // 1.5 minutes  
+            instructions: [
+                "Kijk bewust rond - wat zie je?",
+                "Luister naar geluiden om je heen",
+                "Voel de temperatuur op je huid",
+                "Ruik bewust de lucht om je heen"
+            ]
+        },
+        {
+            title: "Stap 5: Intentie Zetten",
+            duration: 60, // 1 minute
+            instructions: [
+                "Besluit bewust hoe je je volgende tijd wilt besteden",
+                "Zeg tegen jezelf: 'Ik ga nu over naar [activiteit]'",
+                "Neem één bewuste stap in die richting",
+                "Feliciteer jezelf - je hebt een goede overgang gemaakt"
+            ]
+        }
+    ];
+
+    window.nextRitualStep = function() {
+        if (ritualStep < ritualSteps.length - 1) {
+            ritualStep++;
+            updateRitualDisplay();
+        } else {
+            // Complete ritual
+            document.getElementById('ritual-complete').classList.remove('hidden');
+            appState.currentTechnique = 'Afkoel Ritueel - 5 Stappen Voltooid';
+            trackSession('ritual', 480); // 8 minutes total
+            log('SUCCESS', 'Ritual completed');
+        }
+    };
+
+    window.skipToNextStep = function() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+            document.getElementById('timer-btn').className = 'btn btn-green';
+        }
+        nextRitualStep();
+    };
+
+    window.resetRitual = function() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        ritualStep = 0;
+        updateRitualDisplay();
+        document.getElementById('ritual-complete').classList.add('hidden');
+        document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+        document.getElementById('timer-btn').className = 'btn btn-green';
+        document.getElementById('next-btn').style.display = 'none';
+    };
+
+    function updateRitualDisplay() {
+        const step = ritualSteps[ritualStep];
+        
+        // Update title
+        document.getElementById('ritual-title').textContent = step.title;
+        
+        // Update timer display
+        const minutes = Math.floor(step.duration / 60);
+        const seconds = step.duration % 60;
+        document.getElementById('timer-display').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        currentTime = step.duration;
+        
+        // Update instructions
+        const instructionsHtml = '<ul class="step-list">' + 
+            step.instructions.map(instruction => `<li>${instruction}</li>`).join('') +
+            '</ul>';
+        document.getElementById('ritual-instructions').innerHTML = instructionsHtml;
+        
+        // Update progress bar
+        const progress = ((ritualStep + 1) / ritualSteps.length) * 100;
+        document.getElementById('ritual-progress').style.width = progress + '%';
+        
+        // Reset timer button
+        document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+        document.getElementById('timer-btn').className = 'btn btn-green';
+        document.getElementById('next-btn').style.display = 'none';
+        
+        // Clear any existing timer
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        
+        log('INFO', `Ritual step ${ritualStep + 1}/${ritualSteps.length}: ${step.title}`);
     }
+
+    // Skip dagboek functions
+    window.skipButeykoDagboek = function() { 
+        resetButeykoAfterCompletion(); 
+        showUserMessage('✅ Buteyko sessie afgerond!', 'success'); 
+    };
+
+    window.skipRitualDagboek = function() {
+        document.getElementById('ritual-complete').classList.add('hidden');
+        ritualStep = 0;
+        updateRitualDisplay();
+        showUserMessage('✅ Afkoel ritueel afgerond!', 'success');
+    };
+
+    window.skipEmdrDagboek = function() {
+        resetEmdrSession();
+        showUserMessage('✅ EMDR sessie afgerond!', 'success');
+    };
 
     function getResultaatText(resultaat) {
         const mapping = {
@@ -3463,19 +3688,326 @@
         }, updateInterval);
     }
 
-    // Stub functions for missing functionality
-    window.startTimer = function() { log('INFO', 'Timer function - stub'); };
-    window.nextRitualStep = function() { log('INFO', 'Ritual step function - stub'); };
-    window.skipToNextStep = function() { log('INFO', 'Skip step function - stub'); };
-    window.resetRitual = function() { log('INFO', 'Reset ritual function - stub'); };
-    window.nextEmdrStep = function() { log('INFO', 'EMDR step function - stub'); };
-    window.prevEmdrStep = function() { log('INFO', 'EMDR prev step function - stub'); };
-    window.skipButeykoDagboek = function() { 
-        resetButeykoAfterCompletion(); 
-        showUserMessage('✅ Buteyko sessie afgerond!', 'success'); 
+    // EMDR Step Management
+    const emdrSteps = [
+        {
+            title: "Stap 1: Voorbereiding",
+            content: "Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt.",
+            showIntensity: false
+        },
+        {
+            title: "Stap 2: Identificeer het Gevoel",
+            content: "Denk aan het luchthonger-gevoel. Waar voel je het in je lichaam? Geef het een intensiteit score van 1-10.",
+            showIntensity: true
+        },
+        {
+            title: "Stap 3: Bilaterale Stimulatie",
+            content: "Start de bilaterale audio als je dit nog niet hebt gedaan. Focus op het gevoel terwijl je naar de bewegende toon luistert. Laat gedachten en gevoelens vrijelijk komen en gaan.",
+            showIntensity: false
+        },
+        {
+            title: "Stap 4: Check-in",
+            content: "Stop de audio. Hoe voelt het luchthonger-gevoel nu? Is de intensiteit veranderd? Geef een nieuwe score van 1-10.",
+            showIntensity: true
+        },
+        {
+            title: "Stap 5: Afsluiting",
+            content: "Neem een paar diepe, langzame ademhalingen. Visualiseer een veilige, kalme plek. Je hebt goed werk gedaan. Drink wat water als je dat nodig hebt.",
+            showIntensity: false
+        }
+    ];
+
+    // EMDR navigation functions - replacing the stubs
+    window.nextEmdrStep = function() {
+        if (emdrStep < emdrSteps.length - 1) {
+            emdrStep++;
+            updateEmdrDisplay();
+        } else {
+            // Complete EMDR session
+            document.getElementById('emdr-complete').classList.remove('hidden');
+            appState.currentTechnique = 'EMDR Zelfhulp - 5 Stappen Voltooid';
+            trackSession('emdr', 25); // ~5 minutes average
+            log('SUCCESS', 'EMDR session completed');
+        }
     };
-    window.skipRitualDagboek = function() { log('INFO', 'Skip ritual dagboek - stub'); };
-    window.skipEmdrDagboek = function() { log('INFO', 'Skip EMDR dagboek - stub'); };
+
+    window.prevEmdrStep = function() {
+        if (emdrStep > 0) {
+            emdrStep--;
+            updateEmdrDisplay();
+        }
+    };
+
+    function updateEmdrDisplay() {
+        const step = emdrSteps[emdrStep];
+        
+        // Update title and content
+        document.getElementById('emdr-title').textContent = step.title;
+        document.getElementById('emdr-content').innerHTML = '<p>' + step.content + '</p>';
+        
+        // Show/hide intensity slider
+        const intensityDiv = document.getElementById('emdr-intensity');
+        if (step.showIntensity) {
+            intensityDiv.classList.remove('hidden');
+        } else {
+            intensityDiv.classList.add('hidden');
+        }
+        
+        // Update navigation buttons
+        const prevBtn = document.getElementById('emdr-prev-btn');
+        const nextBtn = document.getElementById('emdr-next-btn');
+        
+        if (emdrStep === 0) {
+            prevBtn.style.display = 'none';
+        } else {
+            prevBtn.style.display = 'block';
+        }
+        
+        if (emdrStep === emdrSteps.length - 1) {
+            nextBtn.textContent = 'Voltooien';
+        } else {
+            nextBtn.textContent = 'Volgende';
+        }
+        
+        // Update progress bar
+        const progress = ((emdrStep + 1) / emdrSteps.length) * 100;
+        document.getElementById('emdr-progress').style.width = progress + '%';
+        
+        log('INFO', `EMDR step ${emdrStep + 1}/${emdrSteps.length}: ${step.title}`);
+    }
+
+    // Reset EMDR session
+    function resetEmdrSession() {
+        emdrStep = 0;
+        updateEmdrDisplay();
+        document.getElementById('emdr-complete').classList.add('hidden');
+    }
+
+    // Chart management with Chart.js
+    let progressChart = null;
+
+    async function createProgressChart(entries) {
+        if (!entries || entries.length === 0) {
+            document.getElementById('chart-empty').style.display = 'block';
+            document.getElementById('chart-legend').style.display = 'none';
+            return;
+        }
+
+        document.getElementById('chart-empty').style.display = 'none';
+        document.getElementById('chart-legend').style.display = 'block';
+
+        // Import Chart.js
+        const Chart = await import('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js');
+
+        // Prepare data - take last 10 entries for readability
+        const recentEntries = entries.slice(0, 10).reverse();
+        
+        const labels = recentEntries.map((entry, index) => {
+            const date = entry.timestamp ? entry.timestamp.toDate() : new Date(entry.clientTimestamp);
+            const shortDate = date.toLocaleDateString('nl-BE', { 
+                month: 'short', 
+                day: 'numeric',
+                hour: window.innerWidth <= 768 ? undefined : '2-digit',
+                minute: window.innerWidth <= 768 ? undefined : '2-digit'
+            });
+            return window.innerWidth <= 768 ? `${index + 1}` : shortDate;
+        });
+
+        const beforeData = recentEntries.map(entry => entry.intensiteitVoor);
+        const afterData = recentEntries.map(entry => entry.intensiteitNa);
+
+        // Destroy existing chart
+        if (progressChart) {
+            progressChart.destroy();
+        }
+
+        const ctx = document.getElementById('progress-chart').getContext('2d');
+        
+        progressChart = new Chart.default(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Vóór oefening',
+                        data: beforeData,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: window.innerWidth <= 768 ? 2 : 3,
+                        pointRadius: window.innerWidth <= 768 ? 4 : 5,
+                        pointHoverRadius: window.innerWidth <= 768 ? 6 : 8,
+                        tension: 0.1,
+                        fill: false
+                    },
+                    {
+                        label: 'Ná oefening',
+                        data: afterData,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: window.innerWidth <= 768 ? 2 : 3,
+                        pointRadius: window.innerWidth <= 768 ? 4 : 5,
+                        pointHoverRadius: window.innerWidth <= 768 ? 6 : 8,
+                        tension: 0.1,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: false // We use custom legend for better mobile control
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: '#667eea',
+                        borderWidth: 1,
+                        cornerRadius: 8,
+                        displayColors: true,
+                        callbacks: {
+                            title: function(context) {
+                                const index = context[0].dataIndex;
+                                const entry = recentEntries[index];
+                                const date = entry.timestamp ? entry.timestamp.toDate() : new Date(entry.clientTimestamp);
+                                return date.toLocaleDateString('nl-BE', { 
+                                    weekday: 'short',
+                                    month: 'short', 
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                            },
+                            afterBody: function(context) {
+                                const index = context[0].dataIndex;
+                                const entry = recentEntries[index];
+                                return [
+                                    '',
+                                    `Techniek: ${entry.techniekGebruikt}`,
+                                    `Resultaat: ${getResultaatText(entry.resultaat)}`
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#6b7280',
+                            font: {
+                                size: window.innerWidth <= 768 ? 10 : 12
+                            },
+                            maxRotation: 0,
+                            autoSkip: true,
+                            maxTicksLimit: window.innerWidth <= 768 ? 5 : 8
+                        },
+                        title: {
+                            display: window.innerWidth > 768,
+                            text: 'Sessies (meest recente)',
+                            color: '#6b7280',
+                            font: {
+                                size: 12,
+                                weight: 'normal'
+                            }
+                        }
+                    },
+                    y: {
+                        min: 0,
+                        max: 10,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#6b7280',
+                            font: {
+                                size: window.innerWidth <= 768 ? 10 : 12
+                            },
+                            stepSize: 1,
+                            callback: function(value) {
+                                return value + '/10';
+                            }
+                        },
+                        title: {
+                            display: window.innerWidth > 768,
+                            text: 'Intensiteit Score',
+                            color: '#6b7280',
+                            font: {
+                                size: 12,
+                                weight: 'normal'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        log('SUCCESS', `Progress chart created with ${recentEntries.length} data points`);
+    }
+
+    // Update the display function to include chart
+    function displayDagboekEntries(entries) {
+        const container = document.getElementById('dagboek-entries');
+        
+        // Create the chart first
+        createProgressChart(entries);
+        
+        if (!entries || entries.length === 0) {
+            container.innerHTML = 
+                '<div class="card">' +
+                    '<h3>Nog geen entries</h3>' +
+                    '<p>Maak een dagboekentry na het gebruiken van oefeningen om patronen bij te houden.</p>' +
+                    '<button class="btn btn-primary" onclick="openDagboekModal(\'Eerste Entry\')">' +
+                        'Maak je eerste entry' +
+                    '</button>' +
+                '</div>';
+            return;
+        }
+        
+        // Add a header for the entries list
+        let entriesHtml = '<div class="card"><h3>📝 Alle Dagboek Entries</h3><p style="color: var(--text-light); margin-bottom: 1.5rem;">Chronologisch overzicht van je sessies</p></div>';
+        
+        entriesHtml += entries.map(entry => {
+            return '<div class="entry-card">' +
+                '<div class="entry-header">' +
+                    '<div>' +
+                        '<div class="entry-title">' + entry.techniekGebruikt + '</div>' +
+                        '<div style="font-size: 0.8rem; color: var(--text-light);">' +
+                            entry.tijdstempel + ' • ' +
+                            '<span style="color: #0891b2; font-size: 0.75rem;">' + (entry.bron || 'Onbekend') + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="entry-result ' + entry.resultaat + '">' +
+                        getResultaatText(entry.resultaat) +
+                    '</div>' +
+                '</div>' +
+                '<div class="intensity-grid">' +
+                    '<div style="font-size: 0.85rem;">' +
+                        '<span style="color: var(--text-light);">Vóór:</span>' +
+                        '<span style="font-weight: 500; margin-left: 0.25rem; color: var(--text-dark);">' + entry.intensiteitVoor + '/10</span>' +
+                    '</div>' +
+                    '<div style="font-size: 0.85rem;">' +
+                        '<span style="color: var(--text-light);">Ná:</span>' +
+                        '<span style="font-weight: 500; margin-left: 0.25rem; color: var(--text-dark);">' + entry.intensiteitNa + '/10</span>' +
+                    '</div>' +
+                '</div>' +
+                (entry.trigger ? '<p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--text-dark);"><strong>Trigger:</strong> ' + entry.trigger + '</p>' : '') +
+                (entry.notities ? '<p style="font-size: 0.85rem; color: var(--text-dark);"><strong>Notities:</strong> ' + entry.notities + '</p>' : '') +
+            '</div>';
+        }).join('');
+        
+        container.innerHTML = entriesHtml;
+    }
 
     // Initialize app
     document.addEventListener('DOMContentLoaded', async function() {
@@ -3495,6 +4027,8 @@
             
             // Initialize displays
             updateBreathDisplay();
+            updateRitualDisplay();
+            updateEmdrDisplay();
             
             // Setup tab navigation
             document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -3540,6 +4074,15 @@
                     }
                 });
             }
+
+            // Chart responsiveness - redraw on window resize
+            window.addEventListener('resize', () => {
+                if (progressChart && appState.currentTab === 'dagboek') {
+                    setTimeout(() => {
+                        progressChart.resize();
+                    }, 100);
+                }
+            });
             
             // Initial connection status
             appState.updateConnectionDisplay();
@@ -3581,6 +4124,7 @@
         if (wakeLock) releaseWakeLock();
         if (timerInterval) clearInterval(timerInterval);
         if (breathInterval) clearInterval(breathInterval);
+        if (progressChart) progressChart.destroy();
         
         // Clean up Firebase subscriptions
         appState.cleanup();

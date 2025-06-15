@@ -3688,6 +3688,8 @@
         }, updateInterval);
     }
 
+    }
+
     // EMDR Step Management
     const emdrSteps = [
         {
@@ -3796,163 +3798,179 @@
         document.getElementById('chart-empty').style.display = 'none';
         document.getElementById('chart-legend').style.display = 'block';
 
-        // Import Chart.js
-        const Chart = await import('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js');
+        try {
+            // Import Chart.js from CDN
+            if (!window.Chart) {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js';
+                script.async = false;
+                document.head.appendChild(script);
+                
+                await new Promise((resolve, reject) => {
+                    script.onload = resolve;
+                    script.onerror = reject;
+                });
+            }
 
-        // Prepare data - take last 10 entries for readability
-        const recentEntries = entries.slice(0, 10).reverse();
-        
-        const labels = recentEntries.map((entry, index) => {
-            const date = entry.timestamp ? entry.timestamp.toDate() : new Date(entry.clientTimestamp);
-            const shortDate = date.toLocaleDateString('nl-BE', { 
-                month: 'short', 
-                day: 'numeric',
-                hour: window.innerWidth <= 768 ? undefined : '2-digit',
-                minute: window.innerWidth <= 768 ? undefined : '2-digit'
+            // Prepare data - take last 10 entries for readability
+            const recentEntries = entries.slice(0, 10).reverse();
+            
+            const labels = recentEntries.map((entry, index) => {
+                const date = entry.timestamp ? entry.timestamp.toDate() : new Date(entry.clientTimestamp);
+                const shortDate = date.toLocaleDateString('nl-BE', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: window.innerWidth <= 768 ? undefined : '2-digit',
+                    minute: window.innerWidth <= 768 ? undefined : '2-digit'
+                });
+                return window.innerWidth <= 768 ? `${index + 1}` : shortDate;
             });
-            return window.innerWidth <= 768 ? `${index + 1}` : shortDate;
-        });
 
-        const beforeData = recentEntries.map(entry => entry.intensiteitVoor);
-        const afterData = recentEntries.map(entry => entry.intensiteitNa);
+            const beforeData = recentEntries.map(entry => entry.intensiteitVoor);
+            const afterData = recentEntries.map(entry => entry.intensiteitNa);
 
-        // Destroy existing chart
-        if (progressChart) {
-            progressChart.destroy();
-        }
+            // Destroy existing chart
+            if (progressChart) {
+                progressChart.destroy();
+            }
 
-        const ctx = document.getElementById('progress-chart').getContext('2d');
-        
-        progressChart = new Chart.default(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Vóór oefening',
-                        data: beforeData,
-                        borderColor: '#ef4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        borderWidth: window.innerWidth <= 768 ? 2 : 3,
-                        pointRadius: window.innerWidth <= 768 ? 4 : 5,
-                        pointHoverRadius: window.innerWidth <= 768 ? 6 : 8,
-                        tension: 0.1,
-                        fill: false
-                    },
-                    {
-                        label: 'Ná oefening',
-                        data: afterData,
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        borderWidth: window.innerWidth <= 768 ? 2 : 3,
-                        pointRadius: window.innerWidth <= 768 ? 4 : 5,
-                        pointHoverRadius: window.innerWidth <= 768 ? 6 : 8,
-                        tension: 0.1,
-                        fill: false
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    intersect: false,
-                    mode: 'index'
-                },
-                plugins: {
-                    legend: {
-                        display: false // We use custom legend for better mobile control
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        titleColor: '#ffffff',
-                        bodyColor: '#ffffff',
-                        borderColor: '#667eea',
-                        borderWidth: 1,
-                        cornerRadius: 8,
-                        displayColors: true,
-                        callbacks: {
-                            title: function(context) {
-                                const index = context[0].dataIndex;
-                                const entry = recentEntries[index];
-                                const date = entry.timestamp ? entry.timestamp.toDate() : new Date(entry.clientTimestamp);
-                                return date.toLocaleDateString('nl-BE', { 
-                                    weekday: 'short',
-                                    month: 'short', 
-                                    day: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                });
-                            },
-                            afterBody: function(context) {
-                                const index = context[0].dataIndex;
-                                const entry = recentEntries[index];
-                                return [
-                                    '',
-                                    `Techniek: ${entry.techniekGebruikt}`,
-                                    `Resultaat: ${getResultaatText(entry.resultaat)}`
-                                ];
-                            }
+            const ctx = document.getElementById('progress-chart').getContext('2d');
+            
+            progressChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Vóór oefening',
+                            data: beforeData,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: window.innerWidth <= 768 ? 2 : 3,
+                            pointRadius: window.innerWidth <= 768 ? 4 : 5,
+                            pointHoverRadius: window.innerWidth <= 768 ? 6 : 8,
+                            tension: 0.1,
+                            fill: false
+                        },
+                        {
+                            label: 'Ná oefening',
+                            data: afterData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: window.innerWidth <= 768 ? 2 : 3,
+                            pointRadius: window.innerWidth <= 768 ? 4 : 5,
+                            pointHoverRadius: window.innerWidth <= 768 ? 6 : 8,
+                            tension: 0.1,
+                            fill: false
                         }
-                    }
+                    ]
                 },
-                scales: {
-                    x: {
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.1)',
-                            drawBorder: false
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            display: false // We use custom legend for better mobile control
                         },
-                        ticks: {
-                            color: '#6b7280',
-                            font: {
-                                size: window.innerWidth <= 768 ? 10 : 12
-                            },
-                            maxRotation: 0,
-                            autoSkip: true,
-                            maxTicksLimit: window.innerWidth <= 768 ? 5 : 8
-                        },
-                        title: {
-                            display: window.innerWidth > 768,
-                            text: 'Sessies (meest recente)',
-                            color: '#6b7280',
-                            font: {
-                                size: 12,
-                                weight: 'normal'
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#667eea',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                title: function(context) {
+                                    const index = context[0].dataIndex;
+                                    const entry = recentEntries[index];
+                                    const date = entry.timestamp ? entry.timestamp.toDate() : new Date(entry.clientTimestamp);
+                                    return date.toLocaleDateString('nl-BE', { 
+                                        weekday: 'short',
+                                        month: 'short', 
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    });
+                                },
+                                afterBody: function(context) {
+                                    const index = context[0].dataIndex;
+                                    const entry = recentEntries[index];
+                                    return [
+                                        '',
+                                        `Techniek: ${entry.techniekGebruikt}`,
+                                        `Resultaat: ${getResultaatText(entry.resultaat)}`
+                                    ];
+                                }
                             }
                         }
                     },
-                    y: {
-                        min: 0,
-                        max: 10,
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.1)',
-                            drawBorder: false
-                        },
-                        ticks: {
-                            color: '#6b7280',
-                            font: {
-                                size: window.innerWidth <= 768 ? 10 : 12
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                drawBorder: false
                             },
-                            stepSize: 1,
-                            callback: function(value) {
-                                return value + '/10';
+                            ticks: {
+                                color: '#6b7280',
+                                font: {
+                                    size: window.innerWidth <= 768 ? 10 : 12
+                                },
+                                maxRotation: 0,
+                                autoSkip: true,
+                                maxTicksLimit: window.innerWidth <= 768 ? 5 : 8
+                            },
+                            title: {
+                                display: window.innerWidth > 768,
+                                text: 'Sessies (meest recente)',
+                                color: '#6b7280',
+                                font: {
+                                    size: 12,
+                                    weight: 'normal'
+                                }
                             }
                         },
-                        title: {
-                            display: window.innerWidth > 768,
-                            text: 'Intensiteit Score',
-                            color: '#6b7280',
-                            font: {
-                                size: 12,
-                                weight: 'normal'
+                        y: {
+                            min: 0,
+                            max: 10,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                font: {
+                                    size: window.innerWidth <= 768 ? 10 : 12
+                                },
+                                stepSize: 1,
+                                callback: function(value) {
+                                    return value + '/10';
+                                }
+                            },
+                            title: {
+                                display: window.innerWidth > 768,
+                                text: 'Intensiteit Score',
+                                color: '#6b7280',
+                                font: {
+                                    size: 12,
+                                    weight: 'normal'
+                                }
                             }
                         }
                     }
                 }
-            }
-        });
+            });
 
-        log('SUCCESS', `Progress chart created with ${recentEntries.length} data points`);
+            log('SUCCESS', `Progress chart created with ${recentEntries.length} data points`);
+        } catch (error) {
+            log('ERROR', 'Failed to create chart:', error);
+            document.getElementById('chart-empty').style.display = 'block';
+            document.getElementById('chart-legend').style.display = 'none';
+        }
     }
 
     // Update the display function to include chart
@@ -4008,6 +4026,191 @@
         
         container.innerHTML = entriesHtml;
     }
+
+    // Timer functionality
+    window.startTimer = function() {
+        const timerDisplay = document.getElementById('timer-display');
+        const timerBtn = document.getElementById('timer-btn');
+        const nextBtn = document.getElementById('next-btn');
+        
+        if (timerInterval) {
+            // Stop timer
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerBtn.innerHTML = '▶️ Start Timer';
+            timerBtn.className = 'btn btn-green';
+            nextBtn.style.display = 'block';
+            log('INFO', 'Timer stopped manually');
+            return;
+        }
+        
+        // Start timer
+        currentTime = 120; // 2 minutes
+        timerBtn.innerHTML = '⏸️ Stop Timer';
+        timerBtn.className = 'btn btn-red';
+        nextBtn.style.display = 'none';
+        
+        timerInterval = setInterval(() => {
+            currentTime--;
+            const minutes = Math.floor(currentTime / 60);
+            const seconds = currentTime % 60;
+            timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (currentTime <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                timerBtn.innerHTML = '▶️ Start Timer';
+                timerBtn.className = 'btn btn-green';
+                nextBtn.style.display = 'block';
+                showUserMessage('⏰ Timer afgelopen! Tijd voor de volgende stap.', 'success');
+                log('SUCCESS', 'Timer completed');
+            }
+        }, 1000);
+    };
+
+    // Ritual step management
+    const ritualSteps = [
+        {
+            title: "Stap 1: Fysieke Mini-Reset",
+            duration: 120, // 2 minutes
+            instructions: [
+                "Sta op en strek je volledig uit",
+                "Schud je armen en benen los", 
+                "Rol je schouders 5x naar achteren",
+                "Maak kleine cirkels met je hoofd (5x elke richting)"
+            ]
+        },
+        {
+            title: "Stap 2: Ademhaling Reset",
+            duration: 90, // 1.5 minutes
+            instructions: [
+                "Ga comfortabel zitten of staan",
+                "Adem 5x heel diep in door je neus",
+                "Adem langzaam uit door je mond",
+                "Let op de vertraging tussen gedachte en lichaam"
+            ]
+        },
+        {
+            title: "Stap 3: Mentale Overgang",
+            duration: 120, // 2 minutes
+            instructions: [
+                "Zeg hardop: 'Ik ben klaar met intensief denken'",
+                "Denk aan 3 dingen waar je dankbaar voor bent",
+                "Visualiseer je volgende activiteit",
+                "Geef jezelf toestemming om te ontspannen"
+            ]
+        },
+        {
+            title: "Stap 4: Zintuiglijke Reset",
+            duration: 90, // 1.5 minutes  
+            instructions: [
+                "Kijk bewust rond - wat zie je?",
+                "Luister naar geluiden om je heen",
+                "Voel de temperatuur op je huid",
+                "Ruik bewust de lucht om je heen"
+            ]
+        },
+        {
+            title: "Stap 5: Intentie Zetten",
+            duration: 60, // 1 minute
+            instructions: [
+                "Besluit bewust hoe je je volgende tijd wilt besteden",
+                "Zeg tegen jezelf: 'Ik ga nu over naar [activiteit]'",
+                "Neem één bewuste stap in die richting",
+                "Feliciteer jezelf - je hebt een goede overgang gemaakt"
+            ]
+        }
+    ];
+
+    window.nextRitualStep = function() {
+        if (ritualStep < ritualSteps.length - 1) {
+            ritualStep++;
+            updateRitualDisplay();
+        } else {
+            // Complete ritual
+            document.getElementById('ritual-complete').classList.remove('hidden');
+            appState.currentTechnique = 'Afkoel Ritueel - 5 Stappen Voltooid';
+            trackSession('ritual', 480); // 8 minutes total
+            log('SUCCESS', 'Ritual completed');
+        }
+    };
+
+    window.skipToNextStep = function() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+            document.getElementById('timer-btn').className = 'btn btn-green';
+        }
+        nextRitualStep();
+    };
+
+    window.resetRitual = function() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        ritualStep = 0;
+        updateRitualDisplay();
+        document.getElementById('ritual-complete').classList.add('hidden');
+        document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+        document.getElementById('timer-btn').className = 'btn btn-green';
+        document.getElementById('next-btn').style.display = 'none';
+    };
+
+    function updateRitualDisplay() {
+        const step = ritualSteps[ritualStep];
+        
+        // Update title
+        document.getElementById('ritual-title').textContent = step.title;
+        
+        // Update timer display
+        const minutes = Math.floor(step.duration / 60);
+        const seconds = step.duration % 60;
+        document.getElementById('timer-display').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        currentTime = step.duration;
+        
+        // Update instructions
+        const instructionsHtml = '<ul class="step-list">' + 
+            step.instructions.map(instruction => `<li>${instruction}</li>`).join('') +
+            '</ul>';
+        document.getElementById('ritual-instructions').innerHTML = instructionsHtml;
+        
+        // Update progress bar
+        const progress = ((ritualStep + 1) / ritualSteps.length) * 100;
+        document.getElementById('ritual-progress').style.width = progress + '%';
+        
+        // Reset timer button
+        document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+        document.getElementById('timer-btn').className = 'btn btn-green';
+        document.getElementById('next-btn').style.display = 'none';
+        
+        // Clear any existing timer
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        
+        log('INFO', `Ritual step ${ritualStep + 1}/${ritualSteps.length}: ${step.title}`);
+    }
+
+    // Skip dagboek functions
+    window.skipButeykoDagboek = function() { 
+        resetButeykoAfterCompletion(); 
+        showUserMessage('✅ Buteyko sessie afgerond!', 'success'); 
+    };
+
+    window.skipRitualDagboek = function() {
+        document.getElementById('ritual-complete').classList.add('hidden');
+        ritualStep = 0;
+        updateRitualDisplay();
+        showUserMessage('✅ Afkoel ritueel afgerond!', 'success');
+    };
+
+    window.skipEmdrDagboek = function() {
+        resetEmdrSession();
+        showUserMessage('✅ EMDR sessie afgerond!', 'success');
+    };
 
     // Initialize app
     document.addEventListener('DOMContentLoaded', async function() {

@@ -9,6 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Ademruimte - Hyperventilatie Helper</title>
     
+    <!-- Preload kritieke resources -->
     <link rel="preconnect" href="https://www.gstatic.com">
     <link rel="preconnect" href="https://unpkg.com">
 
@@ -1172,6 +1173,7 @@
 </head>
 
 <body>
+    <!-- Skip link voor toegankelijkheid -->
     <a href="#main-content" class="skip-link">Spring naar hoofdinhoud</a>
 
     <header role="banner">
@@ -1179,6 +1181,7 @@
             <div class="spinner" id="auth-loading" aria-label="Bezig met inloggen..."></div>
         </div>
         
+        <!-- Ademruimte Logo -->
         <div class="logo-container">
             <svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
               <defs>
@@ -1267,6 +1270,7 @@
         </div>
     </header>
 
+    <!-- Login Screen -->
     <div id="login-screen" role="main">
         <div style="max-width: 400px; margin: 2rem auto; padding: 0 1rem;">
             <div class="card">
@@ -1278,6 +1282,7 @@
                     <span id="login-description">Log in om je vooruitgang op te slaan en te synchroniseren tussen al je apparaten.</span>
                 </p>
 
+                <!-- Google Login -->
                 <button id="google-login-btn" class="google-btn" aria-label="Inloggen met Google account">
                     <svg width="18" height="18" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -1292,6 +1297,7 @@
                     <span>of</span>
                 </div>
 
+                <!-- Email/Password Login -->
                 <form id="login-form" novalidate>
                     <div class="form-group">
                         <label for="login-email" class="form-label">E-mail:</label>
@@ -1336,6 +1342,7 @@
         </div>
     </div>
 
+    <!-- Register Modal -->
     <div id="register-modal" class="modal" role="dialog" aria-labelledby="register-title">
         <div class="modal-content">
             <div class="modal-header">
@@ -1387,6 +1394,7 @@
         </div>
     </div>
 
+    <!-- Main App -->
     <div id="main-app" class="hidden">
         <nav class="nav-tabs" role="navigation" aria-label="Hoofdnavigatie">
             <button class="tab-btn active" data-tab="dashboard" aria-selected="true">🏠 Dashboard</button>
@@ -1399,7 +1407,9 @@
         </nav>
 
         <main id="main-content" class="container">
+            <!-- Dashboard Tab -->
             <div id="dashboard" class="tab-content" role="tabpanel" aria-labelledby="dashboard-tab">
+                <!-- Hero Greeting Section -->
                 <div class="card" style="text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85)); margin-bottom: 2rem;">
                     <h2 id="dashboard-greeting" style="font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 1rem; background: linear-gradient(135deg, #06b6d4, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
                         Welkom bij Ademruimte
@@ -1459,16 +1469,19 @@
                             aria-label="Nieuwe tip laden">🔄</button>
                 </div>
 
+                <!-- Account Settings -->
                 <div class="settings-section">
                     <h3>👤 Account</h3>
                     <div id="account-info" style="margin-bottom: 1rem;">
-                        </div>
+                        <!-- Account info wordt hier ingevuld -->
+                    </div>
                     <button class="btn btn-red" onclick="performLogout()">
                         🚪 Uitloggen
                     </button>
                 </div>
             </div>
 
+            <!-- Crisis Tab -->
             <div id="crisis" class="tab-content hidden" role="tabpanel" aria-labelledby="crisis-tab">
                 <div class="card">
                     <h2>🚨 Crisis Hulp - Luchthonger</h2>
@@ -1513,6 +1526,7 @@
                 </div>
             </div>
 
+            <!-- Buteyko Tab -->
             <div id="buteyko" class="tab-content hidden" role="tabpanel" aria-labelledby="buteyko-tab">
                 <div class="card">
                     <h2>🌬️ Buteyko Ademhaling</h2>
@@ -1589,6 +1603,7 @@
                     </div>
                 </div>
 
+                <!-- Completion bericht buiten de hoofdkaart -->
                 <div id="breath-complete" class="alert alert-success hidden">
                     <strong>✅ Buteyko Sessie Voltooid!</strong><br>
                     Geweldig! Je hebt 10 ademhalingscycli succesvol afgerond.
@@ -1620,6 +1635,7 @@
                 </div>
             </div>
 
+            <!-- Ritueel Tab -->
             <div id="ritueel" class="tab-content hidden" role="tabpanel" aria-labelledby="ritueel-tab">
                 <div class="card">
                     <h2>🕐 Afkoel Ritueel</h2>
@@ -1666,6 +1682,7 @@
                 </div>
             </div>
 
+            <!-- Gapen Tab -->
             <div id="gapen" class="tab-content hidden" role="tabpanel" aria-labelledby="gapen-tab">
                 <div class="card">
                     <h2>🥱 Gaap Preventie Technieken</h2>
@@ -1716,6 +1733,7 @@
                 </div>
             </div>
 
+            <!-- EMDR Tab -->
             <div id="emdr" class="tab-content hidden" role="tabpanel" aria-labelledby="emdr-tab">
                 <div class="card">
                     <h2>💜 EMDR Zelfhulp</h2>
@@ -1730,6 +1748,7 @@
                     <strong>🎧 Bilaterale Audio:</strong> Voor de beste ervaring, gebruik koptelefoon of oortjes. Zet het volume op een comfortabel niveau voordat je begint.
                 </div>
 
+                <!-- Audio Controls -->
                 <div class="card">
                     <h3>🔊 Bilaterale Audio Stimulatie</h3>
                     <p style="margin-bottom: 1rem;">Een instelbare toon die van links naar rechts beweegt om bilaterale hersenstimulatie te ondersteunen.</p>
@@ -1800,6 +1819,7 @@
                 </div>
             </div>
 
+            <!-- Dagboek Tab -->
             <div id="dagboek" class="tab-content hidden" role="tabpanel" aria-labelledby="dagboek-tab">
                 <div class="card">
                     <h2>📖 Dagboek</h2>
@@ -1817,6 +1837,7 @@
                     </div>
                 </div>
 
+                <!-- Vooruitgang Grafiek -->
                 <div class="card">
                     <h3>📊 Je Vooruitgang</h3>
                     <p style="color: var(--text-light); margin-bottom: 1rem;">Intensiteit scores over tijd - lagere scores betekenen meer verbetering</p>
@@ -1845,7 +1866,8 @@
                 </div>
 
                 <div id="dagboek-entries">
-                    </div>
+                    <!-- Entries worden hier geladen -->
+                </div>
 
                 <div class="card">
                     <h3>Patronen om naar uit te kijken</h3>
@@ -1861,6 +1883,7 @@
         </main>
     </div>
 
+    <!-- Dagboek Modal -->
     <div id="dagboek-modal" class="modal" role="dialog" aria-labelledby="dagboek-modal-title">
         <div class="modal-content">
             <div class="modal-header">
@@ -1906,10 +1929,10 @@
                 </div>
 
                 <div class="button-group">
-                    <button type="button" class="btn btn-primary" id="save-dagboek-entry-btn">
+                    <button type="button" class="btn btn-primary">
                         📁 Opslaan
                     </button>
-                    <button type="button" class="btn btn-orange" onclick="closeDagboekModal()">
+                    <button type="button" class="btn btn-orange">
                         Annuleren
                     </button>
                 </div>
@@ -1921,12 +1944,14 @@
         <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
             <p style="margin: 0;">📞 In noodgevallen: contacteer altijd je huisarts of spoeddiensten</p>
             
+            <!-- Firebase Status Indicator -->
             <div style="display: flex; align-items: center; gap: 0.375rem;">
                 <div id="firebase-status-dot" class="status-disconnected" style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; transition: all 0.3s ease; opacity: 0.6;" title="Firebase verbinding status"></div>
                 <span style="font-size: 0.7rem; opacity: 0.7;">Status</span>
             </div>
         </div>
         
+        <!-- Developer Credit -->
         <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
             <p style="margin: 0; font-size: 0.75rem; opacity: 0.8; color: rgba(255,255,255,0.9);">
                 Ontwikkeld door <strong>Thomas Van Troostenberghe</strong>
@@ -1970,11 +1995,6 @@
                 "Het bijhouden van patronen in je dagboek helpt je triggers te identificeren.",
                 "Na intensief denkwerk heeft je lichaam een afkoel ritueel nodig om te ontspannen."
             ];
-            // Initialize auth-loading spinner to be visible initially
-            const authLoading = document.getElementById('auth-loading');
-            if (authLoading) {
-                authLoading.style.display = 'inline-block';
-            }
         }
 
         setUser(user) {
@@ -2002,18 +2022,10 @@
             const userInfo = document.getElementById('user-info');
             const accountInfo = document.getElementById('account-info');
             
-            // Hide loading spinner regardless of auth state
-            const authLoading = document.getElementById('auth-loading');
-            if (authLoading) {
-                authLoading.style.display = 'none';
-            }
-
             if (this.currentUser && userInfo) {
                 const displayName = this.currentUser.displayName || this.currentUser.email;
                 const shortName = displayName.length > 15 ? displayName.substring(0, 13) + '...' : displayName;
                 userInfo.innerHTML = shortName;
-            } else if (userInfo) {
-                userInfo.innerHTML = ''; // Clear user info if not logged in
             }
 
             if (this.currentUser && accountInfo) {
@@ -2022,8 +2034,6 @@
                     '<strong>Ingelogd als:</strong><br>' + 
                     (this.currentUser.displayName || this.currentUser.email) + 
                     '</p>';
-            } else if (accountInfo) {
-                accountInfo.innerHTML = '<p style="color: var(--text-light); font-size: 0.9rem;">Niet ingelogd</p>';
             }
             
             // Update dashboard greeting
@@ -2036,8 +2046,6 @@
                 const firstName = this.getFirstName();
                 const timeOfDay = this.getTimeOfDay();
                 greetingElement.textContent = `${timeOfDay}, ${firstName}!`;
-            } else if (greetingElement) {
-                greetingElement.textContent = `Welkom bij Ademruimte`;
             }
         }
 
@@ -2055,12 +2063,11 @@
                     statusDot.className = 'status-connected';
                     statusDot.title = 'Firebase: Verbonden';
                 } else if (this.isOnline) {
-                    // If online but Firebase isn't connected, it means a temporary issue or not initialized
-                    statusDot.className = 'status-disconnected'; 
-                    statusDot.title = 'Firebase: Verbindingsprobleem of niet geïnitialiseerd';
+                    statusDot.className = 'status-disconnected';
+                    statusDot.title = 'Firebase: Offline';
                 } else {
                     statusDot.className = 'status-error';
-                    statusDot.title = 'Firebase: Geen internetverbinding';
+                    statusDot.title = 'Firebase: Geen verbinding';
                 }
             }
         }
@@ -2070,7 +2077,7 @@
         }
 
         getFirstName() {
-            if (!this.currentUser) return 'Gebruiker';
+            if (!this.currentUser) return '';
             
             const displayName = this.currentUser.displayName;
             if (displayName) {
@@ -2118,7 +2125,7 @@
     // Wake lock for keeping screen on
     let wakeLock = null;
 
-    // Progress tracking (will still use localStorage for now, but note the potential loss)
+    // Progress tracking
     let progressData = {
         buteyko: { sessions: 0, totalTime: 0, lastSession: null },
         ritual: { sessions: 0, totalTime: 0, lastSession: null },
@@ -2126,30 +2133,26 @@
         crisis: { sessions: 0, lastSession: null }
     };
 
-    // Firebase configuration - MAKE SURE THIS IS CORRECT
-    const firebaseConfig = {
-        apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
-        authDomain: "ademruimte-12c09.firebaseapp.com",
-        projectId: "ademruimte-12c09",
-        storageBucket: "ademruimte-12c09.firebasestorage.app",
-        messagingSenderId: "744941871331",
-        appId: "1:744941871331:web:c3ce24d814fe41314d25d6",
-        measurementId: "G-SD2ZEYNMNY"
-    };
-
+    // Simplified Firebase initialization with redirect flow
     async function initializeFirebase() {
-        if (appState.authInitialized) {
-            log('INFO', 'Firebase already initialized.');
-            return true;
-        }
-
         try {
             log('INFO', 'Initializing Firebase...');
             
             // Firebase v9+ modular imports
             const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
             const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
-            const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithRedirect, getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+
+            // Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
+                authDomain: "ademruimte-12c09.firebaseapp.com",
+                projectId: "ademruimte-12c09",
+                storageBucket: "ademruimte-12c09.firebasestorage.app",
+                messagingSenderId: "744941871331",
+                appId: "1:744941871331:web:c3ce24d814fe41314d25d6",
+                measurementId: "G-SD2ZEYNMNY"
+            };
 
             // Initialize Firebase
             app = initializeApp(firebaseConfig);
@@ -2159,26 +2162,10 @@
             // Set authentication persistence
             await setPersistence(auth, browserLocalPersistence);
 
-            // IMPORTANT: Handle redirect result ON PAGE LOAD for Google Auth
-            // This needs to be checked early in the app's lifecycle
-            try {
-                const result = await getRedirectResult(auth);
-                if (result) {
-                    // This means a Google sign-in redirect just completed
-                    log('SUCCESS', 'Google sign-in successful via redirect result:', result.user.email);
-                    // The onAuthStateChanged observer will handle setting the user and showing the app
-                    return true;
-                }
-            } catch (redirectError) {
-                // If there's an error during the redirect result retrieval (e.g., user cancelled)
-                log('ERROR', 'Error getting redirect result:', redirectError);
-                showUserMessage(`Fout bij Google login: ${redirectError.message}`, 'error');
-                // Don't show login screen yet, let onAuthStateChanged decide
-            }
-
-            // Setup auth state observer AFTER trying to get redirect result
+            // Setup auth state observer
             setupAuthStateObserver(onAuthStateChanged);
 
+            // Mark as connected
             appState.setConnectionStatus(true);
             appState.authInitialized = true;
             
@@ -2190,9 +2177,10 @@
             appState.setConnectionStatus(false);
             appState.authInitialized = false;
             
+            // Show error to user
             showUserMessage('Firebase kon niet worden geïnitialiseerd. Controleer je internetverbinding.', 'error');
             
-            // Show login screen only if Firebase completely fails to initialize
+            // Still show login screen for potential retry
             showLoginScreen();
             
             return false;
@@ -2208,7 +2196,10 @@
         // Auth state observer
         appState.authUnsubscribe = onAuthStateChanged(auth, (user) => {
             // Hide loading spinner
-            appState.updateUI(); // Will hide spinner and update user info
+            const authLoading = document.getElementById('auth-loading');
+            if (authLoading) {
+                authLoading.style.display = 'none';
+            }
             
             if (user) {
                 // User is authenticated
@@ -2227,12 +2218,21 @@
                 log('INFO', 'User not authenticated');
                 appState.setUser(null);
                 showLoginScreen();
+                
+                // Ensure login event listeners are set up
+                setTimeout(setupLoginEventListeners, 100);
             }
         }, (error) => {
             log('ERROR', 'Auth state observer error:', error);
-            appState.updateUI(); // Will hide spinner
+            const authLoading = document.getElementById('auth-loading');
+            if (authLoading) {
+                authLoading.style.display = 'none';
+            }
             showUserMessage('Authenticatie fout: ' + error.message, 'error');
             showLoginScreen();
+            
+            // Ensure login event listeners are set up even on auth error
+            setTimeout(setupLoginEventListeners, 100);
         });
     }
 
@@ -2244,6 +2244,9 @@
         if (loginScreen && mainApp) {
             loginScreen.classList.remove('hidden');
             mainApp.classList.add('hidden');
+            
+            // Set up login screen event listeners immediately
+            setupLoginEventListeners();
             
             // Focus management
             setTimeout(() => {
@@ -2280,17 +2283,10 @@
 
     // Enhanced authentication functions with redirect flow for Google
     window.signInWithGoogle = async function() {
-        const googleBtn = document.getElementById('google-login-btn');
-        const originalBtnText = googleBtn.querySelector('#google-btn-text').textContent;
-        googleBtn.querySelector('#google-btn-text').textContent = 'Bezig...';
-        googleBtn.disabled = true;
-        
         if (!appState.authInitialized || !auth) {
-            const initialized = await initializeFirebase();
-            if (!initialized) {
+            await initializeFirebase();
+            if (!appState.authInitialized) {
                 showUserMessage('Firebase is niet beschikbaar. Probeer email/wachtwoord login.', 'warning');
-                googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
-                googleBtn.disabled = false;
                 return;
             }
         }
@@ -2298,40 +2294,43 @@
         try {
             log('INFO', 'Starting Google sign-in with redirect...');
             
-            const { GoogleAuthProvider, signInWithRedirect } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            const { GoogleAuthProvider, signInWithRedirect, getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
             
+            // Check for redirect result first
+            try {
+                const result = await getRedirectResult(auth);
+                if (result) {
+                    log('SUCCESS', 'Google sign-in successful via redirect:', result.user.email);
+                    return;
+                }
+            } catch (redirectError) {
+                log('WARNING', 'No redirect result or redirect error:', redirectError);
+            }
+            
+            // Set up provider and initiate redirect
             const provider = new GoogleAuthProvider();
             provider.setCustomParameters({ 
                 prompt: 'select_account'
             });
             
+            // Use redirect instead of popup to avoid CORP issues
             await signInWithRedirect(auth, provider);
-            // This line will not be reached if redirect occurs successfully
             
         } catch (error) {
             log('ERROR', 'Google sign-in failed:', error);
             
             let message = 'Google inloggen mislukt';
             if (error.code === 'auth/popup-blocked') {
-                message = 'Login werd geblokkeerd. Controleer popup instellingen of gebruik email/wachtwoord.';
+                message = 'Login werd geblokkeerd. Probeer het opnieuw of gebruik email/wachtwoord.';
             } else if (error.code === 'auth/network-request-failed') {
                 message = 'Netwerkfout. Controleer je internetverbinding en probeer opnieuw.';
-            } else if (error.code === 'auth/cancelled-popup-request') {
-                // User cancelled, no need to show error
-                log('INFO', 'Google sign-in cancelled by user');
-                message = 'Google inloggen geannuleerd.';
-                showUserMessage(message, 'info');
-                return; // Exit function without showing error message again
             } else if (error.code === 'auth/too-many-requests') {
                 message = 'Te veel inlogpogingen. Probeer het later opnieuw.';
+            } else if (error.code === 'auth/cancelled-popup-request') {
+                return; // User cancelled, no need to show error
             }
             
             showUserMessage(message, 'error');
-            
-        } finally {
-            // Re-enable button and restore text if redirect didn't happen (i.e., error occurred)
-            googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
-            googleBtn.disabled = false;
         }
     };
 
@@ -2344,10 +2343,7 @@
             // Stop any running services immediately
             if (isAudioPlaying) toggleBilateralAudio();
             if (wakeLock) releaseWakeLock();
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
+            if (timerInterval) clearInterval(timerInterval);
             if (breathInterval) {
                 clearInterval(breathInterval);
                 breathInterval = null;
@@ -2357,10 +2353,6 @@
                 const { signOut } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
                 await signOut(auth);
                 log('SUCCESS', 'User logged out successfully');
-                showUserMessage('Je bent succesvol uitgelogd!', 'success');
-            } else {
-                log('INFO', 'No user logged in to log out.');
-                showUserMessage('Je bent al uitgelogd.', 'info');
             }
             
         } catch (error) {
@@ -2487,8 +2479,8 @@
         }
 
         if (!appState.authInitialized || !auth) {
-            const initialized = await initializeFirebase();
-            if (!initialized) {
+            await initializeFirebase();
+            if (!appState.authInitialized) {
                 showUserMessage('Firebase is niet beschikbaar. Probeer het later opnieuw.', 'error');
                 return;
             }
@@ -2547,8 +2539,8 @@
         }
 
         if (!appState.authInitialized || !auth) {
-            const initialized = await initializeFirebase();
-            if (!initialized) {
+            await initializeFirebase();
+            if (!appState.authInitialized) {
                 showUserMessage('Firebase is niet beschikbaar. Probeer het later opnieuw.', 'error');
                 return;
             }
@@ -2677,8 +2669,7 @@
             const q = query(
                 collection(db, "dagboekEntries"), 
                 where("userId", "==", appState.currentUser.uid),
-                orderBy("timestamp", "desc"), // Order by timestamp descending
-                limit(100) // Limit to 100 most recent entries
+                limit(100)
             );
             
             const querySnapshot = await getDocs(q);
@@ -2689,14 +2680,17 @@
                 entries.push({
                     id: doc.id,
                     ...data,
-                    // Convert Firebase Timestamp to Date object for consistent handling
-                    timestamp: data.timestamp ? data.timestamp.toDate() : (data.clientTimestamp ? new Date(data.clientTimestamp) : new Date()),
-                    tijdstempel: data.timestamp ? data.timestamp.toDate().toLocaleString('nl-BE') : (data.clientTimestamp ? new Date(data.clientTimestamp).toLocaleString('nl-BE') : 'Onbekend'),
+                    tijdstempel: data.timestamp ? data.timestamp.toDate().toLocaleString('nl-BE') : 'Onbekend',
                     bron: "Firebase"
                 });
             });
             
-            // Note: Entries are already sorted by Firestore query, no need for client-side sort here.
+            // Sort by timestamp (newest first)
+            entries.sort((a, b) => {
+                const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
+                const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
+                return dateB - dateA;
+            });
             
             log('SUCCESS', `Loaded ${entries.length} entries from Firestore`);
             return entries;
@@ -2724,18 +2718,12 @@
                 intensiteitNa: parseInt(document.getElementById('entry-after').value),
                 resultaat: document.getElementById('entry-result').value,
                 notities: document.getElementById('entry-notes').value,
-                // Client-side timestamp as fallback/for local use before server timestamp
-                clientTimestamp: new Date().toISOString() 
+                tijdstempel: new Date().toLocaleString('nl-BE'),
+                clientTimestamp: new Date().toISOString()
             };
 
-            // Basic validation for result
-            if (!entry.resultaat) {
-                showUserMessage('Selecteer een resultaat voor de dagboek entry.', 'warning');
-                return;
-            }
-
             // Show saving state
-            const saveBtn = document.getElementById('save-dagboek-entry-btn');
+            const saveBtn = document.querySelector('#dagboek-modal .btn-primary');
             const originalText = saveBtn.textContent;
             saveBtn.textContent = '💾 Opslaan...';
             saveBtn.disabled = true;
@@ -2758,11 +2746,9 @@
             
         } catch (error) {
             // Restore button on error
-            const saveBtn = document.getElementById('save-dagboek-entry-btn');
-            if (saveBtn) { // Check if button exists before trying to access
-                saveBtn.textContent = '📁 Opslaan';
-                saveBtn.disabled = false;
-            }
+            const saveBtn = document.querySelector('#dagboek-modal .btn-primary');
+            saveBtn.textContent = '📁 Opslaan';
+            saveBtn.disabled = false;
             
             log('ERROR', 'Save error:', error);
             showUserMessage('❌ Opslaan mislukt: ' + error.message, 'error');
@@ -2775,7 +2761,6 @@
             if (appState.currentTechnique.includes('Buteyko Ademhaling')) {
                 resetButeykoAfterCompletion();
             }
-            // Add other resets here if necessary
         }
     }
 
@@ -2786,8 +2771,7 @@
             
         } catch (error) {
             log('ERROR', 'Load entries failed:', error);
-            const container = document.getElementById('dagboek-entries');
-            container.innerHTML = 
+            document.getElementById('dagboek-entries').innerHTML = 
                 '<div class="alert alert-danger">' +
                     '<strong>❌ Fout bij laden entries:</strong><br>' + 
                     error.message +
@@ -2802,33 +2786,30 @@
                     retryBtn.addEventListener('click', loadDagboekEntries);
                 }
             }, 100);
-
-            // Also clear chart if data loading failed
-            if (progressChart) {
-                progressChart.destroy();
-                progressChart = null;
-            }
-            document.getElementById('chart-empty').style.display = 'block';
-            document.getElementById('chart-legend').style.display = 'none';
         }
     };
 
-    // Display dagboek entries and manage chart
+    // Display dagboek entries
     function displayDagboekEntries(entries) {
         const container = document.getElementById('dagboek-entries');
-        
-        // Create the chart first, passing the entries
-        createProgressChart(entries);
         
         if (!entries || entries.length === 0) {
             container.innerHTML = 
                 '<div class="card">' +
                     '<h3>Nog geen entries</h3>' +
                     '<p>Maak een dagboekentry na het gebruiken van oefeningen om patronen bij te houden.</p>' +
-                    '<button class="btn btn-primary" onclick="openDagboekModal(\'Eerste Entry\')">' +
+                    '<button id="first-entry-btn" class="btn btn-primary">' +
                         'Maak je eerste entry' +
                     '</button>' +
                 '</div>';
+            
+            // Add event listener for first entry button
+            setTimeout(() => {
+                const firstEntryBtn = document.getElementById('first-entry-btn');
+                if (firstEntryBtn) {
+                    firstEntryBtn.addEventListener('click', () => openDagboekModal('Eerste Entry'));
+                }
+            }, 100);
             return;
         }
         
@@ -2836,15 +2817,12 @@
         let entriesHtml = '<div class="card"><h3>📝 Alle Dagboek Entries</h3><p style="color: var(--text-light); margin-bottom: 1.5rem;">Chronologisch overzicht van je sessies</p></div>';
         
         entriesHtml += entries.map(entry => {
-            // Ensure timestamp is always a Date object for toLocaleDateString
-            const displayDate = entry.timestamp instanceof Date ? entry.timestamp : new Date(entry.clientTimestamp || 0);
-
             return '<div class="entry-card">' +
                 '<div class="entry-header">' +
                     '<div>' +
                         '<div class="entry-title">' + entry.techniekGebruikt + '</div>' +
                         '<div style="font-size: 0.8rem; color: var(--text-light);">' +
-                            displayDate.toLocaleString('nl-BE') + ' • ' + // Use the prepared Date object
+                            entry.tijdstempel + ' • ' +
                             '<span style="color: #0891b2; font-size: 0.75rem;">' + (entry.bron || 'Onbekend') + '</span>' +
                         '</div>' +
                     '</div>' +
@@ -2867,7 +2845,171 @@
             '</div>';
         }).join('');
         
-        container.innerHTML = entriesHtml;
+    // Timer functionality
+    window.startTimer = function() {
+        const timerDisplay = document.getElementById('timer-display');
+        const timerBtn = document.getElementById('timer-btn');
+        const nextBtn = document.getElementById('next-btn');
+        
+        if (timerInterval) {
+            // Stop timer
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerBtn.innerHTML = '▶️ Start Timer';
+            timerBtn.className = 'btn btn-green';
+            nextBtn.style.display = 'block';
+            log('INFO', 'Timer stopped manually');
+            return;
+        }
+        
+        // Start timer
+        currentTime = 120; // 2 minutes
+        timerBtn.innerHTML = '⏸️ Stop Timer';
+        timerBtn.className = 'btn btn-red';
+        nextBtn.style.display = 'none';
+        
+        timerInterval = setInterval(() => {
+            currentTime--;
+            const minutes = Math.floor(currentTime / 60);
+            const seconds = currentTime % 60;
+            timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (currentTime <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                timerBtn.innerHTML = '▶️ Start Timer';
+                timerBtn.className = 'btn btn-green';
+                nextBtn.style.display = 'block';
+                showUserMessage('⏰ Timer afgelopen! Tijd voor de volgende stap.', 'success');
+                log('SUCCESS', 'Timer completed');
+            }
+        }, 1000);
+    };
+
+    // Ritual step management
+    const ritualSteps = [
+        {
+            title: "Stap 1: Fysieke Mini-Reset",
+            duration: 120, // 2 minutes
+            instructions: [
+                "Sta op en strek je volledig uit",
+                "Schud je armen en benen los", 
+                "Rol je schouders 5x naar achteren",
+                "Maak kleine cirkels met je hoofd (5x elke richting)"
+            ]
+        },
+        {
+            title: "Stap 2: Ademhaling Reset",
+            duration: 90, // 1.5 minutes
+            instructions: [
+                "Ga comfortabel zitten of staan",
+                "Adem 5x heel diep in door je neus",
+                "Adem langzaam uit door je mond",
+                "Let op de vertraging tussen gedachte en lichaam"
+            ]
+        },
+        {
+            title: "Stap 3: Mentale Overgang",
+            duration: 120, // 2 minutes
+            instructions: [
+                "Zeg hardop: 'Ik ben klaar met intensief denken'",
+                "Denk aan 3 dingen waar je dankbaar voor bent",
+                "Visualiseer je volgende activiteit",
+                "Geef jezelf toestemming om te ontspannen"
+            ]
+        },
+        {
+            title: "Stap 4: Zintuiglijke Reset",
+            duration: 90, // 1.5 minutes  
+            instructions: [
+                "Kijk bewust rond - wat zie je?",
+                "Luister naar geluiden om je heen",
+                "Voel de temperatuur op je huid",
+                "Ruik bewust de lucht om je heen"
+            ]
+        },
+        {
+            title: "Stap 5: Intentie Zetten",
+            duration: 60, // 1 minute
+            instructions: [
+                "Besluit bewust hoe je je volgende tijd wilt besteden",
+                "Zeg tegen jezelf: 'Ik ga nu over naar [activiteit]'",
+                "Neem één bewuste stap in die richting",
+                "Feliciteer jezelf - je hebt een goede overgang gemaakt"
+            ]
+        }
+    ];
+
+    window.nextRitualStep = function() {
+        if (ritualStep < ritualSteps.length - 1) {
+            ritualStep++;
+            updateRitualDisplay();
+        } else {
+            // Complete ritual
+            document.getElementById('ritual-complete').classList.remove('hidden');
+            appState.currentTechnique = 'Afkoel Ritueel - 5 Stappen Voltooid';
+            trackSession('ritual', 480); // 8 minutes total
+            log('SUCCESS', 'Ritual completed');
+        }
+    };
+
+    window.skipToNextStep = function() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+            document.getElementById('timer-btn').className = 'btn btn-green';
+        }
+        nextRitualStep();
+    };
+
+    window.resetRitual = function() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        ritualStep = 0;
+        updateRitualDisplay();
+        document.getElementById('ritual-complete').classList.add('hidden');
+        document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+        document.getElementById('timer-btn').className = 'btn btn-green';
+        document.getElementById('next-btn').style.display = 'none';
+    };
+
+    function updateRitualDisplay() {
+        const step = ritualSteps[ritualStep];
+        
+        // Update title
+        document.getElementById('ritual-title').textContent = step.title;
+        
+        // Update timer display
+        const minutes = Math.floor(step.duration / 60);
+        const seconds = step.duration % 60;
+        document.getElementById('timer-display').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        currentTime = step.duration;
+        
+        // Update instructions
+        const instructionsHtml = '<ul class="step-list">' + 
+            step.instructions.map(instruction => `<li>${instruction}</li>`).join('') +
+            '</ul>';
+        document.getElementById('ritual-instructions').innerHTML = instructionsHtml;
+        
+        // Update progress bar
+        const progress = ((ritualStep + 1) / ritualSteps.length) * 100;
+        document.getElementById('ritual-progress').style.width = progress + '%';
+        
+        // Reset timer button
+        document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+        document.getElementById('timer-btn').className = 'btn btn-green';
+        document.getElementById('next-btn').style.display = 'none';
+        
+        // Clear any existing timer
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        
+        log('INFO', `Ritual step ${ritualStep + 1}/${ritualSteps.length}: ${step.title}`);
     }
 
     // Skip dagboek functions
@@ -2915,10 +3057,8 @@
             
             for (let i = 0; i < entries.length; i++) {
                 const entry = entries[i];
-                const displayDate = entry.timestamp instanceof Date ? entry.timestamp : new Date(entry.clientTimestamp || 0);
-
                 exportText += 'ENTRY ' + (i + 1) + '\n';
-                exportText += 'Datum: ' + displayDate.toLocaleString('nl-BE') + '\n';
+                exportText += 'Datum: ' + entry.tijdstempel + '\n';
                 exportText += 'Techniek: ' + entry.techniekGebruikt + '\n';
                 exportText += 'Trigger: ' + (entry.trigger || 'Geen') + '\n';
                 exportText += 'Intensiteit vóór: ' + entry.intensiteitVoor + '/10\n';
@@ -2946,49 +3086,71 @@
         }
     };
 
-    // Comprehensive event listener setup
-    function setupEventListeners() {
-        // Debug logging
-        log('INFO', 'Setting up event listeners...');
+    // Dedicated login event listeners setup
+    function setupLoginEventListeners() {
+        log('INFO', 'Setting up login event listeners...');
         
-        // Google login button
-        const googleLoginBtn = document.getElementById('google-login-btn');
-        if (googleLoginBtn) {
-            googleLoginBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                log('INFO', 'Google login button clicked!');
-                signInWithGoogle();
-            });
-            log('SUCCESS', 'Google login button event listener attached');
-        } else {
-            log('ERROR', 'Google login button not found!');
+        // Google login button - with multiple attempts to find it
+        const setupGoogleLogin = () => {
+            const googleLoginBtn = document.getElementById('google-login-btn');
+            log('INFO', 'Google login button found:', !!googleLoginBtn);
+            
+            if (googleLoginBtn && !googleLoginBtn.hasAttribute('data-listener-added')) {
+                googleLoginBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    log('INFO', '🚀 Google login button CLICKED!');
+                    signInWithGoogle();
+                });
+                googleLoginBtn.setAttribute('data-listener-added', 'true');
+                log('SUCCESS', '✅ Google login button event listener attached');
+                return true;
+            }
+            return false;
+        };
+
+        // Try immediately and with retries
+        if (!setupGoogleLogin()) {
+            setTimeout(setupGoogleLogin, 100);
+            setTimeout(setupGoogleLogin, 500);
         }
 
-        // Register modal buttons
+        // Register modal button
         const showRegisterBtn = document.getElementById('show-register-btn');
-        if (showRegisterBtn) {
+        if (showRegisterBtn && !showRegisterBtn.hasAttribute('data-listener-added')) {
             showRegisterBtn.addEventListener('click', function(e) {
                 e.preventDefault();
+                log('INFO', 'Show register button clicked');
                 showRegisterForm();
             });
+            showRegisterBtn.setAttribute('data-listener-added', 'true');
+            log('SUCCESS', 'Register button event listener attached');
         }
 
+        // Register modal close buttons
         const closeRegisterBtn = document.getElementById('close-register-btn');
-        if (closeRegisterBtn) {
+        if (closeRegisterBtn && !closeRegisterBtn.hasAttribute('data-listener-added')) {
             closeRegisterBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 closeRegisterModal();
             });
+            closeRegisterBtn.setAttribute('data-listener-added', 'true');
         }
 
         const cancelRegisterBtn = document.getElementById('cancel-register-btn');
-        if (cancelRegisterBtn) {
+        if (cancelRegisterBtn && !cancelRegisterBtn.hasAttribute('data-listener-added')) {
             cancelRegisterBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 closeRegisterModal();
             });
+            cancelRegisterBtn.setAttribute('data-listener-added', 'true');
         }
+    }
 
+    // Comprehensive event listener setup
+    // Comprehensive event listener setup for main app
+    function setupEventListeners() {
+        log('INFO', 'Setting up main app event listeners...');
+        
         // Tip refresh button
         const tipRefreshBtn = document.getElementById('tip-refresh-btn');
         if (tipRefreshBtn) {
@@ -3002,11 +3164,27 @@
             }
         });
 
-        // Dagboek modal buttons (moved into global scope, now directly attached)
-        const saveDagboekBtn = document.getElementById('save-dagboek-entry-btn'); // Updated ID
-        if (saveDagboekBtn) {
-            saveDagboekBtn.addEventListener('click', saveDagboekEntry);
-        }
+        // Setup all the main functionality buttons
+        setTimeout(() => {
+            // Dagboek modal buttons
+            const saveDagboekBtn = document.querySelector('#dagboek-modal .btn-primary');
+            if (saveDagboekBtn && !saveDagboekBtn.hasAttribute('data-listener-added')) {
+                saveDagboekBtn.addEventListener('click', saveDagboekEntry);
+                saveDagboekBtn.setAttribute('data-listener-added', 'true');
+            }
+
+            const closeDagboekBtn = document.querySelector('#dagboek-modal .btn-orange');
+            if (closeDagboekBtn && !closeDagboekBtn.hasAttribute('data-listener-added')) {
+                closeDagboekBtn.addEventListener('click', closeDagboekModal);
+                closeDagboekBtn.setAttribute('data-listener-added', 'true');
+            }
+
+            const closeDagboekX = document.querySelector('#dagboek-modal .close-btn');
+            if (closeDagboekX && !closeDagboekX.hasAttribute('data-listener-added')) {
+                closeDagboekX.addEventListener('click', closeDagboekModal);
+                closeDagboekX.setAttribute('data-listener-added', 'true');
+            }
+        }, 500);
     }
 
     // Wake Lock API for keeping screen on
@@ -3047,11 +3225,11 @@
 
     function loadProgressData() {
         try {
-            // Try localStorage first
+            // Try localStorage first, fallback to in-memory storage
             if (typeof Storage !== "undefined" && window.localStorage) {
                 const stored = localStorage.getItem('ademruimte-progress');
                 if (stored) {
-                    progressData = { ...progressDataStore, ...JSON.parse(stored) };
+                    progressDataStore = { ...progressDataStore, ...JSON.parse(stored) };
                     log('SUCCESS', 'Progress data loaded from localStorage');
                     return;
                 }
@@ -3060,23 +3238,26 @@
             log('WARNING', 'localStorage not available, using in-memory storage:', error.message);
         }
         
-        // If localStorage fails or no data, default to initial progressDataStore
+        // Use in-memory storage as fallback
         progressData = { ...progressDataStore };
-        log('INFO', 'Using in-memory progress storage (or initial values)');
+        log('INFO', 'Using in-memory progress storage');
     }
 
     function saveProgressData() {
         try {
-            // Try localStorage first
+            // Try localStorage first, fallback to in-memory storage
             if (typeof Storage !== "undefined" && window.localStorage) {
                 localStorage.setItem('ademruimte-progress', JSON.stringify(progressData));
                 log('SUCCESS', 'Progress data saved to localStorage');
                 return;
             }
         } catch (error) {
-            log('WARNING', 'localStorage not available, data will not persist between sessions:', error.message);
+            log('WARNING', 'localStorage not available, using in-memory storage:', error.message);
         }
-        // No explicit in-memory fallback assignment needed as `progressData` is already updated
+        
+        // Save to in-memory storage as fallback
+        progressDataStore = { ...progressData };
+        log('INFO', 'Progress data saved to memory (will not persist between sessions)');
     }
 
     function trackSession(type, duration = null) {
@@ -3329,10 +3510,6 @@
             appState.isOnline = true;
             appState.updateConnectionDisplay();
             log('INFO', 'Network connection restored');
-            // Try to re-initialize Firebase if it was disconnected
-            if (!appState.isFirebaseConnected && appState.authInitialized) {
-                initializeFirebase();
-            }
         });
 
         window.addEventListener('offline', () => {
@@ -3393,8 +3570,6 @@
                 input.addEventListener('input', function() {
                     output.textContent = this.value;
                 });
-                // Set initial value display
-                output.textContent = input.value;
             }
         });
     }
@@ -3632,14 +3807,13 @@
 
             pannerNode.pan.setValueAtTime(panPosition, audioContext.currentTime);
 
+            const side = panPosition < -0.3 ? 'Links' : panPosition > 0.3 ? 'Rechts' : 'Midden';
             const frequency = parseInt(document.getElementById('audio-frequency').value);
-            // Update status text only if tab is active to avoid performance issues for hidden tabs
-            if (appState.currentTab === 'emdr') {
-                const side = panPosition < -0.3 ? 'Links' : panPosition > 0.3 ? 'Rechts' : 'Midden';
-                document.getElementById('audio-status').textContent = `Actief - ${frequency}Hz - ${side}`;
-            }
+            document.getElementById('audio-status').textContent = `Actief - ${frequency}Hz - ${side}`;
 
         }, updateInterval);
+    }
+
     }
 
     // EMDR Step Management
@@ -3671,7 +3845,7 @@
         }
     ];
 
-    // EMDR navigation functions
+    // EMDR navigation functions - replacing the stubs
     window.nextEmdrStep = function() {
         if (emdrStep < emdrSteps.length - 1) {
             emdrStep++;
@@ -3735,29 +3909,15 @@
         emdrStep = 0;
         updateEmdrDisplay();
         document.getElementById('emdr-complete').classList.add('hidden');
-        // Stop audio if it's still playing
-        if (isAudioPlaying) {
-            stopBilateralAudio();
-        }
     }
 
     // Chart management with Chart.js
     let progressChart = null;
 
     async function createProgressChart(entries) {
-        // Filter out entries without valid intensity data or specific techniques if needed
-        const chartRelevantEntries = entries.filter(entry => 
-            entry.intensiteitVoor !== undefined && entry.intensiteitNa !== undefined && 
-            entry.intensiteitVoor !== null && entry.intensiteitNa !== null
-        );
-
-        if (!chartRelevantEntries || chartRelevantEntries.length === 0) {
+        if (!entries || entries.length === 0) {
             document.getElementById('chart-empty').style.display = 'block';
             document.getElementById('chart-legend').style.display = 'none';
-            if (progressChart) {
-                progressChart.destroy();
-                progressChart = null;
-            }
             return;
         }
 
@@ -3767,24 +3927,22 @@
         try {
             // Import Chart.js from CDN
             if (!window.Chart) {
-                log('INFO', 'Loading Chart.js...');
                 const script = document.createElement('script');
                 script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js';
                 script.async = false;
                 document.head.appendChild(script);
                 
                 await new Promise((resolve, reject) => {
-                    script.onload = () => { log('SUCCESS', 'Chart.js loaded.'); resolve(); };
-                    script.onerror = () => { log('ERROR', 'Failed to load Chart.js'); reject(new Error('Chart.js failed to load.')); };
+                    script.onload = resolve;
+                    script.onerror = reject;
                 });
             }
 
             // Prepare data - take last 10 entries for readability
-            // Entries are already sorted newest first from Firestore
-            const recentEntries = chartRelevantEntries.slice(0, 10).reverse(); // Reverse to show oldest on left
-
+            const recentEntries = entries.slice(0, 10).reverse();
+            
             const labels = recentEntries.map((entry, index) => {
-                const date = entry.timestamp; // Already a Date object
+                const date = entry.timestamp ? entry.timestamp.toDate() : new Date(entry.clientTimestamp);
                 const shortDate = date.toLocaleDateString('nl-BE', { 
                     month: 'short', 
                     day: 'numeric',
@@ -3856,7 +4014,7 @@
                                 title: function(context) {
                                     const index = context[0].dataIndex;
                                     const entry = recentEntries[index];
-                                    const date = entry.timestamp; // Already a Date object
+                                    const date = entry.timestamp ? entry.timestamp.toDate() : new Date(entry.clientTimestamp);
                                     return date.toLocaleDateString('nl-BE', { 
                                         weekday: 'short',
                                         month: 'short', 
@@ -3941,19 +4099,251 @@
         }
     }
 
-    // Ritual timer and steps are already well-defined, no functional changes needed there.
-    // Just ensuring they are part of the overall flow and initialized.
+    // Update the display function to include chart
+    function displayDagboekEntries(entries) {
+        const container = document.getElementById('dagboek-entries');
+        
+        // Create the chart first
+        createProgressChart(entries);
+        
+        if (!entries || entries.length === 0) {
+            container.innerHTML = 
+                '<div class="card">' +
+                    '<h3>Nog geen entries</h3>' +
+                    '<p>Maak een dagboekentry na het gebruiken van oefeningen om patronen bij te houden.</p>' +
+                    '<button class="btn btn-primary" onclick="openDagboekModal(\'Eerste Entry\')">' +
+                        'Maak je eerste entry' +
+                    '</button>' +
+                '</div>';
+            return;
+        }
+        
+        // Add a header for the entries list
+        let entriesHtml = '<div class="card"><h3>📝 Alle Dagboek Entries</h3><p style="color: var(--text-light); margin-bottom: 1.5rem;">Chronologisch overzicht van je sessies</p></div>';
+        
+        entriesHtml += entries.map(entry => {
+            return '<div class="entry-card">' +
+                '<div class="entry-header">' +
+                    '<div>' +
+                        '<div class="entry-title">' + entry.techniekGebruikt + '</div>' +
+                        '<div style="font-size: 0.8rem; color: var(--text-light);">' +
+                            entry.tijdstempel + ' • ' +
+                            '<span style="color: #0891b2; font-size: 0.75rem;">' + (entry.bron || 'Onbekend') + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="entry-result ' + entry.resultaat + '">' +
+                        getResultaatText(entry.resultaat) +
+                    '</div>' +
+                '</div>' +
+                '<div class="intensity-grid">' +
+                    '<div style="font-size: 0.85rem;">' +
+                        '<span style="color: var(--text-light);">Vóór:</span>' +
+                        '<span style="font-weight: 500; margin-left: 0.25rem; color: var(--text-dark);">' + entry.intensiteitVoor + '/10</span>' +
+                    '</div>' +
+                    '<div style="font-size: 0.85rem;">' +
+                        '<span style="color: var(--text-light);">Ná:</span>' +
+                        '<span style="font-weight: 500; margin-left: 0.25rem; color: var(--text-dark);">' + entry.intensiteitNa + '/10</span>' +
+                    '</div>' +
+                '</div>' +
+                (entry.trigger ? '<p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--text-dark);"><strong>Trigger:</strong> ' + entry.trigger + '</p>' : '') +
+                (entry.notities ? '<p style="font-size: 0.85rem; color: var(--text-dark);"><strong>Notities:</strong> ' + entry.notities + '</p>' : '') +
+            '</div>';
+        }).join('');
+        
+        container.innerHTML = entriesHtml;
+    }
+
+    // Timer functionality
+    window.startTimer = function() {
+        const timerDisplay = document.getElementById('timer-display');
+        const timerBtn = document.getElementById('timer-btn');
+        const nextBtn = document.getElementById('next-btn');
+        
+        if (timerInterval) {
+            // Stop timer
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerBtn.innerHTML = '▶️ Start Timer';
+            timerBtn.className = 'btn btn-green';
+            nextBtn.style.display = 'block';
+            log('INFO', 'Timer stopped manually');
+            return;
+        }
+        
+        // Start timer
+        currentTime = 120; // 2 minutes
+        timerBtn.innerHTML = '⏸️ Stop Timer';
+        timerBtn.className = 'btn btn-red';
+        nextBtn.style.display = 'none';
+        
+        timerInterval = setInterval(() => {
+            currentTime--;
+            const minutes = Math.floor(currentTime / 60);
+            const seconds = currentTime % 60;
+            timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (currentTime <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                timerBtn.innerHTML = '▶️ Start Timer';
+                timerBtn.className = 'btn btn-green';
+                nextBtn.style.display = 'block';
+                showUserMessage('⏰ Timer afgelopen! Tijd voor de volgende stap.', 'success');
+                log('SUCCESS', 'Timer completed');
+            }
+        }, 1000);
+    };
+
+    // Ritual step management
+    const ritualSteps = [
+        {
+            title: "Stap 1: Fysieke Mini-Reset",
+            duration: 120, // 2 minutes
+            instructions: [
+                "Sta op en strek je volledig uit",
+                "Schud je armen en benen los", 
+                "Rol je schouders 5x naar achteren",
+                "Maak kleine cirkels met je hoofd (5x elke richting)"
+            ]
+        },
+        {
+            title: "Stap 2: Ademhaling Reset",
+            duration: 90, // 1.5 minutes
+            instructions: [
+                "Ga comfortabel zitten of staan",
+                "Adem 5x heel diep in door je neus",
+                "Adem langzaam uit door je mond",
+                "Let op de vertraging tussen gedachte en lichaam"
+            ]
+        },
+        {
+            title: "Stap 3: Mentale Overgang",
+            duration: 120, // 2 minutes
+            instructions: [
+                "Zeg hardop: 'Ik ben klaar met intensief denken'",
+                "Denk aan 3 dingen waar je dankbaar voor bent",
+                "Visualiseer je volgende activiteit",
+                "Geef jezelf toestemming om te ontspannen"
+            ]
+        },
+        {
+            title: "Stap 4: Zintuiglijke Reset",
+            duration: 90, // 1.5 minutes  
+            instructions: [
+                "Kijk bewust rond - wat zie je?",
+                "Luister naar geluiden om je heen",
+                "Voel de temperatuur op je huid",
+                "Ruik bewust de lucht om je heen"
+            ]
+        },
+        {
+            title: "Stap 5: Intentie Zetten",
+            duration: 60, // 1 minute
+            instructions: [
+                "Besluit bewust hoe je je volgende tijd wilt besteden",
+                "Zeg tegen jezelf: 'Ik ga nu over naar [activiteit]'",
+                "Neem één bewuste stap in die richting",
+                "Feliciteer jezelf - je hebt een goede overgang gemaakt"
+            ]
+        }
+    ];
+
+    window.nextRitualStep = function() {
+        if (ritualStep < ritualSteps.length - 1) {
+            ritualStep++;
+            updateRitualDisplay();
+        } else {
+            // Complete ritual
+            document.getElementById('ritual-complete').classList.remove('hidden');
+            appState.currentTechnique = 'Afkoel Ritueel - 5 Stappen Voltooid';
+            trackSession('ritual', 480); // 8 minutes total
+            log('SUCCESS', 'Ritual completed');
+        }
+    };
+
+    window.skipToNextStep = function() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+            document.getElementById('timer-btn').className = 'btn btn-green';
+        }
+        nextRitualStep();
+    };
+
+    window.resetRitual = function() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        ritualStep = 0;
+        updateRitualDisplay();
+        document.getElementById('ritual-complete').classList.add('hidden');
+        document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+        document.getElementById('timer-btn').className = 'btn btn-green';
+        document.getElementById('next-btn').style.display = 'none';
+    };
+
+    function updateRitualDisplay() {
+        const step = ritualSteps[ritualStep];
+        
+        // Update title
+        document.getElementById('ritual-title').textContent = step.title;
+        
+        // Update timer display
+        const minutes = Math.floor(step.duration / 60);
+        const seconds = step.duration % 60;
+        document.getElementById('timer-display').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        currentTime = step.duration;
+        
+        // Update instructions
+        const instructionsHtml = '<ul class="step-list">' + 
+            step.instructions.map(instruction => `<li>${instruction}</li>`).join('') +
+            '</ul>';
+        document.getElementById('ritual-instructions').innerHTML = instructionsHtml;
+        
+        // Update progress bar
+        const progress = ((ritualStep + 1) / ritualSteps.length) * 100;
+        document.getElementById('ritual-progress').style.width = progress + '%';
+        
+        // Reset timer button
+        document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+        document.getElementById('timer-btn').className = 'btn btn-green';
+        document.getElementById('next-btn').style.display = 'none';
+        
+        // Clear any existing timer
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        
+        log('INFO', `Ritual step ${ritualStep + 1}/${ritualSteps.length}: ${step.title}`);
+    }
+
+    // Skip dagboek functions
+    window.skipButeykoDagboek = function() { 
+        resetButeykoAfterCompletion(); 
+        showUserMessage('✅ Buteyko sessie afgerond!', 'success'); 
+    };
+
+    window.skipRitualDagboek = function() {
+        document.getElementById('ritual-complete').classList.add('hidden');
+        ritualStep = 0;
+        updateRitualDisplay();
+        showUserMessage('✅ Afkoel ritueel afgerond!', 'success');
+    };
+
+    window.skipEmdrDagboek = function() {
+        resetEmdrSession();
+        showUserMessage('✅ EMDR sessie afgerond!', 'success');
+    };
 
     // Initialize app
     document.addEventListener('DOMContentLoaded', async function() {
         log('INFO', 'Starting Ademruimte app initialization');
         
         try {
-            // Initial UI setup before Firebase is ready
-            appState.updateConnectionDisplay(); // Set initial status based on navigator.onLine
-            appState.updateUI(); // Set initial greeting and hide spinner if user is already known (e.g. from redirect)
-
-            // Initialize general components
+            // Initialize components first
             setupForms();
             setupNetworkMonitoring();
             setupKeyboardNavigation();
@@ -3961,10 +4351,10 @@
             setupMobileFocusHandling();
             setRandomTip();
             
-            // Load progress data (from localStorage or default)
+            // Load progress data
             loadProgressData();
             
-            // Initialize tab displays (e.g., Buteyko, Ritual, EMDR sections)
+            // Initialize displays
             updateBreathDisplay();
             updateRitualDisplay();
             updateEmdrDisplay();
@@ -3977,18 +4367,16 @@
                 });
             });
             
-            // Ensure DAGBOEK MODAL SAVE button has listener attached (moved here for guaranteed attachment)
-            const saveDagboekBtn = document.getElementById('save-dagboek-entry-btn');
-            if (saveDagboekBtn) {
-                saveDagboekBtn.addEventListener('click', window.saveDagboekEntry);
-            } else {
-                log('ERROR', 'Save Dagboek Entry button not found!');
+            // Setup tip refresh button
+            const tipRefreshBtn = document.getElementById('tip-refresh-btn');
+            if (tipRefreshBtn) {
+                tipRefreshBtn.addEventListener('click', getNewTip);
             }
 
-            // Setup all other event listeners
+            // Setup all event listeners properly
             setupEventListeners();
 
-            // Audio controls (inputs already have direct event listeners, but good to ensure they're parsed)
+            // Audio controls
             const volumeControl = document.getElementById('audio-volume');
             if (volumeControl) {
                 volumeControl.addEventListener('input', function() {
@@ -4013,51 +4401,64 @@
             if (speedControl) {
                 speedControl.addEventListener('change', function() {
                     if (isAudioPlaying) {
-                        // Re-start audio to apply speed change (panning interval needs resetting)
-                        stopBilateralAudio();
-                        setTimeout(() => startBilateralAudio(), 100);
+                        toggleBilateralAudio();
+                        setTimeout(() => toggleBilateralAudio(), 100);
                     }
                 });
             }
 
-            // Chart responsiveness - redraw on window resize (ensure progressChart exists first)
+            // Chart responsiveness - redraw on window resize
             window.addEventListener('resize', () => {
                 if (progressChart && appState.currentTab === 'dagboek') {
-                    // Debounce if performance is an issue
                     setTimeout(() => {
-                        progressChart.resize(); // Chart.js 3.x uses resize()
+                        progressChart.resize();
                     }, 100);
                 }
             });
             
-            // Initialize Firebase - this will also handle Google redirect result if present
+            // Initial connection status
+            appState.updateConnectionDisplay();
+            
+            // Initialize Firebase
             log('INFO', 'Attempting Firebase initialization...');
             const success = await initializeFirebase();
             
             if (!success) {
-                log('WARNING', 'Firebase initialization failed during DOMContentLoaded. Showing login screen.');
+                // Hide loading spinner even if Firebase failed
+                const authLoading = document.getElementById('auth-loading');
+                if (authLoading) {
+                    authLoading.style.display = 'none';
+                }
+                
+                showUserMessage('Firebase kon niet worden geïnitialiseerd. Controleer je internetverbinding en herlaad de pagina.', 'error');
                 showLoginScreen();
+                
+                // Ensure login listeners are set up even if Firebase fails
+                setTimeout(setupLoginEventListeners, 100);
             }
             
             log('SUCCESS', 'App initialization completed');
             
         } catch (error) {
-            log('ERROR', 'App initialization failed at a critical stage', error);
+            log('ERROR', 'App initialization failed', error);
             
-            // Hide loading spinner in case of critical failure
+            // Hide loading spinner
             const authLoading = document.getElementById('auth-loading');
             if (authLoading) {
                 authLoading.style.display = 'none';
             }
             
-            showUserMessage('Er is een kritieke fout opgetreden bij het laden van de app. Herlaad de pagina om het opnieuw te proberen.', 'error');
+            showUserMessage('Er is een fout opgetreden bij het laden van de app. Herlaad de pagina om het opnieuw te proberen.', 'error');
             showLoginScreen();
+            
+            // Ensure login listeners are set up even on error
+            setTimeout(setupLoginEventListeners, 100);
         }
     });
 
     // Cleanup on page unload
     window.addEventListener('beforeunload', () => {
-        if (isAudioPlaying) stopBilateralAudio(); // Call stop function for cleanup
+        if (isAudioPlaying) toggleBilateralAudio();
         if (wakeLock) releaseWakeLock();
         if (timerInterval) clearInterval(timerInterval);
         if (breathInterval) clearInterval(breathInterval);

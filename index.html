@@ -2133,15 +2133,62 @@
         crisis: { sessions: 0, lastSession: null }
     };
 
-    // FIXED: Simplified Firebase initialization with better error handling
+    // FIXED: Robust Firebase initialization with CDN fallbacks
     async function initializeFirebase() {
         try {
             log('INFO', 'Initializing Firebase...');
             
-            // Firebase v9+ modular imports
-            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
-            const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
-            const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            // Try multiple CDN sources for Firebase
+            const firebaseCDNs = [
+                "https://www.gstatic.com/firebasejs/10.13.2",
+                "https://cdnjs.cloudflare.com/ajax/libs/firebase/10.13.2", 
+                "https://unpkg.com/firebase@10.13.2",
+                "https://cdn.jsdelivr.net/npm/firebase@10.13.2"
+            ];
+            
+            let firebaseModules = null;
+            let lastError = null;
+            
+            // Try each CDN until one works
+            for (const cdn of firebaseCDNs) {
+                try {
+                    log('INFO', `Trying Firebase CDN: ${cdn}`);
+                    
+                    const [
+                        { initializeApp },
+                        { getFirestore }, 
+                        { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence }
+                    ] = await Promise.all([
+                        import(`${cdn}/firebase-app.js`),
+                        import(`${cdn}/firebase-firestore.js`),
+                        import(`${cdn}/firebase-auth.js`)
+                    ]);
+                    
+                    firebaseModules = {
+                        initializeApp,
+                        getFirestore,
+                        getAuth,
+                        onAuthStateChanged,
+                        setPersistence,
+                        browserLocalPersistence
+                    };
+                    
+                    log('SUCCESS', `Firebase modules loaded from: ${cdn}`);
+                    break;
+                    
+                } catch (error) {
+                    log('WARNING', `Failed to load Firebase from ${cdn}:`, error.message);
+                    lastError = error;
+                    continue;
+                }
+            }
+            
+            // If all CDNs failed, enable offline mode
+            if (!firebaseModules) {
+                log('ERROR', 'All Firebase CDNs failed, enabling offline mode');
+                enableOfflineMode();
+                return false;
+            }
 
             // Firebase configuration
             const firebaseConfig = {
@@ -2155,15 +2202,15 @@
             };
 
             // Initialize Firebase
-            app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
+            app = firebaseModules.initializeApp(firebaseConfig);
+            db = firebaseModules.getFirestore(app);
+            auth = firebaseModules.getAuth(app);
 
             // Set authentication persistence
-            await setPersistence(auth, browserLocalPersistence);
+            await firebaseModules.setPersistence(auth, firebaseModules.browserLocalPersistence);
 
             // Setup auth state observer
-            setupAuthStateObserver(onAuthStateChanged);
+            setupAuthStateObserver(firebaseModules.onAuthStateChanged);
 
             // Mark as connected
             appState.setConnectionStatus(true);
@@ -2174,14 +2221,50 @@
 
         } catch (error) {
             log('ERROR', 'Firebase initialization failed:', error);
-            appState.setConnectionStatus(false);
-            appState.authInitialized = false;
-            
-            // Show error to user
-            showUserMessage('Firebase kon niet worden geïnitialiseerd. Controleer je internetverbinding.', 'error');
-            
+            enableOfflineMode();
             return false;
         }
+    }
+
+    // Offline mode when Firebase is not available
+    function enableOfflineMode() {
+        appState.setConnectionStatus(false);
+        appState.authInitialized = false;
+        
+        // Hide loading spinner
+        const authLoading = document.getElementById('auth-loading');
+        if (authLoading) {
+            authLoading.style.display = 'none';
+        }
+        
+        showUserMessage(
+            'Firebase is momenteel niet beschikbaar.\n' +
+            'Je kunt de app in offline modus gebruiken, maar je gegevens worden niet opgeslagen.\n\n' +
+            'Controleer je internetverbinding en herlaad de pagina om het opnieuw te proberen.',
+            'warning'
+        );
+        
+        // Show a simplified login screen or skip to main app in demo mode
+        enableDemoMode();
+    }
+
+    function enableDemoMode() {
+        // Create a demo user
+        const demoUser = {
+            uid: 'demo-user',
+            email: 'demo@ademruimte.app', 
+            displayName: 'Demo Gebruiker'
+        };
+        
+        appState.setUser(demoUser);
+        showMainApp();
+        
+        // Show demo mode indicator
+        setTimeout(() => {
+            showUserMessage('🔄 Demo Modus: Geen gegevens worden opgeslagen', 'info');
+        }, 1000);
+        
+        log('INFO', 'Enabled demo mode');
     }
 
     function setupAuthStateObserver(onAuthStateChanged) {
@@ -2631,6 +2714,19 @@
         log('INFO', `Switched to tab: ${tabName}`);
     };
 
+    // Tip management
+    function setRandomTip() {
+        const tipElement = document.getElementById('daily-tip');
+        if (tipElement) {
+            tipElement.textContent = appState.getRandomTip();
+        }
+    }
+
+    window.getNewTip = function() {
+        setRandomTip();
+        showUserMessage('Nieuwe tip geladen! 💡', 'success');
+    };
+
     // Enhanced user feedback system
     function showUserMessage(message, type = 'info') {
         // Remove existing message
@@ -2680,10 +2776,11 @@
         }, delay);
     }
 
-    // Firebase Firestore functions
+    // Firebase Firestore functions with demo mode fallback
     async function saveToFirestore(entry) {
+        // Demo mode fallback
         if (!appState.isFirebaseConnected) {
-            throw new Error('Firebase niet verbonden. Controleer je internetverbinding.');
+            return saveToDemoStorage(entry);
         }
         
         if (!appState.currentUser) {
@@ -2708,12 +2805,19 @@
             
         } catch (error) {
             log('ERROR', 'Firestore save error:', error);
-            throw error;
+            // Fallback to demo storage if Firestore fails
+            log('INFO', 'Falling back to demo storage');
+            return saveToDemoStorage(entry);
         }
     }
 
     async function loadFromFirestore() {
-        if (!appState.isFirebaseConnected || !appState.currentUser) {
+        // Demo mode fallback
+        if (!appState.isFirebaseConnected) {
+            return loadFromDemoStorage();
+        }
+        
+        if (!appState.currentUser) {
             throw new Error('Je moet ingelogd zijn en verbonden met internet om entries te laden.');
         }
 
@@ -2753,15 +2857,37 @@
             
         } catch (error) {
             log('ERROR', 'Firestore query error:', error);
-            
-            if (error.code === 'permission-denied') {
-                throw new Error('Geen toestemming om data te laden. Log opnieuw in.');
-            } else if (error.code === 'unavailable') {
-                throw new Error('Firebase service tijdelijk niet beschikbaar. Probeer het later opnieuw.');
-            } else {
-                throw new Error('Fout bij laden van entries: ' + error.message);
-            }
+            // Fallback to demo storage if Firestore fails
+            log('INFO', 'Falling back to demo storage');
+            return loadFromDemoStorage();
         }
+    }
+
+    // Demo storage functions for offline mode
+    let demoEntries = [];
+
+    function saveToDemoStorage(entry) {
+        const demoEntry = {
+            ...entry,
+            id: 'demo-' + Date.now(),
+            tijdstempel: new Date().toLocaleString('nl-BE'),
+            bron: "Demo (lokaal)"
+        };
+        
+        demoEntries.unshift(demoEntry); // Add to beginning (newest first)
+        
+        // Keep only last 50 entries in demo mode
+        if (demoEntries.length > 50) {
+            demoEntries = demoEntries.slice(0, 50);
+        }
+        
+        log('SUCCESS', 'Entry saved to demo storage');
+        return { id: demoEntry.id, success: true };
+    }
+
+    function loadFromDemoStorage() {
+        log('INFO', `Loading ${demoEntries.length} entries from demo storage`);
+        return Promise.resolve([...demoEntries]);
     }
 
     // Dagboek functions
@@ -3154,19 +3280,6 @@
         });
     }
 
-    // Tip management
-    function setRandomTip() {
-        const tipElement = document.getElementById('daily-tip');
-        if (tipElement) {
-            tipElement.textContent = appState.getRandomTip();
-        }
-    }
-
-    window.getNewTip = function() {
-        setRandomTip();
-        showUserMessage('Nieuwe tip geladen! 💡', 'success');
-    };
-
     // FIXED: Initialize app with proper timing and event listener setup
     document.addEventListener('DOMContentLoaded', async function() {
         log('INFO', 'Starting Ademruimte app initialization');
@@ -3185,18 +3298,6 @@
             
             // Setup main app event listeners
             setupMainAppEventListeners();
-            
-            // Setup audio control listeners
-            setupAudioControlListeners();
-            
-            // Chart responsiveness - redraw on window resize
-            window.addEventListener('resize', () => {
-                if (progressChart && appState.currentTab === 'dagboek') {
-                    setTimeout(() => {
-                        progressChart.resize();
-                    }, 100);
-                }
-            });
             
             // Initial connection status
             appState.updateConnectionDisplay();
@@ -3258,41 +3359,6 @@
         setupKeyboardNavigation();
         
         log('SUCCESS', 'Main app event listeners setup completed');
-    }
-
-    function setupAudioControlListeners() {
-        // Audio controls
-        const volumeControl = document.getElementById('audio-volume');
-        if (volumeControl) {
-            volumeControl.addEventListener('input', function() {
-                if (isAudioPlaying && gainNode) {
-                    const volume = parseInt(this.value) / 100;
-                    gainNode.gain.setValueAtTime(volume * 0.3, audioContext.currentTime);
-                }
-            });
-        }
-
-        const frequencyControl = document.getElementById('audio-frequency');
-        if (frequencyControl) {
-            frequencyControl.addEventListener('input', function() {
-                if (isAudioPlaying && oscillator) {
-                    const frequency = parseInt(this.value);
-                    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-                }
-            });
-        }
-
-        const speedControl = document.getElementById('audio-speed');
-        if (speedControl) {
-            speedControl.addEventListener('change', function() {
-                if (isAudioPlaying) {
-                    toggleBilateralAudio();
-                    setTimeout(() => toggleBilateralAudio(), 100);
-                }
-            });
-        }
-        
-        log('SUCCESS', 'Audio control listeners setup completed');
     }
 
     function setupKeyboardNavigation() {

@@ -1386,7 +1386,7 @@
                     <button type="submit" class="btn btn-green" style="flex: 1;">
                         Account Aanmaken
                     </button>
-                    <button type="button" class="btn" onclick="closeRegisterModal()" style="flex: 1;">
+                    <button type="button" id="cancel-register-btn" class="btn" style="flex: 1;">
                         Annuleren
                     </button>
                 </div>
@@ -1929,10 +1929,10 @@
                 </div>
 
                 <div class="button-group">
-                    <button type="button" class="btn btn-primary" onclick="saveDagboekEntry()">
+                    <button type="button" class="btn btn-primary">
                         📁 Opslaan
                     </button>
-                    <button type="button" class="btn btn-orange" onclick="closeDagboekModal()">
+                    <button type="button" class="btn btn-orange">
                         Annuleren
                     </button>
                 </div>
@@ -2218,6 +2218,9 @@
                 log('INFO', 'User not authenticated');
                 appState.setUser(null);
                 showLoginScreen();
+                
+                // Ensure login event listeners are set up
+                setTimeout(setupLoginEventListeners, 100);
             }
         }, (error) => {
             log('ERROR', 'Auth state observer error:', error);
@@ -2227,6 +2230,9 @@
             }
             showUserMessage('Authenticatie fout: ' + error.message, 'error');
             showLoginScreen();
+            
+            // Ensure login event listeners are set up even on auth error
+            setTimeout(setupLoginEventListeners, 100);
         });
     }
 
@@ -2238,6 +2244,9 @@
         if (loginScreen && mainApp) {
             loginScreen.classList.remove('hidden');
             mainApp.classList.add('hidden');
+            
+            // Set up login screen event listeners immediately
+            setupLoginEventListeners();
             
             // Focus management
             setTimeout(() => {
@@ -2767,8 +2776,16 @@
                     '<strong>❌ Fout bij laden entries:</strong><br>' + 
                     error.message +
                     '<br><br>' +
-                    '<button class="btn btn-primary" onclick="loadDagboekEntries()" style="margin-top: 1rem;">🔄 Opnieuw proberen</button>' +
+                    '<button id="retry-load-btn" class="btn btn-primary" style="margin-top: 1rem;">🔄 Opnieuw proberen</button>' +
                 '</div>';
+            
+            // Add event listener for retry button
+            setTimeout(() => {
+                const retryBtn = document.getElementById('retry-load-btn');
+                if (retryBtn) {
+                    retryBtn.addEventListener('click', loadDagboekEntries);
+                }
+            }, 100);
         }
     };
 
@@ -2781,10 +2798,18 @@
                 '<div class="card">' +
                     '<h3>Nog geen entries</h3>' +
                     '<p>Maak een dagboekentry na het gebruiken van oefeningen om patronen bij te houden.</p>' +
-                    '<button class="btn btn-primary" onclick="openDagboekModal(\'Eerste Entry\')">' +
+                    '<button id="first-entry-btn" class="btn btn-primary">' +
                         'Maak je eerste entry' +
                     '</button>' +
                 '</div>';
+            
+            // Add event listener for first entry button
+            setTimeout(() => {
+                const firstEntryBtn = document.getElementById('first-entry-btn');
+                if (firstEntryBtn) {
+                    firstEntryBtn.addEventListener('click', () => openDagboekModal('Eerste Entry'));
+                }
+            }, 100);
             return;
         }
         
@@ -3060,6 +3085,107 @@
             showUserMessage('❌ Fout bij exporteren: ' + error.message, 'error');
         }
     };
+
+    // Dedicated login event listeners setup
+    function setupLoginEventListeners() {
+        log('INFO', 'Setting up login event listeners...');
+        
+        // Google login button - with multiple attempts to find it
+        const setupGoogleLogin = () => {
+            const googleLoginBtn = document.getElementById('google-login-btn');
+            log('INFO', 'Google login button found:', !!googleLoginBtn);
+            
+            if (googleLoginBtn && !googleLoginBtn.hasAttribute('data-listener-added')) {
+                googleLoginBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    log('INFO', '🚀 Google login button CLICKED!');
+                    signInWithGoogle();
+                });
+                googleLoginBtn.setAttribute('data-listener-added', 'true');
+                log('SUCCESS', '✅ Google login button event listener attached');
+                return true;
+            }
+            return false;
+        };
+
+        // Try immediately and with retries
+        if (!setupGoogleLogin()) {
+            setTimeout(setupGoogleLogin, 100);
+            setTimeout(setupGoogleLogin, 500);
+        }
+
+        // Register modal button
+        const showRegisterBtn = document.getElementById('show-register-btn');
+        if (showRegisterBtn && !showRegisterBtn.hasAttribute('data-listener-added')) {
+            showRegisterBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                log('INFO', 'Show register button clicked');
+                showRegisterForm();
+            });
+            showRegisterBtn.setAttribute('data-listener-added', 'true');
+            log('SUCCESS', 'Register button event listener attached');
+        }
+
+        // Register modal close buttons
+        const closeRegisterBtn = document.getElementById('close-register-btn');
+        if (closeRegisterBtn && !closeRegisterBtn.hasAttribute('data-listener-added')) {
+            closeRegisterBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeRegisterModal();
+            });
+            closeRegisterBtn.setAttribute('data-listener-added', 'true');
+        }
+
+        const cancelRegisterBtn = document.getElementById('cancel-register-btn');
+        if (cancelRegisterBtn && !cancelRegisterBtn.hasAttribute('data-listener-added')) {
+            cancelRegisterBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeRegisterModal();
+            });
+            cancelRegisterBtn.setAttribute('data-listener-added', 'true');
+        }
+    }
+
+    // Comprehensive event listener setup
+    // Comprehensive event listener setup for main app
+    function setupEventListeners() {
+        log('INFO', 'Setting up main app event listeners...');
+        
+        // Tip refresh button
+        const tipRefreshBtn = document.getElementById('tip-refresh-btn');
+        if (tipRefreshBtn) {
+            tipRefreshBtn.addEventListener('click', getNewTip);
+        }
+
+        // Modal close on background click
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+
+        // Setup all the main functionality buttons
+        setTimeout(() => {
+            // Dagboek modal buttons
+            const saveDagboekBtn = document.querySelector('#dagboek-modal .btn-primary');
+            if (saveDagboekBtn && !saveDagboekBtn.hasAttribute('data-listener-added')) {
+                saveDagboekBtn.addEventListener('click', saveDagboekEntry);
+                saveDagboekBtn.setAttribute('data-listener-added', 'true');
+            }
+
+            const closeDagboekBtn = document.querySelector('#dagboek-modal .btn-orange');
+            if (closeDagboekBtn && !closeDagboekBtn.hasAttribute('data-listener-added')) {
+                closeDagboekBtn.addEventListener('click', closeDagboekModal);
+                closeDagboekBtn.setAttribute('data-listener-added', 'true');
+            }
+
+            const closeDagboekX = document.querySelector('#dagboek-modal .close-btn');
+            if (closeDagboekX && !closeDagboekX.hasAttribute('data-listener-added')) {
+                closeDagboekX.addEventListener('click', closeDagboekModal);
+                closeDagboekX.setAttribute('data-listener-added', 'true');
+            }
+        }, 500);
+    }
 
     // Wake Lock API for keeping screen on
     async function requestWakeLock() {
@@ -4247,11 +4373,8 @@
                 tipRefreshBtn.addEventListener('click', getNewTip);
             }
 
-            // Setup Google login button - fix the onclick issue
-            const googleLoginBtn = document.getElementById('google-login-btn');
-            if (googleLoginBtn) {
-                googleLoginBtn.addEventListener('click', signInWithGoogle);
-            }
+            // Setup all event listeners properly
+            setupEventListeners();
 
             // Audio controls
             const volumeControl = document.getElementById('audio-volume');
@@ -4309,6 +4432,9 @@
                 
                 showUserMessage('Firebase kon niet worden geïnitialiseerd. Controleer je internetverbinding en herlaad de pagina.', 'error');
                 showLoginScreen();
+                
+                // Ensure login listeners are set up even if Firebase fails
+                setTimeout(setupLoginEventListeners, 100);
             }
             
             log('SUCCESS', 'App initialization completed');
@@ -4324,6 +4450,9 @@
             
             showUserMessage('Er is een fout opgetreden bij het laden van de app. Herlaad de pagina om het opnieuw te proberen.', 'error');
             showLoginScreen();
+            
+            // Ensure login listeners are set up even on error
+            setTimeout(setupLoginEventListeners, 100);
         }
     });
 

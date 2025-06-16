@@ -2273,6 +2273,9 @@
             return;
         }
         
+        // Check for Google redirect result BEFORE setting up auth observer
+        checkForGoogleRedirectResult();
+        
         // Auth state observer
         appState.authUnsubscribe = onAuthStateChanged(auth, (user) => {
             // Hide loading spinner
@@ -2310,153 +2313,49 @@
         });
     }
 
-    // FIXED: Enhanced screen management with proper event listener setup
-    function showLoginScreen() {
-        const loginScreen = document.getElementById('login-screen');
-        const mainApp = document.getElementById('main-app');
+    // FIXED: Improved Google redirect result handling
+    async function checkForGoogleRedirectResult() {
+        if (!auth) return;
         
-        if (loginScreen && mainApp) {
-            loginScreen.classList.remove('hidden');
-            mainApp.classList.add('hidden');
+        try {
+            log('INFO', 'Checking for Google redirect result...');
+            const { getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
             
-            // CRITICAL: Set up login event listeners AFTER screen is shown
-            setTimeout(() => {
-                setupLoginEventListeners();
+            const result = await getRedirectResult(auth);
+            if (result && result.user) {
+                log('SUCCESS', 'Google sign-in redirect successful:', result.user.email);
                 
-                // Focus management
-                const emailField = document.getElementById('login-email');
-                if (emailField) {
-                    emailField.focus();
-                }
-            }, 100);
-        }
-        
-        log('INFO', 'Switched to login screen');
-    }
-
-    function showMainApp() {
-        const loginScreen = document.getElementById('login-screen');
-        const mainApp = document.getElementById('main-app');
-        
-        if (loginScreen && mainApp) {
-            loginScreen.classList.add('hidden');
-            mainApp.classList.remove('hidden');
-            
-            // Update dashboard greeting after a brief delay
-            setTimeout(() => {
-                appState.updateDashboardGreeting();
-            }, 100);
-            
-            // Focus management
-            const dashboard = document.querySelector('[data-tab="dashboard"]');
-            if (dashboard) dashboard.focus();
-        }
-        
-        log('INFO', 'Switched to main app');
-    }
-
-    // FIXED: Comprehensive and reliable login event listener setup
-    function setupLoginEventListeners() {
-        log('INFO', 'Setting up login event listeners...');
-        
-        // Remove existing listeners to prevent duplicates
-        removeExistingLoginListeners();
-        
-        // 1. Google Login Button
-        const googleLoginBtn = document.getElementById('google-login-btn');
-        if (googleLoginBtn) {
-            const googleClickHandler = function(e) {
-                e.preventDefault();
-                log('INFO', 'Google login button clicked!');
-                signInWithGoogle();
-            };
-            
-            googleLoginBtn.addEventListener('click', googleClickHandler);
-            googleLoginBtn.setAttribute('data-listener-added', 'true');
-            log('SUCCESS', 'Google login button listener attached');
-        } else {
-            log('WARNING', 'Google login button not found');
-        }
-
-        // 2. Email/Password Login Form
-        const loginForm = document.getElementById('login-form');
-        if (loginForm) {
-            const loginSubmitHandler = function(e) {
-                e.preventDefault();
-                log('INFO', 'Login form submitted!');
-                handleEmailLogin(e);
-            };
-            
-            loginForm.addEventListener('submit', loginSubmitHandler);
-            loginForm.setAttribute('data-listener-added', 'true');
-            log('SUCCESS', 'Login form listener attached');
-        } else {
-            log('WARNING', 'Login form not found');
-        }
-
-        // 3. Show Register Button
-        const showRegisterBtn = document.getElementById('show-register-btn');
-        if (showRegisterBtn) {
-            const showRegisterHandler = function(e) {
-                e.preventDefault();
-                log('INFO', 'Show register button clicked!');
-                showRegisterForm();
-            };
-            
-            showRegisterBtn.addEventListener('click', showRegisterHandler);
-            showRegisterBtn.setAttribute('data-listener-added', 'true');
-            log('SUCCESS', 'Show register button listener attached');
-        } else {
-            log('WARNING', 'Show register button not found');
-        }
-
-        // 4. Register Modal Event Listeners
-        setupRegisterModalListeners();
-        
-        log('SUCCESS', 'Login event listeners setup completed');
-    }
-
-    function removeExistingLoginListeners() {
-        // Remove existing event listeners by cloning and replacing elements
-        const elementsToReset = [
-            'google-login-btn',
-            'login-form', 
-            'show-register-btn'
-        ];
-        
-        elementsToReset.forEach(id => {
-            const element = document.getElementById(id);
-            if (element && element.hasAttribute('data-listener-added')) {
-                const newElement = element.cloneNode(true);
-                element.parentNode.replaceChild(newElement, element);
-                log('INFO', `Reset listeners for ${id}`);
+                // Force trigger auth state change
+                appState.setUser(result.user);
+                showMainApp();
+                
+                showUserMessage('Succesvol ingelogd met Google!', 'success');
+                return true;
+            } else {
+                log('INFO', 'No redirect result found');
+                return false;
             }
-        });
-    }
-
-    function setupRegisterModalListeners() {
-        // Register form submission
-        const registerForm = document.getElementById('register-form');
-        if (registerForm && !registerForm.hasAttribute('data-listener-added')) {
-            registerForm.addEventListener('submit', handleRegister);
-            registerForm.setAttribute('data-listener-added', 'true');
-        }
-
-        // Close register modal buttons
-        const closeRegisterBtn = document.getElementById('close-register-btn');
-        if (closeRegisterBtn && !closeRegisterBtn.hasAttribute('data-listener-added')) {
-            closeRegisterBtn.addEventListener('click', closeRegisterModal);
-            closeRegisterBtn.setAttribute('data-listener-added', 'true');
-        }
-
-        const cancelRegisterBtn = document.getElementById('cancel-register-btn');
-        if (cancelRegisterBtn && !cancelRegisterBtn.hasAttribute('data-listener-added')) {
-            cancelRegisterBtn.addEventListener('click', closeRegisterModal);
-            cancelRegisterBtn.setAttribute('data-listener-added', 'true');
+        } catch (error) {
+            log('ERROR', 'Error checking redirect result:', error);
+            
+            // Common redirect errors
+            if (error.code === 'auth/popup-closed-by-user') {
+                return false; // User cancelled, no error needed
+            } else if (error.code === 'auth/cancelled-popup-request') {
+                return false; // User cancelled, no error needed  
+            } else if (error.code === 'auth/network-request-failed') {
+                showUserMessage('Netwerkfout bij Google inloggen. Probeer het opnieuw.', 'error');
+            } else if (error.code === 'auth/too-many-requests') {
+                showUserMessage('Te veel inlogpogingen. Probeer het later opnieuw.', 'error');
+            } else {
+                showUserMessage('Google inloggen mislukt: ' + error.message, 'error');
+            }
+            
+            return false;
         }
     }
 
-    // FIXED: Enhanced authentication functions
+    // FIXED: Enhanced Google sign-in with better redirect handling
     window.signInWithGoogle = async function() {
         if (!appState.authInitialized || !auth) {
             showUserMessage('Firebase wordt geïnitialiseerd... Probeer het over een moment opnieuw.', 'warning');
@@ -2464,32 +2363,48 @@
         }
 
         try {
-            log('INFO', 'Starting Google sign-in with redirect...');
+            log('INFO', 'Starting Google sign-in...');
             
-            const { GoogleAuthProvider, signInWithRedirect, getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            const { GoogleAuthProvider, signInWithRedirect } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
             
-            // Check for redirect result first
-            try {
-                const result = await getRedirectResult(auth);
-                if (result) {
-                    log('SUCCESS', 'Google sign-in successful via redirect:', result.user.email);
-                    return;
-                }
-            } catch (redirectError) {
-                log('WARNING', 'No redirect result or redirect error:', redirectError);
-            }
-            
-            // Set up provider and initiate redirect
+            // Set up provider
             const provider = new GoogleAuthProvider();
             provider.setCustomParameters({ 
-                prompt: 'select_account'
+                prompt: 'select_account',
+                access_type: 'offline'
             });
             
-            // Use redirect instead of popup to avoid CORP issues
+            // Add required scopes
+            provider.addScope('email');
+            provider.addScope('profile');
+            
+            // Show loading state
+            const googleBtn = document.getElementById('google-login-btn');
+            const originalText = googleBtn.innerHTML;
+            googleBtn.innerHTML = '<div class="spinner" style="width: 18px; height: 18px;"></div> <span>Bezig met inloggen...</span>';
+            googleBtn.disabled = true;
+            
+            log('INFO', 'Initiating Google redirect...');
+            
+            // Store state to detect redirect
+            try {
+                localStorage.setItem('google_signin_initiated', Date.now().toString());
+            } catch(e) {
+                // localStorage not available, continue anyway
+            }
+            
+            // Initiate redirect
             await signInWithRedirect(auth, provider);
             
         } catch (error) {
             log('ERROR', 'Google sign-in failed:', error);
+            
+            // Restore button
+            const googleBtn = document.getElementById('google-login-btn');
+            if (googleBtn) {
+                googleBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24">...</svg> <span>Doorgaan met Google</span>';
+                googleBtn.disabled = false;
+            }
             
             let message = 'Google inloggen mislukt';
             if (error.code === 'auth/popup-blocked') {

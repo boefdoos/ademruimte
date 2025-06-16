@@ -2218,6 +2218,9 @@
                 log('INFO', 'User not authenticated');
                 appState.setUser(null);
                 showLoginScreen();
+                
+                // Ensure login event listeners are set up
+                setTimeout(setupLoginEventListeners, 100);
             }
         }, (error) => {
             log('ERROR', 'Auth state observer error:', error);
@@ -2227,6 +2230,9 @@
             }
             showUserMessage('Authenticatie fout: ' + error.message, 'error');
             showLoginScreen();
+            
+            // Ensure login event listeners are set up even on auth error
+            setTimeout(setupLoginEventListeners, 100);
         });
     }
 
@@ -2238,6 +2244,9 @@
         if (loginScreen && mainApp) {
             loginScreen.classList.remove('hidden');
             mainApp.classList.add('hidden');
+            
+            // Set up login screen event listeners immediately
+            setupLoginEventListeners();
             
             // Focus management
             setTimeout(() => {
@@ -3077,51 +3086,71 @@
         }
     };
 
-    // Comprehensive event listener setup
-    function setupEventListeners() {
-        // Debug logging
-        log('INFO', 'Setting up event listeners...');
+    // Dedicated login event listeners setup
+    function setupLoginEventListeners() {
+        log('INFO', 'Setting up login event listeners...');
         
-        // Google login button
-        const googleLoginBtn = document.getElementById('google-login-btn');
-        log('INFO', 'Google login button found:', !!googleLoginBtn);
-        
-        if (googleLoginBtn) {
-            googleLoginBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                log('INFO', 'Google login button clicked!');
-                signInWithGoogle();
-            });
-            log('SUCCESS', 'Google login button event listener attached');
-        } else {
-            log('ERROR', 'Google login button not found!');
+        // Google login button - with multiple attempts to find it
+        const setupGoogleLogin = () => {
+            const googleLoginBtn = document.getElementById('google-login-btn');
+            log('INFO', 'Google login button found:', !!googleLoginBtn);
+            
+            if (googleLoginBtn && !googleLoginBtn.hasAttribute('data-listener-added')) {
+                googleLoginBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    log('INFO', '🚀 Google login button CLICKED!');
+                    signInWithGoogle();
+                });
+                googleLoginBtn.setAttribute('data-listener-added', 'true');
+                log('SUCCESS', '✅ Google login button event listener attached');
+                return true;
+            }
+            return false;
+        };
+
+        // Try immediately and with retries
+        if (!setupGoogleLogin()) {
+            setTimeout(setupGoogleLogin, 100);
+            setTimeout(setupGoogleLogin, 500);
         }
 
-        // Register modal buttons
+        // Register modal button
         const showRegisterBtn = document.getElementById('show-register-btn');
-        if (showRegisterBtn) {
+        if (showRegisterBtn && !showRegisterBtn.hasAttribute('data-listener-added')) {
             showRegisterBtn.addEventListener('click', function(e) {
                 e.preventDefault();
+                log('INFO', 'Show register button clicked');
                 showRegisterForm();
             });
+            showRegisterBtn.setAttribute('data-listener-added', 'true');
+            log('SUCCESS', 'Register button event listener attached');
         }
 
+        // Register modal close buttons
         const closeRegisterBtn = document.getElementById('close-register-btn');
-        if (closeRegisterBtn) {
+        if (closeRegisterBtn && !closeRegisterBtn.hasAttribute('data-listener-added')) {
             closeRegisterBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 closeRegisterModal();
             });
+            closeRegisterBtn.setAttribute('data-listener-added', 'true');
         }
 
         const cancelRegisterBtn = document.getElementById('cancel-register-btn');
-        if (cancelRegisterBtn) {
+        if (cancelRegisterBtn && !cancelRegisterBtn.hasAttribute('data-listener-added')) {
             cancelRegisterBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 closeRegisterModal();
             });
+            cancelRegisterBtn.setAttribute('data-listener-added', 'true');
         }
+    }
 
+    // Comprehensive event listener setup
+    // Comprehensive event listener setup for main app
+    function setupEventListeners() {
+        log('INFO', 'Setting up main app event listeners...');
+        
         // Tip refresh button
         const tipRefreshBtn = document.getElementById('tip-refresh-btn');
         if (tipRefreshBtn) {
@@ -4403,6 +4432,9 @@
                 
                 showUserMessage('Firebase kon niet worden geïnitialiseerd. Controleer je internetverbinding en herlaad de pagina.', 'error');
                 showLoginScreen();
+                
+                // Ensure login listeners are set up even if Firebase fails
+                setTimeout(setupLoginEventListeners, 100);
             }
             
             log('SUCCESS', 'App initialization completed');
@@ -4418,6 +4450,9 @@
             
             showUserMessage('Er is een fout opgetreden bij het laden van de app. Herlaad de pagina om het opnieuw te proberen.', 'error');
             showLoginScreen();
+            
+            // Ensure login listeners are set up even on error
+            setTimeout(setupLoginEventListeners, 100);
         }
     });
 

@@ -1405,6 +1405,7 @@
             <button class="tab-btn" data-tab="gapen" aria-selected="false">🥱 Gapen</button>
             <button class="tab-btn" data-tab="emdr" aria-selected="false">💜 EMDR</button>
             <button class="tab-btn" data-tab="dagboek" aria-selected="false">📖 Dagboek</button>
+            <button class="tab-btn" data-tab="statistieken" aria-selected="false">📊 Statistieken</button>
         </nav>
 
         <main id="main-content" class="container">
@@ -1881,6 +1882,92 @@
                     </ul>
                 </div>
             </div>
+
+            <!-- Statistieken Tab -->
+            <div id="statistieken" class="tab-content hidden" role="tabpanel" aria-labelledby="statistieken-tab">
+                <div class="card">
+                    <h2>📊 Statistieken & Inzichten</h2>
+                    <p>Ontdek patronen in je ademhalingspraktijk en zie welke technieken het beste voor jou werken</p>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="loadStatistics()">
+                            🔄 Statistieken Laden
+                        </button>
+                        <button class="btn btn-green" onclick="exportStatistics()">
+                            📥 Export Rapport
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Overview -->
+                <div id="stats-overview" class="grid" style="margin-bottom: 2rem;">
+                    <!-- Stats cards will be inserted here -->
+                </div>
+
+                <!-- Most Used Techniques -->
+                <div class="card">
+                    <h3>🏆 Meest Gebruikte Technieken</h3>
+                    <div class="chart-container" style="position: relative; height: 300px; margin: 1rem 0;">
+                        <canvas id="usage-chart" style="max-height: 300px;"></canvas>
+                    </div>
+                    <div id="usage-empty" class="alert alert-info" style="text-align: center;">
+                        <strong>📈 Geen data beschikbaar</strong><br>
+                        Maak een paar dagboek entries om te zien welke technieken je het meest gebruikt!
+                    </div>
+                </div>
+
+                <!-- Effectiveness Analysis -->
+                <div class="card">
+                    <h3>⚡ Effectiviteit per Techniek</h3>
+                    <p style="color: var(--text-light); margin-bottom: 1rem;">Gemiddelde verbetering in intensiteit score (hoger = beter)</p>
+                    <div class="chart-container" style="position: relative; height: 300px; margin: 1rem 0;">
+                        <canvas id="effectiveness-chart" style="max-height: 300px;"></canvas>
+                    </div>
+                    <div id="effectiveness-empty" class="alert alert-info" style="text-align: center;">
+                        <strong>📈 Geen data beschikbaar</strong><br>
+                        Voer meer sessies uit om effectiviteit te kunnen analyseren!
+                    </div>
+                </div>
+
+                <!-- Results Distribution -->
+                <div class="card">
+                    <h3>🎯 Resultaten Verdeling</h3>
+                    <div class="chart-container" style="position: relative; height: 300px; margin: 1rem 0;">
+                        <canvas id="results-chart" style="max-height: 300px;"></canvas>
+                    </div>
+                    <div id="results-empty" class="alert alert-info" style="text-align: center;">
+                        <strong>📈 Geen data beschikbaar</strong><br>
+                        Vul resultaten in bij je dagboek entries om deze analyse te zien!
+                    </div>
+                </div>
+
+                <!-- Intensity Improvement Trends -->
+                <div class="card">
+                    <h3>📈 Intensiteit Verbeteringen</h3>
+                    <div class="chart-container" style="position: relative; height: 300px; margin: 1rem 0;">
+                        <canvas id="improvement-chart" style="max-height: 300px;"></canvas>
+                    </div>
+                    <div id="improvement-empty" class="alert alert-info" style="text-align: center;">
+                        <strong>📈 Geen data beschikbaar</strong><br>
+                        Meer data nodig om verbeteringstrends te tonen!
+                    </div>
+                </div>
+
+                <!-- Detailed Statistics Table -->
+                <div class="card">
+                    <h3>📋 Gedetailleerde Statistieken</h3>
+                    <div id="detailed-stats" style="overflow-x: auto;">
+                        <!-- Detailed stats table will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Insights and Recommendations -->
+                <div id="insights-section" class="card" style="display: none;">
+                    <h3>💡 Persoonlijke Inzichten</h3>
+                    <div id="insights-content">
+                        <!-- AI-like insights will be generated here -->
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -1961,7 +2048,678 @@
     </footer>
 
 <script type="module">
-    // Enhanced error handling and logging
+    // Enhanced mobile focus handling
+    function setupMobileFocusHandling() {
+        // Add event listeners for better mobile input handling
+        document.addEventListener('touchstart', function(e) {
+            if (e.target.matches('.form-input, .form-textarea')) {
+                // Small delay to ensure the input is ready for focus
+                setTimeout(() => {
+                    e.target.focus();
+                }, 50);
+            }
+        });
+
+        // Handle modal input focusing
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('.form-input, .form-textarea')) {
+                // Scroll input into view on mobile
+                if (window.innerWidth <= 768) {
+                    setTimeout(() => {
+                        e.target.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center',
+                            inline: 'nearest'
+                        });
+                    }, 300); // Wait for keyboard to open
+                }
+            }
+        });
+    }
+
+    // Dagboek modal functions
+    window.openDagboekModal = function(technique) {
+        appState.currentTechnique = technique;
+        
+        if (technique === 'Crisis Hulp Technieken') {
+            trackSession('crisis');
+        }
+        
+        let triggerText = '';
+        if (technique) {
+            if (technique.includes('Buteyko')) {
+                triggerText = 'Na voltooiing van Buteyko ademhalingsoefening (10 cycli)';
+            } else if (technique.includes('Afkoel Ritueel')) {
+                triggerText = 'Na voltooiing van Afkoel Ritueel (5 stappen)';
+            } else if (technique.includes('EMDR')) {
+                triggerText = 'Na voltooiing van EMDR zelfhulp sessie (5 stappen)';
+            } else if (technique.includes('Crisis Hulp')) {
+                triggerText = 'Tijdens/na gebruik van crisis hulp technieken';
+            } else {
+                triggerText = `Tijdens/na ${technique}`;
+            }
+        }
+        
+        document.getElementById('entry-trigger').value = triggerText;
+        
+        if (technique && (technique.includes('Voltooid') || technique.includes('Crisis Hulp'))) {
+            document.getElementById('entry-before').value = '7';
+            document.getElementById('entry-before-value').textContent = '7';
+            document.getElementById('entry-after').value = '3';
+            document.getElementById('entry-after-value').textContent = '3';
+        } else {
+            document.getElementById('entry-before').value = '5';
+            document.getElementById('entry-before-value').textContent = '5';
+            document.getElementById('entry-after').value = '5';
+            document.getElementById('entry-after-value').textContent = '5';
+        }
+        
+        document.getElementById('dagboek-modal').classList.add('show');
+        
+        setTimeout(() => {
+            const modal = document.getElementById('dagboek-modal');
+            if (modal) {
+                modal.scrollTop = 0;
+                const firstInput = modal.querySelector('input[type="text"], textarea');
+                if (firstInput) {
+                    firstInput.focus();
+                    if (window.innerWidth <= 768) {
+                        firstInput.click();
+                        setTimeout(() => {
+                            firstInput.focus();
+                            firstInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 100);
+                    }
+                }
+            }
+        }, 150);
+    };
+
+    window.closeDagboekModal = function() {
+        document.getElementById('dagboek-modal').classList.remove('show');
+        
+        // Reset form fields
+        document.getElementById('entry-trigger').value = '';
+        document.getElementById('entry-before').value = '5';
+        document.getElementById('entry-after').value = '5';
+        document.getElementById('entry-result').value = '';
+        document.getElementById('entry-notes').value = '';
+        
+        // Reset range displays
+        document.getElementById('entry-before-value').textContent = '5';
+        document.getElementById('entry-after-value').textContent = '5';
+        
+        appState.currentTechnique = '';
+    };
+
+    // Audio functions for EMDR
+    function initAudioContext() {
+        if (!audioContext) {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                log('SUCCESS', 'Audio context initialized');
+            } catch (error) {
+                log('ERROR', 'Audio context initialization failed:', error);
+                showUserMessage('Je browser ondersteunt geen Web Audio API.', 'error');
+                return false;
+            }
+        }
+        return true;
+    }
+
+    window.toggleBilateralAudio = function() {
+        if (isAudioPlaying) {
+            stopBilateralAudio();
+        } else {
+            startBilateralAudio();
+        }
+    };
+
+    function startBilateralAudio() {
+        if (!initAudioContext()) return;
+
+        try {
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
+            oscillator = audioContext.createOscillator();
+            const frequency = parseInt(document.getElementById('audio-frequency').value);
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            oscillator.type = 'sine';
+
+            gainNode = audioContext.createGain();
+            const volume = parseInt(document.getElementById('audio-volume').value) / 100;
+            gainNode.gain.setValueAtTime(volume * 0.3, audioContext.currentTime);
+
+            pannerNode = audioContext.createStereoPanner();
+            pannerNode.pan.setValueAtTime(-1, audioContext.currentTime);
+
+            oscillator.connect(gainNode);
+            gainNode.connect(pannerNode);
+            pannerNode.connect(audioContext.destination);
+
+            oscillator.start();
+            startPanning();
+
+            isAudioPlaying = true;
+            document.getElementById('audio-btn').innerHTML = '⏸️ Stop Audio';
+            document.getElementById('audio-btn').className = 'btn btn-red';
+            document.getElementById('audio-status').textContent = `Actief - ${frequency}Hz`;
+            document.getElementById('audio-status').style.color = '#059669';
+
+            log('SUCCESS', `Bilateral audio started at ${frequency}Hz`);
+
+        } catch (error) {
+            log('ERROR', 'Error starting bilateral audio:', error);
+            showUserMessage('Fout bij starten audio: ' + error.message, 'error');
+        }
+    }
+
+    function stopBilateralAudio() {
+        try {
+            if (oscillator) {
+                oscillator.stop();
+                oscillator.disconnect();
+                oscillator = null;
+            }
+
+            if (gainNode) {
+                gainNode.disconnect();
+                gainNode = null;
+            }
+
+            if (pannerNode) {
+                pannerNode.disconnect();
+                pannerNode = null;
+            }
+
+            if (audioInterval) {
+                clearInterval(audioInterval);
+                audioInterval = null;
+            }
+
+            isAudioPlaying = false;
+            panPosition = -1;
+            
+            document.getElementById('audio-btn').innerHTML = '🔊 Start Audio';
+            document.getElementById('audio-btn').className = 'btn btn-purple';
+            document.getElementById('audio-status').textContent = 'Gestopt';
+            document.getElementById('audio-status').style.color = 'var(--text-light)';
+
+            log('SUCCESS', 'Bilateral audio stopped');
+
+        } catch (error) {
+            log('ERROR', 'Error stopping bilateral audio:', error);
+        }
+    }
+
+    function startPanning() {
+        const speed = parseFloat(document.getElementById('audio-speed').value) * 1000;
+        const updateInterval = 50;
+        const steps = speed / updateInterval;
+        const panStep = 2 / steps;
+
+        panPosition = -1;
+        let direction = 1;
+
+        audioInterval = setInterval(() => {
+            if (!isAudioPlaying || !pannerNode) {
+                clearInterval(audioInterval);
+                return;
+            }
+
+            panPosition += (panStep * direction);
+
+            if (panPosition >= 1) {
+                panPosition = 1;
+                direction = -1;
+            } else if (panPosition <= -1) {
+                panPosition = -1;
+                direction = 1;
+            }
+
+            pannerNode.pan.setValueAtTime(panPosition, audioContext.currentTime);
+
+            const frequency = parseInt(document.getElementById('audio-frequency').value);
+            // Update status text only if tab is active to avoid performance issues for hidden tabs
+            if (appState.currentTab === 'emdr') {
+                const side = panPosition < -0.3 ? 'Links' : panPosition > 0.3 ? 'Rechts' : 'Midden';
+                document.getElementById('audio-status').textContent = `Actief - ${frequency}Hz - ${side}`;
+            }
+
+        }, updateInterval);
+    }
+
+    // EMDR Step Management
+    const emdrSteps = [
+        {
+            title: "Stap 1: Voorbereiding",
+            content: "Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt.",
+            showIntensity: false
+        },
+        {
+            title: "Stap 2: Identificeer het Gevoel",
+            content: "Denk aan het luchthonger-gevoel. Waar voel je het in je lichaam? Geef het een intensiteit score van 1-10.",
+            showIntensity: true
+        },
+        {
+            title: "Stap 3: Bilaterale Stimulatie",
+            content: "Start de bilaterale audio als je dit nog niet hebt gedaan. Focus op het gevoel terwijl je naar de bewegende toon luistert. Laat gedachten en gevoelens vrijelijk komen en gaan.",
+            showIntensity: false
+        },
+        {
+            title: "Stap 4: Check-in",
+            content: "Stop de audio. Hoe voelt het luchthonger-gevoel nu? Is de intensiteit veranderd? Geef een nieuwe score van 1-10.",
+            showIntensity: true
+        },
+        {
+            title: "Stap 5: Afsluiting",
+            content: "Neem een paar diepe, langzame ademhalingen. Visualiseer een veilige, kalme plek. Je hebt goed werk gedaan. Drink wat water als je dat nodig hebt.",
+            showIntensity: false
+        }
+    ];
+
+    // EMDR navigation functions
+    window.nextEmdrStep = function() {
+        if (emdrStep < emdrSteps.length - 1) {
+            emdrStep++;
+            updateEmdrDisplay();
+        } else {
+            // Complete EMDR session
+            document.getElementById('emdr-complete').classList.remove('hidden');
+            appState.currentTechnique = 'EMDR Zelfhulp - 5 Stappen Voltooid';
+            trackSession('emdr', 25); // ~5 minutes average
+            log('SUCCESS', 'EMDR session completed');
+        }
+    };
+
+    window.prevEmdrStep = function() {
+        if (emdrStep > 0) {
+            emdrStep--;
+            updateEmdrDisplay();
+        }
+    };
+
+    function updateEmdrDisplay() {
+        const step = emdrSteps[emdrStep];
+        
+        // Update title and content
+        document.getElementById('emdr-title').textContent = step.title;
+        document.getElementById('emdr-content').innerHTML = '<p>' + step.content + '</p>';
+        
+        // Show/hide intensity slider
+        const intensityDiv = document.getElementById('emdr-intensity');
+        if (step.showIntensity) {
+            intensityDiv.classList.remove('hidden');
+        } else {
+            intensityDiv.classList.add('hidden');
+        }
+        
+        // Update navigation buttons
+        const prevBtn = document.getElementById('emdr-prev-btn');
+        const nextBtn = document.getElementById('emdr-next-btn');
+        
+        if (emdrStep === 0) {
+            prevBtn.style.display = 'none';
+        } else {
+            prevBtn.style.display = 'block';
+        }
+        
+        if (emdrStep === emdrSteps.length - 1) {
+            nextBtn.textContent = 'Voltooien';
+        } else {
+            nextBtn.textContent = 'Volgende';
+        }
+        
+        // Update progress bar
+        const progress = ((emdrStep + 1) / emdrSteps.length) * 100;
+        document.getElementById('emdr-progress').style.width = progress + '%';
+        
+        log('INFO', `EMDR step ${emdrStep + 1}/${emdrSteps.length}: ${step.title}`);
+    }
+
+    // Reset EMDR session
+    function resetEmdrSession() {
+        emdrStep = 0;
+        updateEmdrDisplay();
+        document.getElementById('emdr-complete').classList.add('hidden');
+        // Stop audio if it's still playing
+        if (isAudioPlaying) {
+            stopBilateralAudio();
+        }
+    }
+
+    // Chart management with Chart.js
+    async function createProgressChart(entries) {
+        // Filter out entries without valid intensity data or specific techniques if needed
+        const chartRelevantEntries = entries.filter(entry => 
+            entry.intensiteitVoor !== undefined && entry.intensiteitNa !== undefined && 
+            entry.intensiteitVoor !== null && entry.intensiteitNa !== null
+        );
+
+        if (!chartRelevantEntries || chartRelevantEntries.length === 0) {
+            document.getElementById('chart-empty').style.display = 'block';
+            document.getElementById('chart-legend').style.display = 'none';
+            if (progressChart) {
+                progressChart.destroy();
+                progressChart = null;
+            }
+            return;
+        }
+
+        document.getElementById('chart-empty').style.display = 'none';
+        document.getElementById('chart-legend').style.display = 'block';
+
+        try {
+            // Import Chart.js from CDN
+            if (!window.Chart) {
+                log('INFO', 'Loading Chart.js...');
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js';
+                script.async = false;
+                document.head.appendChild(script);
+                
+                await new Promise((resolve, reject) => {
+                    script.onload = () => { log('SUCCESS', 'Chart.js loaded.'); resolve(); };
+                    script.onerror = () => { log('ERROR', 'Failed to load Chart.js'); reject(new Error('Chart.js failed to load.')); };
+                });
+            }
+
+            // Prepare data - take last 10 entries for readability
+            // Entries are already sorted newest first from Firestore
+            const recentEntries = chartRelevantEntries.slice(0, 10).reverse(); // Reverse to show oldest on left
+
+            const labels = recentEntries.map((entry, index) => {
+                const date = entry.timestamp; // Already a Date object
+                const shortDate = date.toLocaleDateString('nl-BE', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: window.innerWidth <= 768 ? undefined : '2-digit',
+                    minute: window.innerWidth <= 768 ? undefined : '2-digit'
+                });
+                return window.innerWidth <= 768 ? `${index + 1}` : shortDate;
+            });
+
+            const beforeData = recentEntries.map(entry => entry.intensiteitVoor);
+            const afterData = recentEntries.map(entry => entry.intensiteitNa);
+
+            // Destroy existing chart
+            if (progressChart) {
+                progressChart.destroy();
+            }
+
+            const ctx = document.getElementById('progress-chart').getContext('2d');
+            
+            progressChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Vóór oefening',
+                            data: beforeData,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: window.innerWidth <= 768 ? 2 : 3,
+                            pointRadius: window.innerWidth <= 768 ? 4 : 5,
+                            pointHoverRadius: window.innerWidth <= 768 ? 6 : 8,
+                            tension: 0.1,
+                            fill: false
+                        },
+                        {
+                            label: 'Ná oefening',
+                            data: afterData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: window.innerWidth <= 768 ? 2 : 3,
+                            pointRadius: window.innerWidth <= 768 ? 4 : 5,
+                            pointHoverRadius: window.innerWidth <= 768 ? 6 : 8,
+                            tension: 0.1,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            display: false // We use custom legend for better mobile control
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#667eea',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                title: function(context) {
+                                    const index = context[0].dataIndex;
+                                    const entry = recentEntries[index];
+                                    const date = entry.timestamp; // Already a Date object
+                                    return date.toLocaleDateString('nl-BE', { 
+                                        weekday: 'short',
+                                        month: 'short', 
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    });
+                                },
+                                afterBody: function(context) {
+                                    const index = context[0].dataIndex;
+                                    const entry = recentEntries[index];
+                                    return [
+                                        '',
+                                        `Techniek: ${entry.techniekGebruikt}`,
+                                        `Resultaat: ${getResultaatText(entry.resultaat)}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                font: {
+                                    size: window.innerWidth <= 768 ? 10 : 12
+                                },
+                                maxRotation: 0,
+                                autoSkip: true,
+                                maxTicksLimit: window.innerWidth <= 768 ? 5 : 8
+                            },
+                            title: {
+                                display: window.innerWidth > 768,
+                                text: 'Sessies (meest recente)',
+                                color: '#6b7280',
+                                font: {
+                                    size: 12,
+                                    weight: 'normal'
+                                }
+                            }
+                        },
+                        y: {
+                            min: 0,
+                            max: 10,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                font: {
+                                    size: window.innerWidth <= 768 ? 10 : 12
+                                },
+                                stepSize: 1,
+                                callback: function(value) {
+                                    return value + '/10';
+                                }
+                            },
+                            title: {
+                                display: window.innerWidth > 768,
+                                text: 'Intensiteit Score',
+                                color: '#6b7280',
+                                font: {
+                                    size: 12,
+                                    weight: 'normal'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            log('SUCCESS', `Progress chart created with ${recentEntries.length} data points`);
+        } catch (error) {
+            log('ERROR', 'Failed to create chart:', error);
+            document.getElementById('chart-empty').style.display = 'block';
+            document.getElementById('chart-legend').style.display = 'none';
+        }
+    }
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', async function() {
+        log('INFO', 'Starting Ademruimte app initialization');
+        
+        try {
+            // Initial UI setup before Firebase is ready
+            appState.updateConnectionDisplay(); // Set initial status based on navigator.onLine
+            appState.updateUI(); // Set initial greeting and hide spinner if user is already known (e.g. from redirect)
+
+            // Initialize general components
+            setupForms();
+            setupNetworkMonitoring();
+            setupKeyboardNavigation();
+            setupRangeSliders();
+            setupMobileFocusHandling();
+            setRandomTip();
+            
+            // Load progress data (from localStorage or default)
+            loadProgressData();
+            
+            // Initialize tab displays (e.g., Buteyko, Ritual, EMDR sections)
+            updateBreathDisplay();
+            updateRitualDisplay(); // This call is now safe because the function is defined above
+            updateEmdrDisplay();
+            
+            // Setup tab navigation
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.getAttribute('data-tab');
+                    showTab(tab);
+                });
+            });
+            
+            // Ensure DAGBOEK MODAL SAVE button has listener attached
+            const saveDagboekBtn = document.getElementById('save-dagboek-entry-btn');
+            if (saveDagboekBtn) {
+                saveDagboekBtn.addEventListener('click', window.saveDagboekEntry);
+            } else {
+                log('ERROR', 'Save Dagboek Entry button not found!');
+            }
+
+            // Setup all other event listeners
+            setupEventListeners();
+
+            // Audio controls (inputs already have direct event listeners, but good to ensure they're parsed)
+            const volumeControl = document.getElementById('audio-volume');
+            if (volumeControl) {
+                volumeControl.addEventListener('input', function() {
+                    if (isAudioPlaying && gainNode) {
+                        const volume = parseInt(this.value) / 100;
+                        gainNode.gain.setValueAtTime(volume * 0.3, audioContext.currentTime);
+                    }
+                });
+            }
+
+            const frequencyControl = document.getElementById('audio-frequency');
+            if (frequencyControl) {
+                frequencyControl.addEventListener('input', function() {
+                    if (isAudioPlaying && oscillator) {
+                        const frequency = parseInt(this.value);
+                        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                    }
+                });
+            }
+
+            const speedControl = document.getElementById('audio-speed');
+            if (speedControl) {
+                speedControl.addEventListener('change', function() {
+                    if (isAudioPlaying) {
+                        // Re-start audio to apply speed change (panning interval needs resetting)
+                        stopBilateralAudio();
+                        setTimeout(() => startBilateralAudio(), 100);
+                    }
+                });
+            }
+
+            // Chart responsiveness - redraw on window resize (ensure progressChart exists first)
+            window.addEventListener('resize', () => {
+                if (progressChart && appState.currentTab === 'dagboek') {
+                    // Debounce if performance is an issue
+                    setTimeout(() => {
+                        progressChart.resize(); // Chart.js 3.x uses resize()
+                    }, 100);
+                }
+            });
+            
+            // Initialize Firebase - this will also handle Google redirect result if present
+            log('INFO', 'Attempting Firebase initialization...');
+            const success = await initializeFirebase();
+            
+            if (!success) {
+                log('WARNING', 'Firebase initialization failed during DOMContentLoaded. Showing login screen.');
+                showLoginScreen();
+            }
+            
+            log('SUCCESS', 'App initialization completed');
+            
+        } catch (error) {
+            log('ERROR', 'App initialization failed at a critical stage', error);
+            
+            // Hide loading spinner in case of critical failure
+            const authLoading = document.getElementById('auth-loading');
+            if (authLoading) {
+                authLoading.style.display = 'none';
+            }
+            
+            showUserMessage('Er is een kritieke fout opgetreden bij het laden van de app. Herlaad de pagina om het opnieuw te proberen.', 'error');
+            showLoginScreen();
+        }
+    });
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        if (isAudioPlaying) stopBilateralAudio(); // Call stop function for cleanup
+        if (wakeLock) releaseWakeLock();
+        if (timerInterval) clearInterval(timerInterval);
+        if (breathInterval) clearInterval(breathInterval);
+        if (progressChart) progressChart.destroy();
+        if (usageChart) usageChart.destroy();
+        if (effectivenessChart) effectivenessChart.destroy();
+        if (resultsChart) resultsChart.destroy();
+        if (improvementChart) improvementChart.destroy();
+        
+        // Clean up Firebase subscriptions
+        appState.cleanup();
+        
+        log('INFO', 'App shutting down');
+    });
+</script>
+
+</body>
+</html> Enhanced error handling and logging
     const LOG_LEVELS = {
         INFO: 'ℹ️',
         SUCCESS: '✅', 
@@ -2143,6 +2901,13 @@
 
     // Wake lock for keeping screen on
     let wakeLock = null;
+
+    // Statistics chart variables
+    let progressChart = null;
+    let usageChart = null;
+    let effectivenessChart = null;
+    let resultsChart = null;
+    let improvementChart = null;
 
     // Progress tracking (will still use localStorage for now, but note the potential loss)
     let progressData = {
@@ -2336,6 +3101,649 @@
     }
     // --- End of moved Ritual and Timer functions ---
 
+    // Enhanced statistics functions
+    window.loadStatistics = async function() {
+        try {
+            showUserMessage('📊 Laden van statistieken...', 'info');
+            const entries = await loadFromFirestore();
+            
+            if (!entries || entries.length === 0) {
+                showUserMessage('📝 Geen data beschikbaar voor statistieken', 'warning');
+                return;
+            }
+
+            // Calculate and display all statistics
+            displayStatsOverview(entries);
+            createUsageChart(entries);
+            createEffectivenessChart(entries);
+            createResultsChart(entries);
+            createImprovementChart(entries);
+            createDetailedStatsTable(entries);
+            generateInsights(entries);
+            
+            showUserMessage('✅ Statistieken succesvol geladen!', 'success');
+            
+        } catch (error) {
+            log('ERROR', 'Failed to load statistics:', error);
+            showUserMessage('❌ Fout bij laden statistieken: ' + error.message, 'error');
+        }
+    };
+
+    function displayStatsOverview(entries) {
+        const overview = document.getElementById('stats-overview');
+        
+        // Calculate basic stats
+        const totalSessions = entries.length;
+        const avgImprovement = entries.reduce((sum, entry) => 
+            sum + (entry.intensiteitVoor - entry.intensiteitNa), 0) / totalSessions;
+        
+        const techniqueCount = {};
+        entries.forEach(entry => {
+            const technique = entry.techniekGebruikt || 'Onbekend';
+            techniqueCount[technique] = (techniqueCount[technique] || 0) + 1;
+        });
+        
+        const mostUsedTechnique = Object.entries(techniqueCount)
+            .sort(([,a], [,b]) => b - a)[0];
+        
+        const successfulSessions = entries.filter(entry => 
+            ['zeer-goed', 'goed'].includes(entry.resultaat)).length;
+        const successRate = ((successfulSessions / totalSessions) * 100).toFixed(1);
+        
+        // Get date range
+        const sortedDates = entries.map(entry => entry.timestamp).sort((a, b) => a - b);
+        const firstSession = sortedDates[0];
+        const lastSession = sortedDates[sortedDates.length - 1];
+        const daysBetween = Math.ceil((lastSession - firstSession) / (1000 * 60 * 60 * 24));
+        
+        overview.innerHTML = `
+            <div class="card" style="text-align: center; background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+                <h3 style="color: white; margin-bottom: 0.5rem;">📊 Totaal Sessies</h3>
+                <div style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;">${totalSessions}</div>
+                <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">
+                    ${daysBetween > 0 ? `Over ${daysBetween} dagen` : 'Vandaag gestart'}
+                </p>
+            </div>
+            
+            <div class="card" style="text-align: center; background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                <h3 style="color: white; margin-bottom: 0.5rem;">⚡ Gem. Verbetering</h3>
+                <div style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;">${avgImprovement.toFixed(1)} pnt</div>
+                <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">Intensiteit reductie</p>
+            </div>
+            
+            <div class="card" style="text-align: center; background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">
+                <h3 style="color: white; margin-bottom: 0.5rem;">🏆 Favoriete Techniek</h3>
+                <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem;">${mostUsedTechnique ? mostUsedTechnique[0].replace(/\s-.*/, '') : 'Geen data'}</div>
+                <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">
+                    ${mostUsedTechnique ? `${mostUsedTechnique[1]}x gebruikt` : ''}
+                </p>
+            </div>
+            
+            <div class="card" style="text-align: center; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white;">
+                <h3 style="color: white; margin-bottom: 0.5rem;">✅ Succes Ratio</h3>
+                <div style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;">${successRate}%</div>
+                <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">Goede/zeer goede resultaten</p>
+            </div>
+        `;
+    }
+
+    async function createUsageChart(entries) {
+        if (!window.Chart) return;
+
+        const techniqueCount = {};
+        entries.forEach(entry => {
+            const technique = entry.techniekGebruikt || 'Onbekend';
+            const shortName = technique.replace(/\s-.*/, '').replace('Technieken', '');
+            techniqueCount[shortName] = (techniqueCount[shortName] || 0) + 1;
+        });
+
+        const sortedTechniques = Object.entries(techniqueCount)
+            .sort(([,a], [,b]) => b - a)
+            .slice(0, 8); // Top 8
+
+        if (sortedTechniques.length === 0) {
+            document.getElementById('usage-empty').style.display = 'block';
+            return;
+        }
+
+        document.getElementById('usage-empty').style.display = 'none';
+
+        if (usageChart) usageChart.destroy();
+
+        const ctx = document.getElementById('usage-chart').getContext('2d');
+        usageChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: sortedTechniques.map(([name]) => name),
+                datasets: [{
+                    data: sortedTechniques.map(([, count]) => count),
+                    backgroundColor: [
+                        '#667eea', '#10b981', '#f59e0b', '#8b5cf6',
+                        '#ef4444', '#06b6d4', '#84cc16', '#f97316'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: window.innerWidth <= 768 ? 'bottom' : 'right',
+                        labels: {
+                            padding: 15,
+                            usePointStyle: true,
+                            font: {
+                                size: window.innerWidth <= 768 ? 11 : 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                return `${context.label}: ${context.parsed} sessies (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    async function createEffectivenessChart(entries) {
+        if (!window.Chart) return;
+
+        const techniqueStats = {};
+        
+        entries.forEach(entry => {
+            const technique = entry.techniekGebruikt || 'Onbekend';
+            const shortName = technique.replace(/\s-.*/, '').replace('Technieken', '');
+            const improvement = entry.intensiteitVoor - entry.intensiteitNa;
+            
+            if (!techniqueStats[shortName]) {
+                techniqueStats[shortName] = { improvements: [], total: 0, count: 0 };
+            }
+            
+            techniqueStats[shortName].improvements.push(improvement);
+            techniqueStats[shortName].total += improvement;
+            techniqueStats[shortName].count++;
+        });
+
+        const effectivenessData = Object.entries(techniqueStats)
+            .map(([name, stats]) => ({
+                name,
+                avgImprovement: stats.total / stats.count,
+                count: stats.count
+            }))
+            .filter(item => item.count >= 2) // Only show techniques used at least twice
+            .sort((a, b) => b.avgImprovement - a.avgImprovement)
+            .slice(0, 8);
+
+        if (effectivenessData.length === 0) {
+            document.getElementById('effectiveness-empty').style.display = 'block';
+            return;
+        }
+
+        document.getElementById('effectiveness-empty').style.display = 'none';
+
+        if (effectivenessChart) effectivenessChart.destroy();
+
+        const ctx = document.getElementById('effectiveness-chart').getContext('2d');
+        effectivenessChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: effectivenessData.map(item => item.name),
+                datasets: [{
+                    label: 'Gemiddelde Verbetering',
+                    data: effectivenessData.map(item => item.avgImprovement),
+                    backgroundColor: effectivenessData.map(item => {
+                        if (item.avgImprovement >= 3) return '#10b981';
+                        if (item.avgImprovement >= 2) return '#f59e0b';
+                        if (item.avgImprovement >= 1) return '#ef4444';
+                        return '#6b7280';
+                    }),
+                    borderRadius: 6,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const item = effectivenessData[context.dataIndex];
+                                return [
+                                    `Verbetering: ${context.parsed.y.toFixed(2)} punten`,
+                                    `Gebaseerd op ${item.count} sessies`
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            maxRotation: window.innerWidth <= 768 ? 45 : 0,
+                            font: {
+                                size: window.innerWidth <= 768 ? 10 : 12
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Gemiddelde Verbetering (punten)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    async function createResultsChart(entries) {
+        if (!window.Chart) return;
+
+        const resultCounts = {
+            'zeer-goed': 0,
+            'goed': 0,
+            'matig': 0,
+            'geen-effect': 0,
+            'slechter': 0
+        };
+
+        entries.forEach(entry => {
+            if (entry.resultaat && resultCounts.hasOwnProperty(entry.resultaat)) {
+                resultCounts[entry.resultaat]++;
+            }
+        });
+
+        const hasData = Object.values(resultCounts).some(count => count > 0);
+        if (!hasData) {
+            document.getElementById('results-empty').style.display = 'block';
+            return;
+        }
+
+        document.getElementById('results-empty').style.display = 'none';
+
+        if (resultsChart) resultsChart.destroy();
+
+        const ctx = document.getElementById('results-chart').getContext('2d');
+        resultsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Zeer Goed', 'Goed', 'Matig', 'Geen Effect', 'Slechter'],
+                datasets: [{
+                    label: 'Aantal Sessies',
+                    data: [
+                        resultCounts['zeer-goed'],
+                        resultCounts['goed'],
+                        resultCounts['matig'],
+                        resultCounts['geen-effect'],
+                        resultCounts['slechter']
+                    ],
+                    backgroundColor: ['#059669', '#10b981', '#f59e0b', '#6b7280', '#ef4444'],
+                    borderRadius: 6,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            font: {
+                                size: window.innerWidth <= 768 ? 10 : 12
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        },
+                        title: {
+                            display: true,
+                            text: 'Aantal Sessies'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    async function createImprovementChart(entries) {
+        if (!window.Chart) return;
+
+        // Group entries by week
+        const weeklyData = {};
+        
+        entries.forEach(entry => {
+            const date = entry.timestamp;
+            const weekStart = new Date(date);
+            weekStart.setDate(date.getDate() - date.getDay()); // Start of week (Sunday)
+            const weekKey = weekStart.toISOString().slice(0, 10);
+            
+            if (!weeklyData[weekKey]) {
+                weeklyData[weekKey] = { improvements: [], count: 0 };
+            }
+            
+            const improvement = entry.intensiteitVoor - entry.intensiteitNa;
+            weeklyData[weekKey].improvements.push(improvement);
+            weeklyData[weekKey].count++;
+        });
+
+        const sortedWeeks = Object.entries(weeklyData)
+            .map(([week, data]) => ({
+                week,
+                avgImprovement: data.improvements.reduce((a, b) => a + b, 0) / data.count,
+                count: data.count
+            }))
+            .sort((a, b) => new Date(a.week) - new Date(b.week))
+            .slice(-8); // Last 8 weeks
+
+        if (sortedWeeks.length < 2) {
+            document.getElementById('improvement-empty').style.display = 'block';
+            return;
+        }
+
+        document.getElementById('improvement-empty').style.display = 'none';
+
+        if (improvementChart) improvementChart.destroy();
+
+        const ctx = document.getElementById('improvement-chart').getContext('2d');
+        improvementChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: sortedWeeks.map(item => {
+                    const date = new Date(item.week);
+                    return date.toLocaleDateString('nl-BE', { 
+                        month: 'short', 
+                        day: 'numeric'
+                    });
+                }),
+                datasets: [{
+                    label: 'Gemiddelde Verbetering',
+                    data: sortedWeeks.map(item => item.avgImprovement),
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    pointRadius: 5,
+                    pointHoverRadius: 8,
+                    tension: 0.3,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const item = sortedWeeks[context.dataIndex];
+                                return [
+                                    `Verbetering: ${context.parsed.y.toFixed(2)} punten`,
+                                    `${item.count} sessies deze week`
+                                ];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Week (start datum)'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Gemiddelde Verbetering'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function createDetailedStatsTable(entries) {
+        const techniqueStats = {};
+        
+        entries.forEach(entry => {
+            const technique = entry.techniekGebruikt || 'Onbekend';
+            const shortName = technique.replace(/\s-.*/, '');
+            
+            if (!techniqueStats[shortName]) {
+                techniqueStats[shortName] = {
+                    count: 0,
+                    totalImprovement: 0,
+                    bestImprovement: -Infinity,
+                    worstImprovement: Infinity,
+                    results: { 'zeer-goed': 0, 'goed': 0, 'matig': 0, 'geen-effect': 0, 'slechter': 0 }
+                };
+            }
+            
+            const improvement = entry.intensiteitVoor - entry.intensiteitNa;
+            const stats = techniqueStats[shortName];
+            
+            stats.count++;
+            stats.totalImprovement += improvement;
+            stats.bestImprovement = Math.max(stats.bestImprovement, improvement);
+            stats.worstImprovement = Math.min(stats.worstImprovement, improvement);
+            
+            if (entry.resultaat && stats.results.hasOwnProperty(entry.resultaat)) {
+                stats.results[entry.resultaat]++;
+            }
+        });
+
+        const sortedStats = Object.entries(techniqueStats)
+            .sort(([,a], [,b]) => b.count - a.count);
+
+        let tableHtml = `
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 1rem;">
+                <thead>
+                    <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                        <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Techniek</th>
+                        <th style="padding: 0.75rem; text-align: center;">Sessies</th>
+                        <th style="padding: 0.75rem; text-align: center;">Gem. Verbeter.</th>
+                        <th style="padding: 0.75rem; text-align: center;">Beste</th>
+                        <th style="padding: 0.75rem; text-align: center;">Succes %</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+        sortedStats.forEach(([technique, stats]) => {
+            const avgImprovement = (stats.totalImprovement / stats.count).toFixed(1);
+            const successCount = stats.results['zeer-goed'] + stats.results['goed'];
+            const successRate = ((successCount / stats.count) * 100).toFixed(0);
+            
+            tableHtml += `
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 0.75rem; font-weight: 500;">${technique}</td>
+                    <td style="padding: 0.75rem; text-align: center;">${stats.count}</td>
+                    <td style="padding: 0.75rem; text-align: center; color: ${avgImprovement >= 2 ? '#059669' : avgImprovement >= 1 ? '#f59e0b' : '#ef4444'};">
+                        ${avgImprovement} pnt
+                    </td>
+                    <td style="padding: 0.75rem; text-align: center; font-weight: 600; color: #059669;">
+                        ${stats.bestImprovement.toFixed(1)} pnt
+                    </td>
+                    <td style="padding: 0.75rem; text-align: center; color: ${successRate >= 70 ? '#059669' : successRate >= 50 ? '#f59e0b' : '#ef4444'};">
+                        ${successRate}%
+                    </td>
+                </tr>
+            `;
+        });
+
+        tableHtml += '</tbody></table>';
+        document.getElementById('detailed-stats').innerHTML = tableHtml;
+    }
+
+    function generateInsights(entries) {
+        const insights = [];
+        
+        // Calculate various metrics
+        const totalSessions = entries.length;
+        const avgImprovement = entries.reduce((sum, entry) => 
+            sum + (entry.intensiteitVoor - entry.intensiteitNa), 0) / totalSessions;
+        
+        // Technique analysis
+        const techniqueStats = {};
+        entries.forEach(entry => {
+            const technique = entry.techniekGebruikt || 'Onbekend';
+            const shortName = technique.replace(/\s-.*/, '');
+            const improvement = entry.intensiteitVoor - entry.intensiteitNa;
+            
+            if (!techniqueStats[shortName]) {
+                techniqueStats[shortName] = { improvements: [], count: 0 };
+            }
+            techniqueStats[shortName].improvements.push(improvement);
+            techniqueStats[shortName].count++;
+        });
+
+        const bestTechnique = Object.entries(techniqueStats)
+            .filter(([, stats]) => stats.count >= 3)
+            .map(([name, stats]) => ({
+                name,
+                avgImprovement: stats.improvements.reduce((a, b) => a + b, 0) / stats.count
+            }))
+            .sort((a, b) => b.avgImprovement - a.avgImprovement)[0];
+
+        // Generate insights
+        if (totalSessions >= 5) {
+            insights.push(`🎯 <strong>Je hebt al ${totalSessions} sessies voltooid</strong> - dat laat zien dat je toegewijd bent aan je welzijn!`);
+        }
+
+        if (avgImprovement >= 2) {
+            insights.push(`⚡ <strong>Uitstekende vooruitgang!</strong> Je gemiddelde verbetering van ${avgImprovement.toFixed(1)} punten per sessie is zeer positief.`);
+        } else if (avgImprovement >= 1) {
+            insights.push(`📈 <strong>Goede vooruitgang!</strong> Je gemiddelde verbetering van ${avgImprovement.toFixed(1)} punten toont dat de technieken werken.`);
+        }
+
+        if (bestTechnique) {
+            insights.push(`🏆 <strong>${bestTechnique.name}</strong> lijkt het beste voor jou te werken met een gemiddelde verbetering van ${bestTechnique.avgImprovement.toFixed(1)} punten.`);
+        }
+
+        // Recent trend analysis
+        const recentEntries = entries.slice(0, 5);
+        const recentImprovement = recentEntries.reduce((sum, entry) => 
+            sum + (entry.intensiteitVoor - entry.intensiteitNa), 0) / recentEntries.length;
+        
+        if (recentImprovement > avgImprovement * 1.2) {
+            insights.push(`📊 <strong>Je bent de laatste tijd extra effectief!</strong> Je recente sessies tonen ${recentImprovement.toFixed(1)} punten verbetering gemiddeld.`);
+        }
+
+        // Time-based insights
+        const dates = entries.map(e => e.timestamp).sort((a, b) => a - b);
+        if (dates.length >= 2) {
+            const daysBetween = Math.ceil((dates[dates.length - 1] - dates[0]) / (1000 * 60 * 60 * 24));
+            const frequency = totalSessions / Math.max(daysBetween, 1);
+            
+            if (frequency >= 0.8) {
+                insights.push(`🔥 <strong>Geweldige consistentie!</strong> Je oefent bijna dagelijks - dit is de sleutel tot succes.`);
+            } else if (frequency >= 0.4) {
+                insights.push(`✅ <strong>Goede routine!</strong> Je oefent regelmatig, wat belangrijk is voor blijvende resultaten.`);
+            }
+        }
+
+        if (insights.length > 0) {
+            document.getElementById('insights-section').style.display = 'block';
+            document.getElementById('insights-content').innerHTML = 
+                '<div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 0.5rem; padding: 1rem;">' +
+                insights.map(insight => `<p style="margin: 0.5rem 0;">${insight}</p>`).join('') +
+                '</div>';
+        }
+    }
+
+    window.exportStatistics = async function() {
+        try {
+            const entries = await loadFromFirestore();
+            
+            if (!entries || entries.length === 0) {
+                showUserMessage('📝 Geen data om te exporteren', 'warning');
+                return;
+            }
+
+            let report = 'ADEMRUIMTE STATISTIEKEN RAPPORT\n';
+            report += '===================================\n';
+            report += 'Gebruiker: ' + (appState.currentUser ? (appState.currentUser.displayName || appState.currentUser.email) : 'Onbekend') + '\n';
+            report += 'Rapport datum: ' + new Date().toLocaleString('nl-BE') + '\n';
+            report += 'Periode: ' + entries[entries.length - 1].timestamp.toLocaleDateString('nl-BE') + ' - ' + entries[0].timestamp.toLocaleDateString('nl-BE') + '\n\n';
+
+            // Overview stats
+            const totalSessions = entries.length;
+            const avgImprovement = entries.reduce((sum, entry) => 
+                sum + (entry.intensiteitVoor - entry.intensiteitNa), 0) / totalSessions;
+            
+            report += 'OVERZICHT\n';
+            report += '---------\n';
+            report += `Totaal aantal sessies: ${totalSessions}\n`;
+            report += `Gemiddelde verbetering: ${avgImprovement.toFixed(2)} punten\n\n`;
+
+            // Technique statistics
+            const techniqueStats = {};
+            entries.forEach(entry => {
+                const technique = entry.techniekGebruikt || 'Onbekend';
+                const improvement = entry.intensiteitVoor - entry.intensiteitNa;
+                
+                if (!techniqueStats[technique]) {
+                    techniqueStats[technique] = { count: 0, totalImprovement: 0, improvements: [] };
+                }
+                techniqueStats[technique].count++;
+                techniqueStats[technique].totalImprovement += improvement;
+                techniqueStats[technique].improvements.push(improvement);
+            });
+
+            report += 'TECHNIEK ANALYSE\n';
+            report += '---------------\n';
+            
+            Object.entries(techniqueStats)
+                .sort(([,a], [,b]) => b.count - a.count)
+                .forEach(([technique, stats]) => {
+                    const avgImprovement = stats.totalImprovement / stats.count;
+                    report += `${technique}:\n`;
+                    report += `  - Aantal sessies: ${stats.count}\n`;
+                    report += `  - Gemiddelde verbetering: ${avgImprovement.toFixed(2)} punten\n`;
+                    report += `  - Beste resultaat: ${Math.max(...stats.improvements).toFixed(1)} punten\n\n`;
+                });
+
+            // Create downloadable file
+            const blob = new Blob([report], { type: 'text/plain; charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ademruimte-statistieken-' + new Date().toLocaleDateString('nl-BE').replace(/\//g, '-') + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showUserMessage('📁 Statistieken rapport geëxporteerd!', 'success');
+            
+        } catch (error) {
+            showUserMessage('❌ Fout bij exporteren: ' + error.message, 'error');
+        }
+    };
 
     async function initializeFirebase() {
         if (appState.authInitialized) {
@@ -2610,6 +4018,13 @@
             loadDagboekEntries().catch(error => {
                 log('WARNING', 'Could not load dagboek entries:', error);
             });
+        } else if (tabName === 'statistieken') {
+            // Auto-load statistics when switching to statistics tab
+            setTimeout(() => {
+                loadStatistics().catch(error => {
+                    log('WARNING', 'Could not load statistics:', error);
+                });
+            }, 100);
         }
         
         log('INFO', `Switched to tab: ${tabName}`);
@@ -3602,673 +5017,4 @@
         });
     }
 
-    // Enhanced mobile focus handling
-    function setupMobileFocusHandling() {
-        // Add event listeners for better mobile input handling
-        document.addEventListener('touchstart', function(e) {
-            if (e.target.matches('.form-input, .form-textarea')) {
-                // Small delay to ensure the input is ready for focus
-                setTimeout(() => {
-                    e.target.focus();
-                }, 50);
-            }
-        });
-
-        // Handle modal input focusing
-        document.addEventListener('click', function(e) {
-            if (e.target.matches('.form-input, .form-textarea')) {
-                // Scroll input into view on mobile
-                if (window.innerWidth <= 768) {
-                    setTimeout(() => {
-                        e.target.scrollIntoView({ 
-                            behavior: 'smooth', 
-                            block: 'center',
-                            inline: 'nearest'
-                        });
-                    }, 300); // Wait for keyboard to open
-                }
-            }
-        });
-    }
-
-    // Dagboek modal functions
-    window.openDagboekModal = function(technique) {
-        appState.currentTechnique = technique;
-        
-        if (technique === 'Crisis Hulp Technieken') {
-            trackSession('crisis');
-        }
-        
-        let triggerText = '';
-        if (technique) {
-            if (technique.includes('Buteyko')) {
-                triggerText = 'Na voltooiing van Buteyko ademhalingsoefening (10 cycli)';
-            } else if (technique.includes('Afkoel Ritueel')) {
-                triggerText = 'Na voltooiing van Afkoel Ritueel (5 stappen)';
-            } else if (technique.includes('EMDR')) {
-                triggerText = 'Na voltooiing van EMDR zelfhulp sessie (5 stappen)';
-            } else if (technique.includes('Crisis Hulp')) {
-                triggerText = 'Tijdens/na gebruik van crisis hulp technieken';
-            } else {
-                triggerText = `Tijdens/na ${technique}`;
-            }
-        }
-        
-        document.getElementById('entry-trigger').value = triggerText;
-        
-        if (technique && (technique.includes('Voltooid') || technique.includes('Crisis Hulp'))) {
-            document.getElementById('entry-before').value = '7';
-            document.getElementById('entry-before-value').textContent = '7';
-            document.getElementById('entry-after').value = '3';
-            document.getElementById('entry-after-value').textContent = '3';
-        } else {
-            document.getElementById('entry-before').value = '5';
-            document.getElementById('entry-before-value').textContent = '5';
-            document.getElementById('entry-after').value = '5';
-            document.getElementById('entry-after-value').textContent = '5';
-        }
-        
-        document.getElementById('dagboek-modal').classList.add('show');
-        
-        setTimeout(() => {
-            const modal = document.getElementById('dagboek-modal');
-            if (modal) {
-                modal.scrollTop = 0;
-                const firstInput = modal.querySelector('input[type="text"], textarea');
-                if (firstInput) {
-                    firstInput.focus();
-                    if (window.innerWidth <= 768) {
-                        firstInput.click();
-                        setTimeout(() => {
-                            firstInput.focus();
-                            firstInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }, 100);
-                    }
-                }
-            }
-        }, 150);
-    };
-
-    window.closeDagboekModal = function() {
-        document.getElementById('dagboek-modal').classList.remove('show');
-        
-        // Reset form fields
-        document.getElementById('entry-trigger').value = '';
-        document.getElementById('entry-before').value = '5';
-        document.getElementById('entry-after').value = '5';
-        document.getElementById('entry-result').value = '';
-        document.getElementById('entry-notes').value = '';
-        
-        // Reset range displays
-        document.getElementById('entry-before-value').textContent = '5';
-        document.getElementById('entry-after-value').textContent = '5';
-        
-        appState.currentTechnique = '';
-    };
-
-    // Audio functions for EMDR
-    function initAudioContext() {
-        if (!audioContext) {
-            try {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                log('SUCCESS', 'Audio context initialized');
-            } catch (error) {
-                log('ERROR', 'Audio context initialization failed:', error);
-                showUserMessage('Je browser ondersteunt geen Web Audio API.', 'error');
-                return false;
-            }
-        }
-        return true;
-    }
-
-    window.toggleBilateralAudio = function() {
-        if (isAudioPlaying) {
-            stopBilateralAudio();
-        } else {
-            startBilateralAudio();
-        }
-    };
-
-    function startBilateralAudio() {
-        if (!initAudioContext()) return;
-
-        try {
-            if (audioContext.state === 'suspended') {
-                audioContext.resume();
-            }
-
-            oscillator = audioContext.createOscillator();
-            const frequency = parseInt(document.getElementById('audio-frequency').value);
-            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-            oscillator.type = 'sine';
-
-            gainNode = audioContext.createGain();
-            const volume = parseInt(document.getElementById('audio-volume').value) / 100;
-            gainNode.gain.setValueAtTime(volume * 0.3, audioContext.currentTime);
-
-            pannerNode = audioContext.createStereoPanner();
-            pannerNode.pan.setValueAtTime(-1, audioContext.currentTime);
-
-            oscillator.connect(gainNode);
-            gainNode.connect(pannerNode);
-            pannerNode.connect(audioContext.destination);
-
-            oscillator.start();
-            startPanning();
-
-            isAudioPlaying = true;
-            document.getElementById('audio-btn').innerHTML = '⏸️ Stop Audio';
-            document.getElementById('audio-btn').className = 'btn btn-red';
-            document.getElementById('audio-status').textContent = `Actief - ${frequency}Hz`;
-            document.getElementById('audio-status').style.color = '#059669';
-
-            log('SUCCESS', `Bilateral audio started at ${frequency}Hz`);
-
-        } catch (error) {
-            log('ERROR', 'Error starting bilateral audio:', error);
-            showUserMessage('Fout bij starten audio: ' + error.message, 'error');
-        }
-    }
-
-    function stopBilateralAudio() {
-        try {
-            if (oscillator) {
-                oscillator.stop();
-                oscillator.disconnect();
-                oscillator = null;
-            }
-
-            if (gainNode) {
-                gainNode.disconnect();
-                gainNode = null;
-            }
-
-            if (pannerNode) {
-                pannerNode.disconnect();
-                pannerNode = null;
-            }
-
-            if (audioInterval) {
-                clearInterval(audioInterval);
-                audioInterval = null;
-            }
-
-            isAudioPlaying = false;
-            panPosition = -1;
-            
-            document.getElementById('audio-btn').innerHTML = '🔊 Start Audio';
-            document.getElementById('audio-btn').className = 'btn btn-purple';
-            document.getElementById('audio-status').textContent = 'Gestopt';
-            document.getElementById('audio-status').style.color = 'var(--text-light)';
-
-            log('SUCCESS', 'Bilateral audio stopped');
-
-        } catch (error) {
-            log('ERROR', 'Error stopping bilateral audio:', error);
-        }
-    }
-
-    function startPanning() {
-        const speed = parseFloat(document.getElementById('audio-speed').value) * 1000;
-        const updateInterval = 50;
-        const steps = speed / updateInterval;
-        const panStep = 2 / steps;
-
-        panPosition = -1;
-        let direction = 1;
-
-        audioInterval = setInterval(() => {
-            if (!isAudioPlaying || !pannerNode) {
-                clearInterval(audioInterval);
-                return;
-            }
-
-            panPosition += (panStep * direction);
-
-            if (panPosition >= 1) {
-                panPosition = 1;
-                direction = -1;
-            } else if (panPosition <= -1) {
-                panPosition = -1;
-                direction = 1;
-            }
-
-            pannerNode.pan.setValueAtTime(panPosition, audioContext.currentTime);
-
-            const frequency = parseInt(document.getElementById('audio-frequency').value);
-            // Update status text only if tab is active to avoid performance issues for hidden tabs
-            if (appState.currentTab === 'emdr') {
-                const side = panPosition < -0.3 ? 'Links' : panPosition > 0.3 ? 'Rechts' : 'Midden';
-                document.getElementById('audio-status').textContent = `Actief - ${frequency}Hz - ${side}`;
-            }
-
-        }, updateInterval);
-    }
-
-    // EMDR Step Management
-    const emdrSteps = [
-        {
-            title: "Stap 1: Voorbereiding",
-            content: "Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt.",
-            showIntensity: false
-        },
-        {
-            title: "Stap 2: Identificeer het Gevoel",
-            content: "Denk aan het luchthonger-gevoel. Waar voel je het in je lichaam? Geef het een intensiteit score van 1-10.",
-            showIntensity: true
-        },
-        {
-            title: "Stap 3: Bilaterale Stimulatie",
-            content: "Start de bilaterale audio als je dit nog niet hebt gedaan. Focus op het gevoel terwijl je naar de bewegende toon luistert. Laat gedachten en gevoelens vrijelijk komen en gaan.",
-            showIntensity: false
-        },
-        {
-            title: "Stap 4: Check-in",
-            content: "Stop de audio. Hoe voelt het luchthonger-gevoel nu? Is de intensiteit veranderd? Geef een nieuwe score van 1-10.",
-            showIntensity: true
-        },
-        {
-            title: "Stap 5: Afsluiting",
-            content: "Neem een paar diepe, langzame ademhalingen. Visualiseer een veilige, kalme plek. Je hebt goed werk gedaan. Drink wat water als je dat nodig hebt.",
-            showIntensity: false
-        }
-    ];
-
-    // EMDR navigation functions
-    window.nextEmdrStep = function() {
-        if (emdrStep < emdrSteps.length - 1) {
-            emdrStep++;
-            updateEmdrDisplay();
-        } else {
-            // Complete EMDR session
-            document.getElementById('emdr-complete').classList.remove('hidden');
-            appState.currentTechnique = 'EMDR Zelfhulp - 5 Stappen Voltooid';
-            trackSession('emdr', 25); // ~5 minutes average
-            log('SUCCESS', 'EMDR session completed');
-        }
-    };
-
-    window.prevEmdrStep = function() {
-        if (emdrStep > 0) {
-            emdrStep--;
-            updateEmdrDisplay();
-        }
-    };
-
-    function updateEmdrDisplay() {
-        const step = emdrSteps[emdrStep];
-        
-        // Update title and content
-        document.getElementById('emdr-title').textContent = step.title;
-        document.getElementById('emdr-content').innerHTML = '<p>' + step.content + '</p>';
-        
-        // Show/hide intensity slider
-        const intensityDiv = document.getElementById('emdr-intensity');
-        if (step.showIntensity) {
-            intensityDiv.classList.remove('hidden');
-        } else {
-            intensityDiv.classList.add('hidden');
-        }
-        
-        // Update navigation buttons
-        const prevBtn = document.getElementById('emdr-prev-btn');
-        const nextBtn = document.getElementById('emdr-next-btn');
-        
-        if (emdrStep === 0) {
-            prevBtn.style.display = 'none';
-        } else {
-            prevBtn.style.display = 'block';
-        }
-        
-        if (emdrStep === emdrSteps.length - 1) {
-            nextBtn.textContent = 'Voltooien';
-        } else {
-            nextBtn.textContent = 'Volgende';
-        }
-        
-        // Update progress bar
-        const progress = ((emdrStep + 1) / emdrSteps.length) * 100;
-        document.getElementById('emdr-progress').style.width = progress + '%';
-        
-        log('INFO', `EMDR step ${emdrStep + 1}/${emdrSteps.length}: ${step.title}`);
-    }
-
-    // Reset EMDR session
-    function resetEmdrSession() {
-        emdrStep = 0;
-        updateEmdrDisplay();
-        document.getElementById('emdr-complete').classList.add('hidden');
-        // Stop audio if it's still playing
-        if (isAudioPlaying) {
-            stopBilateralAudio();
-        }
-    }
-
-    // Chart management with Chart.js
-    let progressChart = null;
-
-    async function createProgressChart(entries) {
-        // Filter out entries without valid intensity data or specific techniques if needed
-        const chartRelevantEntries = entries.filter(entry => 
-            entry.intensiteitVoor !== undefined && entry.intensiteitNa !== undefined && 
-            entry.intensiteitVoor !== null && entry.intensiteitNa !== null
-        );
-
-        if (!chartRelevantEntries || chartRelevantEntries.length === 0) {
-            document.getElementById('chart-empty').style.display = 'block';
-            document.getElementById('chart-legend').style.display = 'none';
-            if (progressChart) {
-                progressChart.destroy();
-                progressChart = null;
-            }
-            return;
-        }
-
-        document.getElementById('chart-empty').style.display = 'none';
-        document.getElementById('chart-legend').style.display = 'block';
-
-        try {
-            // Import Chart.js from CDN
-            if (!window.Chart) {
-                log('INFO', 'Loading Chart.js...');
-                const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js';
-                script.async = false;
-                document.head.appendChild(script);
-                
-                await new Promise((resolve, reject) => {
-                    script.onload = () => { log('SUCCESS', 'Chart.js loaded.'); resolve(); };
-                    script.onerror = () => { log('ERROR', 'Failed to load Chart.js'); reject(new Error('Chart.js failed to load.')); };
-                });
-            }
-
-            // Prepare data - take last 10 entries for readability
-            // Entries are already sorted newest first from Firestore
-            const recentEntries = chartRelevantEntries.slice(0, 10).reverse(); // Reverse to show oldest on left
-
-            const labels = recentEntries.map((entry, index) => {
-                const date = entry.timestamp; // Already a Date object
-                const shortDate = date.toLocaleDateString('nl-BE', { 
-                    month: 'short', 
-                    day: 'numeric',
-                    hour: window.innerWidth <= 768 ? undefined : '2-digit',
-                    minute: window.innerWidth <= 768 ? undefined : '2-digit'
-                });
-                return window.innerWidth <= 768 ? `${index + 1}` : shortDate;
-            });
-
-            const beforeData = recentEntries.map(entry => entry.intensiteitVoor);
-            const afterData = recentEntries.map(entry => entry.intensiteitNa);
-
-            // Destroy existing chart
-            if (progressChart) {
-                progressChart.destroy();
-            }
-
-            const ctx = document.getElementById('progress-chart').getContext('2d');
-            
-            progressChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Vóór oefening',
-                            data: beforeData,
-                            borderColor: '#ef4444',
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            borderWidth: window.innerWidth <= 768 ? 2 : 3,
-                            pointRadius: window.innerWidth <= 768 ? 4 : 5,
-                            pointHoverRadius: window.innerWidth <= 768 ? 6 : 8,
-                            tension: 0.1,
-                            fill: false
-                        },
-                        {
-                            label: 'Ná oefening',
-                            data: afterData,
-                            borderColor: '#10b981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            borderWidth: window.innerWidth <= 768 ? 2 : 3,
-                            pointRadius: window.innerWidth <= 768 ? 4 : 5,
-                            pointHoverRadius: window.innerWidth <= 768 ? 6 : 8,
-                            tension: 0.1,
-                            fill: false
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
-                    },
-                    plugins: {
-                        legend: {
-                            display: false // We use custom legend for better mobile control
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleColor: '#ffffff',
-                            bodyColor: '#ffffff',
-                            borderColor: '#667eea',
-                            borderWidth: 1,
-                            cornerRadius: 8,
-                            displayColors: true,
-                            callbacks: {
-                                title: function(context) {
-                                    const index = context[0].dataIndex;
-                                    const entry = recentEntries[index];
-                                    const date = entry.timestamp; // Already a Date object
-                                    return date.toLocaleDateString('nl-BE', { 
-                                        weekday: 'short',
-                                        month: 'short', 
-                                        day: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit'
-                                    });
-                                },
-                                afterBody: function(context) {
-                                    const index = context[0].dataIndex;
-                                    const entry = recentEntries[index];
-                                    return [
-                                        '',
-                                        `Techniek: ${entry.techniekGebruikt}`,
-                                        `Resultaat: ${getResultaatText(entry.resultaat)}`
-                                    ];
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.1)',
-                                drawBorder: false
-                            },
-                            ticks: {
-                                color: '#6b7280',
-                                font: {
-                                    size: window.innerWidth <= 768 ? 10 : 12
-                                },
-                                maxRotation: 0,
-                                autoSkip: true,
-                                maxTicksLimit: window.innerWidth <= 768 ? 5 : 8
-                            },
-                            title: {
-                                display: window.innerWidth > 768,
-                                text: 'Sessies (meest recente)',
-                                color: '#6b7280',
-                                font: {
-                                    size: 12,
-                                    weight: 'normal'
-                                }
-                            }
-                        },
-                        y: {
-                            min: 0,
-                            max: 10,
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.1)',
-                                drawBorder: false
-                            },
-                            ticks: {
-                                color: '#6b7280',
-                                font: {
-                                    size: window.innerWidth <= 768 ? 10 : 12
-                                },
-                                stepSize: 1,
-                                callback: function(value) {
-                                    return value + '/10';
-                                }
-                            },
-                            title: {
-                                display: window.innerWidth > 768,
-                                text: 'Intensiteit Score',
-                                color: '#6b7280',
-                                font: {
-                                    size: 12,
-                                    weight: 'normal'
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            log('SUCCESS', `Progress chart created with ${recentEntries.length} data points`);
-        } catch (error) {
-            log('ERROR', 'Failed to create chart:', error);
-            document.getElementById('chart-empty').style.display = 'block';
-            document.getElementById('chart-legend').style.display = 'none';
-        }
-    }
-
-    // Initialize app
-    document.addEventListener('DOMContentLoaded', async function() {
-        log('INFO', 'Starting Ademruimte app initialization');
-        
-        try {
-            // Initial UI setup before Firebase is ready
-            appState.updateConnectionDisplay(); // Set initial status based on navigator.onLine
-            appState.updateUI(); // Set initial greeting and hide spinner if user is already known (e.g. from redirect)
-
-            // Initialize general components
-            setupForms();
-            setupNetworkMonitoring();
-            setupKeyboardNavigation();
-            setupRangeSliders();
-            setupMobileFocusHandling();
-            setRandomTip();
-            
-            // Load progress data (from localStorage or default)
-            loadProgressData();
-            
-            // Initialize tab displays (e.g., Buteyko, Ritual, EMDR sections)
-            updateBreathDisplay();
-            updateRitualDisplay(); // This call is now safe because the function is defined above
-            updateEmdrDisplay();
-            
-            // Setup tab navigation
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const tab = btn.getAttribute('data-tab');
-                    showTab(tab);
-                });
-            });
-            
-            // Ensure DAGBOEK MODAL SAVE button has listener attached
-            const saveDagboekBtn = document.getElementById('save-dagboek-entry-btn');
-            if (saveDagboekBtn) {
-                saveDagboekBtn.addEventListener('click', window.saveDagboekEntry);
-            } else {
-                log('ERROR', 'Save Dagboek Entry button not found!');
-            }
-
-            // Setup all other event listeners
-            setupEventListeners();
-
-            // Audio controls (inputs already have direct event listeners, but good to ensure they're parsed)
-            const volumeControl = document.getElementById('audio-volume');
-            if (volumeControl) {
-                volumeControl.addEventListener('input', function() {
-                    if (isAudioPlaying && gainNode) {
-                        const volume = parseInt(this.value) / 100;
-                        gainNode.gain.setValueAtTime(volume * 0.3, audioContext.currentTime);
-                    }
-                });
-            }
-
-            const frequencyControl = document.getElementById('audio-frequency');
-            if (frequencyControl) {
-                frequencyControl.addEventListener('input', function() {
-                    if (isAudioPlaying && oscillator) {
-                        const frequency = parseInt(this.value);
-                        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-                    }
-                });
-            }
-
-            const speedControl = document.getElementById('audio-speed');
-            if (speedControl) {
-                speedControl.addEventListener('change', function() {
-                    if (isAudioPlaying) {
-                        // Re-start audio to apply speed change (panning interval needs resetting)
-                        stopBilateralAudio();
-                        setTimeout(() => startBilateralAudio(), 100);
-                    }
-                });
-            }
-
-            // Chart responsiveness - redraw on window resize (ensure progressChart exists first)
-            window.addEventListener('resize', () => {
-                if (progressChart && appState.currentTab === 'dagboek') {
-                    // Debounce if performance is an issue
-                    setTimeout(() => {
-                        progressChart.resize(); // Chart.js 3.x uses resize()
-                    }, 100);
-                }
-            });
-            
-            // Initialize Firebase - this will also handle Google redirect result if present
-            log('INFO', 'Attempting Firebase initialization...');
-            const success = await initializeFirebase();
-            
-            if (!success) {
-                log('WARNING', 'Firebase initialization failed during DOMContentLoaded. Showing login screen.');
-                showLoginScreen();
-            }
-            
-            log('SUCCESS', 'App initialization completed');
-            
-        } catch (error) {
-            log('ERROR', 'App initialization failed at a critical stage', error);
-            
-            // Hide loading spinner in case of critical failure
-            const authLoading = document.getElementById('auth-loading');
-            if (authLoading) {
-                authLoading.style.display = 'none';
-            }
-            
-            showUserMessage('Er is een kritieke fout opgetreden bij het laden van de app. Herlaad de pagina om het opnieuw te proberen.', 'error');
-            showLoginScreen();
-        }
-    });
-
-    // Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
-        if (isAudioPlaying) stopBilateralAudio(); // Call stop function for cleanup
-        if (wakeLock) releaseWakeLock();
-        if (timerInterval) clearInterval(timerInterval);
-        if (breathInterval) clearInterval(breathInterval);
-        if (progressChart) progressChart.destroy();
-        
-        // Clean up Firebase subscriptions
-        appState.cleanup();
-        
-        log('INFO', 'App shutting down');
-    });
-</script>
-
-</body>
-</html>
+    //

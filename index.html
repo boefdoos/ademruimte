@@ -27,7 +27,7 @@
         --touch-target: 44px;
     }
 
-    /* Reset en basis styling - geen ongewenste borders */
+    /* Reset en basis styling */
     * {
         margin: 0;
         padding: 0;
@@ -70,7 +70,7 @@
         top: 6px;
     }
 
-    /* Verbeterde header */
+    /* Header styling */
     header {
         background: linear-gradient(135deg, #06b6d4, #10b981);
         color: white;
@@ -85,7 +85,6 @@
         backdrop-filter: blur(10px);
     }
 
-    /* SVG Logo styling */
     .logo-container {
         display: flex;
         align-items: center;
@@ -132,7 +131,7 @@
         z-index: 2;
     }
 
-    /* Geoptimaliseerde navigatie */
+    /* Navigation */
     .nav-tabs {
         background: var(--card-background);
         backdrop-filter: blur(20px);
@@ -193,7 +192,7 @@
         transform: translateY(-1px);
     }
 
-    /* Container optimalisaties */
+    /* Container */
     .container {
         max-width: 1200px;
         margin: 0 auto;
@@ -201,7 +200,7 @@
         min-height: calc(100vh - 120px);
     }
 
-    /* Verbeterde card styling */
+    /* Card styling */
     .card {
         background: var(--card-background);
         backdrop-filter: blur(20px);
@@ -236,7 +235,7 @@
         font-weight: 600;
     }
 
-    /* Toegankelijke button styling */
+    /* Button styling */
     .btn {
         padding: 1rem 1.5rem;
         border: none;
@@ -303,7 +302,7 @@
         color: white;
     }
 
-    /* Verbeterde grid layout */
+    /* Grid layout */
     .grid {
         display: grid;
         gap: 1.5rem;
@@ -349,26 +348,6 @@
     }
 
     /* Loading states */
-    .loading {
-        opacity: 0.6;
-        pointer-events: none;
-        position: relative;
-    }
-
-    .loading::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 20px;
-        height: 20px;
-        margin: -10px 0 0 -10px;
-        border: 2px solid #f3f4f6;
-        border-top: 2px solid #3b82f6;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
     .spinner {
         display: inline-block;
         width: 1rem;
@@ -384,7 +363,7 @@
         100% { transform: rotate(360deg); }
     }
 
-    /* Verbeterde form styling met mobiele focus support */
+    /* Form styling */
     .form-group {
         margin-bottom: 1rem;
     }
@@ -425,10 +404,10 @@
         line-height: 1.5;
     }
 
-    /* Mobile-specific input improvements */
+    /* Mobile form improvements */
     @media (max-width: 768px) {
         .form-input, .form-select, .form-textarea {
-            font-size: 16px; /* Prevents zoom on iOS */
+            font-size: 16px;
             padding: 1rem;
             min-height: 48px;
         }
@@ -437,7 +416,6 @@
             min-height: 100px;
         }
         
-        /* Ensure inputs are visible when keyboard opens */
         .modal-content {
             position: relative;
             max-height: 90vh;
@@ -489,7 +467,7 @@
         margin: 0.5rem 0;
     }
 
-    /* Alert verbeteringen */
+    /* Alert styling */
     .alert {
         padding: 1rem 1.5rem;
         border-radius: 0.75rem;
@@ -524,7 +502,7 @@
         color: #991b1b;
     }
 
-    /* User message notifications */
+    /* User messages */
     .user-message {
         position: fixed;
         top: 20px;
@@ -632,7 +610,7 @@
         color: var(--text-dark);
     }
 
-    /* Google button styling */
+    /* Google button */
     .google-btn {
         width: 100%;
         padding: 0.875rem;
@@ -656,7 +634,7 @@
         border-color: #9ca3af;
     }
 
-    /* Divider styling */
+    /* Divider */
     .divider {
         text-align: center;
         margin: 1.5rem 0;
@@ -683,248 +661,6 @@
         z-index: 2;
     }
 
-    /* Breathing exercise styling */
-    .breath-display {
-        font-size: 2rem;
-        font-weight: bold;
-        text-align: center;
-        margin: 1.5rem 0;
-        padding: 1.5rem;
-        border-radius: 1rem;
-        transition: all 0.3s ease;
-        min-height: 120px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .breath-display.inhale {
-        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-        color: #1e40af;
-        transform: scale(1.02);
-    }
-
-    .breath-display.exhale {
-        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-        color: #065f46;
-        transform: scale(0.98);
-    }
-
-    .breath-display.hold {
-        background: linear-gradient(135deg, #fef3c7, #fde68a);
-        color: #92400e;
-        transform: scale(1.01);
-    }
-
-    .breath-display.rest {
-        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-        color: var(--text-light);
-    }
-
-    .breath-display.gentle-breath {
-        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-        color: #1e40af;
-    }
-
-    .progress-bar {
-        width: 100%;
-        height: 0.75rem;
-        background: #e5e7eb;
-        border-radius: 0.375rem;
-        overflow: hidden;
-        margin: 1rem 0;
-    }
-
-    .progress-fill {
-        height: 100%;
-        background: #10b981;
-        border-radius: 0.375rem;
-        transition: width 0.3s ease;
-    }
-
-    .breath-progress {
-        height: 100%;
-        border-radius: 0.375rem;
-        transition: width linear;
-    }
-
-    .breath-progress.inhale {
-        background: #3b82f6;
-    }
-
-    .breath-progress.exhale {
-        background: #10b981;
-    }
-
-    .breath-progress.gentle-breath {
-        background: #06b6d4;
-    }
-
-    .breath-controls {
-        display: grid;
-        gap: 1rem;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        margin: 1rem 0;
-    }
-
-    .breath-setting {
-        text-align: center;
-        padding: 1rem;
-        background: #f8fafc;
-        border-radius: 0.5rem;
-        border: 1px solid #e2e8f0;
-    }
-
-    .breath-setting label {
-        display: block;
-        font-size: 0.875rem;
-        color: var(--text-light);
-        margin-bottom: 0.5rem;
-    }
-
-    .breath-setting input {
-        width: 80px;
-        text-align: center;
-        font-size: 1.125rem;
-        font-weight: bold;
-        border: 1px solid #d1d5db;
-        border-radius: 0.375rem;
-        padding: 0.5rem;
-        min-height: var(--touch-target);
-    }
-
-    .button-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin: 1rem 0;
-    }
-
-    .button-group .btn {
-        flex: 1;
-        min-width: 120px;
-    }
-
-    /* Timer display */
-    .timer-display {
-        font-size: 2.5rem;
-        font-weight: bold;
-        text-align: center;
-        color: var(--text-dark);
-        margin: 1.5rem 0;
-        font-family: 'Courier New', monospace;
-    }
-
-    /* Technique cards */
-    .technique-card {
-        background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
-        border: 1px solid rgba(102, 126, 234, 0.2);
-        border-radius: 1rem;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-        backdrop-filter: blur(10px);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .technique-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
-    }
-
-    .technique-card h4 {
-        color: #667eea;
-        margin-bottom: 0.75rem;
-        font-size: 1.1rem;
-        font-weight: 600;
-    }
-
-    .technique-card p {
-        font-size: 0.95rem;
-        line-height: 1.6;
-        color: #4b5563;
-    }
-
-    /* Step list styling */
-    .step-list {
-        list-style: none;
-        margin: 1rem 0;
-    }
-
-    .step-list li {
-        padding: 0.75rem 0;
-        border-bottom: 1px solid #f3f4f6;
-        font-size: 0.9rem;
-    }
-
-    .step-list li:before {
-        content: "✓ ";
-        color: #10b981;
-        font-weight: bold;
-    }
-
-    /* Settings sections */
-    .settings-section {
-        background: #f8fafc;
-        border-radius: 0.75rem;
-        padding: 1.5rem;
-        margin: 2rem 0;
-        border: 1px solid #e2e8f0;
-    }
-
-    .settings-section h3 {
-        color: #374151;
-        margin-bottom: 1rem;
-        font-size: 1rem;
-    }
-
-    /* Entry cards for dagboek */
-    .entry-card {
-        background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 0.75rem;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        transition: var(--transition-base);
-    }
-
-    .entry-card:hover {
-        transform: translateY(-1px);
-        box-shadow: var(--shadow-sm);
-    }
-
-    .entry-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 0.75rem;
-        gap: 1rem;
-    }
-
-    .entry-title {
-        font-weight: 600;
-        color: var(--text-dark);
-        font-size: 0.95rem;
-    }
-
-    .entry-result {
-        font-size: 0.8rem;
-        font-weight: 500;
-        white-space: nowrap;
-    }
-
-    .entry-result.zeer-goed { color: #059669; }
-    .entry-result.goed { color: #10b981; }
-    .entry-result.matig { color: #f59e0b; }
-    .entry-result.geen-effect { color: var(--text-light); }
-    .entry-result.slechter { color: #ef4444; }
-
-    .intensity-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        margin-bottom: 0.75rem;
-    }
-
     /* Connection status */
     .status-connected {
         background: #059669 !important;
@@ -947,21 +683,6 @@
         50% { opacity: 1; }
     }
 
-    /* Chart styling */
-    .chart-container {
-        position: relative;
-        width: 100%;
-        max-width: 100%;
-        overflow: hidden;
-    }
-
-    .chart-legend {
-        padding: 0.75rem;
-        background: #f8fafc;
-        border-radius: 0.5rem;
-        border: 1px solid #e2e8f0;
-    }
-
     /* Utility classes */
     .hidden {
         display: none !important;
@@ -979,7 +700,7 @@
         border: 0;
     }
 
-    /* Responsive optimalisaties */
+    /* Responsive */
     @media (max-width: 768px) {
         .container {
             padding: 1rem;
@@ -995,7 +716,6 @@
             font-size: 0.9rem;
         }
 
-        /* Verbeterde nav voor mobiel */
         .nav-tabs {
             padding: 0.5rem 0.25rem;
             gap: 0.25rem;
@@ -1008,7 +728,6 @@
             border-radius: 0.875rem;
         }
 
-        /* Header aanpassingen voor mobiel */
         header {
             min-height: 100px;
             padding: 1rem 0.75rem;
@@ -1025,20 +744,9 @@
         .logo-svg {
             height: clamp(90px, 15vw, 140px);
         }
-
-        .breath-display {
-            font-size: 1.5rem;
-            padding: 1rem;
-            min-height: 80px;
-        }
-
-        .timer-display {
-            font-size: 2rem;
-        }
     }
 
     @media (max-width: 480px) {
-        /* Extra kleine schermen */
         .nav-tabs button {
             font-size: 0.7rem;
             padding: 0.625rem 0.75rem;
@@ -1059,58 +767,7 @@
         }
     }
 
-    @media (max-height: 600px) and (orientation: landscape) {
-        header {
-            padding: 0.5rem 1rem;
-            min-height: 70px;
-        }
-        
-        .logo-svg {
-            height: clamp(60px, 10vw, 80px);
-        }
-
-        .user-info {
-            top: 0.25rem;
-            right: 0.5rem;
-            font-size: 0.65rem;
-            padding: 0.25rem 0.375rem;
-        }
-        
-        .container {
-            padding: 0.5rem;
-        }
-
-        .timer-display, .breath-display {
-            font-size: 1.5rem;
-            margin: 0.5rem 0;
-            padding: 1rem;
-        }
-
-        .nav-tabs {
-            padding: 0.375rem 0.25rem;
-        }
-
-        .nav-tabs button {
-            padding: 0.5rem 0.75rem;
-            font-size: 0.7rem;
-        }
-    }
-
     @media (min-width: 768px) {
-        .breath-controls {
-            grid-template-columns: 1fr 1fr 1fr;
-        }
-
-        .breath-display {
-            font-size: 2.5rem;
-            padding: 2rem;
-        }
-
-        .timer-display {
-            font-size: 3rem;
-        }
-
-        /* Betere nav spacing op desktop */
         .nav-tabs {
             justify-content: center;
             gap: 1rem;
@@ -1129,29 +786,6 @@
         }
     }
 
-    /* Print styling */
-    @media print {
-        body {
-            background: white;
-            color: black;
-        }
-        
-        .nav-tabs, .btn, header {
-            display: none;
-        }
-    }
-
-    /* High contrast mode support */
-    @media (prefers-contrast: high) {
-        .card {
-            border: 2px solid;
-        }
-        
-        .btn {
-            border: 2px solid;
-        }
-    }
-
     /* Reduced motion support */
     @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after {
@@ -1160,29 +794,17 @@
             transition-duration: 0.01ms !important;
         }
     }
-
-    /* Dark mode preparation */
-    @media (prefers-color-scheme: dark) {
-        :root {
-            --card-background: rgba(31, 41, 55, 0.95);
-            --text-dark: #f9fafb;
-            --text-light: #d1d5db;
-        }
-    }
 </style>
 </head>
 
 <body>
-    <!-- Skip link voor toegankelijkheid -->
     <a href="#main-content" class="skip-link">Spring naar hoofdinhoud</a>
 
     <header role="banner">
         <div class="user-info" id="user-info" aria-live="polite">
-            <!-- Spinner should be shown by default until auth state is known -->
             <div class="spinner" id="auth-loading" aria-label="Bezig met inloggen..."></div>
         </div>
         
-        <!-- Ademruimte Logo -->
         <div class="logo-container">
             <svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
               <defs>
@@ -1280,7 +902,7 @@
                 </h2>
                 
                 <p style="text-align: center; margin-bottom: 2rem; color: var(--text-light);">
-                    <span id="login-description">Log in om je vooruitgang op te slaan en te synchroniseren tussen al je apparaten.</span>
+                    Log in om je vooruitgang op te slaan en te synchroniseren tussen al je apparaten.
                 </p>
 
                 <!-- Google Login -->
@@ -1395,31 +1017,20 @@
         </div>
     </div>
 
-    <!-- Main App -->
+    <!-- Main App (simplified for this demo) -->
     <div id="main-app" class="hidden">
         <nav class="nav-tabs" role="navigation" aria-label="Hoofdnavigatie">
             <button class="tab-btn active" data-tab="dashboard" aria-selected="true">🏠 Dashboard</button>
             <button class="tab-btn" data-tab="crisis" aria-selected="false">🚨 Crisis</button>
             <button class="tab-btn" data-tab="buteyko" aria-selected="false">🌬️ Buteyko</button>
-            <button class="tab-btn" data-tab="ritueel" aria-selected="false">🕐 Ritueel</button>
-            <button class="tab-btn" data-tab="gapen" aria-selected="false">🥱 Gapen</button>
-            <button class="tab-btn" data-tab="emdr" aria-selected="false">💜 EMDR</button>
-            <button class="tab-btn" data-tab="dagboek" aria-selected="false">📖 Dagboek</button>
-            <button class="tab-btn" data-tab="statistieken" aria-selected="false">📊 Statistieken</button>
         </nav>
 
         <main id="main-content" class="container">
-            <!-- Dashboard Tab -->
-            <div id="dashboard" class="tab-content" role="tabpanel" aria-labelledby="dashboard-tab">
-                <!-- Hero Greeting Section -->
-                <div class="card" style="text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85)); margin-bottom: 2rem;">
-                    <h2 id="dashboard-greeting" style="font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 1rem; background: linear-gradient(135deg, #06b6d4, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                        Welkom bij Ademruimte
-                    </h2>
-                    
-                    <p style="color: var(--text-light); font-size: 1rem; margin-top: 0.5rem; max-width: 600px; margin-left: auto; margin-right: auto;">
-                        Je persoonlijke ruimte voor ademhalingsoefeningen en hyperventilatie begeleiding. 
-                        Neem de tijd om te ontspannen en ontdek welke technieken het beste voor jou werken.
+            <div id="dashboard" class="tab-content" role="tabpanel">
+                <div class="card" style="text-align: center; padding: 2rem;">
+                    <h2 id="dashboard-greeting">Welkom bij Ademruimte</h2>
+                    <p style="color: var(--text-light); margin-top: 0.5rem;">
+                        Je persoonlijke ruimte voor ademhalingsoefeningen en hyperventilatie begeleiding.
                     </p>
                 </div>
 
@@ -1427,53 +1038,23 @@
                     <div class="card">
                         <h3>🚨 Crisis Hulp</h3>
                         <p>Voor wanneer je luchthonger voelt opkomen</p>
-                        <button class="btn btn-red" onclick="showTab('crisis')">Open Crisis Hulp</button>
+                        <button class="btn btn-red">Open Crisis Hulp</button>
                     </div>
 
                     <div class="card">
                         <h3>🌬️ Buteyko Ademhaling</h3>
                         <p>CO2 tolerantie training</p>
-                        <button class="btn btn-cyan" onclick="showTab('buteyko')">Start Buteyko</button>
-                    </div>
-
-                    <div class="card">
-                        <h3>🕐 Afkoel Ritueel</h3>
-                        <p>Na intensief denkwerk</p>
-                        <button class="btn btn-green" onclick="showTab('ritueel')">Start Ritueel</button>
-                    </div>
-
-                    <div class="card">
-                        <h3>🥱 Gaap Preventie</h3>
-                        <p>Technieken voor gaapaanvallen</p>
-                        <button class="btn btn-orange" onclick="showTab('gapen')">Bekijk Technieken</button>
-                    </div>
-
-                    <div class="card">
-                        <h3>💜 EMDR Zelfhulp</h3>
-                        <p>Voor luchthonger-gevoelens</p>
-                        <button class="btn btn-purple" onclick="showTab('emdr')">Start EMDR</button>
-                    </div>
-
-                    <div class="card">
-                        <h3>📖 Dagboek</h3>
-                        <p>Bijhouden van patronen</p>
-                        <button class="btn btn-primary" onclick="showTab('dagboek')">Open Dagboek</button>
+                        <button class="btn btn-cyan">Start Buteyko</button>
                     </div>
                 </div>
 
                 <div class="alert alert-info">
                     <strong>💡 Tip van de dag:</strong> 
-                    <span id="daily-tip">Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.</span>
-                    <button id="tip-refresh-btn" 
-                            style="background: none; border: none; color: #0891b2; cursor: pointer; margin-left: 0.5rem; font-weight: 600; padding: 0.25rem; border-radius: 0.25rem; transition: var(--transition-base);" 
-                            onmouseover="this.style.background='rgba(8,145,178,0.1)'" 
-                            onmouseout="this.style.background='none'" 
-                            aria-label="Nieuwe tip laden">🔄</button>
+                    <span id="daily-tip">Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging.</span>
                 </div>
 
-                <!-- Account Settings -->
-                <div class="settings-section">
-                    <h3>👤 Account</h3>
+                <div style="background: #f8fafc; border-radius: 0.75rem; padding: 1.5rem; margin: 2rem 0; border: 1px solid #e2e8f0;">
+                    <h3 style="color: #374151; margin-bottom: 1rem;">👤 Account</h3>
                     <div id="account-info" style="margin-bottom: 1rem;">
                         <!-- Account info wordt hier ingevuld -->
                     </div>
@@ -1483,563 +1064,32 @@
                 </div>
             </div>
 
-            <!-- Crisis Tab -->
-            <div id="crisis" class="tab-content hidden" role="tabpanel" aria-labelledby="crisis-tab">
+            <div id="crisis" class="tab-content hidden" role="tabpanel">
                 <div class="card">
-                    <h2>🚨 Crisis Hulp - Luchthonger</h2>
-                    <p>Voor wanneer je dat benauwde gevoel voelt opkomen</p>
-                </div>
-
-                <div class="technique-card">
-                    <h4>1. Paradoxale Ademhaling</h4>
-                    <p>Start met bewust zeer kleine, korte ademhalingen. Na 3-4 van deze mini-ademhalingen, probeer een iets langere uitademing.</p>
-                </div>
-
-                <div class="technique-card">
-                    <h4>2. Purse-lip Ademhaling</h4>
-                    <p>Tuut je lippen bij het uitademen om lichte weerstand te creëren. Dit helpt bij luchthonger en stabiliseert CO2-niveaus.</p>
-                </div>
-
-                <div class="technique-card">
-                    <h4>3. IJswater Techniek</h4>
-                    <p>Breng iets kouds tegen je gezicht (vooral rond wangen en ogen) om de duikreflex te activeren.</p>
-                </div>
-
-                <div class="technique-card">
-                    <h4>4. Herframing</h4>
-                    <p>"Dit is geen echt zuurstoftekort, dit is een sensatie die voorbij zal gaan. Mijn lichaam krijgt genoeg zuurstof."</p>
-                </div>
-
-                <div class="card">
-                    <h3>5-4-3-2-1 Grounding</h3>
-                    <ul class="step-list">
-                        <li>5 dingen die je ZIET</li>
-                        <li>4 dingen die je VOELT</li>
-                        <li>3 dingen die je HOORT</li>
-                        <li>2 dingen die je RUIKT</li>
-                        <li>1 ding dat je PROEFT</li>
-                    </ul>
-                </div>
-
-                <div class="card">
-                    <button class="btn btn-primary" onclick="openDagboekModal('Crisis Hulp Technieken')">
-                        📝 Dagboek Entry Maken
-                    </button>
+                    <h2>🚨 Crisis Hulp</h2>
+                    <p>Hier komen de crisis hulp technieken...</p>
                 </div>
             </div>
 
-            <!-- Buteyko Tab -->
-            <div id="buteyko" class="tab-content hidden" role="tabpanel" aria-labelledby="buteyko-tab">
+            <div id="buteyko" class="tab-content hidden" role="tabpanel">
                 <div class="card">
                     <h2>🌬️ Buteyko Ademhaling</h2>
-                    <p>Verbeter je CO2 tolerantie en verminder hyperventilatie neiging</p>
-                </div>
-
-                <div class="alert alert-info">
-                    <strong>💡 Hoe het werkt:</strong> Buteyko ademhaling helpt je lichaam wennen aan hogere CO2 niveaus, wat hyperventilatie-episodes kan verminderen.
-                </div>
-
-                <div class="card">
-                    <h3>Ademhalingsinstellingen</h3>
-                    <div style="margin-bottom: 1rem;">
-                        <label style="font-weight: 500; margin-bottom: 0.5rem; display: block;">Ademhalingspatroon:</label>
-                        <select id="breathing-pattern" class="form-select" onchange="updateBreathingPattern()">
-                            <option value="standard">Standaard (4-6-3)</option>
-                            <option value="gentle">Zacht (2x ademhaling + pauze)</option>
-                        </select>
-                    </div>
-                    
-                    <div id="standard-controls" class="breath-controls">
-                        <div class="breath-setting">
-                            <label>Inademen (sec)</label>
-                            <input type="number" id="inhale-duration" value="4" min="2" max="10">
-                        </div>
-                        <div class="breath-setting">
-                            <label>Uitademen (sec)</label>
-                            <input type="number" id="exhale-duration" value="6" min="3" max="15">
-                        </div>
-                        <div class="breath-setting">
-                            <label>Pauze (sec)</label>
-                            <input type="number" id="hold-duration" value="3" min="1" max="20">
-                        </div>
-                    </div>
-
-                    <div id="gentle-controls" class="breath-controls hidden">
-                        <div class="breath-setting">
-                            <label>Cyclus Tijd (sec)</label>
-                            <input type="number" id="gentle-cycle" value="10" min="8" max="15" readonly>
-                        </div>
-                        <div class="breath-setting">
-                            <label>Pauze (sec)</label>
-                            <input type="number" id="gentle-pause" value="4" min="2" max="8">
-                        </div>
-                        <div class="breath-setting">
-                            <label>Ademhalingen</label>
-                            <div style="font-weight: bold; color: #3b82f6; margin-top: 0.5rem;">2x per cyclus</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="breath-display rest" id="breath-display">
-                        Klik op start om te beginnen
-                    </div>
-
-                    <div class="progress-bar">
-                        <div class="breath-progress" id="breath-progress" style="width: 0%"></div>
-                    </div>
-
-                    <div style="text-align: center; margin: 1rem 0;">
-                        <div id="breath-cycle-counter" style="font-size: 1.125rem; color: var(--text-light); margin-bottom: 1rem;">
-                            Cyclus: 1/10
-                        </div>
-                        
-                        <div class="button-group">
-                            <button id="breath-btn" class="btn btn-cyan" onclick="toggleBreathExercise()">
-                                ▶️ Start Buteyko
-                            </button>
-                            <button class="btn btn-orange" onclick="resetBreathExercise()">
-                                🔄 Reset
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Completion bericht buiten de hoofdkaart -->
-                <div id="breath-complete" class="alert alert-success hidden">
-                    <strong>✅ Buteyko Sessie Voltooid!</strong><br>
-                    Geweldig! Je hebt 10 ademhalingscycli succesvol afgerond.
-                    <br><br>
-                    <div class="button-group">
-                        <button class="btn btn-primary" onclick="openDagboekModal('Buteyko Ademhaling - 10 Cycli Voltooid')">
-                            📝 Maak Dagboek Entry
-                        </button>
-                        <button class="btn btn-orange" onclick="skipButeykoDagboek()">
-                            ⏭️ Overslaan
-                        </button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3>Buteyko Principes</h3>
-                    <div class="technique-card">
-                        <h4>Zachte Ademhaling</h4>
-                        <p>Adem zo zacht mogelijk - stel je voor dat je een veertje voor je neus niet wilt laten bewegen.</p>
-                    </div>
-                    <div class="technique-card">
-                        <h4>Langere Uitademing</h4>
-                        <p>De uitademing is langer dan de inademing om CO2 te behouden en het autonome zenuwstelsel te kalmeren.</p>
-                    </div>
-                    <div class="technique-card">
-                        <h4>Comfortabele Pauze</h4>
-                        <p>De adempauze na uitademing mag nooit geforceerd aanvoelen - stop als het oncomfortabel wordt.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Ritueel Tab -->
-            <div id="ritueel" class="tab-content hidden" role="tabpanel" aria-labelledby="ritueel-tab">
-                <div class="card">
-                    <h2>🕐 Afkoel Ritueel</h2>
-                    <p>Voor na periodes van intensief denkwerk (5-10 minuten)</p>
-                </div>
-
-                <div class="card">
-                    <h3 id="ritual-title">Stap 1: Fysieke Mini-Reset</h3>
-                    <div class="timer-display" id="timer-display">2:00</div>
-                    
-                    <div id="ritual-instructions">
-                        <ul class="step-list">
-                            <li>Sta op en strek je volledig uit</li>
-                            <li>Schud je armen en benen los</li>
-                            <li>Rol je schouders 5x naar achteren</li>
-                            <li>Maak kleine cirkels met je hoofd (5x elke richting)</li>
-                        </ul>
-                    </div>
-
-                    <div class="button-group">
-                        <button id="timer-btn" class="btn btn-green" onclick="startTimer()">▶️ Start Timer</button>
-                        <button class="btn btn-primary" onclick="nextRitualStep()" id="next-btn" style="display: none;">Volgende Stap</button>
-                        <button class="btn btn-cyan" onclick="skipToNextStep()" id="skip-btn">⏭️ Overslaan</button>
-                        <button class="btn btn-orange" onclick="resetRitual()">🔄 Reset</button>
-                    </div>
-
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="ritual-progress" style="width: 20%"></div>
-                    </div>
-
-                    <div id="ritual-complete" class="alert alert-success hidden">
-                        <strong>✅ Afkoel Ritueel Voltooid!</strong><br>
-                        Fantastisch! Je hebt alle 5 stappen van het afkoel ritueel doorlopen.
-                        <br><br>
-                        <div class="button-group">
-                            <button class="btn btn-primary" onclick="openDagboekModal('Afkoel Ritueel - 5 Stappen Voltooid')">
-                                📝 Maak Dagboek Entry
-                            </button>
-                            <button class="btn btn-orange" onclick="skipRitualDagboek()">
-                                ⏭️ Overslaan
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Gapen Tab -->
-            <div id="gapen" class="tab-content hidden" role="tabpanel" aria-labelledby="gapen-tab">
-                <div class="card">
-                    <h2>🥱 Gaap Preventie Technieken</h2>
-                    <p>Voor wanneer je die vervelende gaapaanvallen voelt opkomen</p>
-                </div>
-
-                <div class="technique-card">
-                    <h4>Lipremming-techniek</h4>
-                    <p>Druk je lippen zachtjes op elkaar wanneer je een gaapneiging voelt. Laat de lucht langzaam door je neus in en uit gaan.</p>
-                </div>
-
-                <div class="technique-card">
-                    <h4>Mini-ademhalingen</h4>
-                    <p>Neem bewust 3-4 zeer kleine, ondiepe ademhalingen door je neus. Hiermee voorkom je de grote 'zucht-ademhaling'.</p>
-                </div>
-
-                <div class="technique-card">
-                    <h4>Tongpositie veranderen</h4>
-                    <p>Plaats je tongpunt tegen je gehemelte (achter je voortanden). Dit vermindert de neiging tot gapen.</p>
-                </div>
-
-                <div class="technique-card">
-                    <h4>Water drinken</h4>
-                    <p>Neem kleine slokjes water wanneer je merkt dat je begint te gapen. Dit doorbreekt het ademhalingspatroon.</p>
-                </div>
-
-                <div class="alert alert-info">
-                    <strong>💡 Belangrijk om te onthouden:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Ze geven je de kans om preventief in te grijpen voordat een volledige hyperventilatie-episode begint.
-                </div>
-
-                <div class="card">
-                    <h3>Gedachte-Breaking Technieken</h3>
-                    <div class="technique-card">
-                        <strong>Paradoxale intentie:</strong> "Oké hersenen, jullie willen dat ik ga gapen? Prima, ik ga nu heel bewust gapen"
-                    </div>
-                    <div class="technique-card">
-                        <strong>Herframing:</strong> "Mijn brein probeert me te beschermen, maar ik hoef niet te reageren"
-                    </div>
-                    <div class="technique-card">
-                        <strong>Aandacht verplaatsen:</strong> Tel 5 blauwe dingen die je kunt zien
-                    </div>
-                </div>
-
-                <div class="card">
-                    <button class="btn btn-primary" onclick="openDagboekModal('Gaap Preventie Technieken')">
-                        📝 Dagboek Entry Maken
-                    </button>
-                </div>
-            </div>
-
-            <!-- EMDR Tab -->
-            <div id="emdr" class="tab-content hidden" role="tabpanel" aria-labelledby="emdr-tab">
-                <div class="card">
-                    <h2>💜 EMDR Zelfhulp</h2>
-                    <p>Voor luchthonger-gevoelens (dit is ondersteuning, geen vervanging voor professionele EMDR)</p>
-                </div>
-
-                <div class="alert alert-warning">
-                    <strong>⚠️ Gebruik dit alleen voor milde tot matige gevoelens. Stop als je je overweldigd voelt.</strong>
-                </div>
-
-                <div class="alert alert-info">
-                    <strong>🎧 Bilaterale Audio:</strong> Voor de beste ervaring, gebruik koptelefoon of oortjes. Zet het volume op een comfortabel niveau voordat je begint.
-                </div>
-
-                <!-- Audio Controls -->
-                <div class="card">
-                    <h3>🔊 Bilaterale Audio Stimulatie</h3>
-                    <p style="margin-bottom: 1rem;">Een instelbare toon die van links naar rechts beweegt om bilaterale hersenstimulatie te ondersteunen.</p>
-                    
-                    <div class="breath-controls">
-                        <div class="breath-setting">
-                            <label>Volume (%)</label>
-                            <input type="number" id="audio-volume" value="30" min="10" max="100" step="10">
-                        </div>
-                        <div class="breath-setting">
-                            <label>Snelheid (sec)</label>
-                            <input type="number" id="audio-speed" value="2" min="1" max="5" step="0.5">
-                        </div>
-                        <div class="breath-setting">
-                            <label>Toonhoogte (Hz)</label>
-                            <input type="number" id="audio-frequency" value="880" min="60" max="1000" step="10">
-                            <div style="font-size: 0.7rem; color: var(--text-light); margin-top: 0.25rem;">60-1000 Hz</div>
-                        </div>
-                        <div class="breath-setting">
-                            <label>Status</label>
-                            <div id="audio-status" style="font-weight: bold; color: var(--text-light); margin-top: 0.5rem;">Gestopt</div>
-                        </div>
-                    </div>
-
-                    <div class="button-group">
-                        <button id="audio-btn" class="btn btn-purple" onclick="toggleBilateralAudio()">
-                            🔊 Start Audio
-                        </button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3 id="emdr-title">Stap 1: Voorbereiding</h3>
-                    <div id="emdr-content">
-                        <p>Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt.</p>
-                    </div>
-
-                    <div id="emdr-intensity" class="hidden">
-                        <div class="form-group">
-                            <label class="form-label">Intensiteit van luchthonger-gevoel (1-10):</label>
-                            <input type="range" min="1" max="10" value="5" class="range-input" id="emdr-intensity-slider">
-                            <div class="range-value" id="emdr-intensity-value">5</div>
-                        </div>
-                    </div>
-
-                    <div class="button-group">
-                        <button id="emdr-prev-btn" class="btn btn-orange" onclick="prevEmdrStep()" style="display: none;">Vorige</button>
-                        <button id="emdr-next-btn" class="btn btn-purple" onclick="nextEmdrStep()">Volgende</button>
-                    </div>
-
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="emdr-progress" style="width: 20%"></div>
-                    </div>
-
-                    <div id="emdr-complete" class="alert alert-success hidden">
-                        <strong>✅ EMDR Zelfhulp Sessie Voltooid!</strong><br>
-                        Goed gedaan! Je hebt alle 5 stappen van de EMDR zelfhulp doorlopen.
-                        <br><br>
-                        <div class="button-group">
-                            <button class="btn btn-primary" onclick="openDagboekModal('EMDR Zelfhulp - 5 Stappen Voltooid')">
-                                📝 Maak Dagboek Entry
-                            </button>
-                            <button class="btn btn-orange" onclick="skipEmdrDagboek()">
-                                ⏭️ Overslaan
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dagboek Tab -->
-            <div id="dagboek" class="tab-content hidden" role="tabpanel" aria-labelledby="dagboek-tab">
-                <div class="card">
-                    <h2>📖 Dagboek</h2>
-                    <p>Overzicht van je sessies en vooruitgang</p>
-                    <div class="button-group">
-                        <button class="btn btn-primary" onclick="openDagboekModal('Handmatige Entry')">
-                            ➕ Nieuwe Entry
-                        </button>
-                        <button class="btn btn-green" onclick="loadDagboekEntries()">
-                            🔄 Vernieuw
-                        </button>
-                        <button class="btn btn-orange" onclick="exportDagboek()">
-                            📥 Export Dagboek
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Vooruitgang Grafiek -->
-                <div class="card">
-                    <h3>📊 Je Vooruitgang</h3>
-                    <p style="color: var(--text-light); margin-bottom: 1rem;">Intensiteit scores over tijd - lagere scores betekenen meer verbetering</p>
-                    
-                    <div class="chart-container" style="position: relative; height: 300px; margin: 1rem 0;">
-                        <canvas id="progress-chart" style="max-height: 300px;"></canvas>
-                    </div>
-                    
-                    <div id="chart-legend" class="chart-legend" style="display: none; margin-top: 1rem;">
-                        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; font-size: 0.85rem;">
-                            <div style="display: flex; align-items: center; gap: 0.25rem;">
-                                <div style="width: 12px; height: 12px; background: #ef4444; border-radius: 2px;"></div>
-                                <span>Vóór oefening</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 0.25rem;">
-                                <div style="width: 12px; height: 12px; background: #10b981; border-radius: 2px;"></div>
-                                <span>Ná oefening</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="chart-empty" class="alert alert-info" style="text-align: center;">
-                        <strong>📈 Geen data beschikbaar</strong><br>
-                        Maak een paar dagboek entries om je vooruitgang te zien!
-                    </div>
-                </div>
-
-                <div id="dagboek-entries">
-                    <!-- Entries worden hier geladen -->
-                </div>
-
-                <div class="card">
-                    <h3>Patronen om naar uit te kijken</h3>
-                    <ul class="step-list">
-                        <li>Welke technieken het beste werken voor jou</li>
-                        <li>Tijdstippen waarop klachten vaker voorkomen</li>
-                        <li>Specifieke triggers (werk, stress, bepaalde gedachten)</li>
-                        <li>Verband tussen maagklachten en ademhalingsproblemen</li>
-                        <li>Verbetering in intensiteit scores over tijd</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Statistieken Tab -->
-            <div id="statistieken" class="tab-content hidden" role="tabpanel" aria-labelledby="statistieken-tab">
-                <div class="card">
-                    <h2>📊 Statistieken & Inzichten</h2>
-                    <p>Ontdek patronen in je ademhalingspraktijk en zie welke technieken het beste voor jou werken</p>
-                    <div class="button-group">
-                        <button class="btn btn-primary" onclick="loadStatistics()">
-                            🔄 Statistieken Laden
-                        </button>
-                        <button class="btn btn-green" onclick="exportStatistics()">
-                            📥 Export Rapport
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Quick Stats Overview -->
-                <div id="stats-overview" class="grid" style="margin-bottom: 2rem;">
-                    <!-- Stats cards will be inserted here -->
-                </div>
-
-                <!-- Most Used Techniques -->
-                <div class="card">
-                    <h3>🏆 Meest Gebruikte Technieken</h3>
-                    <div class="chart-container" style="position: relative; height: 300px; margin: 1rem 0;">
-                        <canvas id="usage-chart" style="max-height: 300px;"></canvas>
-                    </div>
-                    <div id="usage-empty" class="alert alert-info" style="text-align: center;">
-                        <strong>📈 Geen data beschikbaar</strong><br>
-                        Maak een paar dagboek entries om te zien welke technieken je het meest gebruikt!
-                    </div>
-                </div>
-
-                <!-- Effectiveness Analysis -->
-                <div class="card">
-                    <h3>⚡ Effectiviteit per Techniek</h3>
-                    <p style="color: var(--text-light); margin-bottom: 1rem;">Gemiddelde verbetering in intensiteit score (hoger = beter)</p>
-                    <div class="chart-container" style="position: relative; height: 300px; margin: 1rem 0;">
-                        <canvas id="effectiveness-chart" style="max-height: 300px;"></canvas>
-                    </div>
-                    <div id="effectiveness-empty" class="alert alert-info" style="text-align: center;">
-                        <strong>📈 Geen data beschikbaar</strong><br>
-                        Voer meer sessies uit om effectiviteit te kunnen analyseren!
-                    </div>
-                </div>
-
-                <!-- Results Distribution -->
-                <div class="card">
-                    <h3>🎯 Resultaten Verdeling</h3>
-                    <div class="chart-container" style="position: relative; height: 300px; margin: 1rem 0;">
-                        <canvas id="results-chart" style="max-height: 300px;"></canvas>
-                    </div>
-                    <div id="results-empty" class="alert alert-info" style="text-align: center;">
-                        <strong>📈 Geen data beschikbaar</strong><br>
-                        Vul resultaten in bij je dagboek entries om deze analyse te zien!
-                    </div>
-                </div>
-
-                <!-- Intensity Improvement Trends -->
-                <div class="card">
-                    <h3>📈 Intensiteit Verbeteringen</h3>
-                    <div class="chart-container" style="position: relative; height: 300px; margin: 1rem 0;">
-                        <canvas id="improvement-chart" style="max-height: 300px;"></canvas>
-                    </div>
-                    <div id="improvement-empty" class="alert alert-info" style="text-align: center;">
-                        <strong>📈 Geen data beschikbaar</strong><br>
-                        Meer data nodig om verbeteringstrends te tonen!
-                    </div>
-                </div>
-
-                <!-- Detailed Statistics Table -->
-                <div class="card">
-                    <h3>📋 Gedetailleerde Statistieken</h3>
-                    <div id="detailed-stats" style="overflow-x: auto;">
-                        <!-- Detailed stats table will be inserted here -->
-                    </div>
-                </div>
-
-                <!-- Insights and Recommendations -->
-                <div id="insights-section" class="card" style="display: none;">
-                    <h3>💡 Persoonlijke Inzichten</h3>
-                    <div id="insights-content">
-                        <!-- AI-like insights will be generated here -->
-                    </div>
+                    <p>Hier komen de ademhalingsoefeningen...</p>
                 </div>
             </div>
         </main>
-    </div>
-
-    <!-- Dagboek Modal -->
-    <div id="dagboek-modal" class="modal" role="dialog" aria-labelledby="dagboek-modal-title">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="dagboek-modal-title">📝 Dagboek Entry</h3>
-                <button class="close-btn" onclick="closeDagboekModal()" aria-label="Sluit dagboek venster">&times;</button>
-            </div>
-            
-            <form id="dagboek-form" novalidate>
-                <div class="form-group">
-                    <label class="form-label" for="entry-trigger">Situatie/Trigger:</label>
-                    <input type="text" id="entry-trigger" class="form-input" placeholder="Bijv. na intensief werken">
-                </div>
-
-                <div class="grid">
-                    <div class="form-group">
-                        <label class="form-label" for="entry-before">Intensiteit vóór oefening (1-10):</label>
-                        <input type="range" min="1" max="10" value="5" class="range-input" id="entry-before">
-                        <div class="range-value" id="entry-before-value">5</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="entry-after">Intensiteit ná oefening (1-10):</label>
-                        <input type="range" min="1" max="10" value="5" class="range-input" id="entry-after">
-                        <div class="range-value" id="entry-after-value">5</div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="entry-result">Resultaat:</label>
-                    <select id="entry-result" class="form-select">
-                        <option value="">Selecteer resultaat...</option>
-                        <option value="zeer-goed">Zeer goed - volledig opgelost</option>
-                        <option value="goed">Goed - duidelijke verbetering</option>
-                        <option value="matig">Matig - kleine verbetering</option>
-                        <option value="geen-effect">Geen effect</option>
-                        <option value="slechter">Iets slechter</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="entry-notes">Notities:</label>
-                    <textarea id="entry-notes" class="form-textarea" placeholder="Wat viel je op?"></textarea>
-                </div>
-
-                <div class="button-group">
-                    <button type="button" class="btn btn-primary" id="save-dagboek-entry-btn">
-                        📁 Opslaan
-                    </button>
-                    <button type="button" class="btn btn-orange" onclick="closeDagboekModal()">
-                        Annuleren
-                    </button>
-                </div>
-            </form>
-        </div>
     </div>
 
     <footer style="text-align: center; padding: 2rem 1rem; color: var(--text-light); font-size: 0.8rem;">
         <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
             <p style="margin: 0;">📞 In noodgevallen: contacteer altijd je huisarts of spoeddiensten</p>
             
-            <!-- Firebase Status Indicator -->
             <div style="display: flex; align-items: center; gap: 0.375rem;">
                 <div id="firebase-status-dot" class="status-disconnected" style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; transition: all 0.3s ease; opacity: 0.6;" title="Firebase verbinding status"></div>
                 <span style="font-size: 0.7rem; opacity: 0.7;">Status</span>
             </div>
         </div>
         
-        <!-- Developer Credit -->
         <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
             <p style="margin: 0; font-size: 0.75rem; opacity: 0.8; color: rgba(255,255,255,0.9);">
                 Ontwikkeld door <strong>Thomas Van Troostenberghe</strong>
@@ -2048,7 +1098,7 @@
     </footer>
 
 <script type="module">
-    // Enhanced error handling and logging
+    // Enhanced logging system
     const LOG_LEVELS = {
         INFO: 'ℹ️',
         SUCCESS: '✅', 
@@ -2061,7 +1111,7 @@
         console.log(`${LOG_LEVELS[level]} [${timestamp}] ${message}`, data || '');
     }
 
-    // Enhanced app state management
+    // App State Management
     class AppState {
         constructor() {
             this.currentUser = null;
@@ -2070,20 +1120,7 @@
             this.isFirebaseConnected = false;
             this.authInitialized = false;
             this.authUnsubscribe = null;
-            this.currentTechnique = '';
-            this.tips = [
-                "Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.",
-                "Bij luchthonger: probeer paradoxale ademhaling - begin met zeer kleine, korte ademhalingen.",
-                "CO2 is niet giftig! Een hoger CO2-niveau in je bloed is juist gezond en kalmerend.",
-                "Buteyko ademhaling helpt je lichaam wennen aan hogere CO2 niveaus.",
-                "Een koude kompres op je gezicht activeert de duikreflex en kalmeert het zenuwstelsel.",
-                "Grounding technieken zoals 5-4-3-2-1 helpen je geest terug naar het hier en nu te brengen.",
-                "Zachte ademhaling is effectiever dan diepe ademhaling bij hyperventilatie.",
-                "Regelmatige oefening van ademhalingstechnieken vermindert de kans op episodes.",
-                "Het bijhouden van patronen in je dagboek helpt je triggers te identificeren.",
-                "Na intensief denkwerk heeft je lichaam een afkoel ritueel nodig om te ontspannen."
-            ];
-            // Initialize auth-loading spinner to be visible initially
+            
             const authLoading = document.getElementById('auth-loading');
             if (authLoading) {
                 authLoading.style.display = 'inline-block';
@@ -2115,7 +1152,7 @@
             const userInfo = document.getElementById('user-info');
             const accountInfo = document.getElementById('account-info');
             
-            // Hide loading spinner regardless of auth state
+            // Hide loading spinner
             const authLoading = document.getElementById('auth-loading');
             if (authLoading) {
                 authLoading.style.display = 'none';
@@ -2126,7 +1163,7 @@
                 const shortName = displayName.length > 15 ? displayName.substring(0, 13) + '...' : displayName;
                 userInfo.innerHTML = shortName;
             } else if (userInfo) {
-                userInfo.innerHTML = ''; // Clear user info if not logged in
+                userInfo.innerHTML = '';
             }
 
             if (this.currentUser && accountInfo) {
@@ -2139,7 +1176,6 @@
                 accountInfo.innerHTML = '<p style="color: var(--text-light); font-size: 0.9rem;">Niet ingelogd</p>';
             }
             
-            // Update dashboard greeting
             this.updateDashboardGreeting();
         }
 
@@ -2168,18 +1204,13 @@
                     statusDot.className = 'status-connected';
                     statusDot.title = 'Firebase: Verbonden';
                 } else if (this.isOnline) {
-                    // If online but Firebase isn't connected, it means a temporary issue or not initialized
                     statusDot.className = 'status-disconnected'; 
-                    statusDot.title = 'Firebase: Verbindingsprobleem of niet geïnitialiseerd';
+                    statusDot.title = 'Firebase: Verbindingsprobleem';
                 } else {
                     statusDot.className = 'status-error';
                     statusDot.title = 'Firebase: Geen internetverbinding';
                 }
             }
-        }
-
-        getRandomTip() {
-            return this.tips[Math.floor(Math.random() * this.tips.length)];
         }
 
         getFirstName() {
@@ -2203,53 +1234,10 @@
     // Initialize app state
     const appState = new AppState();
 
-    // Global variables voor verschillende functionaliteiten
+    // Global variables
     let app, db, auth;
-    let timerInterval = null;
-    let currentTime = 0;
-    let ritualStep = 0;
-    let emdrStep = 0;
 
-    // Breath exercise variables
-    let breathInterval = null;
-    let breathPhase = 'rest';
-    let breathCycleCount = 1;
-    let breathPhaseTime = 0;
-    let breathCycleDuration = 0;
-    let breathingPattern = 'standard';
-    let gentleBreathCount = 0;
-
-    // Audio variables for EMDR
-    let audioContext = null;
-    let oscillator = null;
-    let gainNode = null;
-    let pannerNode = null;
-    let audioInterval = null;
-    let isAudioPlaying = false;
-    let panPosition = -1;
-
-    // Wake lock for keeping screen on
-    let wakeLock = null;
-
-    // Statistics chart variables
-    let progressChart = null;
-    let usageChart = null;
-    let effectivenessChart = null;
-    let resultsChart = null;
-    let improvementChart = null;
-
-    // Progress tracking (will still use localStorage for now, but note the potential loss)
-    let progressData = {
-        buteyko: { sessions: 0, totalTime: 0, lastSession: null },
-        ritual: { sessions: 0, totalTime: 0, lastSession: null },
-        emdr: { sessions: 0, totalTime: 0, lastSession: null },
-        crisis: { sessions: 0, lastSession: null }
-    };
-
-    // Firebase configuration - MAKE SURE THIS IS CORRECT
-    // authDomain should typically be your project's default firebaseapp.com domain.
-    // Ensure your actual hosting domain (e.g., ademruimte.vercel.app) is added
-    // to 'Authorized domains' in Firebase Authentication Settings.
+    // Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
         authDomain: "ademruimte-12c09.firebaseapp.com", 
@@ -2260,820 +1248,7 @@
         measurementId: "G-SD2ZEYNMNY"
     };
 
-    // --- Start of moved Ritual and Timer functions ---
-    // Ritual step data
-    const ritualSteps = [
-        {
-            title: "Stap 1: Fysieke Mini-Reset",
-            duration: 120, // 2 minutes
-            instructions: [
-                "Sta op en strek je volledig uit",
-                "Schud je armen en benen los", 
-                "Rol je schouders 5x naar achteren",
-                "Maak kleine cirkels met je hoofd (5x elke richting)"
-            ]
-        },
-        {
-            title: "Stap 2: Ademhaling Reset",
-            duration: 90, // 1.5 minutes
-            instructions: [
-                "Ga comfortabel zitten of staan",
-                "Adem 5x heel diep in door je neus",
-                "Adem langzaam uit door je mond",
-                "Let op de vertraging tussen gedachte en lichaam"
-            ]
-        },
-        {
-            title: "Stap 3: Mentale Overgang",
-            duration: 120, // 2 minutes
-            instructions: [
-                "Zeg hardop: 'Ik ben klaar met intensief denken'",
-                "Denk aan 3 dingen waar je dankbaar voor bent",
-                "Visualiseer je volgende activiteit",
-                "Geef jezelf toestemming om te ontspannen"
-            ]
-        },
-        {
-            title: "Stap 4: Zintuiglijke Reset",
-            duration: 90, // 1.5 minutes  
-            instructions: [
-                "Kijk bewust rond - wat zie je?",
-                "Luister naar geluiden om je heen",
-                "Voel de temperatuur op je huid",
-                "Ruik bewust de lucht om je heen"
-            ]
-        },
-        {
-            title: "Stap 5: Intentie Zetten",
-            duration: 60, // 1 minute
-            instructions: [
-                "Besluit bewust hoe je je volgende tijd wilt besteden",
-                "Zeg tegen jezelf: 'Ik ga nu over naar [activiteit]'",
-                "Neem één bewuste stap in die richting",
-                "Feliciteer jezelf - je hebt een goede overgang gemaakt"
-            ]
-        }
-    ];
-
-    // Timer functionality for Ritual
-    window.startTimer = function() {
-        const timerDisplay = document.getElementById('timer-display');
-        const timerBtn = document.getElementById('timer-btn');
-        const nextBtn = document.getElementById('next-btn');
-        
-        if (timerInterval) {
-            // Stop timer
-            clearInterval(timerInterval);
-            timerInterval = null;
-            timerBtn.innerHTML = '▶️ Start Timer';
-            timerBtn.className = 'btn btn-green';
-            nextBtn.style.display = 'block';
-            log('INFO', 'Timer stopped manually');
-            return;
-        }
-        
-        // Start timer
-        currentTime = ritualSteps[ritualStep].duration; // Set current time based on current step
-        timerBtn.innerHTML = '⏸️ Stop Timer';
-        timerBtn.className = 'btn btn-red';
-        nextBtn.style.display = 'none';
-        
-        timerInterval = setInterval(() => {
-            currentTime--;
-            const minutes = Math.floor(currentTime / 60);
-            const seconds = currentTime % 60;
-            timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            
-            if (currentTime <= 0) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                timerBtn.innerHTML = '▶️ Start Timer';
-                timerBtn.className = 'btn btn-green';
-                nextBtn.style.display = 'block';
-                showUserMessage('⏰ Timer afgelopen! Tijd voor de volgende stap.', 'success');
-                log('SUCCESS', 'Timer completed');
-            }
-        }, 1000);
-    };
-
-    // Ritual step management
-    window.nextRitualStep = function() {
-        if (ritualStep < ritualSteps.length - 1) {
-            ritualStep++;
-            updateRitualDisplay();
-        } else {
-            // Complete ritual
-            document.getElementById('ritual-complete').classList.remove('hidden');
-            appState.currentTechnique = 'Afkoel Ritueel - 5 Stappen Voltooid';
-            trackSession('ritual', ritualSteps.reduce((sum, step) => sum + step.duration, 0)); // Total duration of all steps
-            log('SUCCESS', 'Ritual completed');
-        }
-    };
-
-    window.skipToNextStep = function() {
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-            document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
-            document.getElementById('timer-btn').className = 'btn btn-green';
-        }
-        nextRitualStep();
-    };
-
-    window.resetRitual = function() {
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-        ritualStep = 0;
-        updateRitualDisplay();
-        document.getElementById('ritual-complete').classList.add('hidden');
-        document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
-        document.getElementById('timer-btn').className = 'btn btn-green';
-        document.getElementById('next-btn').style.display = 'none';
-    };
-
-    function updateRitualDisplay() {
-        const step = ritualSteps[ritualStep];
-        
-        // Update title
-        document.getElementById('ritual-title').textContent = step.title;
-        
-        // Update timer display
-        const minutes = Math.floor(step.duration / 60);
-        const seconds = step.duration % 60;
-        document.getElementById('timer-display').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        currentTime = step.duration;
-        
-        // Update instructions
-        const instructionsHtml = '<ul class="step-list">' + 
-            step.instructions.map(instruction => `<li>${instruction}</li>`).join('') +
-            '</ul>';
-        document.getElementById('ritual-instructions').innerHTML = instructionsHtml;
-        
-        // Update progress bar
-        const progress = ((ritualStep + 1) / ritualSteps.length) * 100;
-        document.getElementById('ritual-progress').style.width = progress + '%';
-        
-        // Reset timer button
-        document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
-        document.getElementById('timer-btn').className = 'btn btn-green';
-        document.getElementById('next-btn').style.display = 'none';
-        
-        // Clear any existing timer
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-        
-        log('INFO', `Ritual step ${ritualStep + 1}/${ritualSteps.length}: ${step.title}`);
-    }
-    // --- End of moved Ritual and Timer functions ---
-
-    // Enhanced statistics functions
-    window.loadStatistics = async function() {
-        try {
-            showUserMessage('📊 Laden van statistieken...', 'info');
-            const entries = await loadFromFirestore();
-            
-            if (!entries || entries.length === 0) {
-                showUserMessage('📝 Geen data beschikbaar voor statistieken', 'warning');
-                return;
-            }
-
-            // Calculate and display all statistics
-            displayStatsOverview(entries);
-            createUsageChart(entries);
-            createEffectivenessChart(entries);
-            createResultsChart(entries);
-            createImprovementChart(entries);
-            createDetailedStatsTable(entries);
-            generateInsights(entries);
-            
-            showUserMessage('✅ Statistieken succesvol geladen!', 'success');
-            
-        } catch (error) {
-            log('ERROR', 'Failed to load statistics:', error);
-            showUserMessage('❌ Fout bij laden statistieken: ' + error.message, 'error');
-        }
-    };
-
-    function displayStatsOverview(entries) {
-        const overview = document.getElementById('stats-overview');
-        
-        // Calculate basic stats
-        const totalSessions = entries.length;
-        const avgImprovement = entries.reduce((sum, entry) => 
-            sum + (entry.intensiteitVoor - entry.intensiteitNa), 0) / totalSessions;
-        
-        const techniqueCount = {};
-        entries.forEach(entry => {
-            const technique = entry.techniekGebruikt || 'Onbekend';
-            techniqueCount[technique] = (techniqueCount[technique] || 0) + 1;
-        });
-        
-        const mostUsedTechnique = Object.entries(techniqueCount)
-            .sort(([,a], [,b]) => b - a)[0];
-        
-        const successfulSessions = entries.filter(entry => 
-            ['zeer-goed', 'goed'].includes(entry.resultaat)).length;
-        const successRate = ((successfulSessions / totalSessions) * 100).toFixed(1);
-        
-        // Get date range
-        const sortedDates = entries.map(entry => entry.timestamp).sort((a, b) => a - b);
-        const firstSession = sortedDates[0];
-        const lastSession = sortedDates[sortedDates.length - 1];
-        const daysBetween = Math.ceil((lastSession - firstSession) / (1000 * 60 * 60 * 24));
-        
-        overview.innerHTML = `
-            <div class="card" style="text-align: center; background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
-                <h3 style="color: white; margin-bottom: 0.5rem;">📊 Totaal Sessies</h3>
-                <div style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;">${totalSessions}</div>
-                <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">
-                    ${daysBetween > 0 ? `Over ${daysBetween} dagen` : 'Vandaag gestart'}
-                </p>
-            </div>
-            
-            <div class="card" style="text-align: center; background: linear-gradient(135deg, #10b981, #059669); color: white;">
-                <h3 style="color: white; margin-bottom: 0.5rem;">⚡ Gem. Verbetering</h3>
-                <div style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;">${avgImprovement.toFixed(1)} pnt</div>
-                <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">Intensiteit reductie</p>
-            </div>
-            
-            <div class="card" style="text-align: center; background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">
-                <h3 style="color: white; margin-bottom: 0.5rem;">🏆 Favoriete Techniek</h3>
-                <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem;">${mostUsedTechnique ? mostUsedTechnique[0].replace(/\s-.*/, '') : 'Geen data'}</div>
-                <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">
-                    ${mostUsedTechnique ? `${mostUsedTechnique[1]}x gebruikt` : ''}
-                </p>
-            </div>
-            
-            <div class="card" style="text-align: center; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white;">
-                <h3 style="color: white; margin-bottom: 0.5rem;">✅ Succes Ratio</h3>
-                <div style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;">${successRate}%</div>
-                <p style="margin: 0; opacity: 0.9; font-size: 0.9rem;">Goede/zeer goede resultaten</p>
-            </div>
-        `;
-    }
-
-    async function createUsageChart(entries) {
-        if (!window.Chart) return;
-
-        const techniqueCount = {};
-        entries.forEach(entry => {
-            const technique = entry.techniekGebruikt || 'Onbekend';
-            const shortName = technique.replace(/\s-.*/, '').replace('Technieken', '');
-            techniqueCount[shortName] = (techniqueCount[shortName] || 0) + 1;
-        });
-
-        const sortedTechniques = Object.entries(techniqueCount)
-            .sort(([,a], [,b]) => b - a)
-            .slice(0, 8); // Top 8
-
-        if (sortedTechniques.length === 0) {
-            document.getElementById('usage-empty').style.display = 'block';
-            return;
-        }
-
-        document.getElementById('usage-empty').style.display = 'none';
-
-        if (usageChart) usageChart.destroy();
-
-        const ctx = document.getElementById('usage-chart').getContext('2d');
-        usageChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: sortedTechniques.map(([name]) => name),
-                datasets: [{
-                    data: sortedTechniques.map(([, count]) => count),
-                    backgroundColor: [
-                        '#667eea', '#10b981', '#f59e0b', '#8b5cf6',
-                        '#ef4444', '#06b6d4', '#84cc16', '#f97316'
-                    ],
-                    borderWidth: 2,
-                    borderColor: '#ffffff'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: window.innerWidth <= 768 ? 'bottom' : 'right',
-                        labels: {
-                            padding: 15,
-                            usePointStyle: true,
-                            font: {
-                                size: window.innerWidth <= 768 ? 11 : 12
-                            }
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = ((context.parsed / total) * 100).toFixed(1);
-                                return `${context.label}: ${context.parsed} sessies (${percentage}%)`;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    async function createEffectivenessChart(entries) {
-        if (!window.Chart) return;
-
-        const techniqueStats = {};
-        
-        entries.forEach(entry => {
-            const technique = entry.techniekGebruikt || 'Onbekend';
-            const shortName = technique.replace(/\s-.*/, '').replace('Technieken', '');
-            const improvement = entry.intensiteitVoor - entry.intensiteitNa;
-            
-            if (!techniqueStats[shortName]) {
-                techniqueStats[shortName] = { improvements: [], total: 0, count: 0 };
-            }
-            
-            techniqueStats[shortName].improvements.push(improvement);
-            techniqueStats[shortName].total += improvement;
-            techniqueStats[shortName].count++;
-        });
-
-        const effectivenessData = Object.entries(techniqueStats)
-            .map(([name, stats]) => ({
-                name,
-                avgImprovement: stats.total / stats.count,
-                count: stats.count
-            }))
-            .filter(item => item.count >= 2) // Only show techniques used at least twice
-            .sort((a, b) => b.avgImprovement - a.avgImprovement)
-            .slice(0, 8);
-
-        if (effectivenessData.length === 0) {
-            document.getElementById('effectiveness-empty').style.display = 'block';
-            return;
-        }
-
-        document.getElementById('effectiveness-empty').style.display = 'none';
-
-        if (effectivenessChart) effectivenessChart.destroy();
-
-        const ctx = document.getElementById('effectiveness-chart').getContext('2d');
-        effectivenessChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: effectivenessData.map(item => item.name),
-                datasets: [{
-                    label: 'Gemiddelde Verbetering',
-                    data: effectivenessData.map(item => item.avgImprovement),
-                    backgroundColor: effectivenessData.map(item => {
-                        if (item.avgImprovement >= 3) return '#10b981';
-                        if (item.avgImprovement >= 2) return '#f59e0b';
-                        if (item.avgImprovement >= 1) return '#ef4444';
-                        return '#6b7280';
-                    }),
-                    borderRadius: 6,
-                    borderSkipped: false,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const item = effectivenessData[context.dataIndex];
-                                return [
-                                    `Verbetering: ${context.parsed.y.toFixed(2)} punten`,
-                                    `Gebaseerd op ${item.count} sessies`
-                                ];
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        ticks: {
-                            maxRotation: window.innerWidth <= 768 ? 45 : 0,
-                            font: {
-                                size: window.innerWidth <= 768 ? 10 : 12
-                            }
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Gemiddelde Verbetering (punten)'
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    async function createResultsChart(entries) {
-        if (!window.Chart) return;
-
-        const resultCounts = {
-            'zeer-goed': 0,
-            'goed': 0,
-            'matig': 0,
-            'geen-effect': 0,
-            'slechter': 0
-        };
-
-        entries.forEach(entry => {
-            if (entry.resultaat && resultCounts.hasOwnProperty(entry.resultaat)) {
-                resultCounts[entry.resultaat]++;
-            }
-        });
-
-        const hasData = Object.values(resultCounts).some(count => count > 0);
-        if (!hasData) {
-            document.getElementById('results-empty').style.display = 'block';
-            return;
-        }
-
-        document.getElementById('results-empty').style.display = 'none';
-
-        if (resultsChart) resultsChart.destroy();
-
-        const ctx = document.getElementById('results-chart').getContext('2d');
-        resultsChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['Zeer Goed', 'Goed', 'Matig', 'Geen Effect', 'Slechter'],
-                datasets: [{
-                    label: 'Aantal Sessies',
-                    data: [
-                        resultCounts['zeer-goed'],
-                        resultCounts['goed'],
-                        resultCounts['matig'],
-                        resultCounts['geen-effect'],
-                        resultCounts['slechter']
-                    ],
-                    backgroundColor: ['#059669', '#10b981', '#f59e0b', '#6b7280', '#ef4444'],
-                    borderRadius: 6,
-                    borderSkipped: false,
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    x: {
-                        ticks: {
-                            font: {
-                                size: window.innerWidth <= 768 ? 10 : 12
-                            }
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        },
-                        title: {
-                            display: true,
-                            text: 'Aantal Sessies'
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    async function createImprovementChart(entries) {
-        if (!window.Chart) return;
-
-        // Group entries by week
-        const weeklyData = {};
-        
-        entries.forEach(entry => {
-            const date = entry.timestamp;
-            const weekStart = new Date(date);
-            weekStart.setDate(date.getDate() - date.getDay()); // Start of week (Sunday)
-            const weekKey = weekStart.toISOString().slice(0, 10);
-            
-            if (!weeklyData[weekKey]) {
-                weeklyData[weekKey] = { improvements: [], count: 0 };
-            }
-            
-            const improvement = entry.intensiteitVoor - entry.intensiteitNa;
-            weeklyData[weekKey].improvements.push(improvement);
-            weeklyData[weekKey].count++;
-        });
-
-        const sortedWeeks = Object.entries(weeklyData)
-            .map(([week, data]) => ({
-                week,
-                avgImprovement: data.improvements.reduce((a, b) => a + b, 0) / data.count,
-                count: data.count
-            }))
-            .sort((a, b) => new Date(a.week) - new Date(b.week))
-            .slice(-8); // Last 8 weeks
-
-        if (sortedWeeks.length < 2) {
-            document.getElementById('improvement-empty').style.display = 'block';
-            return;
-        }
-
-        document.getElementById('improvement-empty').style.display = 'none';
-
-        if (improvementChart) improvementChart.destroy();
-
-        const ctx = document.getElementById('improvement-chart').getContext('2d');
-        improvementChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: sortedWeeks.map(item => {
-                    const date = new Date(item.week);
-                    return date.toLocaleDateString('nl-BE', { 
-                        month: 'short', 
-                        day: 'numeric'
-                    });
-                }),
-                datasets: [{
-                    label: 'Gemiddelde Verbetering',
-                    data: sortedWeeks.map(item => item.avgImprovement),
-                    borderColor: '#667eea',
-                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                    borderWidth: 3,
-                    pointRadius: 5,
-                    pointHoverRadius: 8,
-                    tension: 0.3,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const item = sortedWeeks[context.dataIndex];
-                                return [
-                                    `Verbetering: ${context.parsed.y.toFixed(2)} punten`,
-                                    `${item.count} sessies deze week`
-                                ];
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Week (start datum)'
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Gemiddelde Verbetering'
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    function createDetailedStatsTable(entries) {
-        const techniqueStats = {};
-        
-        entries.forEach(entry => {
-            const technique = entry.techniekGebruikt || 'Onbekend';
-            const shortName = technique.replace(/\s-.*/, '');
-            
-            if (!techniqueStats[shortName]) {
-                techniqueStats[shortName] = {
-                    count: 0,
-                    totalImprovement: 0,
-                    bestImprovement: -Infinity,
-                    worstImprovement: Infinity,
-                    results: { 'zeer-goed': 0, 'goed': 0, 'matig': 0, 'geen-effect': 0, 'slechter': 0 }
-                };
-            }
-            
-            const improvement = entry.intensiteitVoor - entry.intensiteitNa;
-            const stats = techniqueStats[shortName];
-            
-            stats.count++;
-            stats.totalImprovement += improvement;
-            stats.bestImprovement = Math.max(stats.bestImprovement, improvement);
-            stats.worstImprovement = Math.min(stats.worstImprovement, improvement);
-            
-            if (entry.resultaat && stats.results.hasOwnProperty(entry.resultaat)) {
-                stats.results[entry.resultaat]++;
-            }
-        });
-
-        const sortedStats = Object.entries(techniqueStats)
-            .sort(([,a], [,b]) => b.count - a.count);
-
-        let tableHtml = `
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top: 1rem;">
-                <thead>
-                    <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                        <th style="padding: 0.75rem; text-align: left; font-weight: 600;">Techniek</th>
-                        <th style="padding: 0.75rem; text-align: center;">Sessies</th>
-                        <th style="padding: 0.75rem; text-align: center;">Gem. Verbeter.</th>
-                        <th style="padding: 0.75rem; text-align: center;">Beste</th>
-                        <th style="padding: 0.75rem; text-align: center;">Succes %</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-
-        sortedStats.forEach(([technique, stats]) => {
-            const avgImprovement = (stats.totalImprovement / stats.count).toFixed(1);
-            const successCount = stats.results['zeer-goed'] + stats.results['goed'];
-            const successRate = ((successCount / stats.count) * 100).toFixed(0);
-            
-            tableHtml += `
-                <tr style="border-bottom: 1px solid #f1f5f9;">
-                    <td style="padding: 0.75rem; font-weight: 500;">${technique}</td>
-                    <td style="padding: 0.75rem; text-align: center;">${stats.count}</td>
-                    <td style="padding: 0.75rem; text-align: center; color: ${avgImprovement >= 2 ? '#059669' : avgImprovement >= 1 ? '#f59e0b' : '#ef4444'};">
-                        ${avgImprovement} pnt
-                    </td>
-                    <td style="padding: 0.75rem; text-align: center; font-weight: 600; color: #059669;">
-                        ${stats.bestImprovement.toFixed(1)} pnt
-                    </td>
-                    <td style="padding: 0.75rem; text-align: center; color: ${successRate >= 70 ? '#059669' : successRate >= 50 ? '#f59e0b' : '#ef4444'};">
-                        ${successRate}%
-                    </td>
-                </tr>
-            `;
-        });
-
-        tableHtml += '</tbody></table>';
-        document.getElementById('detailed-stats').innerHTML = tableHtml;
-    }
-
-    function generateInsights(entries) {
-        const insights = [];
-        
-        // Calculate various metrics
-        const totalSessions = entries.length;
-        const avgImprovement = entries.reduce((sum, entry) => 
-            sum + (entry.intensiteitVoor - entry.intensiteitNa), 0) / totalSessions;
-        
-        // Technique analysis
-        const techniqueStats = {};
-        entries.forEach(entry => {
-            const technique = entry.techniekGebruikt || 'Onbekend';
-            const shortName = technique.replace(/\s-.*/, '');
-            const improvement = entry.intensiteitVoor - entry.intensiteitNa;
-            
-            if (!techniqueStats[shortName]) {
-                techniqueStats[shortName] = { improvements: [], count: 0 };
-            }
-            techniqueStats[shortName].improvements.push(improvement);
-            techniqueStats[shortName].count++;
-        });
-
-        const bestTechnique = Object.entries(techniqueStats)
-            .filter(([, stats]) => stats.count >= 3)
-            .map(([name, stats]) => ({
-                name,
-                avgImprovement: stats.improvements.reduce((a, b) => a + b, 0) / stats.count
-            }))
-            .sort((a, b) => b.avgImprovement - a.avgImprovement)[0];
-
-        // Generate insights
-        if (totalSessions >= 5) {
-            insights.push(`🎯 <strong>Je hebt al ${totalSessions} sessies voltooid</strong> - dat laat zien dat je toegewijd bent aan je welzijn!`);
-        }
-
-        if (avgImprovement >= 2) {
-            insights.push(`⚡ <strong>Uitstekende vooruitgang!</strong> Je gemiddelde verbetering van ${avgImprovement.toFixed(1)} punten per sessie is zeer positief.`);
-        } else if (avgImprovement >= 1) {
-            insights.push(`📈 <strong>Goede vooruitgang!</strong> Je gemiddelde verbetering van ${avgImprovement.toFixed(1)} punten toont dat de technieken werken.`);
-        }
-
-        if (bestTechnique) {
-            insights.push(`🏆 <strong>${bestTechnique.name}</strong> lijkt het beste voor jou te werken met een gemiddelde verbetering van ${bestTechnique.avgImprovement.toFixed(1)} punten.`);
-        }
-
-        // Recent trend analysis
-        const recentEntries = entries.slice(0, 5);
-        const recentImprovement = recentEntries.reduce((sum, entry) => 
-            sum + (entry.intensiteitVoor - entry.intensiteitNa), 0) / recentEntries.length;
-        
-        if (recentImprovement > avgImprovement * 1.2) {
-            insights.push(`📊 <strong>Je bent de laatste tijd extra effectief!</strong> Je recente sessies tonen ${recentImprovement.toFixed(1)} punten verbetering gemiddeld.`);
-        }
-
-        // Time-based insights
-        const dates = entries.map(e => e.timestamp).sort((a, b) => a - b);
-        if (dates.length >= 2) {
-            const daysBetween = Math.ceil((dates[dates.length - 1] - dates[0]) / (1000 * 60 * 60 * 24));
-            const frequency = totalSessions / Math.max(daysBetween, 1);
-            
-            if (frequency >= 0.8) {
-                insights.push(`🔥 <strong>Geweldige consistentie!</strong> Je oefent bijna dagelijks - dit is de sleutel tot succes.`);
-            } else if (frequency >= 0.4) {
-                insights.push(`✅ <strong>Goede routine!</strong> Je oefent regelmatig, wat belangrijk is voor blijvende resultaten.`);
-            }
-        }
-
-        if (insights.length > 0) {
-            document.getElementById('insights-section').style.display = 'block';
-            document.getElementById('insights-content').innerHTML = 
-                '<div style="background: #f0f9ff; border: 1px solid #0ea5e9; border-radius: 0.5rem; padding: 1rem;">' +
-                insights.map(insight => `<p style="margin: 0.5rem 0;">${insight}</p>`).join('') +
-                '</div>';
-        }
-    }
-
-    window.exportStatistics = async function() {
-        try {
-            const entries = await loadFromFirestore();
-            
-            if (!entries || entries.length === 0) {
-                showUserMessage('📝 Geen data om te exporteren', 'warning');
-                return;
-            }
-
-            let report = 'ADEMRUIMTE STATISTIEKEN RAPPORT\n';
-            report += '===================================\n';
-            report += 'Gebruiker: ' + (appState.currentUser ? (appState.currentUser.displayName || appState.currentUser.email) : 'Onbekend') + '\n';
-            report += 'Rapport datum: ' + new Date().toLocaleString('nl-BE') + '\n';
-            report += 'Periode: ' + entries[entries.length - 1].timestamp.toLocaleDateString('nl-BE') + ' - ' + entries[0].timestamp.toLocaleDateString('nl-BE') + '\n\n';
-
-            // Overview stats
-            const totalSessions = entries.length;
-            const avgImprovement = entries.reduce((sum, entry) => 
-                sum + (entry.intensiteitVoor - entry.intensiteitNa), 0) / totalSessions;
-            
-            report += 'OVERZICHT\n';
-            report += '---------\n';
-            report += `Totaal aantal sessies: ${totalSessions}\n`;
-            report += `Gemiddelde verbetering: ${avgImprovement.toFixed(2)} punten\n\n`;
-
-            // Technique statistics
-            const techniqueStats = {};
-            entries.forEach(entry => {
-                const technique = entry.techniekGebruikt || 'Onbekend';
-                const improvement = entry.intensiteitVoor - entry.intensiteitNa;
-                
-                if (!techniqueStats[technique]) {
-                    techniqueStats[technique] = { count: 0, totalImprovement: 0, improvements: [] };
-                }
-                techniqueStats[technique].count++;
-                techniqueStats[technique].totalImprovement += improvement;
-                techniqueStats[technique].improvements.push(improvement);
-            });
-
-            report += 'TECHNIEK ANALYSE\n';
-            report += '---------------\n';
-            
-            Object.entries(techniqueStats)
-                .sort(([,a], [,b]) => b.count - a.count)
-                .forEach(([technique, stats]) => {
-                    const avgImprovement = stats.totalImprovement / stats.count;
-                    report += `${technique}:\n`;
-                    report += `  - Aantal sessies: ${stats.count}\n`;
-                    report += `  - Gemiddelde verbetering: ${avgImprovement.toFixed(2)} punten\n`;
-                    report += `  - Beste resultaat: ${Math.max(...stats.improvements).toFixed(1)} punten\n\n`;
-                });
-
-            // Create downloadable file
-            const blob = new Blob([report], { type: 'text/plain; charset=utf-8' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'ademruimte-statistieken-' + new Date().toLocaleDateString('nl-BE').replace(/\//g, '-') + '.txt';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-            
-            showUserMessage('📁 Statistieken rapport geëxporteerd!', 'success');
-            
-        } catch (error) {
-            showUserMessage('❌ Fout bij exporteren: ' + error.message, 'error');
-        }
-    };
-
+    // Enhanced Firebase initialization with better error handling
     async function initializeFirebase() {
         if (appState.authInitialized) {
             log('INFO', 'Firebase already initialized.');
@@ -3083,10 +1258,10 @@
         try {
             log('INFO', 'Initializing Firebase...');
             
-            // Firebase v9+ modular imports
+            // Import Firebase modules
             const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
             const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
-            const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithRedirect, getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
 
             // Initialize Firebase
             app = initializeApp(firebaseConfig);
@@ -3096,24 +1271,7 @@
             // Set authentication persistence
             await setPersistence(auth, browserLocalPersistence);
 
-            // IMPORTANT: Handle redirect result ON PAGE LOAD for Google Auth
-            // This needs to be checked early in the app's lifecycle
-            try {
-                const result = await getRedirectResult(auth);
-                if (result) {
-                    // This means a Google sign-in redirect just completed
-                    log('SUCCESS', 'Google sign-in successful via redirect result:', result.user.email);
-                    // The onAuthStateChanged observer will handle setting the user and showing the app
-                    return true;
-                }
-            } catch (redirectError) {
-                // If there's an error during the redirect result retrieval (e.g., user cancelled)
-                log('ERROR', 'Error getting redirect result:', redirectError);
-                showUserMessage(`Fout bij Google login: ${redirectError.message}`, 'error');
-                // Don't show login screen yet, let onAuthStateChanged decide
-            }
-
-            // Setup auth state observer AFTER trying to get redirect result
+            // Setup auth state observer
             setupAuthStateObserver(onAuthStateChanged);
 
             appState.setConnectionStatus(true);
@@ -3128,52 +1286,40 @@
             appState.authInitialized = false;
             
             showUserMessage('Firebase kon niet worden geïnitialiseerd. Controleer je internetverbinding.', 'error');
-            
-            // Show login screen only if Firebase completely fails to initialize
             showLoginScreen();
             
             return false;
         }
     }
 
+    // Enhanced auth state observer
     function setupAuthStateObserver(onAuthStateChanged) {
         if (!auth) {
             log('ERROR', 'Auth not initialized - cannot setup observer');
             return;
         }
         
-        // Auth state observer
         appState.authUnsubscribe = onAuthStateChanged(auth, (user) => {
-            // Hide loading spinner
-            appState.updateUI(); // Will hide spinner and update user info
+            appState.updateUI();
             
             if (user) {
-                // User is authenticated
                 log('SUCCESS', 'User authenticated:', user.email);
                 appState.setUser(user);
                 showMainApp();
-                
-                // Load user data after UI is ready
-                setTimeout(() => {
-                    loadDagboekEntries().catch(error => {
-                        log('WARNING', 'Could not load entries on login:', error);
-                    });
-                }, 500);
             } else {
-                // User is not authenticated
                 log('INFO', 'User not authenticated');
                 appState.setUser(null);
                 showLoginScreen();
             }
         }, (error) => {
             log('ERROR', 'Auth state observer error:', error);
-            appState.updateUI(); // Will hide spinner
+            appState.updateUI();
             showUserMessage('Authenticatie fout: ' + error.message, 'error');
             showLoginScreen();
         });
     }
 
-    // Enhanced screen management
+    // Screen management
     function showLoginScreen() {
         const loginScreen = document.getElementById('login-screen');
         const mainApp = document.getElementById('main-app');
@@ -3182,7 +1328,6 @@
             loginScreen.classList.remove('hidden');
             mainApp.classList.add('hidden');
             
-            // Focus management
             setTimeout(() => {
                 const emailField = document.getElementById('login-email');
                 if (emailField) {
@@ -3202,226 +1347,93 @@
             loginScreen.classList.add('hidden');
             mainApp.classList.remove('hidden');
             
-            // Update dashboard greeting after a brief delay
             setTimeout(() => {
                 appState.updateDashboardGreeting();
             }, 100);
-            
-            // Focus management
-            const dashboard = document.querySelector('[data-tab="dashboard"]');
-            if (dashboard) dashboard.focus();
         }
         
         log('INFO', 'Switched to main app');
     }
 
-    // Enhanced authentication functions with redirect flow for Google
+    // Enhanced Google authentication with better error handling and fallback
     window.signInWithGoogle = async function() {
         const googleBtn = document.getElementById('google-login-btn');
-        const originalBtnText = googleBtn.querySelector('#google-btn-text').textContent;
-        googleBtn.querySelector('#google-btn-text').textContent = 'Bezig...';
+        const btnText = googleBtn.querySelector('#google-btn-text');
+        const originalText = btnText.textContent;
+        
+        btnText.textContent = 'Bezig...';
         googleBtn.disabled = true;
         
         if (!appState.authInitialized || !auth) {
             const initialized = await initializeFirebase();
             if (!initialized) {
                 showUserMessage('Firebase is niet beschikbaar. Probeer email/wachtwoord login.', 'warning');
-                googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
+                btnText.textContent = originalText;
                 googleBtn.disabled = false;
                 return;
             }
         }
 
         try {
-            log('INFO', 'Starting Google sign-in with redirect...');
+            log('INFO', 'Starting Google sign-in...');
             
-            const { GoogleAuthProvider, signInWithRedirect } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            // Try popup first (better UX), fallback to redirect if needed
+            const { GoogleAuthProvider, signInWithPopup, signInWithRedirect } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
             
             const provider = new GoogleAuthProvider();
             provider.setCustomParameters({ 
                 prompt: 'select_account'
             });
-            
-            await signInWithRedirect(auth, provider);
-            // This line will not be reached if redirect occurs successfully
+
+            try {
+                // Try popup first
+                const result = await signInWithPopup(auth, provider);
+                log('SUCCESS', 'Google sign-in successful via popup:', result.user.email);
+            } catch (popupError) {
+                log('WARNING', 'Popup blocked or failed, trying redirect:', popupError.code);
+                
+                if (popupError.code === 'auth/popup-blocked' || 
+                    popupError.code === 'auth/popup-closed-by-user' ||
+                    popupError.code === 'auth/cancelled-popup-request') {
+                    
+                    // Fallback to redirect
+                    showUserMessage('Popup geblokkeerd. Doorverwijzen naar Google...', 'info');
+                    await signInWithRedirect(auth, provider);
+                } else {
+                    throw popupError;
+                }
+            }
             
         } catch (error) {
             log('ERROR', 'Google sign-in failed:', error);
             
             let message = 'Google inloggen mislukt';
-            if (error.code === 'auth/popup-blocked') {
-                message = 'Login werd geblokkeerd. Controleer popup instellingen of gebruik email/wachtwoord.';
-            } else if (error.code === 'auth/network-request-failed') {
-                message = 'Netwerkfout. Controleer je internetverbinding en probeer opnieuw.';
-            } else if (error.code === 'auth/cancelled-popup-request') {
-                // User cancelled, no need to show error
-                log('INFO', 'Google sign-in cancelled by user');
-                message = 'Google inloggen geannuleerd.';
-                showUserMessage(message, 'info');
-                // Re-enable button and restore text
-                googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
-                googleBtn.disabled = false;
-                return; 
-            } else if (error.code === 'auth/too-many-requests') {
-                message = 'Te veel inlogpogingen. Probeer het later opnieuw.';
+            switch (error.code) {
+                case 'auth/network-request-failed':
+                    message = 'Netwerkfout. Controleer je internetverbinding.';
+                    break;
+                case 'auth/too-many-requests':
+                    message = 'Te veel inlogpogingen. Probeer het later opnieuw.';
+                    break;
+                case 'auth/user-disabled':
+                    message = 'Dit account is uitgeschakeld.';
+                    break;
+                case 'auth/operation-not-allowed':
+                    message = 'Google login is niet ingeschakeld voor deze app.';
+                    break;
+                default:
+                    message = `Google inloggen mislukt: ${error.message}`;
             }
             
             showUserMessage(message, 'error');
             
         } finally {
-            // Re-enable button and restore text if redirect didn't happen (i.e., error occurred or cancelled)
-            googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
+            btnText.textContent = originalText;
             googleBtn.disabled = false;
         }
     };
 
-    window.performLogout = async function() {
-        if (!confirm('Weet je zeker dat je wilt uitloggen?')) {
-            return;
-        }
-        
-        try {
-            // Stop any running services immediately
-            if (isAudioPlaying) toggleBilateralAudio();
-            if (wakeLock) releaseWakeLock();
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
-            if (breathInterval) {
-                clearInterval(breathInterval);
-                breathInterval = null;
-            }
-            
-            if (auth && auth.currentUser) {
-                const { signOut } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
-                await signOut(auth);
-                log('SUCCESS', 'User logged out successfully');
-                showUserMessage('Je bent succesvol uitgelogd!', 'success');
-            } else {
-                log('INFO', 'No user logged in to log out.');
-                showUserMessage('Je bent al uitgelogd.', 'info');
-            }
-            
-        } catch (error) {
-            log('ERROR', 'Logout failed:', error);
-            showUserMessage('Uitloggen mislukt: ' + error.message, 'error');
-        }
-    };
-
-    // Enhanced tab management with accessibility
-    window.showTab = function(tabName) {
-        // Stop audio when leaving EMDR tab
-        if (appState.currentTab === 'emdr' && tabName !== 'emdr' && isAudioPlaying) {
-            toggleBilateralAudio();
-        }
-
-        // Hide all tabs
-        document.querySelectorAll('.tab-content').forEach(tab => {
-            tab.classList.add('hidden');
-        });
-        
-        // Remove active from all buttons
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active');
-            btn.setAttribute('aria-selected', 'false');
-        });
-        
-        // Show selected tab
-        const selectedTab = document.getElementById(tabName);
-        const selectedBtn = document.querySelector(`[data-tab="${tabName}"]`);
-        
-        if (selectedTab) {
-            selectedTab.classList.remove('hidden');
-        }
-        
-        if (selectedBtn) {
-            selectedBtn.classList.add('active');
-            selectedBtn.setAttribute('aria-selected', 'true');
-        }
-        
-        appState.currentTab = tabName;
-        
-        // Load content if needed
-        if (tabName === 'dagboek') {
-            loadDagboekEntries().catch(error => {
-                log('WARNING', 'Could not load dagboek entries:', error);
-            });
-        } else if (tabName === 'statistieken') {
-            // Auto-load statistics when switching to statistics tab
-            setTimeout(() => {
-                loadStatistics().catch(error => {
-                    log('WARNING', 'Could not load statistics:', error);
-                });
-            }, 100);
-        }
-        
-        log('INFO', `Switched to tab: ${tabName}`);
-    };
-
-    // Enhanced user feedback system
-    function showUserMessage(message, type = 'info') {
-        // Remove existing message
-        const existing = document.querySelector('.user-message');
-        if (existing) existing.remove();
-        
-        const messageEl = document.createElement('div');
-        messageEl.className = `user-message alert-${type}`;
-        messageEl.style.whiteSpace = 'pre-line'; // Allow line breaks in messages
-        messageEl.textContent = message;
-        messageEl.setAttribute('role', 'alert');
-        messageEl.setAttribute('aria-live', 'polite');
-        
-        // Add close button for longer messages
-        if (message.length > 50) {
-            const closeBtn = document.createElement('button');
-            closeBtn.innerHTML = '×';
-            closeBtn.style.cssText = `
-                position: absolute;
-                top: 0.5rem;
-                right: 0.75rem;
-                background: none;
-                border: none;
-                font-size: 1.25rem;
-                cursor: pointer;
-                color: inherit;
-                opacity: 0.7;
-                line-height: 1;
-                padding: 0;
-                width: 20px;
-                height: 20px;
-            `;
-            closeBtn.onclick = () => messageEl.remove();
-            messageEl.style.paddingRight = '3rem';
-            messageEl.appendChild(closeBtn);
-        }
-        
-        document.body.appendChild(messageEl);
-        
-        // Auto-remove after 5 seconds (8 seconds for errors)
-        const delay = type === 'error' ? 8000 : 5000;
-        setTimeout(() => {
-            if (messageEl.parentNode) {
-                messageEl.style.animation = 'slideInDown 0.3s ease-out reverse';
-                setTimeout(() => messageEl.remove(), 300);
-            }
-        }, delay);
-    }
-
-    // Enhanced form handling with improved validation
-    function setupForms() {
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        
-        if (loginForm) {
-            loginForm.addEventListener('submit', handleLogin);
-        }
-        
-        if (registerForm) {
-            registerForm.addEventListener('submit', handleRegister);
-        }
-    }
-
+    // Enhanced email/password authentication
     async function handleLogin(e) {
         e.preventDefault();
         
@@ -3430,6 +1442,13 @@
         
         if (!email || !password) {
             showUserMessage('Vul alle velden in', 'warning');
+            return;
+        }
+
+        // Basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showUserMessage('Voer een geldig email adres in', 'warning');
             return;
         }
 
@@ -3458,14 +1477,23 @@
             log('ERROR', 'Email sign-in failed:', error);
             
             let message = 'Inloggen mislukt';
-            if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-                message = 'Geen account gevonden met deze gegevens';
-            } else if (error.code === 'auth/wrong-password') {
-                message = 'Verkeerd wachtwoord';
-            } else if (error.code === 'auth/invalid-email') {
-                message = 'Ongeldig email adres';
-            } else if (error.code === 'auth/too-many-requests') {
-                message = 'Te veel mislukte pogingen. Probeer het later opnieuw.';
+            switch (error.code) {
+                case 'auth/user-not-found':
+                case 'auth/invalid-credential':
+                case 'auth/invalid-email':
+                    message = 'Geen account gevonden met deze gegevens';
+                    break;
+                case 'auth/wrong-password':
+                    message = 'Verkeerd wachtwoord';
+                    break;
+                case 'auth/too-many-requests':
+                    message = 'Te veel mislukte pogingen. Probeer het later opnieuw.';
+                    break;
+                case 'auth/network-request-failed':
+                    message = 'Netwerkfout. Controleer je internetverbinding.';
+                    break;
+                default:
+                    message = `Inloggen mislukt: ${error.message}`;
             }
             
             showUserMessage(message, 'error');
@@ -3476,6 +1504,7 @@
         }
     }
 
+    // Enhanced registration
     async function handleRegister(e) {
         e.preventDefault();
         
@@ -3490,6 +1519,13 @@
         
         if (password.length < 6) {
             showUserMessage('Wachtwoord moet minimaal 6 karakters zijn', 'warning');
+            return;
+        }
+
+        // Basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            showUserMessage('Voer een geldig email adres in', 'warning');
             return;
         }
 
@@ -3521,12 +1557,21 @@
             log('ERROR', 'Registration failed:', error);
             
             let message = 'Account aanmaken mislukt';
-            if (error.code === 'auth/email-already-in-use') {
-                message = 'Dit email adres is al in gebruik. Probeer in te loggen.';
-            } else if (error.code === 'auth/weak-password') {
-                message = 'Wachtwoord is te zwak. Gebruik minimaal 6 karakters.';
-            } else if (error.code === 'auth/invalid-email') {
-                message = 'Ongeldig email adres';
+            switch (error.code) {
+                case 'auth/email-already-in-use':
+                    message = 'Dit email adres is al in gebruik. Probeer in te loggen.';
+                    break;
+                case 'auth/weak-password':
+                    message = 'Wachtwoord is te zwak. Gebruik minimaal 6 karakters.';
+                    break;
+                case 'auth/invalid-email':
+                    message = 'Ongeldig email adres';
+                    break;
+                case 'auth/network-request-failed':
+                    message = 'Netwerkfout. Controleer je internetverbinding.';
+                    break;
+                default:
+                    message = `Account aanmaken mislukt: ${error.message}`;
             }
             
             showUserMessage(message, 'error');
@@ -3537,26 +1582,110 @@
         }
     }
 
+    // Enhanced logout
+    window.performLogout = async function() {
+        if (!confirm('Weet je zeker dat je wilt uitloggen?')) {
+            return;
+        }
+        
+        try {
+            if (auth && auth.currentUser) {
+                const { signOut } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+                await signOut(auth);
+                log('SUCCESS', 'User logged out successfully');
+                showUserMessage('Je bent succesvol uitgelogd!', 'success');
+            } else {
+                log('INFO', 'No user logged in to log out.');
+                showUserMessage('Je bent al uitgelogd.', 'info');
+            }
+            
+        } catch (error) {
+            log('ERROR', 'Logout failed:', error);
+            showUserMessage('Uitloggen mislukt: ' + error.message, 'error');
+        }
+    };
+
+    // Enhanced tab management
+    window.showTab = function(tabName) {
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.classList.add('hidden');
+        });
+        
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-selected', 'false');
+        });
+        
+        const selectedTab = document.getElementById(tabName);
+        const selectedBtn = document.querySelector(`[data-tab="${tabName}"]`);
+        
+        if (selectedTab) {
+            selectedTab.classList.remove('hidden');
+        }
+        
+        if (selectedBtn) {
+            selectedBtn.classList.add('active');
+            selectedBtn.setAttribute('aria-selected', 'true');
+        }
+        
+        appState.currentTab = tabName;
+        log('INFO', `Switched to tab: ${tabName}`);
+    };
+
+    // Enhanced user feedback system
+    function showUserMessage(message, type = 'info') {
+        const existing = document.querySelector('.user-message');
+        if (existing) existing.remove();
+        
+        const messageEl = document.createElement('div');
+        messageEl.className = `user-message alert-${type}`;
+        messageEl.style.whiteSpace = 'pre-line';
+        messageEl.textContent = message;
+        messageEl.setAttribute('role', 'alert');
+        messageEl.setAttribute('aria-live', 'polite');
+        
+        if (message.length > 50) {
+            const closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '×';
+            closeBtn.style.cssText = `
+                position: absolute;
+                top: 0.5rem;
+                right: 0.75rem;
+                background: none;
+                border: none;
+                font-size: 1.25rem;
+                cursor: pointer;
+                color: inherit;
+                opacity: 0.7;
+                line-height: 1;
+                padding: 0;
+                width: 20px;
+                height: 20px;
+            `;
+            closeBtn.onclick = () => messageEl.remove();
+            messageEl.style.paddingRight = '3rem';
+            messageEl.appendChild(closeBtn);
+        }
+        
+        document.body.appendChild(messageEl);
+        
+        const delay = type === 'error' ? 8000 : 5000;
+        setTimeout(() => {
+            if (messageEl.parentNode) {
+                messageEl.style.animation = 'slideInDown 0.3s ease-out reverse';
+                setTimeout(() => messageEl.remove(), 300);
+            }
+        }, delay);
+    }
+
     // Modal management
     window.showRegisterForm = function() {
         document.getElementById('register-modal').classList.add('show');
         
-        // Enhanced focus management for mobile
         setTimeout(() => {
-            const modal = document.getElementById('register-modal');
             const nameField = document.getElementById('register-name');
-            if (nameField && modal) {
-                modal.scrollTop = 0;
+            if (nameField) {
                 nameField.focus();
-                
-                // Mobile keyboard trigger
-                if (window.innerWidth <= 768) {
-                    nameField.click();
-                    setTimeout(() => {
-                        nameField.focus();
-                        nameField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }, 100);
-                }
             }
         }, 150);
     };
@@ -3566,336 +1695,22 @@
         document.getElementById('register-form').reset();
     };
 
-    // Tip management
-    function setRandomTip() {
-        const tipElement = document.getElementById('daily-tip');
-        if (tipElement) {
-            tipElement.textContent = appState.getRandomTip();
+    // Enhanced form setup
+    function setupForms() {
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        
+        if (loginForm) {
+            loginForm.addEventListener('submit', handleLogin);
+        }
+        
+        if (registerForm) {
+            registerForm.addEventListener('submit', handleRegister);
         }
     }
 
-    window.getNewTip = function() {
-        setRandomTip();
-        showUserMessage('Nieuwe tip geladen! 💡', 'success');
-    };
-
-    // Firebase Firestore functions
-    async function saveToFirestore(entry) {
-        if (!appState.isFirebaseConnected) {
-            throw new Error('Firebase niet verbonden. Controleer je internetverbinding.');
-        }
-        
-        if (!appState.currentUser) {
-            throw new Error('Je moet ingelogd zijn om entries op te slaan.');
-        }
-
-        try {
-            log('INFO', 'Saving to Firestore...');
-
-            const { addDoc, collection, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
-
-            const docRef = await addDoc(collection(db, "dagboekEntries"), {
-                ...entry,
-                timestamp: serverTimestamp(),
-                userId: appState.currentUser.uid,
-                userEmail: appState.currentUser.email,
-                version: 1
-            });
-            
-            log('SUCCESS', 'Entry saved to Firestore with ID:', docRef.id);
-            return { id: docRef.id, success: true };
-            
-        } catch (error) {
-            log('ERROR', 'Firestore save error:', error);
-            throw error;
-        }
-    }
-
-    async function loadFromFirestore() {
-        if (!appState.isFirebaseConnected || !appState.currentUser) {
-            throw new Error('Je moet ingelogd zijn en verbonden met internet om entries te laden.');
-        }
-
-        try {
-            log('INFO', 'Loading entries from Firestore for user:', appState.currentUser.email);
-            
-            const { getDocs, collection, query, where, orderBy, limit } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
-            
-            const q = query(
-                collection(db, "dagboekEntries"), 
-                where("userId", "==", appState.currentUser.uid),
-                orderBy("timestamp", "desc"), // Order by timestamp descending
-                limit(100) // Limit to 100 most recent entries
-            );
-            
-            const querySnapshot = await getDocs(q);
-            
-            const entries = [];
-            querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                entries.push({
-                    id: doc.id,
-                    ...data,
-                    // Convert Firebase Timestamp to Date object for consistent handling
-                    timestamp: data.timestamp ? data.timestamp.toDate() : (data.clientTimestamp ? new Date(data.clientTimestamp) : new Date()),
-                    tijdstempel: data.timestamp ? data.timestamp.toDate().toLocaleString('nl-BE') : (data.clientTimestamp ? new Date(data.clientTimestamp).toLocaleString('nl-BE') : 'Onbekend'),
-                    bron: "Firebase"
-                });
-            });
-            
-            // Note: Entries are already sorted by Firestore query, no need for client-side sort here.
-            
-            log('SUCCESS', `Loaded ${entries.length} entries from Firestore`);
-            return entries;
-            
-        } catch (error) {
-            log('ERROR', 'Firestore query error:', error);
-            
-            if (error.code === 'permission-denied') {
-                throw new Error('Geen toestemming om data te laden. Log opnieuw in.');
-            } else if (error.code === 'unavailable') {
-                throw new Error('Firebase service tijdelijk niet beschikbaar. Probeer het later opnieuw.');
-            } else {
-                throw new Error('Fout bij laden van entries: ' + error.message);
-            }
-        }
-    }
-
-    // Dagboek functions
-    window.saveDagboekEntry = async function() {
-        try {
-            const entry = {
-                techniekGebruikt: appState.currentTechnique || 'Handmatige Entry',
-                trigger: document.getElementById('entry-trigger').value,
-                intensiteitVoor: parseInt(document.getElementById('entry-before').value),
-                intensiteitNa: parseInt(document.getElementById('entry-after').value),
-                resultaat: document.getElementById('entry-result').value,
-                notities: document.getElementById('entry-notes').value,
-                // Client-side timestamp as fallback/for local use before server timestamp
-                clientTimestamp: new Date().toISOString() 
-            };
-
-            // Basic validation for result
-            if (!entry.resultaat) {
-                showUserMessage('Selecteer een resultaat voor de dagboek entry.', 'warning');
-                return;
-            }
-
-            // Show saving state
-            const saveBtn = document.getElementById('save-dagboek-entry-btn');
-            const originalText = saveBtn.textContent;
-            saveBtn.textContent = '💾 Opslaan...';
-            saveBtn.disabled = true;
-
-            // Save to Firebase
-            await saveToFirestore(entry);
-            
-            // Restore button
-            saveBtn.textContent = originalText;
-            saveBtn.disabled = false;
-            
-            closeDagboekModal();
-            resetCompletedExercise();
-            
-            if (appState.currentTab === 'dagboek') {
-                await loadDagboekEntries();
-            }
-            
-            showUserMessage('✅ Entry succesvol opgeslagen!', 'success');
-            
-        } catch (error) {
-            // Restore button on error
-            const saveBtn = document.getElementById('save-dagboek-entry-btn');
-            if (saveBtn) { // Check if button exists before trying to access
-                saveBtn.textContent = '📁 Opslaan';
-                saveBtn.disabled = false;
-            }
-            
-            log('ERROR', 'Save error:', error);
-            showUserMessage('❌ Opslaan mislukt: ' + error.message, 'error');
-        }
-    };
-
-    // Helper function to reset completed exercises
-    function resetCompletedExercise() {
-        if (appState.currentTechnique) {
-            if (appState.currentTechnique.includes('Buteyko Ademhaling')) {
-                resetButeykoAfterCompletion();
-            }
-            // Add other resets here if necessary
-        }
-    }
-
-    window.loadDagboekEntries = async function() {
-        try {
-            const entries = await loadFromFirestore();
-            displayDagboekEntries(entries);
-            
-        } catch (error) {
-            log('ERROR', 'Load entries failed:', error);
-            const container = document.getElementById('dagboek-entries');
-            container.innerHTML = 
-                '<div class="alert alert-danger">' +
-                    '<strong>❌ Fout bij laden entries:</strong><br>' + 
-                    error.message +
-                    '<br><br>' +
-                    '<button id="retry-load-btn" class="btn btn-primary" style="margin-top: 1rem;">🔄 Opnieuw proberen</button>' +
-                '</div>';
-            
-            // Add event listener for retry button
-            setTimeout(() => {
-                const retryBtn = document.getElementById('retry-load-btn');
-                if (retryBtn) {
-                    retryBtn.addEventListener('click', loadDagboekEntries);
-                }
-            }, 100);
-
-            // Also clear chart if data loading failed
-            if (progressChart) {
-                progressChart.destroy();
-                progressChart = null;
-            }
-            document.getElementById('chart-empty').style.display = 'block';
-            document.getElementById('chart-legend').style.display = 'none';
-        }
-    };
-
-    // Display dagboek entries and manage chart
-    function displayDagboekEntries(entries) {
-        const container = document.getElementById('dagboek-entries');
-        
-        // Create the chart first, passing the entries
-        createProgressChart(entries);
-        
-        if (!entries || entries.length === 0) {
-            container.innerHTML = 
-                '<div class="card">' +
-                    '<h3>Nog geen entries</h3>' +
-                    '<p>Maak een dagboekentry na het gebruiken van oefeningen om patronen bij te houden.</p>' +
-                    '<button class="btn btn-primary" onclick="openDagboekModal(\'Eerste Entry\')">' +
-                        'Maak je eerste entry' +
-                    '</button>' +
-                '</div>';
-            return;
-        }
-        
-        // Add a header for the entries list
-        let entriesHtml = '<div class="card"><h3>📝 Alle Dagboek Entries</h3><p style="color: var(--text-light); margin-bottom: 1.5rem;">Chronologisch overzicht van je sessies</p></div>';
-        
-        entriesHtml += entries.map(entry => {
-            // Ensure timestamp is always a Date object for toLocaleDateString
-            const displayDate = entry.timestamp instanceof Date ? entry.timestamp : new Date(entry.clientTimestamp || 0);
-
-            return '<div class="entry-card">' +
-                '<div class="entry-header">' +
-                    '<div>' +
-                        '<div class="entry-title">' + entry.techniekGebruikt + '</div>' +
-                        '<div style="font-size: 0.8rem; color: var(--text-light);">' +
-                            displayDate.toLocaleString('nl-BE') + ' • ' + // Use the prepared Date object
-                            '<span style="color: #0891b2; font-size: 0.75rem;">' + (entry.bron || 'Onbekend') + '</span>' +
-                        '</div>' +
-                    '</div>' +
-                    '<div class="entry-result ' + entry.resultaat + '">' +
-                        getResultaatText(entry.resultaat) +
-                    '</div>' +
-                '</div>' +
-                '<div class="intensity-grid">' +
-                    '<div style="font-size: 0.85rem;">' +
-                        '<span style="color: var(--text-light);">Vóór:</span>' +
-                        '<span style="font-weight: 500; margin-left: 0.25rem; color: var(--text-dark);">' + entry.intensiteitVoor + '/10</span>' +
-                    '</div>' +
-                    '<div style="font-size: 0.85rem;">' +
-                        '<span style="color: var(--text-light);">Ná:</span>' +
-                        '<span style="font-weight: 500; margin-left: 0.25rem; color: var(--text-dark);">' + entry.intensiteitNa + '/10</span>' +
-                    '</div>' +
-                '</div>' +
-                (entry.trigger ? '<p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--text-dark);"><strong>Trigger:</strong> ' + entry.trigger + '</p>' : '') +
-                (entry.notities ? '<p style="font-size: 0.85rem; color: var(--text-dark);"><strong>Notities:</strong> ' + entry.notities + '</p>' : '') +
-            '</div>';
-        }).join('');
-        
-        container.innerHTML = entriesHtml;
-    }
-
-    // Skip dagboek functions
-    window.skipButeykoDagboek = function() { 
-        resetButeykoAfterCompletion(); 
-        showUserMessage('✅ Buteyko sessie afgerond!', 'success'); 
-    };
-
-    window.skipRitualDagboek = function() {
-        document.getElementById('ritual-complete').classList.add('hidden');
-        ritualStep = 0;
-        updateRitualDisplay();
-        showUserMessage('✅ Afkoel ritueel afgerond!', 'success');
-    };
-
-    window.skipEmdrDagboek = function() {
-        resetEmdrSession();
-        showUserMessage('✅ EMDR sessie afgerond!', 'success');
-    };
-
-    function getResultaatText(resultaat) {
-        const mapping = {
-            'zeer-goed': 'Zeer goed',
-            'goed': 'Goed',
-            'matig': 'Matig',
-            'geen-effect': 'Geen effect',
-            'slechter': 'Slechter'
-        };
-        return mapping[resultaat] || resultaat;
-    }
-
-    window.exportDagboek = async function() {
-        try {
-            const entries = await loadFromFirestore();
-            
-            if (!entries || entries.length === 0) {
-                showUserMessage('📝 Geen entries om te exporteren', 'warning');
-                return;
-            }
-            
-            let exportText = 'ADEMRUIMTE DAGBOEK EXPORT\n';
-            exportText += '================================\n';
-            exportText += 'Gebruiker: ' + (appState.currentUser ? (appState.currentUser.displayName || appState.currentUser.email) : 'Onbekend') + '\n';
-            exportText += 'Export datum: ' + new Date().toLocaleString('nl-BE') + '\n\n';
-            
-            for (let i = 0; i < entries.length; i++) {
-                const entry = entries[i];
-                const displayDate = entry.timestamp instanceof Date ? entry.timestamp : new Date(entry.clientTimestamp || 0);
-
-                exportText += 'ENTRY ' + (i + 1) + '\n';
-                exportText += 'Datum: ' + displayDate.toLocaleString('nl-BE') + '\n';
-                exportText += 'Techniek: ' + entry.techniekGebruikt + '\n';
-                exportText += 'Trigger: ' + (entry.trigger || 'Geen') + '\n';
-                exportText += 'Intensiteit vóór: ' + entry.intensiteitVoor + '/10\n';
-                exportText += 'Intensiteit ná: ' + entry.intensiteitNa + '/10\n';
-                exportText += 'Resultaat: ' + getResultaatText(entry.resultaat) + '\n';
-                exportText += 'Notities: ' + (entry.notities || 'Geen') + '\n';
-                exportText += '\n---\n\n';
-            }
-            
-            // Create downloadable file
-            const blob = new Blob([exportText], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'ademruimte-dagboek-' + new Date().toLocaleDateString('nl-BE') + '.txt';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-            
-            showUserMessage('📁 Dagboek geëxporteerd als tekstbestand!', 'success');
-            
-        } catch (error) {
-            showUserMessage('❌ Fout bij exporteren: ' + error.message, 'error');
-        }
-    };
-
-    // Comprehensive event listener setup
+    // Enhanced event listener setup
     function setupEventListeners() {
-        // Debug logging
         log('INFO', 'Setting up event listeners...');
         
         // Google login button
@@ -3903,12 +1718,9 @@
         if (googleLoginBtn) {
             googleLoginBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                log('INFO', 'Google login button clicked!');
                 signInWithGoogle();
             });
             log('SUCCESS', 'Google login button event listener attached');
-        } else {
-            log('ERROR', 'Google login button not found!');
         }
 
         // Register modal buttons
@@ -3922,24 +1734,12 @@
 
         const closeRegisterBtn = document.getElementById('close-register-btn');
         if (closeRegisterBtn) {
-            closeRegisterBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                closeRegisterModal();
-            });
+            closeRegisterBtn.addEventListener('click', closeRegisterModal);
         }
 
         const cancelRegisterBtn = document.getElementById('cancel-register-btn');
         if (cancelRegisterBtn) {
-            cancelRegisterBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                closeRegisterModal();
-            });
-        }
-
-        // Tip refresh button
-        const tipRefreshBtn = document.getElementById('tip-refresh-btn');
-        if (tipRefreshBtn) {
-            tipRefreshBtn.addEventListener('click', getNewTip);
+            cancelRegisterBtn.addEventListener('click', closeRegisterModal);
         }
 
         // Modal close on background click
@@ -3949,334 +1749,32 @@
             }
         });
 
-        // Dagboek modal buttons (moved into global scope, now directly attached)
-        const saveDagboekBtn = document.getElementById('save-dagboek-entry-btn'); // Updated ID
-        if (saveDagboekBtn) {
-            saveDagboekBtn.addEventListener('click', saveDagboekEntry);
-        }
-    }
+        // Tab navigation
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.getAttribute('data-tab');
+                showTab(tab);
+            });
+        });
 
-    // Wake Lock API for keeping screen on
-    async function requestWakeLock() {
-        try {
-            if ('wakeLock' in navigator) {
-                wakeLock = await navigator.wakeLock.request('screen');
-                log('SUCCESS', 'Wake lock activated - screen will stay on');
-                
-                wakeLock.addEventListener('release', () => {
-                    log('INFO', 'Wake lock released');
-                });
-            }
-        } catch (error) {
-            log('WARNING', 'Wake lock not supported or failed:', error);
-        }
-    }
-
-    async function releaseWakeLock() {
-        if (wakeLock) {
-            try {
-                await wakeLock.release();
-                wakeLock = null;
-                log('SUCCESS', 'Wake lock released');
-            } catch (error) {
-                log('ERROR', 'Error releasing wake lock:', error);
-            }
-        }
-    }
-
-    // Progress tracking functions - using in-memory storage instead of localStorage
-    let progressDataStore = {
-        buteyko: { sessions: 0, totalTime: 0, lastSession: null },
-        ritual: { sessions: 0, totalTime: 0, lastSession: null },
-        emdr: { sessions: 0, totalTime: 0, lastSession: null },
-        crisis: { sessions: 0, lastSession: null }
-    };
-
-    function loadProgressData() {
-        try {
-            // Try localStorage first
-            if (typeof Storage !== "undefined" && window.localStorage) {
-                const stored = localStorage.getItem('ademruimte-progress');
-                if (stored) {
-                    progressData = { ...progressDataStore, ...JSON.parse(stored) };
-                    log('SUCCESS', 'Progress data loaded from localStorage');
-                    return;
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.querySelector('.modal.show');
+                if (modal) {
+                    modal.classList.remove('show');
                 }
             }
-        } catch (error) {
-            log('WARNING', 'localStorage not available, using in-memory storage:', error.message);
-        }
-        
-        // If localStorage fails or no data, default to initial progressDataStore
-        progressData = { ...progressDataStore };
-        log('INFO', 'Using in-memory progress storage (or initial values)');
+        });
     }
 
-    function saveProgressData() {
-        try {
-            // Try localStorage first
-            if (typeof Storage !== "undefined" && window.localStorage) {
-                localStorage.setItem('ademruimte-progress', JSON.stringify(progressData));
-                log('SUCCESS', 'Progress data saved to localStorage');
-                return;
-            }
-        } catch (error) {
-            log('WARNING', 'localStorage not available, data will not persist between sessions:', error.message);
-        }
-        // No explicit in-memory fallback assignment needed as `progressData` is already updated
-    }
-
-    function trackSession(type, duration = null) {
-        if (!progressData[type]) {
-            progressData[type] = { sessions: 0, totalTime: 0, lastSession: null };
-        }
-        
-        progressData[type].sessions++;
-        if (duration) {
-            progressData[type].totalTime += duration;
-        }
-        progressData[type].lastSession = new Date().toISOString();
-        
-        saveProgressData();
-        log('SUCCESS', `Tracked ${type} session:`, progressData[type]);
-    }
-
-    // Buteyko breathing exercise functions
-    window.updateBreathingPattern = function() {
-        breathingPattern = document.getElementById('breathing-pattern').value;
-        const standardControls = document.getElementById('standard-controls');
-        const gentleControls = document.getElementById('gentle-controls');
-        
-        if (breathingPattern === 'gentle') {
-            standardControls.classList.add('hidden');
-            gentleControls.classList.remove('hidden');
-        } else {
-            standardControls.classList.remove('hidden');
-            gentleControls.classList.add('hidden');
-        }
-        
-        // Reset if currently running
-        if (breathInterval) {
-            resetBreathExercise();
-        }
-    };
-
-    window.toggleBreathExercise = function() {
-        if (breathInterval) {
-            stopBreathExercise();
-        } else {
-            startBreathExercise();
-        }
-    };
-
-    window.resetBreathExercise = function() {
-        stopBreathExercise();
-        breathCycleCount = 1;
-        gentleBreathCount = 0;
-        breathPhase = 'rest';
-        updateBreathDisplay();
-        updateBreathProgress(0);
-        document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 1/10';
-        document.getElementById('breath-complete').classList.add('hidden');
-    };
-
-    function startBreathExercise() {
-        // Request wake lock to keep screen on
-        requestWakeLock();
-        
-        // Initialize at cyclus 1
-        breathCycleCount = 1;
-        document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 1/10';
-        
-        if (breathingPattern === 'gentle') {
-            startGentleBreathing();
-        } else {
-            startStandardBreathing();
-        }
-    }
-
-    function startStandardBreathing() {
-        const inhale = parseInt(document.getElementById('inhale-duration').value);
-        const exhale = parseInt(document.getElementById('exhale-duration').value);
-        const hold = parseInt(document.getElementById('hold-duration').value);
-        
-        breathCycleDuration = inhale + exhale + hold;
-        breathPhase = 'inhale';
-        breathPhaseTime = 0;
-        
-        document.getElementById('breath-btn').innerHTML = '⏸️ Stop Buteyko';
-        document.getElementById('breath-btn').className = 'btn btn-red';
-        
-        breathInterval = setInterval(() => {
-            updateStandardBreathCycle();
-        }, 100);
-    }
-
-    function startGentleBreathing() {
-        const cycleTime = parseInt(document.getElementById('gentle-cycle').value);
-        const pauseTime = parseInt(document.getElementById('gentle-pause').value);
-        
-        breathPhase = 'gentle-breath';
-        breathPhaseTime = 0;
-        gentleBreathCount = 0;
-        
-        document.getElementById('breath-btn').innerHTML = '⏸️ Stop Buteyko';
-        document.getElementById('breath-btn').className = 'btn btn-red';
-        
-        breathInterval = setInterval(() => {
-            updateGentleBreathCycle();
-        }, 100);
-    }
-
-    function stopBreathExercise() {
-        if (breathInterval) {
-            clearInterval(breathInterval);
-            breathInterval = null;
-        }
-        
-        // Release wake lock
-        releaseWakeLock();
-        
-        breathPhase = 'rest';
-        updateBreathDisplay();
-        updateBreathProgress(0);
-        
-        document.getElementById('breath-btn').innerHTML = '▶️ Start Buteyko';
-        document.getElementById('breath-btn').className = 'btn btn-cyan';
-    }
-
-    function updateStandardBreathCycle() {
-        const inhale = parseInt(document.getElementById('inhale-duration').value);
-        const exhale = parseInt(document.getElementById('exhale-duration').value);
-        const hold = parseInt(document.getElementById('hold-duration').value);
-        
-        breathPhaseTime += 0.1;
-        
-        // Update phase based on timing
-        let progress = 0;
-        
-        if (breathPhase === 'inhale') {
-            progress = (breathPhaseTime / inhale) * 100;
-            if (breathPhaseTime >= inhale) {
-                breathPhase = 'exhale';
-                breathPhaseTime = 0;
-            }
-        } else if (breathPhase === 'exhale') {
-            progress = (breathPhaseTime / exhale) * 100;
-            if (breathPhaseTime >= exhale) {
-                breathPhase = 'hold';
-                breathPhaseTime = 0;
-            }
-        } else if (breathPhase === 'hold') {
-            progress = (breathPhaseTime / hold) * 100;
-            if (breathPhaseTime >= hold) {
-                breathPhase = 'inhale';
-                breathPhaseTime = 0;
-                breathCycleCount++;
-                document.getElementById('breath-cycle-counter').textContent = `Cyclus: ${breathCycleCount}/10`;
-                
-                // Complete after 10 cycles
-                if (breathCycleCount > 10) {
-                    stopBreathExercise();
-                    trackSession('buteyko', 10 * breathCycleDuration);
-                    document.getElementById('breath-complete').classList.remove('hidden');
-                    appState.currentTechnique = 'Buteyko Ademhaling - 10 Cycli Voltooid';
-                    log('SUCCESS', 'Buteyko session completed');
-                    return;
-                }
-            }
-        }
-        
-        updateBreathDisplay();
-        updateBreathProgress(Math.min(progress, 100));
-    }
-
-    function updateGentleBreathCycle() {
-        const cycleTime = parseInt(document.getElementById('gentle-cycle').value);
-        const pauseTime = parseInt(document.getElementById('gentle-pause').value);
-        
-        breathPhaseTime += 0.1;
-        let progress = 0;
-        
-        if (breathPhase === 'gentle-breath') {
-            progress = (breathPhaseTime / cycleTime) * 100;
-            if (breathPhaseTime >= cycleTime) {
-                breathPhase = 'hold';
-                breathPhaseTime = 0;
-                gentleBreathCount++;
-            }
-        } else if (breathPhase === 'hold') {
-            progress = (breathPhaseTime / pauseTime) * 100;
-            if (breathPhaseTime >= pauseTime) {
-                breathPhase = 'gentle-breath';
-                breathPhaseTime = 0;
-                breathCycleCount++;
-                document.getElementById('breath-cycle-counter').textContent = `Cyclus: ${breathCycleCount}/10`;
-                
-                // Complete after 10 cycles
-                if (breathCycleCount > 10) {
-                    stopBreathExercise();
-                    trackSession('buteyko', 10 * (cycleTime + pauseTime));
-                    document.getElementById('breath-complete').classList.remove('hidden');
-                    appState.currentTechnique = 'Buteyko Ademhaling - 10 Cycli Voltooid';
-                    log('SUCCESS', 'Buteyko gentle session completed');
-                    return;
-                }
-            }
-        }
-        
-        updateBreathDisplay();
-        updateBreathProgress(Math.min(progress, 100));
-    }
-
-    function updateBreathDisplay() {
-        const display = document.getElementById('breath-display');
-        const progressBar = document.getElementById('breath-progress');
-        
-        display.className = `breath-display ${breathPhase}`;
-        progressBar.className = `breath-progress ${breathPhase}`;
-        
-        switch (breathPhase) {
-            case 'inhale':
-                display.textContent = '🌬️ Inademen';
-                break;
-            case 'exhale':
-                display.textContent = '💨 Uitademen';
-                break;
-            case 'hold':
-                display.textContent = '⏸️ Pauze';
-                break;
-            case 'gentle-breath':
-                display.textContent = `🌬️ Zachte Ademhaling`;
-                break;
-            case 'rest':
-            default:
-                display.textContent = 'Klik op start om te beginnen';
-                break;
-        }
-    }
-
-    function updateBreathProgress(percentage) {
-        document.getElementById('breath-progress').style.width = percentage + '%';
-    }
-
-    function resetButeykoAfterCompletion() {
-        document.getElementById('breath-complete').classList.add('hidden');
-        breathCycleCount = 1;
-        gentleBreathCount = 0;
-        breathPhase = 'rest';
-        updateBreathDisplay();
-        updateBreathProgress(0);
-        document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 1/10';
-    }
-
-    // Network status monitoring
+    // Network monitoring
     function setupNetworkMonitoring() {
         window.addEventListener('online', () => {
             appState.isOnline = true;
             appState.updateConnectionDisplay();
             log('INFO', 'Network connection restored');
-            // Try to re-initialize Firebase if it was disconnected
+            
             if (!appState.isFirebaseConnected && appState.authInitialized) {
                 initializeFirebase();
             }
@@ -4290,60 +1788,46 @@
         });
     }
 
-    // Keyboard navigation enhancements
-    function setupKeyboardNavigation() {
-        document.addEventListener('keydown', (e) => {
-            // Tab navigation with arrow keys
-            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-                const activeTab = document.querySelector('.tab-btn.active');
-                if (activeTab && document.activeElement === activeTab) {
-                    e.preventDefault();
-                    
-                    const tabs = Array.from(document.querySelectorAll('.tab-btn'));
-                    const currentIndex = tabs.indexOf(activeTab);
-                    
-                    let nextIndex;
-                    if (e.key === 'ArrowLeft') {
-                        nextIndex = currentIndex > 0 ? currentIndex - 1 : tabs.length - 1;
-                    } else {
-                        nextIndex = currentIndex < tabs.length - 1 ? currentIndex + 1 : 0;
-                    }
-                    
-                    tabs[nextIndex].focus();
-                    tabs[nextIndex].click();
-                }
+    // Main initialization
+    document.addEventListener('DOMContentLoaded', async function() {
+        log('INFO', 'Starting Ademruimte app initialization');
+        
+        try {
+            // Setup basic components
+            setupForms();
+            setupNetworkMonitoring();
+            setupEventListeners();
+            
+            // Initialize Firebase
+            log('INFO', 'Attempting Firebase initialization...');
+            const success = await initializeFirebase();
+            
+            if (!success) {
+                log('WARNING', 'Firebase initialization failed. Showing login screen.');
+                showLoginScreen();
             }
             
-            // Escape key to close modals
-            if (e.key === 'Escape') {
-                const modal = document.querySelector('.modal.show');
-                if (modal) {
-                    modal.classList.remove('show');
-                }
-            }
-        });
-    }
-
-    // Range slider updates
-    function setupRangeSliders() {
-        const sliders = [
-            { input: 'emdr-intensity-slider', output: 'emdr-intensity-value' },
-            { input: 'entry-before', output: 'entry-before-value' },
-            { input: 'entry-after', output: 'entry-after-value' }
-        ];
-
-        sliders.forEach(slider => {
-            const input = document.getElementById(slider.input);
-            const output = document.getElementById(slider.output);
+            log('SUCCESS', 'App initialization completed');
             
-            if (input && output) {
-                input.addEventListener('input', function() {
-                    output.textContent = this.value;
-                });
-                // Set initial value display
-                output.textContent = input.value;
+        } catch (error) {
+            log('ERROR', 'App initialization failed:', error);
+            
+            const authLoading = document.getElementById('auth-loading');
+            if (authLoading) {
+                authLoading.style.display = 'none';
             }
-        });
-    }
+            
+            showUserMessage('Er is een kritieke fout opgetreden bij het laden van de app. Herlaad de pagina.', 'error');
+            showLoginScreen();
+        }
+    });
 
-    //
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        appState.cleanup();
+        log('INFO', 'App shutting down');
+    });
+</script>
+
+</body>
+</html>

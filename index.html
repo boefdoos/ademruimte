@@ -203,6 +203,13 @@
         background-clip: text;
     }
 
+    .card h3 {
+        color: var(--text-dark);
+        margin-bottom: 0.75rem;
+        font-size: clamp(1rem, 3vw, 1.25rem);
+        font-weight: 600;
+    }
+
     /* Buttons */
     .btn {
         padding: 1rem 1.5rem;
@@ -345,6 +352,51 @@
         outline: none;
         border-color: #06b6d4;
         box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+    }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 80px;
+        line-height: 1.5;
+    }
+
+    /* Range input styling */
+    .range-input {
+        width: 100%;
+        margin: 0.75rem 0;
+        height: 8px;
+        -webkit-appearance: none;
+        appearance: none;
+        background: #e5e7eb;
+        border-radius: 5px;
+        outline: none;
+    }
+
+    .range-input::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 24px;
+        height: 24px;
+        background: #3b82f6;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    .range-input::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+        background: #3b82f6;
+        border-radius: 50%;
+        cursor: pointer;
+        border: none;
+    }
+
+    .range-value {
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.25rem;
+        color: #3b82f6;
+        margin: 0.5rem 0;
     }
 
     /* Google button */
@@ -537,6 +589,221 @@
         100% { transform: rotate(360deg); }
     }
 
+    /* Breathing exercise styling */
+    .breath-display {
+        font-size: 2rem;
+        font-weight: bold;
+        text-align: center;
+        margin: 1.5rem 0;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        transition: all 0.3s ease;
+        min-height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .breath-display.inhale {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #1e40af;
+        transform: scale(1.02);
+    }
+
+    .breath-display.exhale {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        color: #065f46;
+        transform: scale(0.98);
+    }
+
+    .breath-display.hold {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #92400e;
+        transform: scale(1.01);
+    }
+
+    .breath-display.rest {
+        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+        color: var(--text-light);
+    }
+
+    .breath-display.gentle-breath {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #1e40af;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 0.75rem;
+        background: #e5e7eb;
+        border-radius: 0.375rem;
+        overflow: hidden;
+        margin: 1rem 0;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: #10b981;
+        border-radius: 0.375rem;
+        transition: width 0.3s ease;
+    }
+
+    .breath-progress {
+        height: 100%;
+        border-radius: 0.375rem;
+        transition: width linear;
+    }
+
+    .breath-progress.inhale {
+        background: #3b82f6;
+    }
+
+    .breath-progress.exhale {
+        background: #10b981;
+    }
+
+    .breath-progress.gentle-breath {
+        background: #06b6d4;
+    }
+
+    .breath-controls {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        margin: 1rem 0;
+    }
+
+    .breath-setting {
+        text-align: center;
+        padding: 1rem;
+        background: #f8fafc;
+        border-radius: 0.5rem;
+        border: 1px solid #e2e8f0;
+    }
+
+    .breath-setting label {
+        display: block;
+        font-size: 0.875rem;
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+    }
+
+    .breath-setting input {
+        width: 80px;
+        text-align: center;
+        font-size: 1.125rem;
+        font-weight: bold;
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        padding: 0.5rem;
+        min-height: var(--touch-target);
+    }
+
+    /* Timer display */
+    .timer-display {
+        font-size: 2.5rem;
+        font-weight: bold;
+        text-align: center;
+        color: var(--text-dark);
+        margin: 1.5rem 0;
+        font-family: 'Courier New', monospace;
+    }
+
+    /* Technique cards */
+    .technique-card {
+        background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        backdrop-filter: blur(10px);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .technique-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+    }
+
+    .technique-card h4 {
+        color: #667eea;
+        margin-bottom: 0.75rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .technique-card p {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #4b5563;
+    }
+
+    /* Step list styling */
+    .step-list {
+        list-style: none;
+        margin: 1rem 0;
+    }
+
+    .step-list li {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 0.9rem;
+    }
+
+    .step-list li:before {
+        content: "✓ ";
+        color: #10b981;
+        font-weight: bold;
+    }
+
+    /* Entry cards for dagboek */
+    .entry-card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        transition: var(--transition-base);
+    }
+
+    .entry-card:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .entry-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+        gap: 1rem;
+    }
+
+    .entry-title {
+        font-weight: 600;
+        color: var(--text-dark);
+        font-size: 0.95rem;
+    }
+
+    .entry-result {
+        font-size: 0.8rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .entry-result.zeer-goed { color: #059669; }
+    .entry-result.goed { color: #10b981; }
+    .entry-result.matig { color: #f59e0b; }
+    .entry-result.geen-effect { color: var(--text-light); }
+    .entry-result.slechter { color: #ef4444; }
+
+    .intensity-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
     /* Status indicators */
     .status-connected {
         background: #059669 !important;
@@ -557,6 +824,21 @@
     @keyframes pulse {
         0%, 100% { opacity: 0.7; }
         50% { opacity: 1; }
+    }
+
+    /* Chart styling */
+    .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .chart-legend {
+        padding: 0.75rem;
+        background: #f8fafc;
+        border-radius: 0.5rem;
+        border: 1px solid #e2e8f0;
     }
 
     /* Utility classes */
@@ -612,6 +894,16 @@
             padding: 0.375rem 0.5rem;
         }
 
+        .breath-display {
+            font-size: 1.5rem;
+            padding: 1rem;
+            min-height: 80px;
+        }
+
+        .timer-display {
+            font-size: 2rem;
+        }
+
         /* Prevent zoom on input focus for iOS */
         .form-input, .form-select, .form-textarea {
             font-size: 16px;
@@ -628,6 +920,21 @@
             font-size: 0.65rem;
             max-width: 90px;
             padding: 0.25rem 0.375rem;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .breath-controls {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .breath-display {
+            font-size: 2.5rem;
+            padding: 2rem;
+        }
+
+        .timer-display {
+            font-size: 3rem;
         }
     }
 </style>
@@ -811,6 +1118,8 @@
             <button class="tab-btn" data-tab="buteyko">🌬️ Buteyko</button>
             <button class="tab-btn" data-tab="ritueel">🕐 Ritueel</button>
             <button class="tab-btn" data-tab="gapen">🥱 Gapen</button>
+            <button class="tab-btn" data-tab="emdr">💜 EMDR</button>
+            <button class="tab-btn" data-tab="dagboek">📖 Dagboek</button>
         </nav>
 
         <main class="container">
@@ -849,6 +1158,18 @@
                         <p>Technieken voor gaapaanvallen</p>
                         <button class="btn btn-orange" onclick="showTab('gapen')">Bekijk Technieken</button>
                     </div>
+
+                    <div class="card">
+                        <h3>💜 EMDR Zelfhulp</h3>
+                        <p>Voor luchthonger-gevoelens</p>
+                        <button class="btn btn-purple" onclick="showTab('emdr')">Start EMDR</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>📖 Dagboek</h3>
+                        <p>Bijhouden van patronen</p>
+                        <button class="btn btn-primary" onclick="showTab('dagboek')">Open Dagboek</button>
+                    </div>
                 </div>
 
                 <div class="alert alert-info">
@@ -876,35 +1197,41 @@
                     <p>Voor wanneer je dat benauwde gevoel voelt opkomen</p>
                 </div>
 
-                <div class="card">
-                    <h3>1. Paradoxale Ademhaling</h3>
+                <div class="technique-card">
+                    <h4>1. Paradoxale Ademhaling</h4>
                     <p>Start met bewust zeer kleine, korte ademhalingen. Na 3-4 van deze mini-ademhalingen, probeer een iets langere uitademing.</p>
                 </div>
 
-                <div class="card">
-                    <h3>2. Purse-lip Ademhaling</h3>
+                <div class="technique-card">
+                    <h4>2. Purse-lip Ademhaling</h4>
                     <p>Tuut je lippen bij het uitademen om lichte weerstand te creëren. Dit helpt bij luchthonger en stabiliseert CO2-niveaus.</p>
                 </div>
 
-                <div class="card">
-                    <h3>3. IJswater Techniek</h3>
+                <div class="technique-card">
+                    <h4>3. IJswater Techniek</h4>
                     <p>Breng iets kouds tegen je gezicht (vooral rond wangen en ogen) om de duikreflex te activeren.</p>
                 </div>
 
-                <div class="card">
-                    <h3>4. Herframing</h3>
+                <div class="technique-card">
+                    <h4>4. Herframing</h4>
                     <p>"Dit is geen echt zuurstoftekort, dit is een sensatie die voorbij zal gaan. Mijn lichaam krijgt genoeg zuurstof."</p>
                 </div>
 
                 <div class="card">
                     <h3>5-4-3-2-1 Grounding</h3>
-                    <ul style="list-style: none; padding-left: 0;">
-                        <li>✓ 5 dingen die je ZIET</li>
-                        <li>✓ 4 dingen die je VOELT</li>
-                        <li>✓ 3 dingen die je HOORT</li>
-                        <li>✓ 2 dingen die je RUIKT</li>
-                        <li>✓ 1 ding dat je PROEFT</li>
+                    <ul class="step-list">
+                        <li>5 dingen die je ZIET</li>
+                        <li>4 dingen die je VOELT</li>
+                        <li>3 dingen die je HOORT</li>
+                        <li>2 dingen die je RUIKT</li>
+                        <li>1 ding dat je PROEFT</li>
                     </ul>
+                </div>
+
+                <div class="card">
+                    <button class="btn btn-primary" onclick="openDagboekModal('Crisis Hulp Technieken')">
+                        📝 Dagboek Entry Maken
+                    </button>
                 </div>
             </div>
 
@@ -913,22 +1240,63 @@
                 <div class="card">
                     <h2>🌬️ Buteyko Ademhaling</h2>
                     <p>Verbeter je CO2 tolerantie en verminder hyperventilatie neiging</p>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>💡 Hoe het werkt:</strong> Buteyko ademhaling helpt je lichaam wennen aan hogere CO2 niveaus, wat hyperventilatie-episodes kan verminderen.
+                </div>
+
+                <div class="card">
+                    <h3>Ademhalingsinstellingen</h3>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="font-weight: 500; margin-bottom: 0.5rem; display: block;">Ademhalingspatroon:</label>
+                        <select id="breathing-pattern" class="form-select" onchange="updateBreathingPattern()">
+                            <option value="standard">Standaard (4-6-3)</option>
+                            <option value="gentle">Zacht (2x ademhaling + pauze)</option>
+                        </select>
+                    </div>
                     
-                    <div class="alert alert-info">
-                        <strong>💡 Hoe het werkt:</strong> Buteyko ademhaling helpt je lichaam wennen aan hogere CO2 niveaus, wat hyperventilatie-episodes kan verminderen.
+                    <div id="standard-controls" class="breath-controls">
+                        <div class="breath-setting">
+                            <label>Inademen (sec)</label>
+                            <input type="number" id="inhale-duration" value="4" min="2" max="10">
+                        </div>
+                        <div class="breath-setting">
+                            <label>Uitademen (sec)</label>
+                            <input type="number" id="exhale-duration" value="6" min="3" max="15">
+                        </div>
+                        <div class="breath-setting">
+                            <label>Pauze (sec)</label>
+                            <input type="number" id="hold-duration" value="3" min="1" max="20">
+                        </div>
                     </div>
 
-                    <div style="text-align: center; margin: 2rem 0;">
-                        <div id="breath-display" style="font-size: 2rem; font-weight: bold; padding: 2rem; border-radius: 1rem; background: #f8fafc; color: var(--text-dark); margin-bottom: 1rem;">
-                            Klik op start om te beginnen
+                    <div id="gentle-controls" class="breath-controls hidden">
+                        <div class="breath-setting">
+                            <label>Cyclus Tijd (sec)</label>
+                            <input type="number" id="gentle-cycle" value="10" min="8" max="15" readonly>
                         </div>
-                        
-                        <div style="margin: 1rem 0;">
-                            <div style="background: #e5e7eb; height: 0.75rem; border-radius: 0.375rem; overflow: hidden;">
-                                <div id="breath-progress" style="height: 100%; background: #10b981; border-radius: 0.375rem; width: 0%; transition: width 0.3s ease;"></div>
-                            </div>
+                        <div class="breath-setting">
+                            <label>Pauze (sec)</label>
+                            <input type="number" id="gentle-pause" value="4" min="2" max="8">
                         </div>
+                        <div class="breath-setting">
+                            <label>Ademhalingen</label>
+                            <div style="font-weight: bold; color: #3b82f6; margin-top: 0.5rem;">2x per cyclus</div>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="card">
+                    <div class="breath-display rest" id="breath-display">
+                        Klik op start om te beginnen
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="breath-progress" id="breath-progress" style="width: 0%"></div>
+                    </div>
+
+                    <div style="text-align: center; margin: 1rem 0;">
                         <div id="breath-cycle-counter" style="font-size: 1.125rem; color: var(--text-light); margin-bottom: 1rem;">
                             Cyclus: 1/10
                         </div>
@@ -942,10 +1310,35 @@
                             </button>
                         </div>
                     </div>
+                </div>
 
-                    <div id="breath-complete" class="alert alert-success hidden">
-                        <strong>✅ Buteyko Sessie Voltooid!</strong><br>
-                        Geweldig! Je hebt 10 ademhalingscycli succesvol afgerond.
+                <div id="breath-complete" class="alert alert-success hidden">
+                    <strong>✅ Buteyko Sessie Voltooid!</strong><br>
+                    Geweldig! Je hebt 10 ademhalingscycli succesvol afgerond.
+                    <br><br>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="openDagboekModal('Buteyko Ademhaling - 10 Cycli Voltooid')">
+                            📝 Maak Dagboek Entry
+                        </button>
+                        <button class="btn btn-orange" onclick="skipButeykoDagboek()">
+                            ⏭️ Overslaan
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Buteyko Principes</h3>
+                    <div class="technique-card">
+                        <h4>Zachte Ademhaling</h4>
+                        <p>Adem zo zacht mogelijk - stel je voor dat je een veertje voor je neus niet wilt laten bewegen.</p>
+                    </div>
+                    <div class="technique-card">
+                        <h4>Langere Uitademing</h4>
+                        <p>De uitademing is langer dan de inademing om CO2 te behouden en het autonome zenuwstelsel te kalmeren.</p>
+                    </div>
+                    <div class="technique-card">
+                        <h4>Comfortabele Pauze</h4>
+                        <p>De adempauze na uitademing mag nooit geforceerd aanvoelen - stop als het oncomfortabel wordt.</p>
                     </div>
                 </div>
             </div>
@@ -955,35 +1348,44 @@
                 <div class="card">
                     <h2>🕐 Afkoel Ritueel</h2>
                     <p>Voor na periodes van intensief denkwerk (5-10 minuten)</p>
+                </div>
+
+                <div class="card">
+                    <h3 id="ritual-title">Stap 1: Fysieke Mini-Reset</h3>
+                    <div class="timer-display" id="timer-display">2:00</div>
                     
-                    <div style="text-align: center; margin: 2rem 0;">
-                        <h3 id="ritual-title">Stap 1: Fysieke Mini-Reset</h3>
-                        <div style="font-size: 2.5rem; font-weight: bold; margin: 1.5rem 0; font-family: 'Courier New', monospace;" id="timer-display">2:00</div>
-                        
-                        <div id="ritual-instructions">
-                            <ul style="list-style: none; padding-left: 0; text-align: left; max-width: 400px; margin: 0 auto;">
-                                <li style="padding: 0.5rem 0;">✓ Sta op en strek je volledig uit</li>
-                                <li style="padding: 0.5rem 0;">✓ Schud je armen en benen los</li>
-                                <li style="padding: 0.5rem 0;">✓ Rol je schouders 5x naar achteren</li>
-                                <li style="padding: 0.5rem 0;">✓ Maak kleine cirkels met je hoofd (5x elke richting)</li>
-                            </ul>
-                        </div>
+                    <div id="ritual-instructions">
+                        <ul class="step-list">
+                            <li>Sta op en strek je volledig uit</li>
+                            <li>Schud je armen en benen los</li>
+                            <li>Rol je schouders 5x naar achteren</li>
+                            <li>Maak kleine cirkels met je hoofd (5x elke richting)</li>
+                        </ul>
+                    </div>
 
-                        <div class="button-group">
-                            <button id="timer-btn" class="btn btn-green" onclick="startTimer()">▶️ Start Timer</button>
-                            <button class="btn btn-primary" onclick="nextRitualStep()" id="next-btn" style="display: none;">Volgende Stap</button>
-                            <button class="btn btn-cyan" onclick="skipToNextStep()">⏭️ Overslaan</button>
-                            <button class="btn btn-orange" onclick="resetRitual()">🔄 Reset</button>
-                        </div>
+                    <div class="button-group">
+                        <button id="timer-btn" class="btn btn-green" onclick="startTimer()">▶️ Start Timer</button>
+                        <button class="btn btn-primary" onclick="nextRitualStep()" id="next-btn" style="display: none;">Volgende Stap</button>
+                        <button class="btn btn-cyan" onclick="skipToNextStep()" id="skip-btn">⏭️ Overslaan</button>
+                        <button class="btn btn-orange" onclick="resetRitual()">🔄 Reset</button>
+                    </div>
 
-                        <div style="background: #e5e7eb; height: 0.75rem; border-radius: 0.375rem; overflow: hidden; margin: 1rem 0;">
-                            <div id="ritual-progress" style="height: 100%; background: #10b981; border-radius: 0.375rem; width: 20%; transition: width 0.3s ease;"></div>
-                        </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="ritual-progress" style="width: 20%"></div>
                     </div>
 
                     <div id="ritual-complete" class="alert alert-success hidden">
                         <strong>✅ Afkoel Ritueel Voltooid!</strong><br>
                         Fantastisch! Je hebt alle 5 stappen van het afkoel ritueel doorlopen.
+                        <br><br>
+                        <div class="button-group">
+                            <button class="btn btn-primary" onclick="openDagboekModal('Afkoel Ritueel - 5 Stappen Voltooid')">
+                                📝 Maak Dagboek Entry
+                            </button>
+                            <button class="btn btn-orange" onclick="skipRitualDagboek()">
+                                ⏭️ Overslaan
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -995,31 +1397,255 @@
                     <p>Voor wanneer je die vervelende gaapaanvallen voelt opkomen</p>
                 </div>
 
-                <div class="card">
-                    <h3>Lipremming-techniek</h3>
+                <div class="technique-card">
+                    <h4>Lipremming-techniek</h4>
                     <p>Druk je lippen zachtjes op elkaar wanneer je een gaapneiging voelt. Laat de lucht langzaam door je neus in en uit gaan.</p>
                 </div>
 
-                <div class="card">
-                    <h3>Mini-ademhalingen</h3>
+                <div class="technique-card">
+                    <h4>Mini-ademhalingen</h4>
                     <p>Neem bewust 3-4 zeer kleine, ondiepe ademhalingen door je neus. Hiermee voorkom je de grote 'zucht-ademhaling'.</p>
                 </div>
 
-                <div class="card">
-                    <h3>Tongpositie veranderen</h3>
+                <div class="technique-card">
+                    <h4>Tongpositie veranderen</h4>
                     <p>Plaats je tongpunt tegen je gehemelte (achter je voortanden). Dit vermindert de neiging tot gapen.</p>
                 </div>
 
-                <div class="card">
-                    <h3>Water drinken</h3>
+                <div class="technique-card">
+                    <h4>Water drinken</h4>
                     <p>Neem kleine slokjes water wanneer je merkt dat je begint te gapen. Dit doorbreekt het ademhalingspatroon.</p>
                 </div>
 
                 <div class="alert alert-info">
                     <strong>💡 Belangrijk om te onthouden:</strong> Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Ze geven je de kans om preventief in te grijpen voordat een volledige hyperventilatie-episode begint.
                 </div>
+
+                <div class="card">
+                    <h3>Gedachte-Breaking Technieken</h3>
+                    <div class="technique-card">
+                        <strong>Paradoxale intentie:</strong> "Oké hersenen, jullie willen dat ik ga gapen? Prima, ik ga nu heel bewust gapen"
+                    </div>
+                    <div class="technique-card">
+                        <strong>Herframing:</strong> "Mijn brein probeert me te beschermen, maar ik hoef niet te reageren"
+                    </div>
+                    <div class="technique-card">
+                        <strong>Aandacht verplaatsen:</strong> Tel 5 blauwe dingen die je kunt zien
+                    </div>
+                </div>
+
+                <div class="card">
+                    <button class="btn btn-primary" onclick="openDagboekModal('Gaap Preventie Technieken')">
+                        📝 Dagboek Entry Maken
+                    </button>
+                </div>
+            </div>
+
+            <!-- EMDR Tab -->
+            <div id="emdr" class="tab-content hidden">
+                <div class="card">
+                    <h2>💜 EMDR Zelfhulp</h2>
+                    <p>Voor luchthonger-gevoelens (dit is ondersteuning, geen vervanging voor professionele EMDR)</p>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>⚠️ Gebruik dit alleen voor milde tot matige gevoelens. Stop als je je overweldigd voelt.</strong>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>🎧 Bilaterale Audio:</strong> Voor de beste ervaring, gebruik koptelefoon of oortjes. Zet het volume op een comfortabel niveau voordat je begint.
+                </div>
+
+                <!-- Audio Controls -->
+                <div class="card">
+                    <h3>🔊 Bilaterale Audio Stimulatie</h3>
+                    <p style="margin-bottom: 1rem;">Een instelbare toon die van links naar rechts beweegt om bilaterale hersenstimulatie te ondersteunen.</p>
+                    
+                    <div class="breath-controls">
+                        <div class="breath-setting">
+                            <label>Volume (%)</label>
+                            <input type="number" id="audio-volume" value="30" min="10" max="100" step="10">
+                        </div>
+                        <div class="breath-setting">
+                            <label>Snelheid (sec)</label>
+                            <input type="number" id="audio-speed" value="2" min="1" max="5" step="0.5">
+                        </div>
+                        <div class="breath-setting">
+                            <label>Toonhoogte (Hz)</label>
+                            <input type="number" id="audio-frequency" value="880" min="60" max="1000" step="10">
+                            <div style="font-size: 0.7rem; color: var(--text-light); margin-top: 0.25rem;">60-1000 Hz</div>
+                        </div>
+                        <div class="breath-setting">
+                            <label>Status</label>
+                            <div id="audio-status" style="font-weight: bold; color: var(--text-light); margin-top: 0.5rem;">Gestopt</div>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="audio-btn" class="btn btn-purple" onclick="toggleBilateralAudio()">
+                            🔊 Start Audio
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 id="emdr-title">Stap 1: Voorbereiding</h3>
+                    <div id="emdr-content">
+                        <p>Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt.</p>
+                    </div>
+
+                    <div id="emdr-intensity" class="hidden">
+                        <div class="form-group">
+                            <label class="form-label">Intensiteit van luchthonger-gevoel (1-10):</label>
+                            <input type="range" min="1" max="10" value="5" class="range-input" id="emdr-intensity-slider">
+                            <div class="range-value" id="emdr-intensity-value">5</div>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="emdr-prev-btn" class="btn btn-orange" onclick="prevEmdrStep()" style="display: none;">Vorige</button>
+                        <button id="emdr-next-btn" class="btn btn-purple" onclick="nextEmdrStep()">Volgende</button>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="emdr-progress" style="width: 20%"></div>
+                    </div>
+
+                    <div id="emdr-complete" class="alert alert-success hidden">
+                        <strong>✅ EMDR Zelfhulp Sessie Voltooid!</strong><br>
+                        Goed gedaan! Je hebt alle 5 stappen van de EMDR zelfhulp doorlopen.
+                        <br><br>
+                        <div class="button-group">
+                            <button class="btn btn-primary" onclick="openDagboekModal('EMDR Zelfhulp - 5 Stappen Voltooid')">
+                                📝 Maak Dagboek Entry
+                            </button>
+                            <button class="btn btn-orange" onclick="skipEmdrDagboek()">
+                                ⏭️ Overslaan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dagboek Tab -->
+            <div id="dagboek" class="tab-content hidden">
+                <div class="card">
+                    <h2>📖 Dagboek</h2>
+                    <p>Overzicht van je sessies en vooruitgang</p>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="openDagboekModal('Handmatige Entry')">
+                            ➕ Nieuwe Entry
+                        </button>
+                        <button class="btn btn-green" onclick="loadDagboekEntries()">
+                            🔄 Vernieuw
+                        </button>
+                        <button class="btn btn-orange" onclick="exportDagboek()">
+                            📥 Export Dagboek
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Vooruitgang Grafiek -->
+                <div class="card">
+                    <h3>📊 Je Vooruitgang</h3>
+                    <p style="color: var(--text-light); margin-bottom: 1rem;">Intensiteit scores over tijd - lagere scores betekenen meer verbetering</p>
+                    
+                    <div class="chart-container" style="position: relative; height: 300px; margin: 1rem 0;">
+                        <canvas id="progress-chart" style="max-height: 300px;"></canvas>
+                    </div>
+                    
+                    <div id="chart-legend" class="chart-legend" style="display: none; margin-top: 1rem;">
+                        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; font-size: 0.85rem;">
+                            <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                <div style="width: 12px; height: 12px; background: #ef4444; border-radius: 2px;"></div>
+                                <span>Vóór oefening</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                <div style="width: 12px; height: 12px; background: #10b981; border-radius: 2px;"></div>
+                                <span>Ná oefening</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="chart-empty" class="alert alert-info" style="text-align: center;">
+                        <strong>📈 Geen data beschikbaar</strong><br>
+                        Maak een paar dagboek entries om je vooruitgang te zien!
+                    </div>
+                </div>
+
+                <div id="dagboek-entries">
+                    <!-- Entries worden hier geladen -->
+                </div>
+
+                <div class="card">
+                    <h3>Patronen om naar uit te kijken</h3>
+                    <ul class="step-list">
+                        <li>Welke technieken het beste werken voor jou</li>
+                        <li>Tijdstippen waarop klachten vaker voorkomen</li>
+                        <li>Specifieke triggers (werk, stress, bepaalde gedachten)</li>
+                        <li>Verband tussen maagklachten en ademhalingsproblemen</li>
+                        <li>Verbetering in intensiteit scores over tijd</li>
+                    </ul>
+                </div>
             </div>
         </main>
+    </div>
+
+    <!-- Dagboek Modal -->
+    <div id="dagboek-modal" class="modal" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📝 Dagboek Entry</h3>
+                <button class="close-btn" onclick="closeDagboekModal()">&times;</button>
+            </div>
+            
+            <form id="dagboek-form">
+                <div class="form-group">
+                    <label class="form-label" for="entry-trigger">Situatie/Trigger:</label>
+                    <input type="text" id="entry-trigger" class="form-input" placeholder="Bijv. na intensief werken">
+                </div>
+
+                <div class="grid">
+                    <div class="form-group">
+                        <label class="form-label" for="entry-before">Intensiteit vóór oefening (1-10):</label>
+                        <input type="range" min="1" max="10" value="5" class="range-input" id="entry-before">
+                        <div class="range-value" id="entry-before-value">5</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="entry-after">Intensiteit ná oefening (1-10):</label>
+                        <input type="range" min="1" max="10" value="5" class="range-input" id="entry-after">
+                        <div class="range-value" id="entry-after-value">5</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="entry-result">Resultaat:</label>
+                    <select id="entry-result" class="form-select">
+                        <option value="">Selecteer resultaat...</option>
+                        <option value="zeer-goed">Zeer goed - volledig opgelost</option>
+                        <option value="goed">Goed - duidelijke verbetering</option>
+                        <option value="matig">Matig - kleine verbetering</option>
+                        <option value="geen-effect">Geen effect</option>
+                        <option value="slechter">Iets slechter</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="entry-notes">Notities:</label>
+                    <textarea id="entry-notes" class="form-textarea" placeholder="Wat viel je op?"></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn btn-primary" id="save-dagboek-entry-btn">
+                        📁 Opslaan
+                    </button>
+                    <button type="button" class="btn btn-orange" onclick="closeDagboekModal()">
+                        Annuleren
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <footer style="text-align: center; padding: 2rem 1rem; color: var(--text-light); font-size: 0.8rem;">
@@ -1060,16 +1686,34 @@
     let currentUser = null;
     let isFirebaseConnected = false;
     let authInitialized = false;
+    let currentTab = 'dashboard';
+    let currentTechnique = '';
     
     // Exercise variables
     let breathInterval = null;
     let breathPhase = 'rest';
     let breathCycleCount = 1;
     let breathPhaseTime = 0;
+    let breathCycleDuration = 0;
+    let breathingPattern = 'standard';
+    let gentleBreathCount = 0;
     
     let timerInterval = null;
     let currentTime = 0;
     let ritualStep = 0;
+    let emdrStep = 0;
+
+    // Audio variables for EMDR
+    let audioContext = null;
+    let oscillator = null;
+    let gainNode = null;
+    let pannerNode = null;
+    let audioInterval = null;
+    let isAudioPlaying = false;
+    let panPosition = -1;
+
+    // Progress chart
+    let progressChart = null;
 
     // Tips array
     const tips = [
@@ -1080,7 +1724,9 @@
         "Een koude kompres op je gezicht activeert de duikreflex en kalmeert het zenuwstelsel.",
         "Grounding technieken zoals 5-4-3-2-1 helpen je geest terug naar het hier en nu te brengen.",
         "Zachte ademhaling is effectiever dan diepe ademhaling bij hyperventilatie.",
-        "Regelmatige oefening van ademhalingstechnieken vermindert de kans op episodes."
+        "Regelmatige oefening van ademhalingstechnieken vermindert de kans op episodes.",
+        "Het bijhouden van patronen in je dagboek helpt je triggers te identificeren.",
+        "Na intensief denkwerk heeft je lichaam een afkoel ritueel nodig om te ontspannen."
     ];
 
     // Ritual steps data
@@ -1134,6 +1780,35 @@
                 "Neem één bewuste stap in die richting",
                 "Feliciteer jezelf - je hebt een goede overgang gemaakt"
             ]
+        }
+    ];
+
+    // EMDR Steps
+    const emdrSteps = [
+        {
+            title: "Stap 1: Voorbereiding",
+            content: "Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt.",
+            showIntensity: false
+        },
+        {
+            title: "Stap 2: Identificeer het Gevoel",
+            content: "Denk aan het luchthonger-gevoel. Waar voel je het in je lichaam? Geef het een intensiteit score van 1-10.",
+            showIntensity: true
+        },
+        {
+            title: "Stap 3: Bilaterale Stimulatie",
+            content: "Start de bilaterale audio als je dit nog niet hebt gedaan. Focus op het gevoel terwijl je naar de bewegende toon luistert. Laat gedachten en gevoelens vrijelijk komen en gaan.",
+            showIntensity: false
+        },
+        {
+            title: "Stap 4: Check-in",
+            content: "Stop de audio. Hoe voelt het luchthonger-gevoel nu? Is de intensiteit veranderd? Geef een nieuwe score van 1-10.",
+            showIntensity: true
+        },
+        {
+            title: "Stap 5: Afsluiting",
+            content: "Neem een paar diepe, langzame ademhalingen. Visualiseer een veilige, kalme plek. Je hebt goed werk gedaan. Drink wat water als je dat nodig hebt.",
+            showIntensity: false
         }
     ];
 
@@ -1257,6 +1932,7 @@
     function showMainApp() {
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('main-app').classList.remove('hidden');
+        setTimeout(() => updateDashboardGreeting(), 100);
         log('INFO', 'Switched to main app');
     }
 
@@ -1304,6 +1980,15 @@
                 if (user) {
                     console.log('✅ User authenticated, showing main app');
                     showMainApp();
+                    
+                    // Load user data after UI is ready
+                    setTimeout(() => {
+                        if (currentTab === 'dagboek') {
+                            loadDagboekEntries().catch(error => {
+                                log('WARNING', 'Could not load entries on login:', error);
+                            });
+                        }
+                    }, 500);
                 } else {
                     console.log('❌ No user, showing login screen');
                     showLoginScreen();
@@ -1466,533 +2151,4 @@
         const email = document.getElementById('register-email').value.trim();
         const password = document.getElementById('register-password').value;
         
-        console.log('🆕 Registration data:', { name, email, passwordLength: password.length });
-        
-        if (!name || !email || !password) {
-            showUserMessage('Vul alle velden in', 'warning');
-            return;
-        }
-        
-        if (password.length < 6) {
-            showUserMessage('Wachtwoord moet minimaal 6 karakters zijn', 'warning');
-            return;
-        }
-
-        if (!authInitialized || !auth) {
-            console.log('⚠️ Firebase not initialized for registration');
-            const initialized = await initializeFirebase();
-            if (!initialized) {
-                showUserMessage('Firebase niet beschikbaar. Herlaad de pagina.', 'error');
-                return;
-            }
-        }
-
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        
-        try {
-            submitBtn.textContent = 'Account aanmaken...';
-            submitBtn.disabled = true;
-            
-            console.log('🆕 Creating user account...');
-            const { createUserWithEmailAndPassword, updateProfile } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
-            
-            const result = await createUserWithEmailAndPassword(auth, email, password);
-            console.log('✅ User created:', result.user.uid);
-            
-            console.log('👤 Updating profile...');
-            await updateProfile(result.user, { displayName: name });
-            console.log('✅ Profile updated');
-            
-            closeRegisterModal();
-            showUserMessage('Account succesvol aangemaakt!', 'success');
-            
-        } catch (error) {
-            console.error('❌ Registration failed:', error);
-            console.error('Error details:', {
-                name: error.name,
-                message: error.message,
-                code: error.code
-            });
-            
-            let message = 'Account aanmaken mislukt';
-            if (error.code === 'auth/email-already-in-use') {
-                message = 'Dit email adres is al in gebruik. Probeer in te loggen.';
-            } else if (error.code === 'auth/weak-password') {
-                message = 'Wachtwoord is te zwak. Gebruik minimaal 6 karakters.';
-            } else if (error.code === 'auth/invalid-email') {
-                message = 'Ongeldig email adres';
-            }
-            
-            showUserMessage(message, 'error');
-            
-        } finally {
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-        }
-    }
-
-    window.performLogout = async function() {
-        if (!confirm('Weet je zeker dat je wilt uitloggen?')) {
-            return;
-        }
-        
-        try {
-            console.log('🚪 Logging out...');
-            if (auth && auth.currentUser) {
-                const { signOut } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
-                await signOut(auth);
-                console.log('✅ User logged out successfully');
-                showUserMessage('Je bent succesvol uitgelogd!', 'success');
-            }
-        } catch (error) {
-            console.error('❌ Logout failed:', error);
-            showUserMessage('Uitloggen mislukt: ' + error.message, 'error');
-        }
-    };
-
-    // Tab management
-    window.showTab = function(tabName) {
-        // Hide all tabs
-        document.querySelectorAll('.tab-content').forEach(tab => {
-            tab.classList.add('hidden');
-        });
-        
-        // Remove active from all buttons
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        
-        // Show selected tab
-        const selectedTab = document.getElementById(tabName);
-        const selectedBtn = document.querySelector(`[data-tab="${tabName}"]`);
-        
-        if (selectedTab) {
-            selectedTab.classList.remove('hidden');
-        }
-        
-        if (selectedBtn) {
-            selectedBtn.classList.add('active');
-        }
-        
-        log('INFO', `Switched to tab: ${tabName}`);
-    };
-
-    // Modal functions
-    window.showRegisterForm = function() {
-        document.getElementById('register-modal').classList.add('show');
-    };
-
-    function closeRegisterModal() {
-        document.getElementById('register-modal').classList.remove('show');
-        document.getElementById('register-form').reset();
-    }
-
-    // Tip management
-    function setRandomTip() {
-        const tipElement = document.getElementById('daily-tip');
-        if (tipElement) {
-            const randomTip = tips[Math.floor(Math.random() * tips.length)];
-            tipElement.textContent = randomTip;
-        }
-    }
-
-    window.getNewTip = function() {
-        setRandomTip();
-        showUserMessage('Nieuwe tip geladen! 💡', 'success');
-    };
-
-    // Breathing exercise functions
-    window.toggleBreathExercise = function() {
-        if (breathInterval) {
-            stopBreathExercise();
-        } else {
-            startBreathExercise();
-        }
-    };
-
-    window.resetBreathExercise = function() {
-        stopBreathExercise();
-        breathCycleCount = 1;
-        breathPhase = 'rest';
-        updateBreathDisplay();
-        updateBreathProgress(0);
-        document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 1/10';
-        document.getElementById('breath-complete').classList.add('hidden');
-    };
-
-    function startBreathExercise() {
-        breathCycleCount = 1;
-        breathPhase = 'inhale';
-        breathPhaseTime = 0;
-        
-        document.getElementById('breath-btn').innerHTML = '⏸️ Stop Buteyko';
-        document.getElementById('breath-btn').className = 'btn btn-red';
-        
-        breathInterval = setInterval(() => {
-            updateBreathCycle();
-        }, 100);
-    }
-
-    function stopBreathExercise() {
-        if (breathInterval) {
-            clearInterval(breathInterval);
-            breathInterval = null;
-        }
-        
-        breathPhase = 'rest';
-        updateBreathDisplay();
-        updateBreathProgress(0);
-        
-        document.getElementById('breath-btn').innerHTML = '▶️ Start Buteyko';
-        document.getElementById('breath-btn').className = 'btn btn-cyan';
-    }
-
-    function updateBreathCycle() {
-        const inhale = 4;
-        const exhale = 6; 
-        const hold = 3;
-        
-        breathPhaseTime += 0.1;
-        let progress = 0;
-        
-        if (breathPhase === 'inhale') {
-            progress = (breathPhaseTime / inhale) * 100;
-            if (breathPhaseTime >= inhale) {
-                breathPhase = 'exhale';
-                breathPhaseTime = 0;
-            }
-        } else if (breathPhase === 'exhale') {
-            progress = (breathPhaseTime / exhale) * 100;
-            if (breathPhaseTime >= exhale) {
-                breathPhase = 'hold';
-                breathPhaseTime = 0;
-            }
-        } else if (breathPhase === 'hold') {
-            progress = (breathPhaseTime / hold) * 100;
-            if (breathPhaseTime >= hold) {
-                breathPhase = 'inhale';
-                breathPhaseTime = 0;
-                breathCycleCount++;
-                document.getElementById('breath-cycle-counter').textContent = `Cyclus: ${breathCycleCount}/10`;
-                
-                if (breathCycleCount > 10) {
-                    stopBreathExercise();
-                    document.getElementById('breath-complete').classList.remove('hidden');
-                    log('SUCCESS', 'Buteyko session completed');
-                    return;
-                }
-            }
-        }
-        
-        updateBreathDisplay();
-        updateBreathProgress(Math.min(progress, 100));
-    }
-
-    function updateBreathDisplay() {
-        const display = document.getElementById('breath-display');
-        
-        switch (breathPhase) {
-            case 'inhale':
-                display.textContent = '🌬️ Inademen';
-                display.style.background = 'linear-gradient(135deg, #dbeafe, #bfdbfe)';
-                display.style.color = '#1e40af';
-                break;
-            case 'exhale':
-                display.textContent = '💨 Uitademen';
-                display.style.background = 'linear-gradient(135deg, #d1fae5, #a7f3d0)';
-                display.style.color = '#065f46';
-                break;
-            case 'hold':
-                display.textContent = '⏸️ Pauze';
-                display.style.background = 'linear-gradient(135deg, #fef3c7, #fde68a)';
-                display.style.color = '#92400e';
-                break;
-            case 'rest':
-            default:
-                display.textContent = 'Klik op start om te beginnen';
-                display.style.background = '#f8fafc';
-                display.style.color = 'var(--text-dark)';
-                break;
-        }
-    }
-
-    function updateBreathProgress(percentage) {
-        document.getElementById('breath-progress').style.width = percentage + '%';
-    }
-
-    // Timer functions for Ritual
-    window.startTimer = function() {
-        const timerDisplay = document.getElementById('timer-display');
-        const timerBtn = document.getElementById('timer-btn');
-        const nextBtn = document.getElementById('next-btn');
-        
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-            timerBtn.innerHTML = '▶️ Start Timer';
-            timerBtn.className = 'btn btn-green';
-            nextBtn.style.display = 'block';
-            return;
-        }
-        
-        currentTime = ritualSteps[ritualStep].duration;
-        timerBtn.innerHTML = '⏸️ Stop Timer';
-        timerBtn.className = 'btn btn-red';
-        nextBtn.style.display = 'none';
-        
-        timerInterval = setInterval(() => {
-            currentTime--;
-            const minutes = Math.floor(currentTime / 60);
-            const seconds = currentTime % 60;
-            timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            
-            if (currentTime <= 0) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                timerBtn.innerHTML = '▶️ Start Timer';
-                timerBtn.className = 'btn btn-green';
-                nextBtn.style.display = 'block';
-                showUserMessage('⏰ Timer afgelopen! Tijd voor de volgende stap.', 'success');
-            }
-        }, 1000);
-    };
-
-    window.nextRitualStep = function() {
-        if (ritualStep < ritualSteps.length - 1) {
-            ritualStep++;
-            updateRitualDisplay();
-        } else {
-            document.getElementById('ritual-complete').classList.remove('hidden');
-            log('SUCCESS', 'Ritual completed');
-        }
-    };
-
-    window.skipToNextStep = function() {
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-            document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
-            document.getElementById('timer-btn').className = 'btn btn-green';
-        }
-        nextRitualStep();
-    };
-
-    window.resetRitual = function() {
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-        ritualStep = 0;
-        updateRitualDisplay();
-        document.getElementById('ritual-complete').classList.add('hidden');
-        document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
-        document.getElementById('timer-btn').className = 'btn btn-green';
-        document.getElementById('next-btn').style.display = 'none';
-    };
-
-    function updateRitualDisplay() {
-        const step = ritualSteps[ritualStep];
-        
-        document.getElementById('ritual-title').textContent = step.title;
-        
-        const minutes = Math.floor(step.duration / 60);
-        const seconds = step.duration % 60;
-        document.getElementById('timer-display').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-        currentTime = step.duration;
-        
-        const instructionsHtml = '<ul style="list-style: none; padding-left: 0; text-align: left; max-width: 400px; margin: 0 auto;">' + 
-            step.instructions.map(instruction => `<li style="padding: 0.5rem 0;">✓ ${instruction}</li>`).join('') +
-            '</ul>';
-        document.getElementById('ritual-instructions').innerHTML = instructionsHtml;
-        
-        const progress = ((ritualStep + 1) / ritualSteps.length) * 100;
-        document.getElementById('ritual-progress').style.width = progress + '%';
-        
-        document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
-        document.getElementById('timer-btn').className = 'btn btn-green';
-        document.getElementById('next-btn').style.display = 'none';
-        
-        if (timerInterval) {
-            clearInterval(timerInterval);
-            timerInterval = null;
-        }
-    }
-
-    // Event listeners setup with detailed logging
-    function setupEventListeners() {
-        console.log('🔧 Setting up event listeners...');
-        
-        try {
-            // Google login
-            const googleBtn = document.getElementById('google-login-btn');
-            if (googleBtn) {
-                googleBtn.addEventListener('click', signInWithGoogle);
-                console.log('✅ Google login button listener attached');
-            } else {
-                console.error('❌ Google login button not found');
-            }
-            
-            // Login form
-            const loginForm = document.getElementById('login-form');
-            if (loginForm) {
-                loginForm.addEventListener('submit', handleLogin);
-                console.log('✅ Login form listener attached');
-            } else {
-                console.error('❌ Login form not found');
-            }
-            
-            // Register modal buttons
-            const showRegisterBtn = document.getElementById('show-register-btn');
-            if (showRegisterBtn) {
-                showRegisterBtn.addEventListener('click', showRegisterForm);
-                console.log('✅ Show register button listener attached');
-            }
-            
-            const registerForm = document.getElementById('register-form');
-            if (registerForm) {
-                registerForm.addEventListener('submit', handleRegister);
-                console.log('✅ Register form listener attached');
-            }
-            
-            const cancelRegisterBtn = document.getElementById('cancel-register-btn');
-            if (cancelRegisterBtn) {
-                cancelRegisterBtn.addEventListener('click', closeRegisterModal);
-                console.log('✅ Cancel register button listener attached');
-            }
-            
-            // Register modal close button
-            const registerCloseBtn = document.querySelector('#register-modal .close-btn');
-            if (registerCloseBtn) {
-                registerCloseBtn.addEventListener('click', closeRegisterModal);
-                console.log('✅ Register close button listener attached');
-            }
-            
-            // Tip refresh
-            const tipRefreshBtn = document.getElementById('tip-refresh-btn');
-            if (tipRefreshBtn) {
-                tipRefreshBtn.addEventListener('click', getNewTip);
-                console.log('✅ Tip refresh button listener attached');
-            }
-            
-            // Tab navigation
-            const tabButtons = document.querySelectorAll('.tab-btn');
-            console.log(`🔧 Found ${tabButtons.length} tab buttons`);
-            tabButtons.forEach((btn, index) => {
-                btn.addEventListener('click', () => {
-                    const tab = btn.getAttribute('data-tab');
-                    console.log(`🔄 Tab clicked: ${tab}`);
-                    showTab(tab);
-                });
-                console.log(`✅ Tab button ${index + 1} listener attached`);
-            });
-            
-            // Modal close on background click
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('modal')) {
-                    e.target.classList.remove('show');
-                }
-            });
-            
-            console.log('🎉 All event listeners setup completed successfully');
-            
-        } catch (error) {
-            console.error('❌ Error setting up event listeners:', error);
-            throw error; // Re-throw to be caught by main initialization
-        }
-    }
-
-    // Initialize app with comprehensive debugging
-    document.addEventListener('DOMContentLoaded', async function() {
-        console.log('🎯 DOMContentLoaded fired - starting app initialization');
-        console.log('🌐 User agent:', navigator.userAgent);
-        console.log('🌐 Online status:', navigator.onLine);
-        
-        try {
-            // Show loading spinner initially
-            const authLoading = document.getElementById('auth-loading');
-            if (authLoading) {
-                authLoading.style.display = 'inline-block';
-                console.log('⏳ Showing auth loading spinner');
-            }
-            
-            // Initialize UI components first
-            console.log('🎨 Initializing UI components...');
-            updateUserInfo();
-            updateConnectionStatus(false);
-            setRandomTip();
-            updateRitualDisplay();
-            
-            setupEventListeners();
-            console.log('✅ UI components initialized');
-            
-            // Initialize Firebase immediately
-            console.log('🔥 Starting Firebase initialization immediately...');
-            const success = await initializeFirebase();
-            
-            if (!success) {
-                console.log('❌ Firebase initialization failed, showing login screen');
-                showLoginScreen();
-            } else {
-                console.log('✅ Firebase initialized successfully');
-                // Auth state observer will handle showing the right screen
-            }
-            
-            console.log('🎉 App initialization completed');
-            
-        } catch (error) {
-            console.error('💥 Critical error during app initialization:', error);
-            console.error('Error details:', {
-                name: error.name,
-                message: error.message,
-                stack: error.stack
-            });
-            
-            // Hide loading spinner on critical failure
-            const authLoading = document.getElementById('auth-loading');
-            if (authLoading) {
-                authLoading.style.display = 'none';
-            }
-            
-            showUserMessage('Er is een kritieke fout opgetreden. Check de console voor details.', 'error');
-            showLoginScreen();
-        }
-    });
-
-    // Additional debugging for network issues
-    window.addEventListener('online', () => {
-        console.log('🌐 Network connection restored');
-        updateConnectionStatus(isFirebaseConnected);
-    });
-
-    window.addEventListener('offline', () => {
-        console.log('🌐 Network connection lost');
-        updateConnectionStatus(false);
-        showUserMessage('Internetverbinding verloren.', 'warning');
-    });
-
-    // Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
-        console.log('🚪 App shutting down');
-        if (timerInterval) clearInterval(timerInterval);
-        if (breathInterval) clearInterval(breathInterval);
-    });
-
-    // Add a test function for debugging
-    window.testFirebase = async function() {
-        console.log('🧪 Testing Firebase connection...');
-        console.log('Auth object:', auth);
-        console.log('Current user:', currentUser);
-        console.log('Auth initialized:', authInitialized);
-        console.log('Firebase connected:', isFirebaseConnected);
-        
-        if (auth) {
-            console.log('Auth state:', auth.currentUser ? 'Logged in' : 'Not logged in');
-        }
-    };
-
-    console.log('📜 Script loaded successfully - waiting for DOMContentLoaded');
-</script>
-
-</body>
-</html>
+        console

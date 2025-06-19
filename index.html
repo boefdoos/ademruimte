@@ -1007,6 +1007,11 @@
                     Log in om je vooruitgang op te slaan en te synchroniseren tussen al je apparaten.
                 </p>
 
+                <div class="alert alert-info" style="font-size: 0.8rem; margin-bottom: 1.5rem;">
+                    <strong>💻 Browser ondersteuning:</strong> Deze app werkt het beste in moderne browsers (Chrome, Firefox, Safari, Edge). 
+                    Zorg ervoor dat JavaScript en popups zijn ingeschakeld.
+                </div>
+
                 <!-- Google Login -->
                 <button id="google-login-btn" class="google-btn" aria-label="Inloggen met Google account">
                     <svg width="18" height="18" viewBox="0 0 24 24">
@@ -1936,7 +1941,7 @@
         log('INFO', 'Switched to main app');
     }
 
-    // Firebase initialization with detailed logging
+    // Firebase initialization with enhanced error handling
     async function initializeFirebase() {
         if (authInitialized) {
             console.log('✅ Firebase already initialized');
@@ -1951,58 +1956,87 @@
                 projectId: firebaseConfig.projectId
             });
             
-            // Test if we can access Firebase modules
+            // Test network connectivity first
+            if (!navigator.onLine) {
+                throw new Error('No internet connection available');
+            }
+            
+            // Test if we can access Firebase modules with timeout
             console.log('📦 Loading Firebase modules...');
-            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
-            const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
-            const { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, signOut } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            const modulePromise = Promise.all([
+                import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js"),
+                import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js"),
+                import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js")
+            ]);
+            
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Firebase modules loading timeout')), 15000)
+            );
+            
+            const [appModule, firestoreModule, authModule] = await Promise.race([modulePromise, timeoutPromise]);
+            
+            const { initializeApp } = appModule;
+            const { getFirestore } = firestoreModule;
+            const { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, signOut } = authModule;
             
             console.log('✅ Firebase modules loaded successfully');
 
-            // Initialize Firebase
+            // Initialize Firebase with error catching
             console.log('🔧 Initializing Firebase app...');
             app = initializeApp(firebaseConfig);
-            console.log('✅ Firebase app initialized');
+            console.log('✅ Firebase app initialized:', app.name);
+            
+            auth = getAuth(app);
+            console.log('✅ Auth initialized, state:', auth.currentUser ? 'Has user' : 'No user');
             
             db = getFirestore(app);
             console.log('✅ Firestore initialized');
-            
-            auth = getAuth(app);
-            console.log('✅ Auth initialized');
 
-            // Set up auth state observer with detailed logging
+            // Set up auth state observer with enhanced error handling
             console.log('👁️ Setting up auth state observer...');
-            onAuthStateChanged(auth, (user) => {
-                console.log('🔔 Auth state changed:', user ? `User: ${user.email}` : 'No user');
-                currentUser = user;
-                updateUserInfo();
-                
-                if (user) {
-                    console.log('✅ User authenticated, showing main app');
-                    showMainApp();
+            const unsubscribe = onAuthStateChanged(auth, 
+                (user) => {
+                    console.log('🔔 Auth state changed:', user ? `User: ${user.email} (${user.uid})` : 'No user');
+                    currentUser = user;
+                    updateUserInfo();
                     
-                    // Load user data after UI is ready
-                    setTimeout(() => {
-                        if (currentTab === 'dagboek') {
-                            loadDagboekEntries().catch(error => {
-                                log('WARNING', 'Could not load entries on login:', error);
-                            });
-                        }
-                    }, 500);
-                } else {
-                    console.log('❌ No user, showing login screen');
+                    if (user) {
+                        console.log('✅ User authenticated, showing main app');
+                        showMainApp();
+                        
+                        // Load user data after UI is ready
+                        setTimeout(() => {
+                            if (currentTab === 'dagboek') {
+                                loadDagboekEntries().catch(error => {
+                                    log('WARNING', 'Could not load entries on login:', error);
+                                });
+                            }
+                        }, 500);
+                    } else {
+                        console.log('❌ No user, showing login screen');
+                        showLoginScreen();
+                    }
+                }, 
+                (error) => {
+                    console.error('❌ Auth state observer error:', error);
+                    updateUserInfo(); // Hide spinner
+                    showUserMessage('Authenticatie fout: ' + error.message, 'error');
                     showLoginScreen();
                 }
-            }, (error) => {
-                console.error('❌ Auth state observer error:', error);
-                updateUserInfo(); // Hide spinner
-                showUserMessage('Authenticatie fout: ' + error.message, 'error');
-                showLoginScreen();
-            });
+            );
+
+            // Store unsubscribe function for cleanup
+            window.authUnsubscribe = unsubscribe;
 
             updateConnectionStatus(true);
             authInitialized = true;
             console.log('🎉 Firebase initialization completed successfully');
+            
+            // Test auth readiness
+            console.log('🧪 Testing auth readiness...');
+            console.log('Auth currentUser:', auth.currentUser);
+            console.log('Auth ready state:', auth.authStateReady ? 'Ready' : 'Not ready');
+            
             return true;
 
         } catch (error) {
@@ -2010,28 +2044,40 @@
             console.error('Error details:', {
                 name: error.name,
                 message: error.message,
-                code: error.code,
+                code: error.code || 'No code',
                 stack: error.stack
             });
             
             updateConnectionStatus(false);
             authInitialized = false;
             
-            showUserMessage('Firebase kon niet worden geïnitialiseerd. Details in console.', 'error');
+            let userMessage = 'Firebase kon niet worden geïnitialiseerd.';
+            if (error.message.includes('timeout')) {
+                userMessage += ' Netwerkverbinding te traag.';
+            } else if (error.message.includes('No internet')) {
+                userMessage += ' Geen internetverbinding.';
+            } else {
+                userMessage += ' Check de console voor details.';
+            }
+            
+            showUserMessage(userMessage, 'error');
             showLoginScreen();
             return false;
         }
     }
 
-    // Authentication functions with enhanced debugging
+    // Enhanced Google Sign-In with better error handling
     window.signInWithGoogle = async function() {
         console.log('🔵 Google sign-in button clicked');
         const googleBtn = document.getElementById('google-login-btn');
         const originalText = googleBtn.textContent;
+        
+        // Immediate UI feedback
         googleBtn.textContent = 'Bezig...';
         googleBtn.disabled = true;
 
         try {
+            // Ensure Firebase is initialized
             if (!authInitialized || !auth) {
                 console.log('⚠️ Firebase not initialized, initializing now...');
                 const initialized = await initializeFirebase();
@@ -2040,42 +2086,89 @@
                 }
             }
 
+            // Verify auth object is ready
+            if (!auth || typeof auth.signInWithPopup !== 'function') {
+                console.log('⚠️ Auth object not ready, waiting...');
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                if (!auth) {
+                    throw new Error('Auth object not available after wait');
+                }
+            }
+
             console.log('🔵 Starting Google popup sign-in...');
-            const { GoogleAuthProvider, signInWithPopup } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            
+            // Import auth functions fresh
+            const authModule = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            const { GoogleAuthProvider, signInWithPopup } = authModule;
+            
             const provider = new GoogleAuthProvider();
             provider.setCustomParameters({
                 prompt: 'select_account'
             });
             
-            console.log('🔵 Opening popup...');
-            const result = await signInWithPopup(auth, provider);
-            console.log('✅ Google sign-in successful:', result.user.email);
+            // Add scopes for better user info
+            provider.addScope('email');
+            provider.addScope('profile');
+            
+            console.log('🔵 Opening popup with provider:', provider);
+            
+            // Create a timeout promise for the popup
+            const signInPromise = signInWithPopup(auth, provider);
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Google sign-in timeout')), 60000)
+            );
+            
+            const result = await Promise.race([signInPromise, timeoutPromise]);
+            
+            console.log('✅ Google sign-in successful:', {
+                uid: result.user.uid,
+                email: result.user.email,
+                displayName: result.user.displayName
+            });
+            
+            // Force UI update
+            setTimeout(() => {
+                if (result.user) {
+                    currentUser = result.user;
+                    updateUserInfo();
+                    showMainApp();
+                }
+            }, 500);
             
         } catch (error) {
             console.error('❌ Google sign-in failed:', error);
             console.error('Error details:', {
                 name: error.name,
                 message: error.message,
-                code: error.code
+                code: error.code || 'No error code'
             });
             
             let message = 'Google inloggen mislukt';
             if (error.code === 'auth/popup-blocked') {
-                message = 'Login werd geblokkeerd. Controleer popup instellingen.';
-            } else if (error.code === 'auth/cancelled-popup-request') {
-                message = 'Login geannuleerd door gebruiker.';
-            } else if (error.code === 'auth/popup-closed-by-user') {
-                message = 'Login popup gesloten.';
+                message = 'Login werd geblokkeerd. Sta popups toe voor deze site.';
+            } else if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
+                message = 'Login geannuleerd.';
+                // Don't show error for user cancellation
+                googleBtn.textContent = originalText;
+                googleBtn.disabled = false;
+                return;
+            } else if (error.message.includes('timeout')) {
+                message = 'Login duurde te lang. Probeer opnieuw.';
             } else if (error.message.includes('Firebase initialization failed')) {
                 message = 'Firebase kon niet worden geïnitialiseerd. Herlaad de pagina.';
+            } else if (error.code === 'auth/network-request-failed') {
+                message = 'Netwerkfout. Controleer je internetverbinding.';
             }
+            
             showUserMessage(message, 'error');
         } finally {
+            // Always restore button state
             googleBtn.textContent = originalText;
             googleBtn.disabled = false;
         }
     };
 
+    // Enhanced Email Login
     async function handleLogin(e) {
         e.preventDefault();
         console.log('📧 Email login attempt');
@@ -2083,16 +2176,27 @@
         const email = document.getElementById('login-email').value.trim();
         const password = document.getElementById('login-password').value;
         
-        console.log('📧 Email:', email);
-        console.log('🔑 Password length:', password.length);
+        console.log('📧 Login details:', { 
+            email, 
+            passwordLength: password.length,
+            emailValid: email.includes('@')
+        });
         
+        // Validation
         if (!email || !password) {
             showUserMessage('Vul alle velden in', 'warning');
             return;
         }
 
+        if (!email.includes('@') || !email.includes('.')) {
+            showUserMessage('Voer een geldig email adres in', 'warning');
+            return;
+        }
+
+        // Ensure Firebase is ready
         if (!authInitialized || !auth) {
             console.log('⚠️ Firebase not initialized for email login');
+            showUserMessage('Bezig met laden van Firebase...', 'info');
             const initialized = await initializeFirebase();
             if (!initialized) {
                 showUserMessage('Firebase niet beschikbaar. Herlaad de pagina.', 'error');
@@ -2108,34 +2212,61 @@
             submitBtn.disabled = true;
             
             console.log('📧 Attempting email sign-in...');
-            const { signInWithEmailAndPassword } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            
+            // Import fresh auth functions
+            const authModule = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            const { signInWithEmailAndPassword } = authModule;
+            
             const result = await signInWithEmailAndPassword(auth, email, password);
             
-            console.log('✅ Email sign-in successful:', result.user.email);
+            console.log('✅ Email sign-in successful:', {
+                uid: result.user.uid,
+                email: result.user.email,
+                emailVerified: result.user.emailVerified
+            });
+            
             e.target.reset();
+            
+            // Force UI update
+            setTimeout(() => {
+                if (result.user) {
+                    currentUser = result.user;
+                    updateUserInfo();
+                    showMainApp();
+                }
+            }, 500);
             
         } catch (error) {
             console.error('❌ Email sign-in failed:', error);
             console.error('Error details:', {
                 name: error.name,
                 message: error.message,
-                code: error.code
+                code: error.code || 'No error code'
             });
             
             let message = 'Inloggen mislukt';
             if (error.code === 'auth/user-not-found') {
-                message = 'Geen account gevonden met dit email adres';
+                message = 'Geen account gevonden met dit email adres. Maak eerst een account aan.';
             } else if (error.code === 'auth/wrong-password') {
-                message = 'Verkeerd wachtwoord';
+                message = 'Verkeerd wachtwoord. Probeer opnieuw.';
             } else if (error.code === 'auth/invalid-email') {
                 message = 'Ongeldig email adres';
             } else if (error.code === 'auth/invalid-credential') {
-                message = 'Ongeldige inloggegevens';
+                message = 'Ongeldige inloggegevens. Controleer email en wachtwoord.';
             } else if (error.code === 'auth/too-many-requests') {
-                message = 'Te veel mislukte pogingen. Probeer het later opnieuw.';
+                message = 'Te veel mislukte pogingen. Wacht even en probeer opnieuw.';
+            } else if (error.code === 'auth/network-request-failed') {
+                message = 'Netwerkfout. Controleer je internetverbinding.';
+            } else if (error.code === 'auth/internal-error') {
+                message = 'Interne fout. Probeer het later opnieuw.';
             }
             
             showUserMessage(message, 'error');
+            
+            // Focus back to email field for retry
+            setTimeout(() => {
+                document.getElementById('login-email').focus();
+            }, 100);
             
         } finally {
             submitBtn.textContent = originalText;

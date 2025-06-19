@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#06b6d4">
     <meta name="description" content="Ademruimte - Je persoonlijke ruimte voor ademhalingsoefeningen en hyperventilatie begeleiding">
-    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Ademruimte - Hyperventilatie Helper</title>
@@ -28,11 +27,20 @@
         --touch-target: 44px;
     }
 
-    /* Reset en basis styling */
+    /* Reset en basis styling - geen ongewenste borders */
     * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+    }
+
+    *:before, *:after {
+        box-sizing: border-box;
+    }
+
+    html {
+        border: none;
+        outline: none;
     }
 
     body {
@@ -45,7 +53,24 @@
         overflow-x: hidden;
     }
 
-    /* Header */
+    /* Skip link voor toegankelijkheid */
+    .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 6px;
+        background: var(--text-dark);
+        color: white;
+        padding: 8px;
+        text-decoration: none;
+        border-radius: 4px;
+        z-index: 1000;
+    }
+    
+    .skip-link:focus {
+        top: 6px;
+    }
+
+    /* Verbeterde header */
     header {
         background: linear-gradient(135deg, #06b6d4, #10b981);
         color: white;
@@ -60,6 +85,7 @@
         backdrop-filter: blur(10px);
     }
 
+    /* SVG Logo styling */
     .logo-container {
         display: flex;
         align-items: center;
@@ -106,7 +132,7 @@
         z-index: 2;
     }
 
-    /* Navigation */
+    /* Geoptimaliseerde navigatie */
     .nav-tabs {
         background: var(--card-background);
         backdrop-filter: blur(20px);
@@ -167,7 +193,7 @@
         transform: translateY(-1px);
     }
 
-    /* Container */
+    /* Container optimalisaties */
     .container {
         max-width: 1200px;
         margin: 0 auto;
@@ -175,7 +201,7 @@
         min-height: calc(100vh - 120px);
     }
 
-    /* Cards */
+    /* Verbeterde card styling */
     .card {
         background: var(--card-background);
         backdrop-filter: blur(20px);
@@ -210,7 +236,7 @@
         font-weight: 600;
     }
 
-    /* Buttons */
+    /* Toegankelijke button styling */
     .btn {
         padding: 1rem 1.5rem;
         border: none;
@@ -277,7 +303,7 @@
         color: white;
     }
 
-    /* Grid */
+    /* Verbeterde grid layout */
     .grid {
         display: grid;
         gap: 1.5rem;
@@ -314,7 +340,6 @@
         font-size: 1.375rem;
         margin-bottom: 1rem;
         font-weight: 700;
-        color: var(--text-dark);
     }
 
     .grid .card p {
@@ -323,7 +348,43 @@
         font-size: 0.95rem;
     }
 
-    /* Forms */
+    /* Loading states */
+    .loading {
+        opacity: 0.6;
+        pointer-events: none;
+        position: relative;
+    }
+
+    .loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin: -10px 0 0 -10px;
+        border: 2px solid #f3f4f6;
+        border-top: 2px solid #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    .spinner {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid #f3f4f6;
+        border-top: 2px solid #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Verbeterde form styling met mobiele focus support */
     .form-group {
         margin-bottom: 1rem;
     }
@@ -345,6 +406,9 @@
         min-height: var(--touch-target);
         font-family: inherit;
         transition: border-color 0.2s ease;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
         background-color: #ffffff;
     }
 
@@ -352,12 +416,38 @@
         outline: none;
         border-color: #06b6d4;
         box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+        background-color: #ffffff;
     }
 
     .form-textarea {
         resize: vertical;
         min-height: 80px;
         line-height: 1.5;
+    }
+
+    /* Mobile-specific input improvements */
+    @media (max-width: 768px) {
+        .form-input, .form-select, .form-textarea {
+            font-size: 16px; /* Prevents zoom on iOS */
+            padding: 1rem;
+            min-height: 48px;
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+        }
+        
+        /* Ensure inputs are visible when keyboard opens */
+        .modal-content {
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal.show {
+            align-items: flex-start;
+            padding-top: 2rem;
+        }
     }
 
     /* Range input styling */
@@ -399,36 +489,7 @@
         margin: 0.5rem 0;
     }
 
-    /* Google button */
-    .google-btn {
-        width: 100%;
-        padding: 0.875rem;
-        border: 1px solid #d1d5db;
-        border-radius: 0.5rem;
-        background: white;
-        color: #374151;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        font-size: 0.9rem;
-        font-weight: 500;
-        transition: all 0.2s;
-        min-height: var(--touch-target);
-    }
-
-    .google-btn:hover:not(:disabled) {
-        background: #f9fafb;
-        border-color: #9ca3af;
-    }
-
-    .google-btn:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
-    /* Alerts */
+    /* Alert verbeteringen */
     .alert {
         padding: 1rem 1.5rem;
         border-radius: 0.75rem;
@@ -436,6 +497,7 @@
         font-size: 0.9rem;
         border: 1px solid;
         box-shadow: var(--shadow-sm);
+        backdrop-filter: blur(10px);
     }
 
     .alert-info {
@@ -456,7 +518,7 @@
         color: #92400e;
     }
 
-    .alert-error {
+    .alert-danger, .alert-error {
         background: rgba(254, 226, 226, 0.95);
         border-color: #ef4444;
         color: #991b1b;
@@ -479,6 +541,30 @@
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         backdrop-filter: blur(15px);
         animation: slideInDown 0.3s ease-out;
+    }
+
+    .user-message.alert-info {
+        background: rgba(219, 234, 254, 0.98);
+        border-color: #3b82f6;
+        color: #1e40af;
+    }
+
+    .user-message.alert-success {
+        background: rgba(209, 250, 229, 0.98);
+        border-color: #10b981;
+        color: #065f46;
+    }
+
+    .user-message.alert-warning {
+        background: rgba(254, 243, 199, 0.98);
+        border-color: #f59e0b;
+        color: #92400e;
+    }
+
+    .user-message.alert-error {
+        background: rgba(254, 226, 226, 0.98);
+        border-color: #ef4444;
+        color: #991b1b;
     }
 
     @keyframes slideInDown {
@@ -546,7 +632,31 @@
         color: var(--text-dark);
     }
 
-    /* Divider */
+    /* Google button styling */
+    .google-btn {
+        width: 100%;
+        padding: 0.875rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        background: white;
+        color: #374151;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        min-height: var(--touch-target);
+    }
+
+    .google-btn:hover {
+        background: #f9fafb;
+        border-color: #9ca3af;
+    }
+
+    /* Divider styling */
     .divider {
         text-align: center;
         margin: 1.5rem 0;
@@ -571,22 +681,6 @@
         padding: 0 1rem;
         position: relative;
         z-index: 2;
-    }
-
-    /* Loading spinner */
-    .spinner {
-        display: inline-block;
-        width: 1rem;
-        height: 1rem;
-        border: 2px solid #f3f4f6;
-        border-top: 2px solid #3b82f6;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
     }
 
     /* Breathing exercise styling */
@@ -699,6 +793,18 @@
         min-height: var(--touch-target);
     }
 
+    .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin: 1rem 0;
+    }
+
+    .button-group .btn {
+        flex: 1;
+        min-width: 120px;
+    }
+
     /* Timer display */
     .timer-display {
         font-size: 2.5rem;
@@ -756,6 +862,21 @@
         font-weight: bold;
     }
 
+    /* Settings sections */
+    .settings-section {
+        background: #f8fafc;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        border: 1px solid #e2e8f0;
+    }
+
+    .settings-section h3 {
+        color: #374151;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+    }
+
     /* Entry cards for dagboek */
     .entry-card {
         background: white;
@@ -804,7 +925,7 @@
         margin-bottom: 0.75rem;
     }
 
-    /* Status indicators */
+    /* Connection status */
     .status-connected {
         background: #059669 !important;
         opacity: 0.8 !important;
@@ -846,19 +967,19 @@
         display: none !important;
     }
 
-    .button-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin: 1rem 0;
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
     }
 
-    .button-group .btn {
-        flex: 1;
-        min-width: 120px;
-    }
-
-    /* Responsive */
+    /* Responsive optimalisaties */
     @media (max-width: 768px) {
         .container {
             padding: 1rem;
@@ -874,6 +995,7 @@
             font-size: 0.9rem;
         }
 
+        /* Verbeterde nav voor mobiel */
         .nav-tabs {
             padding: 0.5rem 0.25rem;
             gap: 0.25rem;
@@ -886,12 +1008,22 @@
             border-radius: 0.875rem;
         }
 
+        /* Header aanpassingen voor mobiel */
+        header {
+            min-height: 100px;
+            padding: 1rem 0.75rem;
+        }
+
         .user-info {
             top: 0.5rem;
             right: 0.5rem;
             font-size: 0.7rem;
             max-width: 100px;
             padding: 0.375rem 0.5rem;
+        }
+
+        .logo-svg {
+            height: clamp(90px, 15vw, 140px);
         }
 
         .breath-display {
@@ -903,14 +1035,10 @@
         .timer-display {
             font-size: 2rem;
         }
-
-        /* Prevent zoom on input focus for iOS */
-        .form-input, .form-select, .form-textarea {
-            font-size: 16px;
-        }
     }
 
     @media (max-width: 480px) {
+        /* Extra kleine schermen */
         .nav-tabs button {
             font-size: 0.7rem;
             padding: 0.625rem 0.75rem;
@@ -920,6 +1048,51 @@
             font-size: 0.65rem;
             max-width: 90px;
             padding: 0.25rem 0.375rem;
+        }
+
+        header {
+            min-height: 90px;
+        }
+
+        .logo-svg {
+            height: clamp(80px, 18vw, 120px);
+        }
+    }
+
+    @media (max-height: 600px) and (orientation: landscape) {
+        header {
+            padding: 0.5rem 1rem;
+            min-height: 70px;
+        }
+        
+        .logo-svg {
+            height: clamp(60px, 10vw, 80px);
+        }
+
+        .user-info {
+            top: 0.25rem;
+            right: 0.5rem;
+            font-size: 0.65rem;
+            padding: 0.25rem 0.375rem;
+        }
+        
+        .container {
+            padding: 0.5rem;
+        }
+
+        .timer-display, .breath-display {
+            font-size: 1.5rem;
+            margin: 0.5rem 0;
+            padding: 1rem;
+        }
+
+        .nav-tabs {
+            padding: 0.375rem 0.25rem;
+        }
+
+        .nav-tabs button {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.7rem;
         }
     }
 
@@ -936,11 +1109,73 @@
         .timer-display {
             font-size: 3rem;
         }
+
+        /* Betere nav spacing op desktop */
+        .nav-tabs {
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
+        }
+
+        .nav-tabs button {
+            padding: 1rem 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .user-info {
+            font-size: 0.8rem;
+            max-width: 150px;
+            padding: 0.75rem 1rem;
+        }
+    }
+
+    /* Print styling */
+    @media print {
+        body {
+            background: white;
+            color: black;
+        }
+        
+        .nav-tabs, .btn, header {
+            display: none;
+        }
+    }
+
+    /* High contrast mode support */
+    @media (prefers-contrast: high) {
+        .card {
+            border: 2px solid;
+        }
+        
+        .btn {
+            border: 2px solid;
+        }
+    }
+
+    /* Reduced motion support */
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+
+    /* Dark mode preparation */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --card-background: rgba(31, 41, 55, 0.95);
+            --text-dark: #f9fafb;
+            --text-light: #d1d5db;
+        }
     }
 </style>
 </head>
 
 <body>
+    <!-- Skip link voor toegankelijkheid -->
+    <a href="#main-content" class="skip-link">Spring naar hoofdinhoud</a>
+
     <header role="banner">
         <div class="user-info" id="user-info" aria-live="polite">
             <div class="spinner" id="auth-loading" aria-label="Bezig met inloggen..."></div>
@@ -972,6 +1207,7 @@
               <circle cx="60" cy="60" r="30" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" opacity="0.7">
                 <animate attributeName="r" values="30;33;30" dur="8s" repeatCount="indefinite"/>
                 <animate attributeName="opacity" values="0.5;0.8;0.5" dur="8s" repeatCount="indefinite"/>
+                <animate attributeName="stroke-width" values="1.5;2;1.5" dur="8s" repeatCount="indefinite"/>
               </circle>
               
               <circle cx="60" cy="60" r="20" fill="url(#breathingGradient)" opacity="0.8">
@@ -984,6 +1220,30 @@
                 <animate attributeName="opacity" values="0.9;1;0.9" dur="8s" repeatCount="indefinite"/>
               </circle>
               
+              <g transform="translate(60,60)">
+                <path d="M-25,0 Q-15,-10 0,-8 Q15,-10 25,0" 
+                      stroke="url(#flowGradient)" stroke-width="2" fill="none" opacity="0.7">
+                  <animate attributeName="opacity" values="0.5;0.9;0.5" dur="12s" repeatCount="indefinite"/>
+                  <animateTransform attributeName="transform" type="rotate" values="0;360" dur="60s" repeatCount="indefinite"/>
+                </path>
+                
+                <path d="M0,-25 Q10,-15 8,0 Q10,15 0,25" 
+                      stroke="url(#flowGradient)" stroke-width="2" fill="none" opacity="0.6">
+                  <animate attributeName="opacity" values="0.4;0.8;0.4" dur="10s" repeatCount="indefinite"/>
+                  <animateTransform attributeName="transform" type="rotate" values="90;450" dur="60s" repeatCount="indefinite"/>
+                </path>
+                
+                <circle cx="15" cy="-5" r="1.2" fill="rgba(255,255,255,0.9)" opacity="0.8">
+                  <animate attributeName="opacity" values="0.5;1;0.5" dur="6s" repeatCount="indefinite"/>
+                  <animateTransform attributeName="transform" type="rotate" values="0;360" dur="45s" repeatCount="indefinite"/>
+                </circle>
+                
+                <circle cx="-8" cy="12" r="1" fill="#FF7F7F" opacity="0.7">
+                  <animate attributeName="opacity" values="0.4;0.9;0.4" dur="7s" repeatCount="indefinite"/>
+                  <animateTransform attributeName="transform" type="rotate" values="180;540" dur="45s" repeatCount="indefinite"/>
+                </circle>
+              </g>
+              
               <text x="140" y="45" font-family="Arial, sans-serif" font-size="28" font-weight="300" fill="url(#textGradient)">
                 ademruimte
               </text>
@@ -991,6 +1251,21 @@
               <text x="140" y="72" font-family="Arial, sans-serif" font-size="13" fill="rgba(255,255,255,0.9)" opacity="0.95">
                 your safe breathing space
               </text>
+              
+              <g opacity="0.6">
+                <circle cx="270" cy="25" r="2.5" fill="rgba(255,255,255,0.8)">
+                  <animate attributeName="cy" values="25;20;25" dur="9s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" values="0.4;0.9;0.4" dur="9s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="280" cy="35" r="2" fill="#FF7F7F">
+                  <animate attributeName="cy" values="35;30;35" dur="11s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" values="0.5;0.9;0.5" dur="11s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="275" cy="55" r="2.2" fill="rgba(255,255,255,0.7)">
+                  <animate attributeName="cy" values="55;50;55" dur="13s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" values="0.4;0.7;0.4" dur="13s" repeatCount="indefinite"/>
+                </circle>
+              </g>
             </svg>
         </div>
     </header>
@@ -1004,13 +1279,8 @@
                 </h2>
                 
                 <p style="text-align: center; margin-bottom: 2rem; color: var(--text-light);">
-                    Log in om je vooruitgang op te slaan en te synchroniseren tussen al je apparaten.
+                    <span id="login-description">Log in om je vooruitgang op te slaan en te synchroniseren tussen al je apparaten.</span>
                 </p>
-
-                <div class="alert alert-info" style="font-size: 0.8rem; margin-bottom: 1.5rem;">
-                    <strong>💻 Browser ondersteuning:</strong> Deze app werkt het beste in moderne browsers (Chrome, Firefox, Safari, Edge). 
-                    Zorg ervoor dat JavaScript en popups zijn ingeschakeld.
-                </div>
 
                 <!-- Google Login -->
                 <button id="google-login-btn" class="google-btn" aria-label="Inloggen met Google account">
@@ -1020,7 +1290,7 @@
                         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                         <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                     </svg>
-                    <span>Doorgaan met Google</span>
+                    <span id="google-btn-text">Doorgaan met Google</span>
                 </button>
 
                 <div class="divider">
@@ -1028,7 +1298,7 @@
                 </div>
 
                 <!-- Email/Password Login -->
-                <form id="login-form">
+                <form id="login-form" novalidate>
                     <div class="form-group">
                         <label for="login-email" class="form-label">E-mail:</label>
                         <input type="email" 
@@ -1049,6 +1319,12 @@
                                autocomplete="current-password">
                     </div>
 
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+                        <input type="checkbox" id="remember-me" checked aria-describedby="remember-help">
+                        <label for="remember-me" style="margin: 0; cursor: pointer;">Ingelogd blijven</label>
+                        <span id="remember-help" class="sr-only">Vink aan om ingelogd te blijven op dit apparaat</span>
+                    </div>
+
                     <button type="submit" class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
                         Inloggen
                     </button>
@@ -1067,21 +1343,22 @@
     </div>
 
     <!-- Register Modal -->
-    <div id="register-modal" class="modal" role="dialog">
+    <div id="register-modal" class="modal" role="dialog" aria-labelledby="register-title">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Account Aanmaken</h3>
-                <button class="close-btn" aria-label="Sluit registratie venster">&times;</button>
+                <h3 id="register-title">Account Aanmaken</h3>
+                <button id="close-register-btn" class="close-btn" aria-label="Sluit registratie venster">&times;</button>
             </div>
             
-            <form id="register-form">
+            <form id="register-form" novalidate>
                 <div class="form-group">
                     <label for="register-name" class="form-label">Naam:</label>
                     <input type="text" 
                            id="register-name" 
                            class="form-input" 
                            placeholder="Jouw naam" 
-                           required>
+                           required 
+                           autocomplete="name">
                 </div>
 
                 <div class="form-group">
@@ -1090,7 +1367,8 @@
                            id="register-email" 
                            class="form-input" 
                            placeholder="jouw@email.com" 
-                           required>
+                           required 
+                           autocomplete="email">
                 </div>
 
                 <div class="form-group">
@@ -1100,14 +1378,15 @@
                            class="form-input" 
                            placeholder="Minimaal 6 karakters" 
                            required 
-                           minlength="6">
+                           minlength="6" 
+                           autocomplete="new-password">
                 </div>
 
-                <div class="button-group">
-                    <button type="submit" class="btn btn-green">
+                <div style="display: flex; gap: 0.5rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-green" style="flex: 1;">
                         Account Aanmaken
                     </button>
-                    <button type="button" class="btn" id="cancel-register-btn">
+                    <button type="button" id="cancel-register-btn" class="btn" style="flex: 1;">
                         Annuleren
                     </button>
                 </div>
@@ -1117,25 +1396,28 @@
 
     <!-- Main App -->
     <div id="main-app" class="hidden">
-        <nav class="nav-tabs" role="navigation">
-            <button class="tab-btn active" data-tab="dashboard">🏠 Dashboard</button>
-            <button class="tab-btn" data-tab="crisis">🚨 Crisis</button>
-            <button class="tab-btn" data-tab="buteyko">🌬️ Buteyko</button>
-            <button class="tab-btn" data-tab="ritueel">🕐 Ritueel</button>
-            <button class="tab-btn" data-tab="gapen">🥱 Gapen</button>
-            <button class="tab-btn" data-tab="emdr">💜 EMDR</button>
-            <button class="tab-btn" data-tab="dagboek">📖 Dagboek</button>
+        <nav class="nav-tabs" role="navigation" aria-label="Hoofdnavigatie">
+            <button class="tab-btn active" data-tab="dashboard" aria-selected="true">🏠 Dashboard</button>
+            <button class="tab-btn" data-tab="crisis" aria-selected="false">🚨 Crisis</button>
+            <button class="tab-btn" data-tab="buteyko" aria-selected="false">🌬️ Buteyko</button>
+            <button class="tab-btn" data-tab="ritueel" aria-selected="false">🕐 Ritueel</button>
+            <button class="tab-btn" data-tab="gapen" aria-selected="false">🥱 Gapen</button>
+            <button class="tab-btn" data-tab="emdr" aria-selected="false">💜 EMDR</button>
+            <button class="tab-btn" data-tab="dagboek" aria-selected="false">📖 Dagboek</button>
         </nav>
 
-        <main class="container">
+        <main id="main-content" class="container">
             <!-- Dashboard Tab -->
-            <div id="dashboard" class="tab-content">
-                <div class="card" style="text-align: center; padding: 2rem; margin-bottom: 2rem;">
-                    <h2 id="dashboard-greeting">
+            <div id="dashboard" class="tab-content" role="tabpanel" aria-labelledby="dashboard-tab">
+                <!-- Hero Greeting Section -->
+                <div class="card" style="text-align: center; padding: 2rem; background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85)); margin-bottom: 2rem;">
+                    <h2 id="dashboard-greeting" style="font-size: clamp(1.5rem, 4vw, 2rem); margin-bottom: 1rem; background: linear-gradient(135deg, #06b6d4, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
                         Welkom bij Ademruimte
                     </h2>
-                    <p style="color: var(--text-light); font-size: 1rem; margin-top: 0.5rem;">
-                        Je persoonlijke ruimte voor ademhalingsoefeningen en hyperventilatie begeleiding.
+                    
+                    <p style="color: var(--text-light); font-size: 1rem; margin-top: 0.5rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                        Je persoonlijke ruimte voor ademhalingsoefeningen en hyperventilatie begeleiding. 
+                        Neem de tijd om te ontspannen en ontdek welke technieken het beste voor jou werken.
                     </p>
                 </div>
 
@@ -1181,10 +1463,14 @@
                     <strong>💡 Tip van de dag:</strong> 
                     <span id="daily-tip">Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.</span>
                     <button id="tip-refresh-btn" 
-                            style="background: none; border: none; color: #0891b2; cursor: pointer; margin-left: 0.5rem; font-weight: 600;">🔄</button>
+                            style="background: none; border: none; color: #0891b2; cursor: pointer; margin-left: 0.5rem; font-weight: 600; padding: 0.25rem; border-radius: 0.25rem; transition: var(--transition-base);" 
+                            onmouseover="this.style.background='rgba(8,145,178,0.1)'" 
+                            onmouseout="this.style.background='none'" 
+                            aria-label="Nieuwe tip laden">🔄</button>
                 </div>
 
-                <div class="card">
+                <!-- Account Settings -->
+                <div class="settings-section">
                     <h3>👤 Account</h3>
                     <div id="account-info" style="margin-bottom: 1rem;">
                         <!-- Account info wordt hier ingevuld -->
@@ -1196,7 +1482,7 @@
             </div>
 
             <!-- Crisis Tab -->
-            <div id="crisis" class="tab-content hidden">
+            <div id="crisis" class="tab-content hidden" role="tabpanel" aria-labelledby="crisis-tab">
                 <div class="card">
                     <h2>🚨 Crisis Hulp - Luchthonger</h2>
                     <p>Voor wanneer je dat benauwde gevoel voelt opkomen</p>
@@ -1241,7 +1527,7 @@
             </div>
 
             <!-- Buteyko Tab -->
-            <div id="buteyko" class="tab-content hidden">
+            <div id="buteyko" class="tab-content hidden" role="tabpanel" aria-labelledby="buteyko-tab">
                 <div class="card">
                     <h2>🌬️ Buteyko Ademhaling</h2>
                     <p>Verbeter je CO2 tolerantie en verminder hyperventilatie neiging</p>
@@ -1317,6 +1603,7 @@
                     </div>
                 </div>
 
+                <!-- Completion bericht buiten de hoofdkaart -->
                 <div id="breath-complete" class="alert alert-success hidden">
                     <strong>✅ Buteyko Sessie Voltooid!</strong><br>
                     Geweldig! Je hebt 10 ademhalingscycli succesvol afgerond.
@@ -1349,7 +1636,7 @@
             </div>
 
             <!-- Ritueel Tab -->
-            <div id="ritueel" class="tab-content hidden">
+            <div id="ritueel" class="tab-content hidden" role="tabpanel" aria-labelledby="ritueel-tab">
                 <div class="card">
                     <h2>🕐 Afkoel Ritueel</h2>
                     <p>Voor na periodes van intensief denkwerk (5-10 minuten)</p>
@@ -1396,7 +1683,7 @@
             </div>
 
             <!-- Gapen Tab -->
-            <div id="gapen" class="tab-content hidden">
+            <div id="gapen" class="tab-content hidden" role="tabpanel" aria-labelledby="gapen-tab">
                 <div class="card">
                     <h2>🥱 Gaap Preventie Technieken</h2>
                     <p>Voor wanneer je die vervelende gaapaanvallen voelt opkomen</p>
@@ -1447,7 +1734,7 @@
             </div>
 
             <!-- EMDR Tab -->
-            <div id="emdr" class="tab-content hidden">
+            <div id="emdr" class="tab-content hidden" role="tabpanel" aria-labelledby="emdr-tab">
                 <div class="card">
                     <h2>💜 EMDR Zelfhulp</h2>
                     <p>Voor luchthonger-gevoelens (dit is ondersteuning, geen vervanging voor professionele EMDR)</p>
@@ -1533,7 +1820,7 @@
             </div>
 
             <!-- Dagboek Tab -->
-            <div id="dagboek" class="tab-content hidden">
+            <div id="dagboek" class="tab-content hidden" role="tabpanel" aria-labelledby="dagboek-tab">
                 <div class="card">
                     <h2>📖 Dagboek</h2>
                     <p>Overzicht van je sessies en vooruitgang</p>
@@ -1597,14 +1884,14 @@
     </div>
 
     <!-- Dagboek Modal -->
-    <div id="dagboek-modal" class="modal" role="dialog">
+    <div id="dagboek-modal" class="modal" role="dialog" aria-labelledby="dagboek-modal-title">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>📝 Dagboek Entry</h3>
-                <button class="close-btn" onclick="closeDagboekModal()">&times;</button>
+                <h3 id="dagboek-modal-title">📝 Dagboek Entry</h3>
+                <button class="close-btn" aria-label="Sluit dagboek venster">&times;</button>
             </div>
             
-            <form id="dagboek-form">
+            <form id="dagboek-form" novalidate>
                 <div class="form-group">
                     <label class="form-label" for="entry-trigger">Situatie/Trigger:</label>
                     <input type="text" id="entry-trigger" class="form-input" placeholder="Bijv. na intensief werken">
@@ -1642,10 +1929,10 @@
                 </div>
 
                 <div class="button-group">
-                    <button type="button" class="btn btn-primary" id="save-dagboek-entry-btn">
+                    <button type="button" class="btn btn-primary">
                         📁 Opslaan
                     </button>
-                    <button type="button" class="btn btn-orange" onclick="closeDagboekModal()">
+                    <button type="button" class="btn btn-orange">
                         Annuleren
                     </button>
                 </div>
@@ -1664,6 +1951,7 @@
             </div>
         </div>
         
+        <!-- Developer Credit -->
         <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
             <p style="margin: 0; font-size: 0.75rem; opacity: 0.8; color: rgba(255,255,255,0.9);">
                 Ontwikkeld door <strong>Thomas Van Troostenberghe</strong>
@@ -1672,29 +1960,151 @@
     </footer>
 
 <script type="module">
-    // Enable detailed logging
-    console.log('🚀 Ademruimte App Starting...');
-    
-    // Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
-        authDomain: "ademruimte-12c09.firebaseapp.com", 
-        projectId: "ademruimte-12c09",
-        storageBucket: "ademruimte-12c09.firebasestorage.app",
-        messagingSenderId: "744941871331",
-        appId: "1:744941871331:web:c3ce24d814fe41314d25d6",
-        measurementId: "G-SD2ZEYNMNY"
+    // Enhanced error handling and logging
+    const LOG_LEVELS = {
+        INFO: 'ℹ️',
+        SUCCESS: '✅', 
+        WARNING: '⚠️',
+        ERROR: '❌'
     };
 
-    // Global variables
+    function log(level, message, data = null) {
+        const timestamp = new Date().toLocaleTimeString('nl-NL');
+        console.log(`${LOG_LEVELS[level]} [${timestamp}] ${message}`, data || '');
+    }
+
+    // Enhanced app state management
+    class AppState {
+        constructor() {
+            this.currentUser = null;
+            this.currentTab = 'dashboard';
+            this.isOnline = navigator.onLine;
+            this.isFirebaseConnected = false;
+            this.authInitialized = false;
+            this.authUnsubscribe = null;
+            this.currentTechnique = '';
+            this.tips = [
+                "Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.",
+                "Bij luchthonger: probeer paradoxale ademhaling - begin met zeer kleine, korte ademhalingen.",
+                "CO2 is niet giftig! Een hoger CO2-niveau in je bloed is juist gezond en kalmerend.",
+                "Buteyko ademhaling helpt je lichaam wennen aan hogere CO2 niveaus.",
+                "Een koude kompres op je gezicht activeert de duikreflex en kalmeert het zenuwstelsel.",
+                "Grounding technieken zoals 5-4-3-2-1 helpen je geest terug naar het hier en nu te brengen.",
+                "Zachte ademhaling is effectiever dan diepe ademhaling bij hyperventilatie.",
+                "Regelmatige oefening van ademhalingstechnieken vermindert de kans op episodes.",
+                "Het bijhouden van patronen in je dagboek helpt je triggers te identificeren.",
+                "Na intensief denkwerk heeft je lichaam een afkoel ritueel nodig om te ontspannen."
+            ];
+        }
+
+        setUser(user) {
+            this.currentUser = user;
+            this.updateUI();
+        }
+
+        setConnectionStatus(isConnected) {
+            this.isFirebaseConnected = isConnected;
+            this.updateConnectionDisplay();
+        }
+
+        cleanup() {
+            if (this.authUnsubscribe) {
+                try {
+                    this.authUnsubscribe();
+                    this.authUnsubscribe = null;
+                } catch (error) {
+                    log('WARNING', 'Error unsubscribing from auth:', error);
+                }
+            }
+        }
+
+        updateUI() {
+            const userInfo = document.getElementById('user-info');
+            const accountInfo = document.getElementById('account-info');
+            
+            if (this.currentUser && userInfo) {
+                const displayName = this.currentUser.displayName || this.currentUser.email;
+                const shortName = displayName.length > 15 ? displayName.substring(0, 13) + '...' : displayName;
+                userInfo.innerHTML = shortName;
+            }
+
+            if (this.currentUser && accountInfo) {
+                accountInfo.innerHTML = 
+                    '<p style="color: var(--text-light); font-size: 0.9rem;">' +
+                    '<strong>Ingelogd als:</strong><br>' + 
+                    (this.currentUser.displayName || this.currentUser.email) + 
+                    '</p>';
+            }
+            
+            // Update dashboard greeting
+            this.updateDashboardGreeting();
+        }
+
+        updateDashboardGreeting() {
+            const greetingElement = document.getElementById('dashboard-greeting');
+            if (greetingElement && this.currentUser) {
+                const firstName = this.getFirstName();
+                const timeOfDay = this.getTimeOfDay();
+                greetingElement.textContent = `${timeOfDay}, ${firstName}!`;
+            }
+        }
+
+        getTimeOfDay() {
+            const hour = new Date().getHours();
+            if (hour < 12) return 'Goedemorgen';
+            if (hour < 18) return 'Goedemiddag';
+            return 'Goedenavond';
+        }
+
+        updateConnectionDisplay() {
+            const statusDot = document.getElementById('firebase-status-dot');
+            if (statusDot) {
+                if (this.isFirebaseConnected) {
+                    statusDot.className = 'status-connected';
+                    statusDot.title = 'Firebase: Verbonden';
+                } else if (this.isOnline) {
+                    statusDot.className = 'status-disconnected';
+                    statusDot.title = 'Firebase: Offline';
+                } else {
+                    statusDot.className = 'status-error';
+                    statusDot.title = 'Firebase: Geen verbinding';
+                }
+            }
+        }
+
+        getRandomTip() {
+            return this.tips[Math.floor(Math.random() * this.tips.length)];
+        }
+
+        getFirstName() {
+            if (!this.currentUser) return '';
+            
+            const displayName = this.currentUser.displayName;
+            if (displayName) {
+                return displayName.split(' ')[0];
+            }
+            
+            const email = this.currentUser.email;
+            if (email) {
+                const localPart = email.split('@')[0];
+                return localPart.charAt(0).toUpperCase() + localPart.slice(1);
+            }
+            
+            return 'Gebruiker';
+        }
+    }
+
+    // Initialize app state
+    const appState = new AppState();
+
+    // Global variables voor verschillende functionaliteiten
     let app, db, auth;
-    let currentUser = null;
-    let isFirebaseConnected = false;
-    let authInitialized = false;
-    let currentTab = 'dashboard';
-    let currentTechnique = '';
-    
-    // Exercise variables
+    let timerInterval = null;
+    let currentTime = 0;
+    let ritualStep = 0;
+    let emdrStep = 0;
+
+    // Breath exercise variables
     let breathInterval = null;
     let breathPhase = 'rest';
     let breathCycleCount = 1;
@@ -1702,11 +2112,6 @@
     let breathCycleDuration = 0;
     let breathingPattern = 'standard';
     let gentleBreathCount = 0;
-    
-    let timerInterval = null;
-    let currentTime = 0;
-    let ritualStep = 0;
-    let emdrStep = 0;
 
     // Audio variables for EMDR
     let audioContext = null;
@@ -1717,569 +2122,34 @@
     let isAudioPlaying = false;
     let panPosition = -1;
 
-    // Progress chart
+    // Wake lock for keeping screen on
+    let wakeLock = null;
+
+    // Progress tracking and Chart
     let progressChart = null;
-
-    // Tips array
-    const tips = [
-        "Gaapaanvallen zijn een waarschuwingssignaal, geen bedreiging. Gebruik ze als mogelijkheid om preventief in te grijpen.",
-        "Bij luchthonger: probeer paradoxale ademhaling - begin met zeer kleine, korte ademhalingen.",
-        "CO2 is niet giftig! Een hoger CO2-niveau in je bloed is juist gezond en kalmerend.",
-        "Buteyko ademhaling helpt je lichaam wennen aan hogere CO2 niveaus.",
-        "Een koude kompres op je gezicht activeert de duikreflex en kalmeert het zenuwstelsel.",
-        "Grounding technieken zoals 5-4-3-2-1 helpen je geest terug naar het hier en nu te brengen.",
-        "Zachte ademhaling is effectiever dan diepe ademhaling bij hyperventilatie.",
-        "Regelmatige oefening van ademhalingstechnieken vermindert de kans op episodes.",
-        "Het bijhouden van patronen in je dagboek helpt je triggers te identificeren.",
-        "Na intensief denkwerk heeft je lichaam een afkoel ritueel nodig om te ontspannen."
-    ];
-
-    // Ritual steps data
-    const ritualSteps = [
-        {
-            title: "Stap 1: Fysieke Mini-Reset",
-            duration: 120,
-            instructions: [
-                "Sta op en strek je volledig uit",
-                "Schud je armen en benen los", 
-                "Rol je schouders 5x naar achteren",
-                "Maak kleine cirkels met je hoofd (5x elke richting)"
-            ]
-        },
-        {
-            title: "Stap 2: Ademhaling Reset",
-            duration: 90,
-            instructions: [
-                "Ga comfortabel zitten of staan",
-                "Adem 5x heel diep in door je neus",
-                "Adem langzaam uit door je mond",
-                "Let op de vertraging tussen gedachte en lichaam"
-            ]
-        },
-        {
-            title: "Stap 3: Mentale Overgang",
-            duration: 120,
-            instructions: [
-                "Zeg hardop: 'Ik ben klaar met intensief denken'",
-                "Denk aan 3 dingen waar je dankbaar voor bent",
-                "Visualiseer je volgende activiteit",
-                "Geef jezelf toestemming om te ontspannen"
-            ]
-        },
-        {
-            title: "Stap 4: Zintuiglijke Reset",
-            duration: 90,
-            instructions: [
-                "Kijk bewust rond - wat zie je?",
-                "Luister naar geluiden om je heen",
-                "Voel de temperatuur op je huid",
-                "Ruik bewust de lucht om je heen"
-            ]
-        },
-        {
-            title: "Stap 5: Intentie Zetten",
-            duration: 60,
-            instructions: [
-                "Besluit bewust hoe je je volgende tijd wilt besteden",
-                "Zeg tegen jezelf: 'Ik ga nu over naar [activiteit]'",
-                "Neem één bewuste stap in die richting",
-                "Feliciteer jezelf - je hebt een goede overgang gemaakt"
-            ]
-        }
-    ];
-
-    // EMDR Steps
-    const emdrSteps = [
-        {
-            title: "Stap 1: Voorbereiding",
-            content: "Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt.",
-            showIntensity: false
-        },
-        {
-            title: "Stap 2: Identificeer het Gevoel",
-            content: "Denk aan het luchthonger-gevoel. Waar voel je het in je lichaam? Geef het een intensiteit score van 1-10.",
-            showIntensity: true
-        },
-        {
-            title: "Stap 3: Bilaterale Stimulatie",
-            content: "Start de bilaterale audio als je dit nog niet hebt gedaan. Focus op het gevoel terwijl je naar de bewegende toon luistert. Laat gedachten en gevoelens vrijelijk komen en gaan.",
-            showIntensity: false
-        },
-        {
-            title: "Stap 4: Check-in",
-            content: "Stop de audio. Hoe voelt het luchthonger-gevoel nu? Is de intensiteit veranderd? Geef een nieuwe score van 1-10.",
-            showIntensity: true
-        },
-        {
-            title: "Stap 5: Afsluiting",
-            content: "Neem een paar diepe, langzame ademhalingen. Visualiseer een veilige, kalme plek. Je hebt goed werk gedaan. Drink wat water als je dat nodig hebt.",
-            showIntensity: false
-        }
-    ];
-
-    // Utility functions
-    function log(level, message, data = null) {
-        const timestamp = new Date().toLocaleTimeString('nl-NL');
-        const emoji = {
-            'INFO': 'ℹ️',
-            'SUCCESS': '✅', 
-            'WARNING': '⚠️',
-            'ERROR': '❌'
-        };
-        console.log(`${emoji[level] || '📝'} [${timestamp}] ${message}`, data || '');
-    }
-
-    function showUserMessage(message, type = 'info') {
-        // Remove existing message
-        const existing = document.querySelector('.user-message');
-        if (existing) existing.remove();
-        
-        const messageEl = document.createElement('div');
-        messageEl.className = `user-message alert-${type}`;
-        messageEl.textContent = message;
-        
-        document.body.appendChild(messageEl);
-        
-        // Auto-remove
-        setTimeout(() => {
-            if (messageEl.parentNode) {
-                messageEl.remove();
-            }
-        }, type === 'error' ? 8000 : 5000);
-    }
-
-    function updateConnectionStatus(connected) {
-        isFirebaseConnected = connected;
-        const statusDot = document.getElementById('firebase-status-dot');
-        if (statusDot) {
-            if (connected) {
-                statusDot.className = 'status-connected';
-                statusDot.title = 'Firebase: Verbonden';
-            } else {
-                statusDot.className = 'status-disconnected';
-                statusDot.title = 'Firebase: Niet verbonden';
-            }
-        }
-    }
-
-    function updateUserInfo() {
-        const userInfo = document.getElementById('user-info');
-        const accountInfo = document.getElementById('account-info');
-        const authLoading = document.getElementById('auth-loading');
-        
-        // Hide loading spinner
-        if (authLoading) {
-            authLoading.style.display = 'none';
-        }
-
-        if (currentUser && userInfo) {
-            const displayName = currentUser.displayName || currentUser.email;
-            const shortName = displayName.length > 15 ? displayName.substring(0, 13) + '...' : displayName;
-            userInfo.innerHTML = shortName;
-        } else if (userInfo) {
-            userInfo.innerHTML = '';
-        }
-
-        if (currentUser && accountInfo) {
-            accountInfo.innerHTML = 
-                '<p style="color: var(--text-light); font-size: 0.9rem;">' +
-                '<strong>Ingelogd als:</strong><br>' + 
-                (currentUser.displayName || currentUser.email) + 
-                '</p>';
-        } else if (accountInfo) {
-            accountInfo.innerHTML = '<p style="color: var(--text-light); font-size: 0.9rem;">Niet ingelogd</p>';
-        }
-        
-        updateDashboardGreeting();
-    }
-
-    function updateDashboardGreeting() {
-        const greetingElement = document.getElementById('dashboard-greeting');
-        if (greetingElement && currentUser) {
-            const firstName = getFirstName();
-            const timeOfDay = getTimeOfDay();
-            greetingElement.textContent = `${timeOfDay}, ${firstName}!`;
-        } else if (greetingElement) {
-            greetingElement.textContent = `Welkom bij Ademruimte`;
-        }
-    }
-
-    function getFirstName() {
-        if (!currentUser) return 'Gebruiker';
-        
-        const displayName = currentUser.displayName;
-        if (displayName) {
-            return displayName.split(' ')[0];
-        }
-        
-        const email = currentUser.email;
-        if (email) {
-            const localPart = email.split('@')[0];
-            return localPart.charAt(0).toUpperCase() + localPart.slice(1);
-        }
-        
-        return 'Gebruiker';
-    }
-
-    function getTimeOfDay() {
-        const hour = new Date().getHours();
-        if (hour < 12) return 'Goedemorgen';
-        if (hour < 18) return 'Goedemiddag';
-        return 'Goedenavond';
-    }
-
-    function showLoginScreen() {
-        document.getElementById('login-screen').classList.remove('hidden');
-        document.getElementById('main-app').classList.add('hidden');
-        log('INFO', 'Switched to login screen');
-    }
-
-    function showMainApp() {
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('main-app').classList.remove('hidden');
-        setTimeout(() => updateDashboardGreeting(), 100);
-        log('INFO', 'Switched to main app');
-    }
-
-    // Firebase initialization with enhanced error handling
-    async function initializeFirebase() {
-        if (authInitialized) {
-            console.log('✅ Firebase already initialized');
-            return true;
-        }
-        
-        try {
-            console.log('🔥 Starting Firebase initialization...');
-            console.log('📊 Config check:', {
-                apiKey: firebaseConfig.apiKey ? 'Present' : 'Missing',
-                authDomain: firebaseConfig.authDomain,
-                projectId: firebaseConfig.projectId
-            });
-            
-            // Test network connectivity first
-            if (!navigator.onLine) {
-                throw new Error('No internet connection available');
-            }
-            
-            // Test if we can access Firebase modules with timeout
-            console.log('📦 Loading Firebase modules...');
-            const modulePromise = Promise.all([
-                import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js"),
-                import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js"),
-                import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js")
-            ]);
-            
-            const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Firebase modules loading timeout')), 15000)
-            );
-            
-            const [appModule, firestoreModule, authModule] = await Promise.race([modulePromise, timeoutPromise]);
-            
-            const { initializeApp } = appModule;
-            const { getFirestore } = firestoreModule;
-            const { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile, signOut } = authModule;
-            
-            console.log('✅ Firebase modules loaded successfully');
-
-            // Initialize Firebase with error catching
-            console.log('🔧 Initializing Firebase app...');
-            app = initializeApp(firebaseConfig);
-            console.log('✅ Firebase app initialized:', app.name);
-            
-            auth = getAuth(app);
-            console.log('✅ Auth initialized, state:', auth.currentUser ? 'Has user' : 'No user');
-            
-            db = getFirestore(app);
-            console.log('✅ Firestore initialized');
-
-            // Set up auth state observer with enhanced error handling
-            console.log('👁️ Setting up auth state observer...');
-            const unsubscribe = onAuthStateChanged(auth, 
-                (user) => {
-                    console.log('🔔 Auth state changed:', user ? `User: ${user.email} (${user.uid})` : 'No user');
-                    currentUser = user;
-                    updateUserInfo();
-                    
-                    if (user) {
-                        console.log('✅ User authenticated, showing main app');
-                        showMainApp();
-                        
-                        // Load user data after UI is ready
-                        setTimeout(() => {
-                            if (currentTab === 'dagboek') {
-                                loadDagboekEntries().catch(error => {
-                                    log('WARNING', 'Could not load entries on login:', error);
-                                });
-                            }
-                        }, 500);
-                    } else {
-                        console.log('❌ No user, showing login screen');
-                        showLoginScreen();
-                    }
-                }, 
-                (error) => {
-                    console.error('❌ Auth state observer error:', error);
-                    updateUserInfo(); // Hide spinner
-                    showUserMessage('Authenticatie fout: ' + error.message, 'error');
-                    showLoginScreen();
-                }
-            );
-
-            // Store unsubscribe function for cleanup
-            window.authUnsubscribe = unsubscribe;
-
-            updateConnectionStatus(true);
-            authInitialized = true;
-            console.log('🎉 Firebase initialization completed successfully');
-            
-            // Test auth readiness
-            console.log('🧪 Testing auth readiness...');
-            console.log('Auth currentUser:', auth.currentUser);
-            console.log('Auth ready state:', auth.authStateReady ? 'Ready' : 'Not ready');
-            
-            return true;
-
-        } catch (error) {
-            console.error('💥 Firebase initialization failed:', error);
-            console.error('Error details:', {
-                name: error.name,
-                message: error.message,
-                code: error.code || 'No code',
-                stack: error.stack
-            });
-            
-            updateConnectionStatus(false);
-            authInitialized = false;
-            
-            let userMessage = 'Firebase kon niet worden geïnitialiseerd.';
-            if (error.message.includes('timeout')) {
-                userMessage += ' Netwerkverbinding te traag.';
-            } else if (error.message.includes('No internet')) {
-                userMessage += ' Geen internetverbinding.';
-            } else {
-                userMessage += ' Check de console voor details.';
-            }
-            
-            showUserMessage(userMessage, 'error');
-            showLoginScreen();
-            return false;
-        }
-    }
-
-    // Enhanced Google Sign-In with better error handling
-    window.signInWithGoogle = async function() {
-        console.log('🔵 Google sign-in button clicked');
-        const googleBtn = document.getElementById('google-login-btn');
-        const originalText = googleBtn.textContent;
-        
-        // Immediate UI feedback
-        googleBtn.textContent = 'Bezig...';
-        googleBtn.disabled = true;
-
-        try {
-            // Ensure Firebase is initialized
-            if (!authInitialized || !auth) {
-                console.log('⚠️ Firebase not initialized, initializing now...');
-                const initialized = await initializeFirebase();
-                if (!initialized) {
-                    throw new Error('Firebase initialization failed');
-                }
-            }
-
-            // Verify auth object is ready
-            if (!auth || typeof auth.signInWithPopup !== 'function') {
-                console.log('⚠️ Auth object not ready, waiting...');
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                if (!auth) {
-                    throw new Error('Auth object not available after wait');
-                }
-            }
-
-            console.log('🔵 Starting Google popup sign-in...');
-            
-            // Import auth functions fresh
-            const authModule = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
-            const { GoogleAuthProvider, signInWithPopup } = authModule;
-            
-            const provider = new GoogleAuthProvider();
-            provider.setCustomParameters({
-                prompt: 'select_account'
-            });
-            
-            // Add scopes for better user info
-            provider.addScope('email');
-            provider.addScope('profile');
-            
-            console.log('🔵 Opening popup with provider:', provider);
-            
-            // Create a timeout promise for the popup
-            const signInPromise = signInWithPopup(auth, provider);
-            const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error('Google sign-in timeout')), 60000)
-            );
-            
-            const result = await Promise.race([signInPromise, timeoutPromise]);
-            
-            console.log('✅ Google sign-in successful:', {
-                uid: result.user.uid,
-                email: result.user.email,
-                displayName: result.user.displayName
-            });
-            
-            // Force UI update
-            setTimeout(() => {
-                if (result.user) {
-                    currentUser = result.user;
-                    updateUserInfo();
-                    showMainApp();
-                }
-            }, 500);
-            
-        } catch (error) {
-            console.error('❌ Google sign-in failed:', error);
-            console.error('Error details:', {
-                name: error.name,
-                message: error.message,
-                code: error.code || 'No error code'
-            });
-            
-            let message = 'Google inloggen mislukt';
-            if (error.code === 'auth/popup-blocked') {
-                message = 'Login werd geblokkeerd. Sta popups toe voor deze site.';
-            } else if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
-                message = 'Login geannuleerd.';
-                // Don't show error for user cancellation
-                googleBtn.textContent = originalText;
-                googleBtn.disabled = false;
-                return;
-            } else if (error.message.includes('timeout')) {
-                message = 'Login duurde te lang. Probeer opnieuw.';
-            } else if (error.message.includes('Firebase initialization failed')) {
-                message = 'Firebase kon niet worden geïnitialiseerd. Herlaad de pagina.';
-            } else if (error.code === 'auth/network-request-failed') {
-                message = 'Netwerkfout. Controleer je internetverbinding.';
-            }
-            
-            showUserMessage(message, 'error');
-        } finally {
-            // Always restore button state
-            googleBtn.textContent = originalText;
-            googleBtn.disabled = false;
-        }
+    let progressData = {
+        buteyko: { sessions: 0, totalTime: 0, lastSession: null },
+        ritual: { sessions: 0, totalTime: 0, lastSession: null },
+        emdr: { sessions: 0, totalTime: 0, lastSession: null },
+        crisis: { sessions: 0, lastSession: null }
     };
 
-    // Enhanced Email Login
-    async function handleLogin(e) {
-        e.preventDefault();
-        console.log('📧 Email login attempt');
-        
-        const email = document.getElementById('login-email').value.trim();
-        const password = document.getElementById('login-password').value;
-        
-        console.log('📧 Login details:', { 
-            email, 
-            passwordLength: password.length,
-            emailValid: email.includes('@')
-        });
-        
-        // Validation
-        if (!email || !password) {
-            showUserMessage('Vul alle velden in', 'warning');
-            return;
-        }
-
-        if (!email.includes('@') || !email.includes('.')) {
-            showUserMessage('Voer een geldig email adres in', 'warning');
-            return;
-        }
-
-        // Ensure Firebase is ready
-        if (!authInitialized || !auth) {
-            console.log('⚠️ Firebase not initialized for email login');
-            showUserMessage('Bezig met laden van Firebase...', 'info');
-            const initialized = await initializeFirebase();
-            if (!initialized) {
-                showUserMessage('Firebase niet beschikbaar. Herlaad de pagina.', 'error');
-                return;
-            }
-        }
-
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        
+    // Simplified Firebase initialization with redirect flow
+    async function initializeFirebase() {
         try {
-            submitBtn.textContent = 'Bezig met inloggen...';
-            submitBtn.disabled = true;
+            log('INFO', 'Initializing Firebase...');
             
-            console.log('📧 Attempting email sign-in...');
-            
-            // Import fresh auth functions
-            const authModule = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
-            const { signInWithEmailAndPassword } = authModule;
-            
-            const result = await signInWithEmailAndPassword(auth, email, password);
-            
-            console.log('✅ Email sign-in successful:', {
-                uid: result.user.uid,
-                email: result.user.email,
-                emailVerified: result.user.emailVerified
-            });
-            
-            e.target.reset();
-            
-            // Force UI update
-            setTimeout(() => {
-                if (result.user) {
-                    currentUser = result.user;
-                    updateUserInfo();
-                    showMainApp();
-                }
-            }, 500);
-            
-        } catch (error) {
-            console.error('❌ Email sign-in failed:', error);
-            console.error('Error details:', {
-                name: error.name,
-                message: error.message,
-                code: error.code || 'No error code'
-            });
-            
-            let message = 'Inloggen mislukt';
-            if (error.code === 'auth/user-not-found') {
-                message = 'Geen account gevonden met dit email adres. Maak eerst een account aan.';
-            } else if (error.code === 'auth/wrong-password') {
-                message = 'Verkeerd wachtwoord. Probeer opnieuw.';
-            } else if (error.code === 'auth/invalid-email') {
-                message = 'Ongeldig email adres';
-            } else if (error.code === 'auth/invalid-credential') {
-                message = 'Ongeldige inloggegevens. Controleer email en wachtwoord.';
-            } else if (error.code === 'auth/too-many-requests') {
-                message = 'Te veel mislukte pogingen. Wacht even en probeer opnieuw.';
-            } else if (error.code === 'auth/network-request-failed') {
-                message = 'Netwerkfout. Controleer je internetverbinding.';
-            } else if (error.code === 'auth/internal-error') {
-                message = 'Interne fout. Probeer het later opnieuw.';
-            }
-            
-            showUserMessage(message, 'error');
-            
-            // Focus back to email field for retry
-            setTimeout(() => {
-                document.getElementById('login-email').focus();
-            }, 100);
-            
-        } finally {
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-        }
-    }
+            // Firebase v9+ modular imports
+            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
+            const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+            const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
 
-    async function handleRegister(e) {
-        e.preventDefault();
-        console.log('🆕 Registration attempt');
-        
-        const name = document.getElementById('register-name').value.trim();
-        const email = document.getElementById('register-email').value.trim();
-        const password = document.getElementById('register-password').value;
-        
-        console
+            // Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
+                authDomain: "ademruimte-12c09.firebaseapp.com",
+                projectId: "ademruimte-12c09",
+                storageBucket: "ademruimte-12c09.firebasestorage.app",
+                messagingSenderId: "744941871331",
+                appId: "1:744941871331:web:c3ce24d814fe41314d25d6",
+                measurementId: "G-SD2

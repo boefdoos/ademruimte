@@ -27,7 +27,7 @@
         --touch-target: 44px;
     }
 
-    /* Reset en basis styling - geen ongewenste borders */
+    /* Reset en basis styling */
     * {
         margin: 0;
         padding: 0;
@@ -70,7 +70,7 @@
         top: 6px;
     }
 
-    /* Verbeterde header */
+    /* Header */
     header {
         background: linear-gradient(135deg, #06b6d4, #10b981);
         color: white;
@@ -85,7 +85,6 @@
         backdrop-filter: blur(10px);
     }
 
-    /* SVG Logo styling */
     .logo-container {
         display: flex;
         align-items: center;
@@ -132,7 +131,7 @@
         z-index: 2;
     }
 
-    /* Geoptimaliseerde navigatie */
+    /* Navigation */
     .nav-tabs {
         background: var(--card-background);
         backdrop-filter: blur(20px);
@@ -193,7 +192,7 @@
         transform: translateY(-1px);
     }
 
-    /* Container optimalisaties */
+    /* Container */
     .container {
         max-width: 1200px;
         margin: 0 auto;
@@ -201,7 +200,7 @@
         min-height: calc(100vh - 120px);
     }
 
-    /* Verbeterde card styling */
+    /* Cards */
     .card {
         background: var(--card-background);
         backdrop-filter: blur(20px);
@@ -236,7 +235,7 @@
         font-weight: 600;
     }
 
-    /* Toegankelijke button styling */
+    /* Buttons */
     .btn {
         padding: 1rem 1.5rem;
         border: none;
@@ -272,12 +271,6 @@
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
-    /* Add this for immediate feedback on click/tap */
-    .btn:active {
-        transform: translateY(1px); /* Pushes the button down slightly */
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Reduces shadow */
-    }
-
 
     .btn-primary {
         background: linear-gradient(135deg, #667eea, #764ba2);
@@ -309,7 +302,7 @@
         color: white;
     }
 
-    /* Verbeterde grid layout */
+    /* Grid layout */
     .grid {
         display: grid;
         gap: 1.5rem;
@@ -354,6 +347,37 @@
         font-size: 0.95rem;
     }
 
+    /* Statistics specific grid for overview cards */
+    .stats-overview-card {
+        background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
+        border-radius: 1rem;
+        padding: 1.5rem;
+        text-align: center;
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.2s ease;
+    }
+
+    .stats-overview-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .stats-number {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, #06b6d4, #10b981);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .stats-label {
+        color: var(--text-light);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
     /* Loading states */
     .loading {
         opacity: 0.6;
@@ -390,7 +414,7 @@
         100% { transform: rotate(360deg); }
     }
 
-    /* Verbeterde form styling met mobiele focus support */
+    /* Form styling */
     .form-group {
         margin-bottom: 1rem;
     }
@@ -443,7 +467,6 @@
             min-height: 100px;
         }
         
-        /* Ensure inputs are visible when keyboard opens */
         .modal-content {
             position: relative;
             max-height: 90vh;
@@ -495,7 +518,7 @@
         margin: 0.5rem 0;
     }
 
-    /* Alert verbeteringen */
+    /* Alert styling */
     .alert {
         padding: 1rem 1.5rem;
         border-radius: 0.75rem;
@@ -968,6 +991,35 @@
         border: 1px solid #e2e8f0;
     }
 
+    /* Statistics table styling */
+    .stats-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        background: white;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .stats-table th,
+    .stats-table td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 0.9rem;
+    }
+
+    .stats-table th {
+        background: #f8fafc;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .stats-table tr:hover {
+        background: #f9fafb;
+    }
+
     /* Utility classes */
     .hidden {
         display: none !important;
@@ -1001,7 +1053,6 @@
             font-size: 0.9rem;
         }
 
-        /* Verbeterde nav voor mobiel */
         .nav-tabs {
             padding: 0.5rem 0.25rem;
             gap: 0.25rem;
@@ -1014,7 +1065,6 @@
             border-radius: 0.875rem;
         }
 
-        /* Header aanpassingen voor mobiel */
         header {
             min-height: 100px;
             padding: 1rem 0.75rem;
@@ -1041,10 +1091,18 @@
         .timer-display {
             font-size: 2rem;
         }
+
+        .stats-table {
+            font-size: 0.8rem;
+        }
+
+        .stats-table th,
+        .stats-table td {
+            padding: 0.5rem;
+        }
     }
 
     @media (max-width: 480px) {
-        /* Extra kleine schermen */
         .nav-tabs button {
             font-size: 0.7rem;
             padding: 0.625rem 0.75rem;
@@ -1116,7 +1174,6 @@
             font-size: 3rem;
         }
 
-        /* Betere nav spacing op desktop */
         .nav-tabs {
             justify-content: center;
             gap: 1rem;
@@ -1184,6 +1241,7 @@
 
     <header role="banner">
         <div class="user-info" id="user-info" aria-live="polite">
+            <!-- Spinner should be shown by default until auth state is known -->
             <div class="spinner" id="auth-loading" aria-label="Bezig met inloggen..."></div>
         </div>
         
@@ -1410,6 +1468,7 @@
             <button class="tab-btn" data-tab="gapen" aria-selected="false">🥱 Gapen</button>
             <button class="tab-btn" data-tab="emdr" aria-selected="false">💜 EMDR</button>
             <button class="tab-btn" data-tab="dagboek" aria-selected="false">📖 Dagboek</button>
+            <button class="tab-btn" data-tab="statistieken" aria-selected="false">📊 Statistieken</button>
         </nav>
 
         <main id="main-content" class="container">
@@ -1431,8 +1490,7 @@
                     <div class="card">
                         <h3>🚨 Crisis Hulp</h3>
                         <p>Voor wanneer je luchthonger voelt opkomen</p>
-                        <!-- Changed from onclick to an ID for event listener -->
-                        <button class="btn btn-red" id="crisis-help-btn" onclick="showTab('crisis')">Open Crisis Hulp</button>
+                        <button class="btn btn-red" onclick="showTab('crisis')">Open Crisis Hulp</button>
                     </div>
 
                     <div class="card">
@@ -1450,8 +1508,7 @@
                     <div class="card">
                         <h3>🥱 Gaap Preventie</h3>
                         <p>Technieken voor gaapaanvallen</p>
-                        <!-- Changed from onclick to an ID for event listener -->
-                        <button class="btn btn-orange" id="yawn-prevention-btn" onclick="showTab('gapen')">Bekijk Technieken</button>
+                        <button class="btn btn-orange" onclick="showTab('gapen')">Bekijk Technieken</button>
                     </div>
 
                     <div class="card">
@@ -1528,8 +1585,7 @@
                 </div>
 
                 <div class="card">
-                    <!-- Changed from onclick to an ID for event listener -->
-                    <button class="btn btn-primary" id="crisis-dagboek-btn">
+                    <button class="btn btn-primary" onclick="openDagboekModal('Crisis Hulp Technieken')">
                         📝 Dagboek Entry Maken
                     </button>
                 </div>
@@ -1618,8 +1674,7 @@
                     Geweldig! Je hebt 10 ademhalingscycli succesvol afgerond.
                     <br><br>
                     <div class="button-group">
-                        <!-- Changed from onclick to an ID for event listener -->
-                        <button class="btn btn-primary" id="buteyko-dagboek-btn">
+                        <button class="btn btn-primary" onclick="openDagboekModal('Buteyko Ademhaling - 10 Cycli Voltooid')">
                             📝 Maak Dagboek Entry
                         </button>
                         <button class="btn btn-orange" onclick="skipButeykoDagboek()">
@@ -1681,8 +1736,7 @@
                         Fantastisch! Je hebt alle 5 stappen van het afkoel ritueel doorlopen.
                         <br><br>
                         <div class="button-group">
-                            <!-- Changed from onclick to an ID for event listener -->
-                            <button class="btn btn-primary" id="ritual-dagboek-btn">
+                            <button class="btn btn-primary" onclick="openDagboekModal('Afkoel Ritueel - 5 Stappen Voltooid')">
                                 📝 Maak Dagboek Entry
                             </button>
                             <button class="btn btn-orange" onclick="skipRitualDagboek()">
@@ -1738,8 +1792,7 @@
                 </div>
 
                 <div class="card">
-                    <!-- Changed from onclick to an ID for event listener -->
-                    <button class="btn btn-primary" id="gapen-dagboek-btn">
+                    <button class="btn btn-primary" onclick="openDagboekModal('Gaap Preventie Technieken')">
                         📝 Dagboek Entry Maken
                     </button>
                 </div>
@@ -1792,6 +1845,52 @@
                     </div>
                 </div>
 
+                <!-- Eye Movement Controls -->
+                <div class="card" id="eye-movement-card">
+                    <h3>👁️ Oogbeweging Stimulatie</h3>
+                    <p style="margin-bottom: 1rem;">Volg de bewegende stip met je ogen zonder je hoofd te bewegen. Dit activeert beide hersenhelften.</p>
+                    
+                    <div class="breath-controls">
+                        <div class="breath-setting">
+                            <label>Snelheid</label>
+                            <select id="eye-speed" class="form-select">
+                                <option value="slow">Langzaam (4 sec)</option>
+                                <option value="medium" selected>Gemiddeld (2 sec)</option>
+                                <option value="fast">Snel (1 sec)</option>
+                            </select>
+                        </div>
+                        <div class="breath-setting">
+                            <label>Patroon</label>
+                            <select id="eye-pattern" class="form-select">
+                                <option value="horizontal" selected>Horizontaal</option>
+                                <option value="vertical">Verticaal</option>
+                                <option value="diagonal">Diagonaal</option>
+                                <option value="figure8">Figuur 8</option>
+                            </select>
+                        </div>
+                        <div class="breath-setting">
+                            <label>Status</label>
+                            <div id="eye-status" style="font-weight: bold; color: var(--text-light); margin-top: 0.5rem;">Gestopt</div>
+                        </div>
+                    </div>
+
+                    <!-- Eye Movement Display -->
+                    <div id="eye-movement-display" style="position: relative; height: 200px; background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-radius: 1rem; margin: 1rem 0; border: 2px solid #0ea5e9; overflow: hidden;">
+                        <div id="eye-dot" style="position: absolute; width: 20px; height: 20px; background: radial-gradient(circle, #ef4444, #dc2626); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3); transition: all 0.1s ease-out; display: none;">
+                            <div style="width: 8px; height: 8px; background: white; border-radius: 50%; position: absolute; top: 3px; left: 6px; opacity: 0.9;"></div>
+                        </div>
+                        <div id="eye-instructions" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #0ea5e9; font-weight: 600;">
+                            Klik op start om oogbewegingen te beginnen
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="eye-btn" class="btn btn-cyan" onclick="toggleEyeMovements()">
+                            👁️ Start Oogbewegingen
+                        </button>
+                    </div>
+                </div>
+
                 <div class="card">
                     <h3 id="emdr-title">Stap 1: Voorbereiding</h3>
                     <div id="emdr-content">
@@ -1820,8 +1919,7 @@
                         Goed gedaan! Je hebt alle 5 stappen van de EMDR zelfhulp doorlopen.
                         <br><br>
                         <div class="button-group">
-                            <!-- Changed from onclick to an ID for event listener -->
-                            <button class="btn btn-primary" id="emdr-dagboek-btn">
+                            <button class="btn btn-primary" onclick="openDagboekModal('EMDR Zelfhulp - 5 Stappen Voltooid')">
                                 📝 Maak Dagboek Entry
                             </button>
                             <button class="btn btn-orange" onclick="skipEmdrDagboek()">
@@ -1838,8 +1936,7 @@
                     <h2>📖 Dagboek</h2>
                     <p>Overzicht van je sessies en vooruitgang</p>
                     <div class="button-group">
-                        <!-- Changed from onclick to an ID for event listener -->
-                        <button class="btn btn-primary" id="new-entry-btn">
+                        <button class="btn btn-primary" onclick="openDagboekModal('Handmatige Entry')">
                             ➕ Nieuwe Entry
                         </button>
                         <button class="btn btn-green" onclick="loadDagboekEntries()">
@@ -1894,6 +1991,92 @@
                     </ul>
                 </div>
             </div>
+
+            <!-- Statistieken Tab -->
+            <div id="statistieken" class="tab-content hidden" role="tabpanel" aria-labelledby="statistieken-tab">
+                <div class="card">
+                    <h2>📊 Statistieken & Inzichten</h2>
+                    <p>Ontdek patronen in je ademhalingspraktijk en zie welke technieken het beste voor jou werken</p>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="loadStatistics()">
+                            🔄 Statistieken Laden
+                        </button>
+                        <button class="btn btn-green" onclick="exportStatistics()">
+                            📥 Export Rapport
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Stats Overview -->
+                <div id="stats-overview" class="grid" style="margin-bottom: 2rem;">
+                    <!-- Stats cards will be inserted here -->
+                </div>
+
+                <!-- Most Used Techniques -->
+                <div class="card">
+                    <h3>🏆 Meest Gebruikte Technieken</h3>
+                    <div class="chart-container" style="position: relative; height: 300px; margin: 1rem 0;">
+                        <canvas id="usage-chart" style="max-height: 300px;"></canvas>
+                    </div>
+                    <div id="usage-empty" class="alert alert-info" style="text-align: center;">
+                        <strong>📈 Geen data beschikbaar</strong><br>
+                        Maak een paar dagboek entries om te zien welke technieken je het meest gebruikt!
+                    </div>
+                </div>
+
+                <!-- Effectiveness Analysis -->
+                <div class="card">
+                    <h3>⚡ Effectiviteit per Techniek</h3>
+                    <p style="color: var(--text-light); margin-bottom: 1rem;">Gemiddelde verbetering in intensiteit score (hoger = beter)</p>
+                    <div class="chart-container" style="position: relative; height: 300px; margin: 1rem 0;">
+                        <canvas id="effectiveness-chart" style="max-height: 300px;"></canvas>
+                    </div>
+                    <div id="effectiveness-empty" class="alert alert-info" style="text-align: center;">
+                        <strong>📈 Geen data beschikbaar</strong><br>
+                        Voer meer sessies uit om effectiviteit te kunnen analyseren!
+                    </div>
+                </div>
+
+                <!-- Results Distribution -->
+                <div class="card">
+                    <h3>🎯 Resultaten Verdeling</h3>
+                    <div class="chart-container" style="position: relative; height: 300px; margin: 1rem 0;">
+                        <canvas id="results-chart" style="max-height: 300px;"></canvas>
+                    </div>
+                    <div id="results-empty" class="alert alert-info" style="text-align: center;">
+                        <strong>📈 Geen data beschikbaar</strong><br>
+                        Vul resultaten in bij je dagboek entries om deze analyse te zien!
+                    </div>
+                </div>
+
+                <!-- Intensity Improvement Trends -->
+                <div class="card">
+                    <h3>📈 Intensiteit Verbeteringen</h3>
+                    <div class="chart-container" style="position: relative; height: 300px; margin: 1rem 0;">
+                        <canvas id="improvement-chart" style="max-height: 300px;"></canvas>
+                    </div>
+                    <div id="improvement-empty" class="alert alert-info" style="text-align: center;">
+                        <strong>📈 Geen data beschikbaar</strong><br>
+                        Meer data nodig om verbeteringstrends te tonen!
+                    </div>
+                </div>
+
+                <!-- Detailed Statistics Table -->
+                <div class="card">
+                    <h3>📋 Gedetailleerde Statistieken</h3>
+                    <div id="detailed-stats" style="overflow-x: auto;">
+                        <!-- Detailed stats table will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Insights and Recommendations -->
+                <div id="insights-section" class="card" style="display: none;">
+                    <h3>💡 Persoonlijke Inzichten</h3>
+                    <div id="insights-content">
+                        <!-- AI-like insights will be generated here -->
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
@@ -1902,7 +2085,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="dagboek-modal-title">📝 Dagboek Entry</h3>
-                <button class="close-btn" aria-label="Sluit dagboek venster">&times;</button>
+                <button class="close-btn" onclick="closeDagboekModal()" aria-label="Sluit dagboek venster">&times;</button>
             </div>
             
             <form id="dagboek-form" novalidate>
@@ -1943,10 +2126,10 @@
                 </div>
 
                 <div class="button-group">
-                    <button type="button" class="btn btn-primary">
+                    <button type="button" class="btn btn-primary" id="save-dagboek-entry-btn">
                         📁 Opslaan
                     </button>
-                    <button type="button" class="btn btn-orange">
+                    <button type="button" class="btn btn-orange" onclick="closeDagboekModal()">
                         Annuleren
                     </button>
                 </div>
@@ -2009,6 +2192,11 @@
                 "Het bijhouden van patronen in je dagboek helpt je triggers te identificeren.",
                 "Na intensief denkwerk heeft je lichaam een afkoel ritueel nodig om te ontspannen."
             ];
+            // Initialize auth-loading spinner to be visible initially
+            const authLoading = document.getElementById('auth-loading');
+            if (authLoading) {
+                authLoading.style.display = 'inline-block';
+            }
         }
 
         setUser(user) {
@@ -2036,10 +2224,18 @@
             const userInfo = document.getElementById('user-info');
             const accountInfo = document.getElementById('account-info');
             
+            // Hide loading spinner regardless of auth state
+            const authLoading = document.getElementById('auth-loading');
+            if (authLoading) {
+                authLoading.style.display = 'none';
+            }
+
             if (this.currentUser && userInfo) {
                 const displayName = this.currentUser.displayName || this.currentUser.email;
                 const shortName = displayName.length > 15 ? displayName.substring(0, 13) + '...' : displayName;
                 userInfo.innerHTML = shortName;
+            } else if (userInfo) {
+                userInfo.innerHTML = '';
             }
 
             if (this.currentUser && accountInfo) {
@@ -2048,9 +2244,10 @@
                     '<strong>Ingelogd als:</strong><br>' + 
                     (this.currentUser.displayName || this.currentUser.email) + 
                     '</p>';
+            } else if (accountInfo) {
+                accountInfo.innerHTML = '<p style="color: var(--text-light); font-size: 0.9rem;">Niet ingelogd</p>';
             }
             
-            // Update dashboard greeting
             this.updateDashboardGreeting();
         }
 
@@ -2060,6 +2257,8 @@
                 const firstName = this.getFirstName();
                 const timeOfDay = this.getTimeOfDay();
                 greetingElement.textContent = `${timeOfDay}, ${firstName}!`;
+            } else if (greetingElement) {
+                greetingElement.textContent = `Welkom bij Ademruimte`;
             }
         }
 
@@ -2077,11 +2276,11 @@
                     statusDot.className = 'status-connected';
                     statusDot.title = 'Firebase: Verbonden';
                 } else if (this.isOnline) {
-                    statusDot.className = 'status-disconnected';
-                    statusDot.title = 'Firebase: Offline';
+                    statusDot.className = 'status-disconnected'; 
+                    statusDot.title = 'Firebase: Verbindingsprobleem of niet geïnitialiseerd';
                 } else {
                     statusDot.className = 'status-error';
-                    statusDot.title = 'Firebase: Geen verbinding';
+                    statusDot.title = 'Firebase: Geen internetverbinding';
                 }
             }
         }
@@ -2091,7 +2290,7 @@
         }
 
         getFirstName() {
-            if (!this.currentUser) return '';
+            if (!this.currentUser) return 'Gebruiker';
             
             const displayName = this.currentUser.displayName;
             if (displayName) {
@@ -2136,551 +2335,2838 @@
     let isAudioPlaying = false;
     let panPosition = -1;
 
+    // Eye movement variables
+    let eyeMovementInterval = null;
+    let isEyeMovementActive = false;
+    let eyePosition = { x: 50, y: 50 };
+    let eyeDirection = { x: 1, y: 0 };
+
     // Wake lock for keeping screen on
     let wakeLock = null;
 
-    // Progress tracking and Chart
+    // Chart variables
     let progressChart = null;
-    let progressData = {
+    let usageChart = null;
+    let effectivenessChart = null;
+    let resultsChart = null;
+    let improvementChart = null;
+
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
+        authDomain: "ademruimte-12c09.firebaseapp.com", 
+        projectId: "ademruimte-12c09",
+        storageBucket: "ademruimte-12c09.firebasestorage.app",
+        messagingSenderId: "744941871331",
+        appId: "1:744941871331:web:c3ce24d814fe41314d25d6",
+        measurementId: "G-SD2ZEYNMNY"
+    };
+
+    // Ritual step data
+    const ritualSteps = [
+        {
+            title: "Stap 1: Fysieke Mini-Reset",
+            duration: 120,
+            instructions: [
+                "Sta op en strek je volledig uit",
+                "Schud je armen en benen los", 
+                "Rol je schouders 5x naar achteren",
+                "Maak kleine cirkels met je hoofd (5x elke richting)"
+            ]
+        },
+        {
+            title: "Stap 2: Ademhaling Reset",
+            duration: 90,
+            instructions: [
+                "Ga comfortabel zitten of staan",
+                "Adem 5x heel diep in door je neus",
+                "Adem langzaam uit door je mond",
+                "Let op de vertraging tussen gedachte en lichaam"
+            ]
+        },
+        {
+            title: "Stap 3: Mentale Overgang",
+            duration: 120,
+            instructions: [
+                "Zeg hardop: 'Ik ben klaar met intensief denken'",
+                "Denk aan 3 dingen waar je dankbaar voor bent",
+                "Visualiseer je volgende activiteit",
+                "Geef jezelf toestemming om te ontspannen"
+            ]
+        },
+        {
+            title: "Stap 4: Zintuiglijke Reset",
+            duration: 90,
+            instructions: [
+                "Kijk bewust rond - wat zie je?",
+                "Luister naar geluiden om je heen",
+                "Voel de temperatuur op je huid",
+                "Ruik bewust de lucht om je heen"
+            ]
+        },
+        {
+            title: "Stap 5: Intentie Zetten",
+            duration: 60,
+            instructions: [
+                "Besluit bewust hoe je je volgende tijd wilt besteden",
+                "Zeg tegen jezelf: 'Ik ga nu over naar [activiteit]'",
+                "Neem één bewuste stap in die richting",
+                "Feliciteer jezelf - je hebt een goede overgang gemaakt"
+            ]
+        }
+    ];
+
+    // EMDR Step data
+    const emdrSteps = [
+        {
+            title: "Stap 1: Voorbereiding",
+            content: "Zorg dat je in een veilige, rustige ruimte bent. Heb water binnen handbereik. Stop als het te overweldigend wordt.",
+            showIntensity: false
+        },
+        {
+            title: "Stap 2: Identificeer het Gevoel",
+            content: "Denk aan het luchthonger-gevoel. Waar voel je het in je lichaam? Geef het een intensiteit score van 1-10.",
+            showIntensity: true
+        },
+        {
+            title: "Stap 3: Bilaterale Stimulatie",
+            content: "Start de bilaterale audio of oogbewegingen als je dit nog niet hebt gedaan. Focus op het gevoel terwijl je naar de stimulatie luistert/kijkt. Laat gedachten en gevoelens vrijelijk komen en gaan.",
+            showIntensity: false
+        },
+        {
+            title: "Stap 4: Check-in",
+            content: "Stop de stimulatie. Hoe voelt het luchthonger-gevoel nu? Is de intensiteit veranderd? Geef een nieuwe score van 1-10.",
+            showIntensity: true
+        },
+        {
+            title: "Stap 5: Afsluiting",
+            content: "Neem een paar diepe, langzame ademhalingen. Visualiseer een veilige, kalme plek. Je hebt goed werk gedaan. Drink wat water als je dat nodig hebt.",
+            showIntensity: false
+        }
+    ];
+
+    // Progress tracking functions
+    let progressDataStore = {
         buteyko: { sessions: 0, totalTime: 0, lastSession: null },
         ritual: { sessions: 0, totalTime: 0, lastSession: null },
         emdr: { sessions: 0, totalTime: 0, lastSession: null },
         crisis: { sessions: 0, lastSession: null }
     };
 
-    // Simplified Firebase initialization with redirect flow
+    function loadProgressData() {
+        try {
+            if (typeof Storage !== "undefined" && window.localStorage) {
+                const stored = localStorage.getItem('ademruimte-progress');
+                if (stored) {
+                    progressDataStore = { ...progressDataStore, ...JSON.parse(stored) };
+                    log('SUCCESS', 'Progress data loaded from localStorage');
+                    return;
+                }
+            }
+        } catch (error) {
+            log('WARNING', 'localStorage not available, using in-memory storage:', error.message);
+        }
+        
+        log('INFO', 'Using in-memory progress storage');
+    }
+
+    function saveProgressData() {
+        try {
+            if (typeof Storage !== "undefined" && window.localStorage) {
+                localStorage.setItem('ademruimte-progress', JSON.stringify(progressDataStore));
+                log('SUCCESS', 'Progress data saved to localStorage');
+                return;
+            }
+        } catch (error) {
+            log('WARNING', 'localStorage not available, data will not persist between sessions:', error.message);
+        }
+    }
+
+    function trackSession(type, duration = null) {
+        if (!progressDataStore[type]) {
+            progressDataStore[type] = { sessions: 0, totalTime: 0, lastSession: null };
+        }
+        
+        progressDataStore[type].sessions++;
+        if (duration) {
+            progressDataStore[type].totalTime += duration;
+        }
+        progressDataStore[type].lastSession = new Date().toISOString();
+        
+        saveProgressData();
+        log('SUCCESS', `Tracked ${type} session:`, progressDataStore[type]);
+    }
+
+    // Firebase initialization
     async function initializeFirebase() {
+        if (appState.authInitialized) {
+            log('INFO', 'Firebase already initialized.');
+            return true;
+        }
+
         try {
             log('INFO', 'Initializing Firebase...');
             
-            // Firebase v9+ modular imports
             const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
-            const { getFirestore, collection, doc, addDoc, getDocs, onSnapshot, query, orderBy, deleteDoc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
-            const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, 
-                    signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, 
-                    GoogleAuthProvider, signInWithPopup } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+            const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithRedirect, getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
 
-            // Firebase configuration
-            // BELANGRIJK: Zorg dat dit de volledige en correcte configuratie van je Firebase project is.
-            // De 'measurementId' was afgebroken in de geleverde code.
-            const firebaseConfig = {
-                apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
-                authDomain: "ademruimte-12c09.firebaseapp.com",
-                projectId: "ademruimte-12c09",
-                storageBucket: "ademruimte-12c09.firebasestorage.app",
-                messagingSenderId: "744941871331",
-                appId: "1:744941871331:web:c3ce24d814fe41314d25d6",
-                measurementId: "G-SD2XXXXXXX" // Deze was afgebroken, vul hier de correcte ID in
-            };
-
-            // Initialize Firebase
             app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             auth = getAuth(app);
 
-            // Set authentication persistence (e.g., stay logged in until explicit logout)
             await setPersistence(auth, browserLocalPersistence);
-            log('INFO', 'Firebase geïnitialiseerd en persistentie ingesteld.');
 
-            // Auth state change listener
-            appState.authUnsubscribe = onAuthStateChanged(auth, async (user) => {
-                log('INFO', 'Auth state changed:', user ? user.uid : 'Geen gebruiker');
-                appState.setUser(user);
-                appState.authInitialized = true; // Mark auth as initialized
-                toggleAuthUI(user);
-
-                if (user) {
-                    await loadDagboekEntries(); // Load data for authenticated user
-                } else {
-                    // Clear user-specific data if logged out
-                    document.getElementById('dagboek-entries').innerHTML = '';
-                    document.getElementById('chart-empty').classList.remove('hidden');
-                    document.getElementById('chart-legend').style.display = 'none';
-                    if (progressChart) {
-                        progressChart.destroy();
-                        progressChart = null;
-                    }
+            try {
+                const result = await getRedirectResult(auth);
+                if (result) {
+                    log('SUCCESS', 'Google sign-in successful via redirect result:', result.user.email);
+                    return true;
                 }
-                document.getElementById('auth-loading').classList.add('hidden'); // Hide loading spinner once auth state is known
-            });
+            } catch (redirectError) {
+                log('ERROR', 'Error getting redirect result:', redirectError);
+                showUserMessage(`Fout bij Google login: ${redirectError.message}`, 'error');
+            }
 
-            // Online/Offline listener for Firebase status
-            window.addEventListener('online', () => {
-                appState.isOnline = true;
-                appState.setConnectionStatus(true); // Assume connected if online, Firebase will correct
-                log('INFO', 'Internetverbinding hersteld.');
-            });
-            window.addEventListener('offline', () => {
-                appState.isOnline = false;
-                appState.setConnectionStatus(false);
-                log('WARNING', 'Internetverbinding verbroken.');
-            });
+            setupAuthStateObserver(onAuthStateChanged);
 
-            // Initial connection status check
-            appState.setConnectionStatus(true); // Assume connected initially, onAuthStateChanged will confirm
+            appState.setConnectionStatus(true);
+            appState.authInitialized = true;
+            
+            log('SUCCESS', 'Firebase initialized successfully');
+            return true;
 
         } catch (error) {
-            log('ERROR', 'Fout bij het initialiseren van Firebase:', error);
-            showMessage('Fout bij het laden van de app. Probeer het later opnieuw.', 'error');
-            document.getElementById('auth-loading').classList.add('hidden'); // Hide loading spinner on error
+            log('ERROR', 'Firebase initialization failed:', error);
             appState.setConnectionStatus(false);
+            appState.authInitialized = false;
+            
+            showUserMessage('Firebase kon niet worden geïnitialiseerd. Controleer je internetverbinding.', 'error');
+            showLoginScreen();
+            
+            return false;
         }
     }
 
-    // Function to show custom message
-    function showMessage(message, type = 'info', duration = 5000) {
-        const messageContainer = document.createElement('div');
-        messageContainer.className = `user-message alert-${type}`;
-        messageContainer.textContent = message;
-        document.body.appendChild(messageContainer);
-
-        setTimeout(() => {
-            messageContainer.remove();
-        }, duration);
+    function setupAuthStateObserver(onAuthStateChanged) {
+        if (!auth) {
+            log('ERROR', 'Auth not initialized - cannot setup observer');
+            return;
+        }
+        
+        appState.authUnsubscribe = onAuthStateChanged(auth, (user) => {
+            appState.updateUI();
+            
+            if (user) {
+                log('SUCCESS', 'User authenticated:', user.email);
+                appState.setUser(user);
+                showMainApp();
+                
+                setTimeout(() => {
+                    loadDagboekEntries().catch(error => {
+                        log('WARNING', 'Could not load entries on login:', error);
+                    });
+                }, 500);
+            } else {
+                log('INFO', 'User not authenticated');
+                appState.setUser(null);
+                showLoginScreen();
+            }
+        }, (error) => {
+            log('ERROR', 'Auth state observer error:', error);
+            appState.updateUI();
+            showUserMessage('Authenticatie fout: ' + error.message, 'error');
+            showLoginScreen();
+        });
     }
 
-    // Toggle UI based on authentication status
-    function toggleAuthUI(user) {
+    // Screen management
+    function showLoginScreen() {
         const loginScreen = document.getElementById('login-screen');
         const mainApp = document.getElementById('main-app');
-        const authLoading = document.getElementById('auth-loading');
-
-        if (user) {
-            loginScreen.classList.add('hidden');
-            mainApp.classList.remove('hidden');
-            authLoading.classList.add('hidden');
-            log('SUCCESS', 'Gebruiker ingelogd. UI bijgewerkt.');
-        } else {
+        
+        if (loginScreen && mainApp) {
             loginScreen.classList.remove('hidden');
             mainApp.classList.add('hidden');
-            authLoading.classList.remove('hidden'); // Show spinner until auth state is confirmed
-            log('INFO', 'Gebruiker uitgelogd. UI bijgewerkt naar inlogscherm.');
+            
+            setTimeout(() => {
+                const emailField = document.getElementById('login-email');
+                if (emailField) {
+                    emailField.focus();
+                }
+            }, 100);
         }
-    }
-
-    // --- Authentication Functions ---
-
-    // Handle user registration
-    async function handleRegister(event) {
-        event.preventDefault();
-        const email = document.getElementById('register-email').value;
-        const password = document.getElementById('register-password').value;
-        const name = document.getElementById('register-name').value;
-
-        if (!email || !password || !name) {
-            showMessage('Vul alle registratievelden in.', 'warning');
-            return;
-        }
-
-        if (password.length < 6) {
-            showMessage('Wachtwoord moet minimaal 6 karakters lang zijn.', 'warning');
-            return;
-        }
-
-        try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            await userCredential.user.updateProfile({ displayName: name });
-            log('SUCCESS', 'Account succesvol aangemaakt:', userCredential.user.uid);
-            showMessage('Account succesvol aangemaakt! Je bent nu ingelogd.', 'success');
-            closeModal('register-modal');
-        } catch (error) {
-            log('ERROR', 'Fout bij account aanmaken:', error);
-            let errorMessage = 'Er is een fout opgetreden bij het aanmaken van het account.';
-            switch (error.code) {
-                case 'auth/email-already-in-use':
-                    errorMessage = 'Dit e-mailadres is al in gebruik.';
-                    break;
-                case 'auth/weak-password':
-                    errorMessage = 'Het wachtwoord is te zwak.';
-                    break;
-                case 'auth/invalid-email':
-                    errorMessage = 'Dit e-mailadres is ongeldig.';
-                    break;
-                default:
-                    errorMessage += ` (${error.message})`;
-            }
-            showMessage(errorMessage, 'error');
-        }
-    }
-
-    // Handle user login
-    async function handleLogin(event) {
-        event.preventDefault();
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
-
-        if (!email || !password) {
-            showMessage('Vul je e-mail en wachtwoord in.', 'warning');
-            return;
-        }
-
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            log('SUCCESS', 'Succesvol ingelogd met e-mail/wachtwoord.');
-            showMessage('Welkom terug!', 'success');
-        } catch (error) {
-            log('ERROR', 'Fout bij inloggen met e-mail/wachtwoord:', error);
-            let errorMessage = 'Onjuist e-mailadres of wachtwoord.';
-            switch (error.code) {
-                case 'auth/user-not-found':
-                case 'auth/wrong-password':
-                case 'auth/invalid-credential': // Nieuwe code voor verkeerde credentials
-                    errorMessage = 'Onjuist e-mailadres of wachtwoord.';
-                    break;
-                case 'auth/invalid-email':
-                    errorMessage = 'Het ingevoerde e-mailadres is ongeldig.';
-                    break;
-                case 'auth/too-many-requests':
-                    errorMessage = 'Te veel mislukte inlogpogingen. Probeer het later opnieuw.';
-                    break;
-                default:
-                    errorMessage += ` (${error.message})`;
-            }
-            showMessage(errorMessage, 'error');
-        }
-    }
-
-    // Handle Google login
-    async function handleGoogleLogin() {
-        try {
-            const provider = new GoogleAuthProvider();
-            await signInWithPopup(auth, provider);
-            log('SUCCESS', 'Succesvol ingelogd met Google.');
-            showMessage('Welkom terug!', 'success');
-        } catch (error) {
-            log('ERROR', 'Fout bij inloggen met Google:', error);
-            let errorMessage = 'Fout bij Google inloggen.';
-            switch (error.code) {
-                case 'auth/popup-closed-by-user':
-                    errorMessage = 'Google inlogvenster gesloten.';
-                    break;
-                case 'auth/cancelled-popup-request':
-                    errorMessage = 'Google inloggen geannuleerd.';
-                    break;
-                case 'auth/operation-not-allowed':
-                    errorMessage = 'Google inloggen is niet ingeschakeld voor dit project.';
-                    break;
-                default:
-                    errorMessage += ` (${error.message})`;
-            }
-            showMessage(errorMessage, 'error');
-        }
-    }
-
-    // Handle user logout
-    async function performLogout() {
-        try {
-            await signOut(auth);
-            log('INFO', 'Gebruiker succesvol uitgelogd.');
-            showMessage('Je bent uitgelogd.', 'info');
-        } catch (error) {
-            log('ERROR', 'Fout bij uitloggen:', error);
-            showMessage('Fout bij uitloggen. Probeer het opnieuw.', 'error');
-        }
-    }
-
-    // --- Modal Functions ---
-    function openModal(modalId) {
-        document.getElementById(modalId).classList.add('show');
-        document.getElementById(modalId).setAttribute('aria-hidden', 'false');
-    }
-
-    function closeModal(modalId) {
-        document.getElementById(modalId).classList.remove('show');
-        document.getElementById(modalId).setAttribute('aria-hidden', 'true');
-    }
-
-    // Open Dagboek Modal
-    function openDagboekModal(prefillTrigger = '') {
-        document.getElementById('entry-trigger').value = prefillTrigger;
-        // Reset ranges to default values
-        document.getElementById('entry-before').value = 5;
-        document.getElementById('entry-before-value').textContent = 5;
-        document.getElementById('entry-after').value = 5;
-        document.getElementById('entry-after-value').textContent = 5;
-        document.getElementById('entry-result').value = ''; // Reset select
-        document.getElementById('entry-notes').value = ''; // Clear notes
         
-        openModal('dagboek-modal');
+        log('INFO', 'Switched to login screen');
     }
 
-    // --- Tab Switching Logic ---
-    function showTab(tabId) {
-        // Hide all tab contents
+    function showMainApp() {
+        const loginScreen = document.getElementById('login-screen');
+        const mainApp = document.getElementById('main-app');
+        
+        if (loginScreen && mainApp) {
+            loginScreen.classList.add('hidden');
+            mainApp.classList.remove('hidden');
+            
+            setTimeout(() => {
+                appState.updateDashboardGreeting();
+            }, 100);
+            
+            const dashboard = document.querySelector('[data-tab="dashboard"]');
+            if (dashboard) dashboard.focus();
+        }
+        
+        log('INFO', 'Switched to main app');
+    }
+
+    // Authentication functions
+    window.signInWithGoogle = async function() {
+        const googleBtn = document.getElementById('google-login-btn');
+        const originalBtnText = googleBtn.querySelector('#google-btn-text').textContent;
+        googleBtn.querySelector('#google-btn-text').textContent = 'Bezig...';
+        googleBtn.disabled = true;
+        
+        if (!appState.authInitialized || !auth) {
+            const initialized = await initializeFirebase();
+            if (!initialized) {
+                showUserMessage('Firebase is niet beschikbaar. Probeer email/wachtwoord login.', 'warning');
+                googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
+                googleBtn.disabled = false;
+                return;
+            }
+        }
+
+        try {
+            log('INFO', 'Starting Google sign-in with redirect...');
+            
+            const { GoogleAuthProvider, signInWithRedirect } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            
+            const provider = new GoogleAuthProvider();
+            provider.setCustomParameters({ 
+                prompt: 'select_account'
+            });
+            
+            await signInWithRedirect(auth, provider);
+            
+        } catch (error) {
+            log('ERROR', 'Google sign-in failed:', error);
+            
+            let message = 'Google inloggen mislukt';
+            if (error.code === 'auth/popup-blocked') {
+                message = 'Login werd geblokkeerd. Controleer popup instellingen of gebruik email/wachtwoord.';
+            } else if (error.code === 'auth/network-request-failed') {
+                message = 'Netwerkfout. Controleer je internetverbinding en probeer opnieuw.';
+            } else if (error.code === 'auth/cancelled-popup-request') {
+                message = 'Google inloggen geannuleerd.';
+                showUserMessage(message, 'info');
+                googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
+                googleBtn.disabled = false;
+                return; 
+            } else if (error.code === 'auth/too-many-requests') {
+                message = 'Te veel inlogpogingen. Probeer het later opnieuw.';
+            }
+            
+            showUserMessage(message, 'error');
+            
+        } finally {
+            googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
+            googleBtn.disabled = false;
+        }
+    };
+
+    window.performLogout = async function() {
+        if (!confirm('Weet je zeker dat je wilt uitloggen?')) {
+            return;
+        }
+        
+        try {
+            if (isAudioPlaying) toggleBilateralAudio();
+            if (isEyeMovementActive) toggleEyeMovements();
+            if (wakeLock) releaseWakeLock();
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            if (breathInterval) {
+                clearInterval(breathInterval);
+                breathInterval = null;
+            }
+            
+            if (auth && auth.currentUser) {
+                const { signOut } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+                await signOut(auth);
+                log('SUCCESS', 'User logged out successfully');
+                showUserMessage('Je bent succesvol uitgelogd!', 'success');
+            } else {
+                log('INFO', 'No user logged in to log out.');
+                showUserMessage('Je bent al uitgelogd.', 'info');
+            }
+            
+        } catch (error) {
+            log('ERROR', 'Logout failed:', error);
+            showUserMessage('Uitloggen mislukt: ' + error.message, 'error');
+        }
+    };
+
+    // Tab management
+    window.showTab = function(tabName) {
+        if (appState.currentTab === 'emdr' && tabName !== 'emdr') {
+            if (isAudioPlaying) toggleBilateralAudio();
+            if (isEyeMovementActive) toggleEyeMovements();
+        }
+
         document.querySelectorAll('.tab-content').forEach(tab => {
             tab.classList.add('hidden');
-            tab.setAttribute('aria-hidden', 'true');
         });
-
-        // Deactivate all tab buttons
+        
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.remove('active');
             btn.setAttribute('aria-selected', 'false');
-            btn.removeAttribute('tabindex'); // Make non-active tabs not focusable by tab key
         });
-
-        // Show the selected tab content
-        const selectedTabContent = document.getElementById(tabId);
-        if (selectedTabContent) {
-            selectedTabContent.classList.remove('hidden');
-            selectedTabContent.setAttribute('aria-hidden', 'false');
-            appState.currentTab = tabId;
-            log('INFO', `Tab geschakeld naar: ${tabId}`);
-        }
-
-        // Activate the selected tab button
-        const selectedTabButton = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
-        if (selectedTabButton) {
-            selectedTabButton.classList.add('active');
-            selectedTabButton.setAttribute('aria-selected', 'true');
-            selectedTabButton.setAttribute('tabindex', '0'); // Make active tab focusable
-            selectedTabButton.focus(); // Focus the active tab button for accessibility
+        
+        const selectedTab = document.getElementById(tabName);
+        const selectedBtn = document.querySelector(`[data-tab="${tabName}"]`);
+        
+        if (selectedTab) {
+            selectedTab.classList.remove('hidden');
         }
         
-        // Specific actions for certain tabs when shown
-        if (tabId === 'dagboek') {
-            loadDagboekEntries();
+        if (selectedBtn) {
+            selectedBtn.classList.add('active');
+            selectedBtn.setAttribute('aria-selected', 'true');
         }
-        if (tabId === 'emdr') {
-            stopBilateralAudio(); // Stop audio if user navigates away from EMDR
-            resetEmdrExercise(); // Reset EMDR exercise state
+        
+        appState.currentTab = tabName;
+        
+        if (tabName === 'dagboek') {
+            loadDagboekEntries().catch(error => {
+                log('WARNING', 'Could not load dagboek entries:', error);
+            });
+        } else if (tabName === 'statistieken') {
+            loadStatistics();
         }
-        if (tabId === 'buteyko') {
-            resetBreathExercise(); // Reset breathing exercise state
+        
+        log('INFO', `Switched to tab: ${tabName}`);
+    };
+
+    // User feedback system
+    function showUserMessage(message, type = 'info') {
+        const existing = document.querySelector('.user-message');
+        if (existing) existing.remove();
+        
+        const messageEl = document.createElement('div');
+        messageEl.className = `user-message alert-${type}`;
+        messageEl.style.whiteSpace = 'pre-line';
+        messageEl.textContent = message;
+        messageEl.setAttribute('role', 'alert');
+        messageEl.setAttribute('aria-live', 'polite');
+        
+        if (message.length > 50) {
+            const closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '×';
+            closeBtn.style.cssText = `
+                position: absolute;
+                top: 0.5rem;
+                right: 0.75rem;
+                background: none;
+                border: none;
+                font-size: 1.25rem;
+                cursor: pointer;
+                color: inherit;
+                opacity: 0.7;
+                line-height: 1;
+                padding: 0;
+                width: 20px;
+                height: 20px;
+            `;
+            closeBtn.onclick = () => messageEl.remove();
+            messageEl.style.paddingRight = '3rem';
+            messageEl.appendChild(closeBtn);
         }
-        if (tabId === 'ritueel') {
-            resetRitual(); // Reset ritual exercise state
+        
+        document.body.appendChild(messageEl);
+        
+        const delay = type === 'error' ? 8000 : 5000;
+        setTimeout(() => {
+            if (messageEl.parentNode) {
+                messageEl.style.animation = 'slideInDown 0.3s ease-out reverse';
+                setTimeout(() => messageEl.remove(), 300);
+            }
+        }, delay);
+    }
+
+    // Form handling
+    function setupForms() {
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        
+        if (loginForm) {
+            loginForm.addEventListener('submit', handleLogin);
+        }
+        
+        if (registerForm) {
+            registerForm.addEventListener('submit', handleRegister);
         }
     }
 
-    // --- Breathing Exercise Logic (Buteyko) ---
-    function updateBreathingPattern() {
-        breathingPattern = document.getElementById('breathing-pattern').value;
-        const standardControls = document.getElementById('standard-controls');
-        const gentleControls = document.getElementById('gentle-controls');
-
-        if (breathingPattern === 'standard') {
-            standardControls.classList.remove('hidden');
-            gentleControls.classList.add('hidden');
-        } else {
-            standardControls.classList.add('hidden');
-            gentleControls.classList.remove('hidden');
-        }
-        resetBreathExercise();
-    }
-
-    function toggleBreathExercise() {
-        if (!auth.currentUser) {
-            showMessage('Log in om ademhalingsoefeningen te starten.', 'warning');
+    async function handleLogin(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        
+        if (!email || !password) {
+            showUserMessage('Vul alle velden in', 'warning');
             return;
         }
 
-        const breathButton = document.getElementById('breath-btn');
-        if (breathInterval) {
-            // Stop exercise
-            clearInterval(breathInterval);
-            breathInterval = null;
-            breathButton.textContent = '▶️ Start Buteyko';
-            document.getElementById('breath-display').textContent = 'Oefening gepauzeerd';
-            document.getElementById('breath-progress').style.width = '0%';
-            log('INFO', 'Ademhalingsoefening gepauzeerd.');
-            // Release wake lock
-            if (wakeLock) {
-                wakeLock.release().then(() => wakeLock = null);
-                log('INFO', 'Wake lock vrijgegeven.');
-            }
-        } else {
-            // Start exercise
-            document.getElementById('breath-complete').classList.add('hidden'); // Hide completion message
-            breathButton.textContent = '⏸️ Pauzeer';
-            startBreathExercise();
-            log('INFO', 'Ademhalingsoefening gestart.');
-            // Request wake lock
-            if ('wakeLock' in navigator) {
-                try {
-                    navigator.wakeLock.request('screen').then(lock => {
-                        wakeLock = lock;
-                        log('INFO', 'Wake lock verkregen.');
-                        wakeLock.addEventListener('release', () => {
-                            log('INFO', 'Wake lock vrijgegeven door systeem.');
-                            wakeLock = null;
-                        });
-                    });
-                } catch (err) {
-                    log('WARNING', `Kon wake lock niet verkrijgen: ${err.name}, ${err.message}`);
-                }
+        if (!appState.authInitialized || !auth) {
+            const initialized = await initializeFirebase();
+            if (!initialized) {
+                showUserMessage('Firebase is niet beschikbaar. Probeer het later opnieuw.', 'error');
+                return;
             }
         }
+        
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        
+        try {
+            submitBtn.textContent = 'Bezig met inloggen...';
+            submitBtn.disabled = true;
+            
+            const { signInWithEmailAndPassword } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            await signInWithEmailAndPassword(auth, email, password);
+            
+            log('SUCCESS', 'Email sign-in successful');
+            e.target.reset();
+            
+        } catch (error) {
+            log('ERROR', 'Email sign-in failed:', error);
+            
+            let message = 'Inloggen mislukt';
+            if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                message = 'Geen account gevonden met deze gegevens';
+            } else if (error.code === 'auth/wrong-password') {
+                message = 'Verkeerd wachtwoord';
+            } else if (error.code === 'auth/invalid-email') {
+                message = 'Ongeldig email adres';
+            } else if (error.code === 'auth/too-many-requests') {
+                message = 'Te veel mislukte pogingen. Probeer het later opnieuw.';
+            }
+            
+            showUserMessage(message, 'error');
+            
+        } finally {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
     }
+
+    async function handleRegister(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('register-name').value.trim();
+        const email = document.getElementById('register-email').value.trim();
+        const password = document.getElementById('register-password').value;
+        
+        if (!name || !email || !password) {
+            showUserMessage('Vul alle velden in', 'warning');
+            return;
+        }
+        
+        if (password.length < 6) {
+            showUserMessage('Wachtwoord moet minimaal 6 karakters zijn', 'warning');
+            return;
+        }
+
+        if (!appState.authInitialized || !auth) {
+            const initialized = await initializeFirebase();
+            if (!initialized) {
+                showUserMessage('Firebase is niet beschikbaar. Probeer het later opnieuw.', 'error');
+                return;
+            }
+        }
+        
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        
+        try {
+            submitBtn.textContent = 'Account aanmaken...';
+            submitBtn.disabled = true;
+            
+            const { createUserWithEmailAndPassword, updateProfile } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            
+            const result = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(result.user, { displayName: name });
+            
+            log('SUCCESS', 'Account created successfully');
+            closeRegisterModal();
+            showUserMessage('Account succesvol aangemaakt!', 'success');
+            
+        } catch (error) {
+            log('ERROR', 'Registration failed:', error);
+            
+            let message = 'Account aanmaken mislukt';
+            if (error.code === 'auth/email-already-in-use') {
+                message = 'Dit email adres is al in gebruik. Probeer in te loggen.';
+            } else if (error.code === 'auth/weak-password') {
+                message = 'Wachtwoord is te zwak. Gebruik minimaal 6 karakters.';
+            } else if (error.code === 'auth/invalid-email') {
+                message = 'Ongeldig email adres';
+            }
+            
+            showUserMessage(message, 'error');
+            
+        } finally {
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+        }
+    }
+
+    // Modal management
+    window.showRegisterForm = function() {
+        document.getElementById('register-modal').classList.add('show');
+        
+        setTimeout(() => {
+            const modal = document.getElementById('register-modal');
+            const nameField = document.getElementById('register-name');
+            if (nameField && modal) {
+                modal.scrollTop = 0;
+                nameField.focus();
+                
+                if (window.innerWidth <= 768) {
+                    nameField.click();
+                    setTimeout(() => {
+                        nameField.focus();
+                        nameField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                }
+            }
+        }, 150);
+    };
+
+    window.closeRegisterModal = function() {
+        document.getElementById('register-modal').classList.remove('show');
+        document.getElementById('register-form').reset();
+    };
+
+    // Tip management
+    function setRandomTip() {
+        const tipElement = document.getElementById('daily-tip');
+        if (tipElement) {
+            tipElement.textContent = appState.getRandomTip();
+        }
+    }
+
+    window.getNewTip = function() {
+        setRandomTip();
+        showUserMessage('Nieuwe tip geladen! 💡', 'success');
+    };
+
+    // Timer functionality for Ritual
+    window.startTimer = function() {
+        const timerDisplay = document.getElementById('timer-display');
+        const timerBtn = document.getElementById('timer-btn');
+        const nextBtn = document.getElementById('next-btn');
+        
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerBtn.innerHTML = '▶️ Start Timer';
+            timerBtn.className = 'btn btn-green';
+            nextBtn.style.display = 'block';
+            log('INFO', 'Timer stopped manually');
+            return;
+        }
+        
+        currentTime = ritualSteps[ritualStep].duration;
+        timerBtn.innerHTML = '⏸️ Stop Timer';
+        timerBtn.className = 'btn btn-red';
+        nextBtn.style.display = 'none';
+        
+        timerInterval = setInterval(() => {
+            currentTime--;
+            const minutes = Math.floor(currentTime / 60);
+            const seconds = currentTime % 60;
+            timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (currentTime <= 0) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                timerBtn.innerHTML = '▶️ Start Timer';
+                timerBtn.className = 'btn btn-green';
+                nextBtn.style.display = 'block';
+                showUserMessage('⏰ Timer afgelopen! Tijd voor de volgende stap.', 'success');
+                log('SUCCESS', 'Timer completed');
+            }
+        }, 1000);
+    };
+
+    window.nextRitualStep = function() {
+        if (ritualStep < ritualSteps.length - 1) {
+            ritualStep++;
+            updateRitualDisplay();
+        } else {
+            document.getElementById('ritual-complete').classList.remove('hidden');
+            appState.currentTechnique = 'Afkoel Ritueel - 5 Stappen Voltooid';
+            trackSession('ritual', ritualSteps.reduce((sum, step) => sum + step.duration, 0));
+            log('SUCCESS', 'Ritual completed');
+        }
+    };
+
+    window.skipToNextStep = function() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+            document.getElementById('timer-btn').className = 'btn btn-green';
+        }
+        nextRitualStep();
+    };
+
+    window.resetRitual = function() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        ritualStep = 0;
+        updateRitualDisplay();
+        document.getElementById('ritual-complete').classList.add('hidden');
+        document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+        document.getElementById('timer-btn').className = 'btn btn-green';
+        document.getElementById('next-btn').style.display = 'none';
+    };
+
+    function updateRitualDisplay() {
+        const step = ritualSteps[ritualStep];
+        
+        document.getElementById('ritual-title').textContent = step.title;
+        
+        const minutes = Math.floor(step.duration / 60);
+        const seconds = step.duration % 60;
+        document.getElementById('timer-display').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        currentTime = step.duration;
+        
+        const instructionsHtml = '<ul class="step-list">' + 
+            step.instructions.map(instruction => `<li>${instruction}</li>`).join('') +
+            '</ul>';
+        document.getElementById('ritual-instructions').innerHTML = instructionsHtml;
+        
+        const progress = ((ritualStep + 1) / ritualSteps.length) * 100;
+        document.getElementById('ritual-progress').style.width = progress + '%';
+        
+        document.getElementById('timer-btn').innerHTML = '▶️ Start Timer';
+        document.getElementById('timer-btn').className = 'btn btn-green';
+        document.getElementById('next-btn').style.display = 'none';
+        
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+        
+        log('INFO', `Ritual step ${ritualStep + 1}/${ritualSteps.length}: ${step.title}`);
+    }
+
+    // Buteyko breathing exercise functions
+    window.updateBreathingPattern = function() {
+        breathingPattern = document.getElementById('breathing-pattern').value;
+        const standardControls = document.getElementById('standard-controls');
+        const gentleControls = document.getElementById('gentle-controls');
+        
+        if (breathingPattern === 'gentle') {
+            standardControls.classList.add('hidden');
+            gentleControls.classList.remove('hidden');
+        } else {
+            standardControls.classList.remove('hidden');
+            gentleControls.classList.add('hidden');
+        }
+        
+        if (breathInterval) {
+            resetBreathExercise();
+        }
+    };
+
+    window.toggleBreathExercise = function() {
+        if (breathInterval) {
+            stopBreathExercise();
+        } else {
+            startBreathExercise();
+        }
+    };
+
+    window.resetBreathExercise = function() {
+        stopBreathExercise();
+        breathCycleCount = 1;
+        gentleBreathCount = 0;
+        breathPhase = 'rest';
+        updateBreathDisplay();
+        updateBreathProgress(0);
+        document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 1/10';
+        document.getElementById('breath-complete').classList.add('hidden');
+    };
 
     function startBreathExercise() {
-        const inhaleDuration = parseInt(document.getElementById('inhale-duration').value);
-        const exhaleDuration = parseInt(document.getElementById('exhale-duration').value);
-        const holdDuration = parseInt(document.getElementById('hold-duration').value);
-        const gentlePause = parseInt(document.getElementById('gentle-pause').value);
-
-        const breathDisplay = document.getElementById('breath-display');
-        const breathProgress = document.getElementById('breath-progress');
-        const breathCycleCounter = document.getElementById('breath-cycle-counter');
-
-        breathCycleCount = 0; // Reset cycle count on start
-        gentleBreathCount = 0; // Reset gentle breath count
-
-        const runCycle = () => {
-            if (breathingPattern === 'standard') {
-                if (breathCycleCount >= 10) { // Limit to 10 cycles for standard
-                    completeBreathExercise();
-                    return;
-                }
-                breathCycleCount++;
-                breathCycleCounter.textContent = `Cyclus: ${breathCycleCount}/10`;
-                runStandardCycle(inhaleDuration, exhaleDuration, holdDuration);
-            } else { // gentle breathing
-                if (breathCycleCount >= 10) {
-                    completeBreathExercise();
-                    return;
-                }
-                breathCycleCount++;
-                breathCycleCounter.textContent = `Cyclus: ${breathCycleCount}/10 (Zacht)`;
-                runGentleCycle(gentlePause);
-            }
-        };
-
-        clearInterval(breathInterval); // Clear any existing interval
-        runCycle(); // Start first cycle immediately
-        breathInterval = setInterval(runCycle, breathCycleDuration * 1000); // Set interval for subsequent cycles
+        requestWakeLock();
+        
+        breathCycleCount = 1;
+        document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 1/10';
+        
+        if (breathingPattern === 'gentle') {
+            startGentleBreathing();
+        } else {
+            startStandardBreathing();
+        }
     }
 
-    function runStandardCycle(inhaleDuration, exhaleDuration, holdDuration) {
-        const breathDisplay = document.getElementById('breath-display');
-        const breathProgress = document.getElementById('breath-progress');
-        let currentPhaseDuration;
-
-        // Inhale phase
+    function startStandardBreathing() {
+        const inhale = parseInt(document.getElementById('inhale-duration').value);
+        const exhale = parseInt(document.getElementById('exhale-duration').value);
+        const hold = parseInt(document.getElementById('hold-duration').value);
+        
+        breathCycleDuration = inhale + exhale + hold;
         breathPhase = 'inhale';
-        currentPhaseDuration = inhaleDuration;
-        breathDisplay.className = 'breath-display inhale';
-        animateProgress(breathProgress, currentPhaseDuration, () => {
-            // Hold after inhale
-            breathPhase = 'hold';
-            currentPhaseDuration = holdDuration;
-            breathDisplay.className = 'breath-display hold';
-            animateProgress(breathProgress, currentPhaseDuration, () => {
-                // Exhale phase
+        breathPhaseTime = 0;
+        
+        document.getElementById('breath-btn').innerHTML = '⏸️ Stop Buteyko';
+        document.getElementById('breath-btn').className = 'btn btn-red';
+        
+        breathInterval = setInterval(() => {
+            updateStandardBreathCycle();
+        }, 100);
+    }
+
+    function startGentleBreathing() {
+        const cycleTime = parseInt(document.getElementById('gentle-cycle').value);
+        const pauseTime = parseInt(document.getElementById('gentle-pause').value);
+        
+        breathPhase = 'gentle-breath';
+        breathPhaseTime = 0;
+        gentleBreathCount = 0;
+        
+        document.getElementById('breath-btn').innerHTML = '⏸️ Stop Buteyko';
+        document.getElementById('breath-btn').className = 'btn btn-red';
+        
+        breathInterval = setInterval(() => {
+            updateGentleBreathCycle();
+        }, 100);
+    }
+
+    function stopBreathExercise() {
+        if (breathInterval) {
+            clearInterval(breathInterval);
+            breathInterval = null;
+        }
+        
+        releaseWakeLock();
+        
+        breathPhase = 'rest';
+        updateBreathDisplay();
+        updateBreathProgress(0);
+        
+        document.getElementById('breath-btn').innerHTML = '▶️ Start Buteyko';
+        document.getElementById('breath-btn').className = 'btn btn-cyan';
+    }
+
+    function updateStandardBreathCycle() {
+        const inhale = parseInt(document.getElementById('inhale-duration').value);
+        const exhale = parseInt(document.getElementById('exhale-duration').value);
+        const hold = parseInt(document.getElementById('hold-duration').value);
+        
+        breathPhaseTime += 0.1;
+        
+        let progress = 0;
+        
+        if (breathPhase === 'inhale') {
+            progress = (breathPhaseTime / inhale) * 100;
+            if (breathPhaseTime >= inhale) {
                 breathPhase = 'exhale';
-                currentPhaseDuration = exhaleDuration;
-                breathDisplay.className = 'breath-display exhale';
-                animateProgress(breathProgress, currentPhaseDuration, () => {
-                    // Rest phase before next cycle
-                    breathPhase = 'rest';
-                    currentPhaseDuration = 3; // Short rest between cycles
-                    breathDisplay.className = 'breath-display rest';
-                    // The next cycle is triggered by setInterval, so no animateProgress callback needed here.
+                breathPhaseTime = 0;
+            }
+        } else if (breathPhase === 'exhale') {
+            progress = (breathPhaseTime / exhale) * 100;
+            if (breathPhaseTime >= exhale) {
+                breathPhase = 'hold';
+                breathPhaseTime = 0;
+            }
+        } else if (breathPhase === 'hold') {
+            progress = (breathPhaseTime / hold) * 100;
+            if (breathPhaseTime >= hold) {
+                breathPhase = 'inhale';
+                breathPhaseTime = 0;
+                breathCycleCount++;
+                document.getElementById('breath-cycle-counter').textContent = `Cyclus: ${breathCycleCount}/10`;
+                
+                if (breathCycleCount > 10) {
+                    stopBreathExercise();
+                    trackSession('buteyko', 10 * breathCycleDuration);
+                    document.getElementById('breath-complete').classList.remove('hidden');
+                    appState.currentTechnique = 'Buteyko Ademhaling - 10 Cycli Voltooid';
+                    log('SUCCESS', 'Buteyko session completed');
+                    return;
+                }
+            }
+        }
+        
+        updateBreathDisplay();
+        updateBreathProgress(Math.min(progress, 100));
+    }
+
+    function updateGentleBreathCycle() {
+        const cycleTime = parseInt(document.getElementById('gentle-cycle').value);
+        const pauseTime = parseInt(document.getElementById('gentle-pause').value);
+        
+        breathPhaseTime += 0.1;
+        let progress = 0;
+        
+        if (breathPhase === 'gentle-breath') {
+            progress = (breathPhaseTime / cycleTime) * 100;
+            if (breathPhaseTime >= cycleTime) {
+                breathPhase = 'hold';
+                breathPhaseTime = 0;
+                gentleBreathCount++;
+            }
+        } else if (breathPhase === 'hold') {
+            progress = (breathPhaseTime / pauseTime) * 100;
+            if (breathPhaseTime >= pauseTime) {
+                breathPhase = 'gentle-breath';
+                breathPhaseTime = 0;
+                breathCycleCount++;
+                document.getElementById('breath-cycle-counter').textContent = `Cyclus: ${breathCycleCount}/10`;
+                
+                if (breathCycleCount > 10) {
+                    stopBreathExercise();
+                    trackSession('buteyko', 10 * (cycleTime + pauseTime));
+                    document.getElementById('breath-complete').classList.remove('hidden');
+                    appState.currentTechnique = 'Buteyko Ademhaling - 10 Cycli Voltooid';
+                    log('SUCCESS', 'Buteyko gentle session completed');
+                    return;
+                }
+            }
+        }
+        
+        updateBreathDisplay();
+        updateBreathProgress(Math.min(progress, 100));
+    }
+
+    function updateBreathDisplay() {
+        const display = document.getElementById('breath-display');
+        const progressBar = document.getElementById('breath-progress');
+        
+        display.className = `breath-display ${breathPhase}`;
+        progressBar.className = `breath-progress ${breathPhase}`;
+        
+        switch (breathPhase) {
+            case 'inhale':
+                display.textContent = '🌬️ Inademen';
+                break;
+            case 'exhale':
+                display.textContent = '💨 Uitademen';
+                break;
+            case 'hold':
+                display.textContent = '⏸️ Pauze';
+                break;
+            case 'gentle-breath':
+                display.textContent = `🌬️ Zachte Ademhaling`;
+                break;
+            case 'rest':
+            default:
+                display.textContent = 'Klik op start om te beginnen';
+                break;
+        }
+    }
+
+    function updateBreathProgress(percentage) {
+        document.getElementById('breath-progress').style.width = percentage + '%';
+    }
+
+    function resetButeykoAfterCompletion() {
+        document.getElementById('breath-complete').classList.add('hidden');
+        breathCycleCount = 1;
+        gentleBreathCount = 0;
+        breathPhase = 'rest';
+        updateBreathDisplay();
+        updateBreathProgress(0);
+        document.getElementById('breath-cycle-counter').textContent = 'Cyclus: 1/10';
+    }
+
+    // Wake Lock API for keeping screen on
+    async function requestWakeLock() {
+        try {
+            if ('wakeLock' in navigator) {
+                wakeLock = await navigator.wakeLock.request('screen');
+                log('SUCCESS', 'Wake lock activated - screen will stay on');
+                
+                wakeLock.addEventListener('release', () => {
+                    log('INFO', 'Wake lock released');
+                });
+            }
+        } catch (error) {
+            log('WARNING', 'Wake lock not supported or failed:', error);
+        }
+    }
+
+    async function releaseWakeLock() {
+        if (wakeLock) {
+            try {
+                await wakeLock.release();
+                wakeLock = null;
+                log('SUCCESS', 'Wake lock released');
+            } catch (error) {
+                log('ERROR', 'Error releasing wake lock:', error);
+            }
+        }
+    }
+
+    // Audio functions for EMDR
+    function initAudioContext() {
+        if (!audioContext) {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                log('SUCCESS', 'Audio context initialized');
+            } catch (error) {
+                log('ERROR', 'Audio context initialization failed:', error);
+                showUserMessage('Je browser ondersteunt geen Web Audio API.', 'error');
+                return false;
+            }
+        }
+        return true;
+    }
+
+    window.toggleBilateralAudio = function() {
+        if (isAudioPlaying) {
+            stopBilateralAudio();
+        } else {
+            startBilateralAudio();
+        }
+    };
+
+    function startBilateralAudio() {
+        if (!initAudioContext()) return;
+
+        try {
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
+            oscillator = audioContext.createOscillator();
+            const frequency = parseInt(document.getElementById('audio-frequency').value);
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            oscillator.type = 'sine';
+
+            gainNode = audioContext.createGain();
+            const volume = parseInt(document.getElementById('audio-volume').value) / 100;
+            gainNode.gain.setValueAtTime(volume * 0.3, audioContext.currentTime);
+
+            pannerNode = audioContext.createStereoPanner();
+            pannerNode.pan.setValueAtTime(-1, audioContext.currentTime);
+
+            oscillator.connect(gainNode);
+            gainNode.connect(pannerNode);
+            pannerNode.connect(audioContext.destination);
+
+            oscillator.start();
+            startPanning();
+
+            isAudioPlaying = true;
+            document.getElementById('audio-btn').innerHTML = '⏸️ Stop Audio';
+            document.getElementById('audio-btn').className = 'btn btn-red';
+            document.getElementById('audio-status').textContent = `Actief - ${frequency}Hz`;
+            document.getElementById('audio-status').style.color = '#059669';
+
+            log('SUCCESS', `Bilateral audio started at ${frequency}Hz`);
+
+        } catch (error) {
+            log('ERROR', 'Error starting bilateral audio:', error);
+            showUserMessage('Fout bij starten audio: ' + error.message, 'error');
+        }
+    }
+
+    function stopBilateralAudio() {
+        try {
+            if (oscillator) {
+                oscillator.stop();
+                oscillator.disconnect();
+                oscillator = null;
+            }
+
+            if (gainNode) {
+                gainNode.disconnect();
+                gainNode = null;
+            }
+
+            if (pannerNode) {
+                pannerNode.disconnect();
+                pannerNode = null;
+            }
+
+            if (audioInterval) {
+                clearInterval(audioInterval);
+                audioInterval = null;
+            }
+
+            isAudioPlaying = false;
+            panPosition = -1;
+            
+            document.getElementById('audio-btn').innerHTML = '🔊 Start Audio';
+            document.getElementById('audio-btn').className = 'btn btn-purple';
+            document.getElementById('audio-status').textContent = 'Gestopt';
+            document.getElementById('audio-status').style.color = 'var(--text-light)';
+
+            log('SUCCESS', 'Bilateral audio stopped');
+
+        } catch (error) {
+            log('ERROR', 'Error stopping bilateral audio:', error);
+        }
+    }
+
+    function startPanning() {
+        const speed = parseFloat(document.getElementById('audio-speed').value) * 1000;
+        const updateInterval = 50;
+        const steps = speed / updateInterval;
+        const panStep = 2 / steps;
+
+        panPosition = -1;
+        let direction = 1;
+
+        audioInterval = setInterval(() => {
+            if (!isAudioPlaying || !pannerNode) {
+                clearInterval(audioInterval);
+                return;
+            }
+
+            panPosition += (panStep * direction);
+
+            if (panPosition >= 1) {
+                panPosition = 1;
+                direction = -1;
+            } else if (panPosition <= -1) {
+                panPosition = -1;
+                direction = 1;
+            }
+
+            pannerNode.pan.setValueAtTime(panPosition, audioContext.currentTime);
+
+            const frequency = parseInt(document.getElementById('audio-frequency').value);
+            if (appState.currentTab === 'emdr') {
+                const side = panPosition < -0.3 ? 'Links' : panPosition > 0.3 ? 'Rechts' : 'Midden';
+                document.getElementById('audio-status').textContent = `Actief - ${frequency}Hz - ${side}`;
+            }
+
+        }, updateInterval);
+    }
+
+    // Eye movement functions for EMDR
+    window.toggleEyeMovements = function() {
+        if (isEyeMovementActive) {
+            stopEyeMovements();
+        } else {
+            startEyeMovements();
+        }
+    };
+
+    function startEyeMovements() {
+        const display = document.getElementById('eye-movement-display');
+        const dot = document.getElementById('eye-dot');
+        const instructions = document.getElementById('eye-instructions');
+        const speedSelect = document.getElementById('eye-speed');
+        const patternSelect = document.getElementById('eye-pattern');
+        
+        if (!display || !dot) return;
+        
+        dot.style.display = 'block';
+        instructions.style.display = 'none';
+        
+        const speed = speedSelect.value;
+        const pattern = patternSelect.value;
+        
+        let duration;
+        switch (speed) {
+            case 'slow': duration = 4000; break;
+            case 'fast': duration = 1000; break;
+            default: duration = 2000; break;
+        }
+        
+        eyePosition = { x: 50, y: 50 };
+        eyeDirection = { x: 1, y: 0 };
+        
+        isEyeMovementActive = true;
+        document.getElementById('eye-btn').innerHTML = '⏸️ Stop Oogbewegingen';
+        document.getElementById('eye-btn').className = 'btn btn-red';
+        document.getElementById('eye-status').textContent = 'Actief';
+        document.getElementById('eye-status').style.color = '#059669';
+        
+        eyeMovementInterval = setInterval(() => {
+            updateEyePosition(pattern, display);
+        }, 50);
+        
+        log('SUCCESS', `Eye movements started with ${pattern} pattern at ${speed} speed`);
+    }
+
+    function stopEyeMovements() {
+        if (eyeMovementInterval) {
+            clearInterval(eyeMovementInterval);
+            eyeMovementInterval = null;
+        }
+        
+        const dot = document.getElementById('eye-dot');
+        const instructions = document.getElementById('eye-instructions');
+        
+        if (dot && instructions) {
+            dot.style.display = 'none';
+            instructions.style.display = 'block';
+        }
+        
+        isEyeMovementActive = false;
+        document.getElementById('eye-btn').innerHTML = '👁️ Start Oogbewegingen';
+        document.getElementById('eye-btn').className = 'btn btn-cyan';
+        document.getElementById('eye-status').textContent = 'Gestopt';
+        document.getElementById('eye-status').style.color = 'var(--text-light)';
+        
+        log('SUCCESS', 'Eye movements stopped');
+    }
+
+    function updateEyePosition(pattern, display) {
+        const dot = document.getElementById('eye-dot');
+        if (!dot || !isEyeMovementActive) return;
+        
+        const displayRect = display.getBoundingClientRect();
+        const margin = 30; // pixels from edge
+        
+        switch (pattern) {
+            case 'horizontal':
+                eyePosition.x += eyeDirection.x * 2;
+                if (eyePosition.x >= 90 || eyePosition.x <= 10) {
+                    eyeDirection.x *= -1;
+                }
+                eyePosition.y = 50;
+                break;
+                
+            case 'vertical':
+                eyePosition.y += eyeDirection.y * 2;
+                if (eyePosition.y >= 90 || eyePosition.y <= 10) {
+                    eyeDirection.y *= -1;
+                }
+                eyePosition.x = 50;
+                break;
+                
+            case 'diagonal':
+                eyePosition.x += eyeDirection.x * 1.5;
+                eyePosition.y += eyeDirection.y * 1.5;
+                if (eyePosition.x >= 90 || eyePosition.x <= 10) {
+                    eyeDirection.x *= -1;
+                }
+                if (eyePosition.y >= 90 || eyePosition.y <= 10) {
+                    eyeDirection.y *= -1;
+                }
+                break;
+                
+            case 'figure8':
+                const time = Date.now() / 1000;
+                eyePosition.x = 50 + 35 * Math.sin(time);
+                eyePosition.y = 50 + 20 * Math.sin(2 * time);
+                break;
+        }
+        
+        // Ensure position stays within bounds
+        eyePosition.x = Math.max(10, Math.min(90, eyePosition.x));
+        eyePosition.y = Math.max(10, Math.min(90, eyePosition.y));
+        
+        dot.style.left = eyePosition.x + '%';
+        dot.style.top = eyePosition.y + '%';
+    }
+
+    // EMDR Step Management
+    window.nextEmdrStep = function() {
+        if (emdrStep < emdrSteps.length - 1) {
+            emdrStep++;
+            updateEmdrDisplay();
+        } else {
+            document.getElementById('emdr-complete').classList.remove('hidden');
+            appState.currentTechnique = 'EMDR Zelfhulp - 5 Stappen Voltooid';
+            trackSession('emdr', 25);
+            log('SUCCESS', 'EMDR session completed');
+        }
+    };
+
+    window.prevEmdrStep = function() {
+        if (emdrStep > 0) {
+            emdrStep--;
+            updateEmdrDisplay();
+        }
+    };
+
+    function updateEmdrDisplay() {
+        const step = emdrSteps[emdrStep];
+        
+        document.getElementById('emdr-title').textContent = step.title;
+        document.getElementById('emdr-content').innerHTML = '<p>' + step.content + '</p>';
+        
+        const intensityDiv = document.getElementById('emdr-intensity');
+        if (step.showIntensity) {
+            intensityDiv.classList.remove('hidden');
+        } else {
+            intensityDiv.classList.add('hidden');
+        }
+        
+        const prevBtn = document.getElementById('emdr-prev-btn');
+        const nextBtn = document.getElementById('emdr-next-btn');
+        
+        if (emdrStep === 0) {
+            prevBtn.style.display = 'none';
+        } else {
+            prevBtn.style.display = 'block';
+        }
+        
+        if (emdrStep === emdrSteps.length - 1) {
+            nextBtn.textContent = 'Voltooien';
+        } else {
+            nextBtn.textContent = 'Volgende';
+        }
+        
+        const progress = ((emdrStep + 1) / emdrSteps.length) * 100;
+        document.getElementById('emdr-progress').style.width = progress + '%';
+        
+        log('INFO', `EMDR step ${emdrStep + 1}/${emdrSteps.length}: ${step.title}`);
+    }
+
+    function resetEmdrSession() {
+        emdrStep = 0;
+        updateEmdrDisplay();
+        document.getElementById('emdr-complete').classList.add('hidden');
+        if (isAudioPlaying) {
+            stopBilateralAudio();
+        }
+        if (isEyeMovementActive) {
+            stopEyeMovements();
+        }
+    }
+
+    // Firestore functions
+    async function saveToFirestore(entry) {
+        if (!appState.isFirebaseConnected) {
+            throw new Error('Firebase niet verbonden. Controleer je internetverbinding.');
+        }
+        
+        if (!appState.currentUser) {
+            throw new Error('Je moet ingelogd zijn om entries op te slaan.');
+        }
+
+        try {
+            log('INFO', 'Saving to Firestore...');
+
+            const { addDoc, collection, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+
+            const docRef = await addDoc(collection(db, "dagboekEntries"), {
+                ...entry,
+                timestamp: serverTimestamp(),
+                userId: appState.currentUser.uid,
+                userEmail: appState.currentUser.email,
+                version: 1
+            });
+            
+            log('SUCCESS', 'Entry saved to Firestore with ID:', docRef.id);
+            return { id: docRef.id, success: true };
+            
+        } catch (error) {
+            log('ERROR', 'Firestore save error:', error);
+            throw error;
+        }
+    }
+
+    async function loadFromFirestore() {
+        if (!appState.isFirebaseConnected || !appState.currentUser) {
+            throw new Error('Je moet ingelogd zijn en verbonden met internet om entries te laden.');
+        }
+
+        try {
+            log('INFO', 'Loading entries from Firestore for user:', appState.currentUser.email);
+            
+            const { getDocs, collection, query, where, orderBy, limit } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+            
+            const q = query(
+                collection(db, "dagboekEntries"), 
+                where("userId", "==", appState.currentUser.uid),
+                orderBy("timestamp", "desc"),
+                limit(100)
+            );
+            
+            const querySnapshot = await getDocs(q);
+            
+            const entries = [];
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                entries.push({
+                    id: doc.id,
+                    ...data,
+                    timestamp: data.timestamp ? data.timestamp.toDate() : (data.clientTimestamp ? new Date(data.clientTimestamp) : new Date()),
+                    tijdstempel: data.timestamp ? data.timestamp.toDate().toLocaleString('nl-BE') : (data.clientTimestamp ? new Date(data.clientTimestamp).toLocaleString('nl-BE') : 'Onbekend'),
+                    bron: "Firebase"
                 });
             });
-        });
-        
-        // Update breath display text based on phase
-        const updateBreathText = () => {
-            if (breathPhase === 'inhale') {
-                breathDisplay.textContent = `Adem In (${inhaleDuration - breathPhaseTime}s)`;
-            } else if (breathPhase === 'hold') {
-                breathDisplay.textContent = `Houd Vast (${holdDuration - breathPhaseTime}s)`;
-            } else if (breathPhase === 'exhale') {
-                breathDisplay.textContent = `Adem Uit (${exhaleDuration - breathPhaseTime}s)`;
-            } else if (breathPhase === 'rest') {
-                breathDisplay.textContent = `Rust (${3 - breathPhaseTime}s)`;
-            }
-            breathPhaseTime++;
-        };
-
-        breathPhaseTime = 0; // Reset phase time for new cycle
-        updateBreathText(); // Initial text update
-        let textInterval = setInterval(updateBreathText, 1000); // Update text every second
-
-        // Clear text update interval when cycle completes or is interrupted
-        setTimeout(() => { clearInterval(textInterval); }, (inhaleDuration + holdDuration + exhaleDuration + 3) * 1000);
-        
-        breathCycleDuration = inhaleDuration + holdDuration + exhaleDuration + 3; // Total cycle duration
-    }
-
-    function runGentleCycle(gentlePause) {
-        const breathDisplay = document.getElementById('breath-display');
-        const breathProgress = document.getElementById('breath-progress');
-        let currentPhaseDuration;
-
-        // Gentle breathing (2 quick breaths + pause)
-        gentleBreathCount = 0;
-        const performGentleBreath = () => {
-            if (gentleBreathCount < 2) {
-                breathPhase = 'gentle-breath';
-                currentPhaseDuration = 1; // Short inhale
-                breathDisplay.className = 'breath-display gentle-breath';
-                breathDisplay.textContent = 'Zachtjes In...';
-                animateProgress(breathProgress, currentPhaseDuration, () => {
-                    breathDisplay.textContent = 'Zachtjes Uit...';
-                    animateProgress(breathProgress, 1, () => { // Short exhale
-                        gentleBreathCount++;
-                        performGentleBreath();
-                    });
-                });
+            
+            log('SUCCESS', `Loaded ${entries.length} entries from Firestore`);
+            return entries;
+            
+        } catch (error) {
+            log('ERROR', 'Firestore query error:', error);
+            
+            if (error.code === 'permission-denied') {
+                throw new Error('Geen toestemming om data te laden. Log opnieuw in.');
+            } else if (error.code === 'unavailable') {
+                throw new Error('Firebase service tijdelijk niet beschikbaar. Probeer het later opnieuw.');
             } else {
-                // Pause after gentle breaths
-                breathPhase = 'hold';
-                currentPhaseDuration = gentlePause;
-                breathDisplay.className = 'breath-display hold';
-                breathDisplay.textContent = `Pauze (${gentlePause - breathPhaseTime}s)`;
-                animateProgress(breathProgress, currentPhaseDuration, () => {
-                    breathPhase = 'rest';
-                    breathDisplay.className = 'breath-display rest';
-                    breathDisplay.textContent = 'Rust...';
-                    // Next cycle handled by main interval
-                });
+                throw new Error('Fout bij laden van entries: ' + error.message);
             }
-            breathPhaseTime = 0; // Reset phase time
-            let textInterval = setInterval(() => {
-                if (breathPhase === 'hold') {
-                    breathDisplay.textContent = `Pauze (${currentPhaseDuration - breathPhaseTime}s)`;
-                }
-                breathPhaseTime++;
-            }, 1000);
-            setTimeout(() => { clearInterval(textInterval); }, (2 * 2 + gentlePause) * 1000); // Approx duration
-        };
-
-        performGentleBreath();
-        breathCycleDuration = (2 * 2) + gentlePause; // Total cycle duration
-    }
-
-    function animateProgress(progressBar, duration, callback) {
-        let startTime = null;
-        const animate = (currentTime) => {
-            if (!startTime) startTime = currentTime;
-            const elapsedTime = (currentTime - startTime) / 1000;
-            const progress = Math.min(elapsedTime / duration, 1);
-            progressBar.style.width = `${progress * 100}%`;
-
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            } else {
-                if (callback) callback();
-            }
-        };
-        requestAnimationFrame(animate);
-    }
-
-    function completeBreathExercise() {
-        clearInterval(breathInterval);
-        breathInterval = null;
-        document.getElementById('breath-btn').textContent = '▶️ Start Buteyko';
-        document.getElementById('breath-display').textContent = 'Oefening Voltooid!';
-        document.getElementById('breath-display').classList.remove('inhale', 'exhale', 'hold', 'gentle-breath');
-        document.getElementById('breath-display').classList.add('rest');
-        document.getElementById('breath-progress').style.width = '100%';
-        document.getElementById('breath-complete').classList.remove('hidden'); // Show completion message
-        
-        // Release wake lock
-        if (wakeLock) {
-            wakeLock.release().then(() => wakeLock = null);
-            log('INFO', 'Wake lock vrijgegeven na voltooiing.');
         }
-        log('SUCCESS', 'Buteyko 
+    }
+
+    // Dagboek functions
+    window.saveDagboekEntry = async function() {
+        try {
+            const entry = {
+                techniekGebruikt: appState.currentTechnique || 'Handmatige Entry',
+                trigger: document.getElementById('entry-trigger').value,
+                intensiteitVoor: parseInt(document.getElementById('entry-before').value),
+                intensiteitNa: parseInt(document.getElementById('entry-after').value),
+                resultaat: document.getElementById('entry-result').value,
+                notities: document.getElementById('entry-notes').value,
+                clientTimestamp: new Date().toISOString() 
+            };
+
+            if (!entry.resultaat) {
+                showUserMessage('Selecteer een resultaat voor de dagboek entry.', 'warning');
+                return;
+            }
+
+            const saveBtn = document.getElementById('save-dagboek-entry-btn');
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = '💾 Opslaan...';
+            saveBtn.disabled = true;
+
+            await saveToFirestore(entry);
+            
+            saveBtn.textContent = originalText;
+            saveBtn.disabled = false;
+            
+            closeDagboekModal();
+            resetCompletedExercise();
+            
+            if (appState.currentTab === 'dagboek') {
+                await loadDagboekEntries();
+            }
+            
+            showUserMessage('✅ Entry succesvol opgeslagen!', 'success');
+            
+        } catch (error) {
+            const saveBtn = document.getElementById('save-dagboek-entry-btn');
+            if (saveBtn) {
+                saveBtn.textContent = '📁 Opslaan';
+                saveBtn.disabled = false;
+            }
+            
+            log('ERROR', 'Save error:', error);
+            showUserMessage('❌ Opslaan mislukt: ' + error.message, 'error');
+        }
+    };
+
+    function resetCompletedExercise() {
+        if (appState.currentTechnique) {
+            if (appState.currentTechnique.includes('Buteyko Ademhaling')) {
+                resetButeykoAfterCompletion();
+            }
+        }
+    }
+
+    window.loadDagboekEntries = async function() {
+        try {
+            const entries = await loadFromFirestore();
+            displayDagboekEntries(entries);
+            
+        } catch (error) {
+            log('ERROR', 'Load entries failed:', error);
+            const container = document.getElementById('dagboek-entries');
+            container.innerHTML = 
+                '<div class="alert alert-danger">' +
+                    '<strong>❌ Fout bij laden entries:</strong><br>' + 
+                    error.message +
+                    '<br><br>' +
+                    '<button id="retry-load-btn" class="btn btn-primary" style="margin-top: 1rem;">🔄 Opnieuw proberen</button>' +
+                '</div>';
+            
+            setTimeout(() => {
+                const retryBtn = document.getElementById('retry-load-btn');
+                if (retryBtn) {
+                    retryBtn.addEventListener('click', loadDagboekEntries);
+                }
+            }, 100);
+
+            if (progressChart) {
+                progressChart.destroy();
+                progressChart = null;
+            }
+            document.getElementById('chart-empty').style.display = 'block';
+            document.getElementById('chart-legend').style.display = 'none';
+        }
+    };
+
+    function displayDagboekEntries(entries) {
+        const container = document.getElementById('dagboek-entries');
+        
+        createProgressChart(entries);
+        
+        if (!entries || entries.length === 0) {
+            container.innerHTML = 
+                '<div class="card">' +
+                    '<h3>Nog geen entries</h3>' +
+                    '<p>Maak een dagboekentry na het gebruiken van oefeningen om patronen bij te houden.</p>' +
+                    '<button class="btn btn-primary" onclick="openDagboekModal(\'Eerste Entry\')">' +
+                        'Maak je eerste entry' +
+                    '</button>' +
+                '</div>';
+            return;
+        }
+        
+        let entriesHtml = '<div class="card"><h3>📝 Alle Dagboek Entries</h3><p style="color: var(--text-light); margin-bottom: 1.5rem;">Chronologisch overzicht van je sessies</p></div>';
+        
+        entriesHtml += entries.map(entry => {
+            const displayDate = entry.timestamp instanceof Date ? entry.timestamp : new Date(entry.clientTimestamp || 0);
+
+            return '<div class="entry-card">' +
+                '<div class="entry-header">' +
+                    '<div>' +
+                        '<div class="entry-title">' + entry.techniekGebruikt + '</div>' +
+                        '<div style="font-size: 0.8rem; color: var(--text-light);">' +
+                            displayDate.toLocaleString('nl-BE') + ' • ' +
+                            '<span style="color: #0891b2; font-size: 0.75rem;">' + (entry.bron || 'Onbekend') + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="entry-result ' + entry.resultaat + '">' +
+                        getResultaatText(entry.resultaat) +
+                    '</div>' +
+                '</div>' +
+                '<div class="intensity-grid">' +
+                    '<div style="font-size: 0.85rem;">' +
+                        '<span style="color: var(--text-light);">Vóór:</span>' +
+                        '<span style="font-weight: 500; margin-left: 0.25rem; color: var(--text-dark);">' + entry.intensiteitVoor + '/10</span>' +
+                    '</div>' +
+                    '<div style="font-size: 0.85rem;">' +
+                        '<span style="color: var(--text-light);">Ná:</span>' +
+                        '<span style="font-weight: 500; margin-left: 0.25rem; color: var(--text-dark);">' + entry.intensiteitNa + '/10</span>' +
+                    '</div>' +
+                '</div>' +
+                (entry.trigger ? '<p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--text-dark);"><strong>Trigger:</strong> ' + entry.trigger + '</p>' : '') +
+                (entry.notities ? '<p style="font-size: 0.85rem; color: var(--text-dark);"><strong>Notities:</strong> ' + entry.notities + '</p>' : '') +
+            '</div>';
+        }).join('');
+        
+        container.innerHTML = entriesHtml;
+    }
+
+    // Skip dagboek functions
+    window.skipButeykoDagboek = function() { 
+        resetButeykoAfterCompletion(); 
+        showUserMessage('✅ Buteyko sessie afgerond!', 'success'); 
+    };
+
+    window.skipRitualDagboek = function() {
+        document.getElementById('ritual-complete').classList.add('hidden');
+        ritualStep = 0;
+        updateRitualDisplay();
+        showUserMessage('✅ Afkoel ritueel afgerond!', 'success');
+    };
+
+    window.skipEmdrDagboek = function() {
+        resetEmdrSession();
+        showUserMessage('✅ EMDR sessie afgerond!', 'success');
+    };
+
+    function getResultaatText(resultaat) {
+        const mapping = {
+            'zeer-goed': 'Zeer goed',
+            'goed': 'Goed',
+            'matig': 'Matig',
+            'geen-effect': 'Geen effect',
+            'slechter': 'Slechter'
+        };
+        return mapping[resultaat] || resultaat;
+    }
+
+    window.exportDagboek = async function() {
+        try {
+            const entries = await loadFromFirestore();
+            
+            if (!entries || entries.length === 0) {
+                showUserMessage('📝 Geen entries om te exporteren', 'warning');
+                return;
+            }
+            
+            let exportText = 'ADEMRUIMTE DAGBOEK EXPORT\n';
+            exportText += '================================\n';
+            exportText += 'Gebruiker: ' + (appState.currentUser ? (appState.currentUser.displayName || appState.currentUser.email) : 'Onbekend') + '\n';
+            exportText += 'Export datum: ' + new Date().toLocaleString('nl-BE') + '\n\n';
+            
+            for (let i = 0; i < entries.length; i++) {
+                const entry = entries[i];
+                const displayDate = entry.timestamp instanceof Date ? entry.timestamp : new Date(entry.clientTimestamp || 0);
+
+                exportText += 'ENTRY ' + (i + 1) + '\n';
+                exportText += 'Datum: ' + displayDate.toLocaleString('nl-BE') + '\n';
+                exportText += 'Techniek: ' + entry.techniekGebruikt + '\n';
+                exportText += 'Trigger: ' + (entry.trigger || 'Geen') + '\n';
+                exportText += 'Intensiteit vóór: ' + entry.intensiteitVoor + '/10\n';
+                exportText += 'Intensiteit ná: ' + entry.intensiteitNa + '/10\n';
+                exportText += 'Resultaat: ' + getResultaatText(entry.resultaat) + '\n';
+                exportText += 'Notities: ' + (entry.notities || 'Geen') + '\n';
+                exportText += '\n---\n\n';
+            }
+            
+            const blob = new Blob([exportText], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ademruimte-dagboek-' + new Date().toLocaleDateString('nl-BE') + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showUserMessage('📁 Dagboek geëxporteerd als tekstbestand!', 'success');
+            
+        } catch (error) {
+            showUserMessage('❌ Fout bij exporteren: ' + error.message, 'error');
+        }
+    };
+
+    // Statistics functions
+    window.loadStatistics = async function() {
+        try {
+            showUserMessage('📊 Statistieken worden geladen...', 'info');
+            
+            const entries = await loadFromFirestore();
+            
+            if (!entries || entries.length === 0) {
+                showUserMessage('📈 Geen data beschikbaar voor statistieken. Maak eerst wat dagboek entries!', 'warning');
+                return;
+            }
+            
+            generateStatistics(entries);
+            showUserMessage('✅ Statistieken geladen!', 'success');
+            
+        } catch (error) {
+            log('ERROR', 'Load statistics failed:', error);
+            showUserMessage('❌ Fout bij laden statistieken: ' + error.message, 'error');
+        }
+    };
+
+    function generateStatistics(entries) {
+        generateOverviewStats(entries);
+        generateUsageChart(entries);
+        generateEffectivenessChart(entries);
+        generateResultsChart(entries);
+        generateImprovementChart(entries);
+        generateDetailedStats(entries);
+        generateInsights(entries);
+    }
+
+    function generateOverviewStats(entries) {
+        const totalSessions = entries.length;
+        const totalImprovement = entries.reduce((sum, entry) => sum + (entry.intensiteitVoor - entry.intensiteitNa), 0);
+        const avgImprovement = totalSessions > 0 ? (totalImprovement / totalSessions).toFixed(1) : 0;
+        
+        const techniques = [...new Set(entries.map(entry => entry.techniekGebruikt))];
+        const uniqueTechniques = techniques.length;
+        
+        const avgBefore = totalSessions > 0 ? (entries.reduce((sum, entry) => sum + entry.intensiteitVoor, 0) / totalSessions).toFixed(1) : 0;
+        const avgAfter = totalSessions > 0 ? (entries.reduce((sum, entry) => sum + entry.intensiteitNa, 0) / totalSessions).toFixed(1) : 0;
+        
+        const successfulSessions = entries.filter(entry => 
+            entry.resultaat === 'zeer-goed' || entry.resultaat === 'goed'
+        ).length;
+        const successRate = totalSessions > 0 ? Math.round((successfulSessions / totalSessions) * 100) : 0;
+
+        const overviewHtml = `
+            <div class="stats-overview-card">
+                <div class="stats-number">${totalSessions}</div>
+                <div class="stats-label">Totaal Sessies</div>
+            </div>
+            <div class="stats-overview-card">
+                <div class="stats-number">${avgImprovement}</div>
+                <div class="stats-label">Gem. Verbetering</div>
+            </div>
+            <div class="stats-overview-card">
+                <div class="stats-number">${successRate}%</div>
+                <div class="stats-label">Succespercentage</div>
+            </div>
+            <div class="stats-overview-card">
+                <div class="stats-number">${uniqueTechniques}</div>
+                <div class="stats-label">Technieken Gebruikt</div>
+            </div>
+            <div class="stats-overview-card">
+                <div class="stats-number">${avgBefore} → ${avgAfter}</div>
+                <div class="stats-label">Gem. Voor → Na</div>
+            </div>
+        `;
+        
+        document.getElementById('stats-overview').innerHTML = overviewHtml;
+    }
+
+    async function generateUsageChart(entries) {
+        const usageData = {};
+        entries.forEach(entry => {
+            const technique = entry.techniekGebruikt;
+            usageData[technique] = (usageData[technique] || 0) + 1;
+        });
+
+        const sortedUsage = Object.entries(usageData)
+            .sort(([,a], [,b]) => b - a)
+            .slice(0, 8); // Top 8 techniques
+
+        if (sortedUsage.length === 0) {
+            document.getElementById('usage-empty').style.display = 'block';
+            return;
+        }
+
+        document.getElementById('usage-empty').style.display = 'none';
+
+        try {
+            if (!window.Chart) {
+                await loadChartJS();
+            }
+
+            if (usageChart) {
+                usageChart.destroy();
+            }
+
+            const ctx = document.getElementById('usage-chart').getContext('2d');
+            
+            usageChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: sortedUsage.map(([technique]) => technique.split(' - ')[0]), // Shorten labels
+                    datasets: [{
+                        data: sortedUsage.map(([, count]) => count),
+                        backgroundColor: [
+                            '#06b6d4', '#10b981', '#8b5cf6', '#f59e0b',
+                            '#ef4444', '#3b82f6', '#f97316', '#84cc16'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true,
+                                font: {
+                                    size: window.innerWidth <= 768 ? 10 : 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((context.raw / total) * 100);
+                                    return `${context.label}: ${context.raw} sessies (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+        } catch (error) {
+            log('ERROR', 'Failed to create usage chart:', error);
+            document.getElementById('usage-empty').style.display = 'block';
+        }
+    }
+
+    async function generateEffectivenessChart(entries) {
+        const effectivenessData = {};
+        entries.forEach(entry => {
+            const technique = entry.techniekGebruikt;
+            const improvement = entry.intensiteitVoor - entry.intensiteitNa;
+            
+            if (!effectivenessData[technique]) {
+                effectivenessData[technique] = { total: 0, count: 0 };
+            }
+            effectivenessData[technique].total += improvement;
+            effectivenessData[technique].count += 1;
+        });
+
+        const avgEffectiveness = Object.entries(effectivenessData)
+            .map(([technique, data]) => ({
+                technique: technique.split(' - ')[0], // Shorten labels
+                fullTechnique: technique,
+                avg: data.total / data.count
+            }))
+            .sort((a, b) => b.avg - a.avg)
+            .slice(0, 8);
+
+        if (avgEffectiveness.length === 0) {
+            document.getElementById('effectiveness-empty').style.display = 'block';
+            return;
+        }
+
+        document.getElementById('effectiveness-empty').style.display = 'none';
+
+        try {
+            if (!window.Chart) {
+                await loadChartJS();
+            }
+
+            if (effectivenessChart) {
+                effectivenessChart.destroy();
+            }
+
+            const ctx = document.getElementById('effectiveness-chart').getContext('2d');
+            
+            effectivenessChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: avgEffectiveness.map(item => item.technique),
+                    datasets: [{
+                        label: 'Gemiddelde Verbetering',
+                        data: avgEffectiveness.map(item => item.avg.toFixed(1)),
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    const index = context[0].dataIndex;
+                                    return avgEffectiveness[index].fullTechnique;
+                                },
+                                label: function(context) {
+                                    return `Gemiddelde verbetering: ${context.raw} punten`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                maxRotation: 45,
+                                font: {
+                                    size: window.innerWidth <= 768 ? 10 : 12
+                                }
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toFixed(1);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+        } catch (error) {
+            log('ERROR', 'Failed to create effectiveness chart:', error);
+            document.getElementById('effectiveness-empty').style.display = 'block';
+        }
+    }
+
+    async function generateResultsChart(entries) {
+        const resultsData = {};
+        entries.forEach(entry => {
+            const result = entry.resultaat;
+            if (result) {
+                resultsData[result] = (resultsData[result] || 0) + 1;
+            }
+        });
+
+        const sortedResults = Object.entries(resultsData)
+            .sort(([,a], [,b]) => b - a);
+
+        if (sortedResults.length === 0) {
+            document.getElementById('results-empty').style.display = 'block';
+            return;
+        }
+
+        document.getElementById('results-empty').style.display = 'none';
+
+        try {
+            if (!window.Chart) {
+                await loadChartJS();
+            }
+
+            if (resultsChart) {
+                resultsChart.destroy();
+            }
+
+            const ctx = document.getElementById('results-chart').getContext('2d');
+            
+            const resultColors = {
+                'zeer-goed': '#059669',
+                'goed': '#10b981',
+                'matig': '#f59e0b',
+                'geen-effect': '#6b7280',
+                'slechter': '#ef4444'
+            };
+            
+            resultsChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: sortedResults.map(([result]) => getResultaatText(result)),
+                    datasets: [{
+                        data: sortedResults.map(([, count]) => count),
+                        backgroundColor: sortedResults.map(([result]) => resultColors[result] || '#6b7280'),
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true,
+                                font: {
+                                    size: window.innerWidth <= 768 ? 10 : 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((context.raw / total) * 100);
+                                    return `${context.label}: ${context.raw} sessies (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+        } catch (error) {
+            log('ERROR', 'Failed to create results chart:', error);
+            document.getElementById('results-empty').style.display = 'block';
+        }
+    }
+
+    async function generateImprovementChart(entries) {
+        if (entries.length < 5) {
+            document.getElementById('improvement-empty').style.display = 'block';
+            return;
+        }
+
+        document.getElementById('improvement-empty').style.display = 'none';
+
+        // Calculate rolling average of improvements
+        const improvements = entries
+            .slice(0, 30) // Last 30 entries
+            .reverse() // Oldest first
+            .map((entry, index) => ({
+                index: index + 1,
+                improvement: entry.intensiteitVoor - entry.intensiteitNa,
+                date: entry.timestamp
+            }));
+
+        // Calculate 5-entry rolling average
+        const rollingAverages = [];
+        for (let i = 4; i < improvements.length; i++) {
+            const window = improvements.slice(i - 4, i + 1);
+            const avg = window.reduce((sum, item) => sum + item.improvement, 0) / 5;
+            rollingAverages.push({
+                index: i + 1,
+                avg: avg,
+                date: improvements[i].date
+            });
+        }
+
+        try {
+            if (!window.Chart) {
+                await loadChartJS();
+            }
+
+            if (improvementChart) {
+                improvementChart.destroy();
+            }
+
+            const ctx = document.getElementById('improvement-chart').getContext('2d');
+            
+            improvementChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: rollingAverages.map(item => `Sessie ${item.index}`),
+                    datasets: [
+                        {
+                            label: 'Individuele Verbetering',
+                            data: improvements.map(item => item.improvement),
+                            borderColor: 'rgba(239, 68, 68, 0.5)',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            pointRadius: 2,
+                            pointHoverRadius: 4,
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Trend (5-sessie gemiddelde)',
+                            data: Array(4).fill(null).concat(rollingAverages.map(item => item.avg)),
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            pointRadius: 3,
+                            pointHoverRadius: 6,
+                            borderWidth: 3,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: {
+                                    size: window.innerWidth <= 768 ? 10 : 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    const index = context[0].dataIndex;
+                                    if (index < improvements.length) {
+                                        const date = improvements[index].date;
+                                        return date.toLocaleDateString('nl-BE', { 
+                                            month: 'short', 
+                                            day: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        });
+                                    }
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: {
+                                maxTicksLimit: window.innerWidth <= 768 ? 6 : 10,
+                                font: {
+                                    size: window.innerWidth <= 768 ? 10 : 12
+                                }
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Verbetering (punten)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toFixed(1);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+        } catch (error) {
+            log('ERROR', 'Failed to create improvement chart:', error);
+            document.getElementById('improvement-empty').style.display = 'block';
+        }
+    }
+
+    function generateDetailedStats(entries) {
+        const techniques = {};
+        
+        entries.forEach(entry => {
+            const technique = entry.techniekGebruikt;
+            if (!techniques[technique]) {
+                techniques[technique] = {
+                    count: 0,
+                    totalImprovement: 0,
+                    results: {}
+                };
+            }
+            
+            techniques[technique].count++;
+            techniques[technique].totalImprovement += (entry.intensiteitVoor - entry.intensiteitNa);
+            
+            const result = entry.resultaat || 'geen-resultaat';
+            techniques[technique].results[result] = (techniques[technique].results[result] || 0) + 1;
+        });
+
+        const tableRows = Object.entries(techniques)
+            .sort(([,a], [,b]) => b.count - a.count)
+            .map(([technique, data]) => {
+                const avgImprovement = (data.totalImprovement / data.count).toFixed(1);
+                const successfulSessions = (data.results['zeer-goed'] || 0) + (data.results['goed'] || 0);
+                const successRate = Math.round((successfulSessions / data.count) * 100);
+                
+                return `
+                    <tr>
+                        <td>${technique}</td>
+                        <td>${data.count}</td>
+                        <td>${avgImprovement}</td>
+                        <td>${successRate}%</td>
+                    </tr>
+                `;
+            }).join('');
+
+        const tableHtml = `
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th>Techniek</th>
+                        <th>Sessies</th>
+                        <th>Gem. Verbetering</th>
+                        <th>Succespercentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableRows}
+                </tbody>
+            </table>
+        `;
+
+        document.getElementById('detailed-stats').innerHTML = tableHtml;
+    }
+
+    function generateInsights(entries) {
+        if (entries.length < 5) {
+            return;
+        }
+
+        const insights = [];
+        
+        // Best performing technique
+        const techniquePerformance = {};
+        entries.forEach(entry => {
+            const technique = entry.techniekGebruikt;
+            const improvement = entry.intensiteitVoor - entry.intensiteitNa;
+            
+            if (!techniquePerformance[technique]) {
+                techniquePerformance[technique] = { total: 0, count: 0 };
+            }
+            techniquePerformance[technique].total += improvement;
+            techniquePerformance[technique].count += 1;
+        });
+
+        const bestTechnique = Object.entries(techniquePerformance)
+            .map(([technique, data]) => ({
+                technique,
+                avg: data.total / data.count
+            }))
+            .sort((a, b) => b.avg - a.avg)[0];
+
+        if (bestTechnique && bestTechnique.avg > 1) {
+            insights.push(`🏆 **${bestTechnique.technique}** is je meest effectieve techniek met een gemiddelde verbetering van ${bestTechnique.avg.toFixed(1)} punten.`);
+        }
+
+        // Improvement trend
+        const recentEntries = entries.slice(0, 10);
+        const olderEntries = entries.slice(-10);
+        
+        if (recentEntries.length >= 5 && olderEntries.length >= 5) {
+            const recentAvg = recentEntries.reduce((sum, entry) => sum + (entry.intensiteitVoor - entry.intensiteitNa), 0) / recentEntries.length;
+            const olderAvg = olderEntries.reduce((sum, entry) => sum + (entry.intensiteitVoor - entry.intensiteitNa), 0) / olderEntries.length;
+            
+            if (recentAvg > olderAvg + 0.5) {
+                insights.push(`📈 **Positieve trend**: Je recente sessies tonen ${(recentAvg - olderAvg).toFixed(1)} punten meer verbetering dan eerder.`);
+            } else if (recentAvg < olderAvg - 0.5) {
+                insights.push(`📉 **Uitdaging gedetecteerd**: Je recente resultaten zijn minder effectief. Overweeg om terug te gaan naar technieken die eerder goed werkten.`);
+            }
+        }
+
+        // Success rate insight
+        const successfulSessions = entries.filter(entry => 
+            entry.resultaat === 'zeer-goed' || entry.resultaat === 'goed'
+        ).length;
+        const successRate = (successfulSessions / entries.length) * 100;
+        
+        if (successRate >= 70) {
+            insights.push(`✨ **Uitstekend**: ${Math.round(successRate)}% van je sessies zijn succesvol. Je hebt een goede routine ontwikkeld!`);
+        } else if (successRate >= 50) {
+            insights.push(`👍 **Goed bezig**: ${Math.round(successRate)}% succespercentage. Probeer meer te focussen op technieken die goed werken.`);
+        } else {
+            insights.push(`💪 **Ruimte voor verbetering**: ${Math.round(successRate)}% succespercentage. Experimenteer met verschillende technieken om te vinden wat het beste werkt.`);
+        }
+
+        // Frequency insight
+        if (entries.length >= 10) {
+            const daysSinceFirst = Math.floor((entries[0].timestamp - entries[entries.length - 1].timestamp) / (1000 * 60 * 60 * 24));
+            const frequency = entries.length / Math.max(daysSinceFirst, 1);
+            
+            if (frequency >= 1) {
+                insights.push(`🔥 **Consistentie**: Je oefent gemiddeld ${frequency.toFixed(1)} keer per dag. Geweldige discipline!`);
+            } else if (frequency >= 0.5) {
+                insights.push(`📅 **Regelmatig**: Je oefent ${(frequency * 7).toFixed(1)} keer per week. Probeer dagelijks te oefenen voor betere resultaten.`);
+            }
+        }
+
+        if (insights.length > 0) {
+            const insightsHtml = insights.map(insight => `<p style="margin-bottom: 1rem; line-height: 1.6;">${insight}</p>`).join('');
+            document.getElementById('insights-content').innerHTML = insightsHtml;
+            document.getElementById('insights-section').style.display = 'block';
+        }
+    }
+
+    window.exportStatistics = async function() {
+        try {
+            const entries = await loadFromFirestore();
+            
+            if (!entries || entries.length === 0) {
+                showUserMessage('📊 Geen data beschikbaar voor export', 'warning');
+                return;
+            }
+
+            let reportText = 'ADEMRUIMTE STATISTIEKEN RAPPORT\n';
+            reportText += '==================================\n';
+            reportText += 'Gebruiker: ' + (appState.currentUser ? (appState.currentUser.displayName || appState.currentUser.email) : 'Onbekend') + '\n';
+            reportText += 'Rapport datum: ' + new Date().toLocaleString('nl-BE') + '\n';
+            reportText += 'Periode: ' + entries[entries.length - 1].timestamp.toLocaleDateString('nl-BE') + ' - ' + entries[0].timestamp.toLocaleDateString('nl-BE') + '\n\n';
+
+            // Overview statistics
+            const totalSessions = entries.length;
+            const totalImprovement = entries.reduce((sum, entry) => sum + (entry.intensiteitVoor - entry.intensiteitNa), 0);
+            const avgImprovement = totalSessions > 0 ? (totalImprovement / totalSessions).toFixed(1) : 0;
+            const successfulSessions = entries.filter(entry => entry.resultaat === 'zeer-goed' || entry.resultaat === 'goed').length;
+            const successRate = totalSessions > 0 ? Math.round((successfulSessions / totalSessions) * 100) : 0;
+
+            reportText += 'OVERZICHT STATISTIEKEN\n';
+            reportText += '----------------------\n';
+            reportText += `Totaal aantal sessies: ${totalSessions}\n`;
+            reportText += `Gemiddelde verbetering: ${avgImprovement} punten\n`;
+            reportText += `Succespercentage: ${successRate}%\n`;
+            reportText += `Succesvolle sessies: ${successfulSessions}\n\n`;
+
+            // Technique usage
+            const usageData = {};
+            entries.forEach(entry => {
+                const technique = entry.techniekGebruikt;
+                usageData[technique] = (usageData[technique] || 0) + 1;
+            });
+
+            reportText += 'TECHNIEK GEBRUIK\n';
+            reportText += '---------------\n';
+            Object.entries(usageData)
+                .sort(([,a], [,b]) => b - a)
+                .forEach(([technique, count]) => {
+                    const percentage = Math.round((count / totalSessions) * 100);
+                    reportText += `${technique}: ${count} sessies (${percentage}%)\n`;
+                });
+
+            reportText += '\n';
+
+            // Results distribution
+            const resultsData = {};
+            entries.forEach(entry => {
+                const result = entry.resultaat || 'geen-resultaat';
+                resultsData[result] = (resultsData[result] || 0) + 1;
+            });
+
+            reportText += 'RESULTATEN VERDELING\n';
+            reportText += '-------------------\n';
+            Object.entries(resultsData)
+                .sort(([,a], [,b]) => b - a)
+                .forEach(([result, count]) => {
+                    const percentage = Math.round((count / totalSessions) * 100);
+                    reportText += `${getResultaatText(result)}: ${count} sessies (${percentage}%)\n`;
+                });
+
+            reportText += '\n';
+
+            // Recent trends
+            if (entries.length >= 10) {
+                const recentEntries = entries.slice(0, 5);
+                const recentAvg = recentEntries.reduce((sum, entry) => sum + (entry.intensiteitVoor - entry.intensiteitNa), 0) / recentEntries.length;
+                
+                reportText += 'RECENTE TRENDS\n';
+                reportText += '-------------\n';
+                reportText += `Gemiddelde verbetering laatste 5 sessies: ${recentAvg.toFixed(1)} punten\n`;
+                
+                const mostRecentTechnique = recentEntries[0].techniekGebruikt;
+                reportText += `Laatst gebruikte techniek: ${mostRecentTechnique}\n`;
+            }
+
+            const blob = new Blob([reportText], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ademruimte-statistieken-' + new Date().toLocaleDateString('nl-BE') + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showUserMessage('📊 Statistieken rapport geëxporteerd!', 'success');
+            
+        } catch (error) {
+            showUserMessage('❌ Fout bij exporteren statistieken: ' + error.message, 'error');
+        }
+    };
+
+    async function loadChartJS() {
+        if (window.Chart) return;
+        
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js';
+            script.async = false;
+            script.onload = () => {
+                log('SUCCESS', 'Chart.js loaded successfully');
+                resolve();
+            };
+            script.onerror = () => {
+                log('ERROR', 'Failed to load Chart.js');
+                reject(new Error('Chart.js failed to load'));
+            };
+            document.head.appendChild(script);
+        });
+    }
+
+    async function createProgressChart(entries) {
+        const chartRelevantEntries = entries.filter(entry => 
+            entry.intensiteitVoor !== undefined && entry.intensiteitNa !== undefined && 
+            entry.intensiteitVoor !== null && entry.intensiteitNa !== null
+        );
+
+        if (!chartRelevantEntries || chartRelevantEntries.length === 0) {
+            document.getElementById('chart-empty').style.display = 'block';
+            document.getElementById('chart-legend').style.display = 'none';
+            if (progressChart) {
+                progressChart.destroy();
+                progressChart = null;
+            }
+            return;
+        }
+
+        document.getElementById('chart-empty').style.display = 'none';
+        document.getElementById('chart-legend').style.display = 'block';
+
+        try {
+            if (!window.Chart) {
+                await loadChartJS();
+            }
+
+            const recentEntries = chartRelevantEntries.slice(0, 10).reverse();
+
+            const labels = recentEntries.map((entry, index) => {
+                const date = entry.timestamp;
+                const shortDate = date.toLocaleDateString('nl-BE', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: window.innerWidth <= 768 ? undefined : '2-digit',
+                    minute: window.innerWidth <= 768 ? undefined : '2-digit'
+                });
+                return window.innerWidth <= 768 ? `${index + 1}` : shortDate;
+            });
+
+            const beforeData = recentEntries.map(entry => entry.intensiteitVoor);
+            const afterData = recentEntries.map(entry => entry.intensiteitNa);
+
+            if (progressChart) {
+                progressChart.destroy();
+            }
+
+            const ctx = document.getElementById('progress-chart').getContext('2d');
+            
+            progressChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Vóór oefening',
+                            data: beforeData,
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: window.innerWidth <= 768 ? 2 : 3,
+                            pointRadius: window.innerWidth <= 768 ? 4 : 5,
+                            pointHoverRadius: window.innerWidth <= 768 ? 6 : 8,
+                            tension: 0.1,
+                            fill: false
+                        },
+                        {
+                            label: 'Ná oefening',
+                            data: afterData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: window.innerWidth <= 768 ? 2 : 3,
+                            pointRadius: window.innerWidth <= 768 ? 4 : 5,
+                            pointHoverRadius: window.innerWidth <= 768 ? 6 : 8,
+                            tension: 0.1,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#667eea',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                title: function(context) {
+                                    const index = context[0].dataIndex;
+                                    const entry = recentEntries[index];
+                                    const date = entry.timestamp;
+                                    return date.toLocaleDateString('nl-BE', { 
+                                        weekday: 'short',
+                                        month: 'short', 
+                                        day: 'numeric',
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    });
+                                },
+                                afterBody: function(context) {
+                                    const index = context[0].dataIndex;
+                                    const entry = recentEntries[index];
+                                    return [
+                                        '',
+                                        `Techniek: ${entry.techniekGebruikt}`,
+                                        `Resultaat: ${getResultaatText(entry.resultaat)}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                font: {
+                                    size: window.innerWidth <= 768 ? 10 : 12
+                                },
+                                maxRotation: 0,
+                                autoSkip: true,
+                                maxTicksLimit: window.innerWidth <= 768 ? 5 : 8
+                            },
+                            title: {
+                                display: window.innerWidth > 768,
+                                text: 'Sessies (meest recente)',
+                                color: '#6b7280',
+                                font: {
+                                    size: 12,
+                                    weight: 'normal'
+                                }
+                            }
+                        },
+                        y: {
+                            min: 0,
+                            max: 10,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                font: {
+                                    size: window.innerWidth <= 768 ? 10 : 12
+                                },
+                                stepSize: 1,
+                                callback: function(value) {
+                                    return value + '/10';
+                                }
+                            },
+                            title: {
+                                display: window.innerWidth > 768,
+                                text: 'Intensiteit Score',
+                                color: '#6b7280',
+                                font: {
+                                    size: 12,
+                                    weight: 'normal'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            log('SUCCESS', `Progress chart created with ${recentEntries.length} data points`);
+        } catch (error) {
+            log('ERROR', 'Failed to create chart:', error);
+            document.getElementById('chart-empty').style.display = 'block';
+            document.getElementById('chart-legend').style.display = 'none';
+        }
+    }
+
+    // Dagboek modal functions
+    window.openDagboekModal = function(technique) {
+        appState.currentTechnique = technique;
+        
+        if (technique === 'Crisis Hulp Technieken') {
+            trackSession('crisis');
+        }
+        
+        let triggerText = '';
+        if (technique) {
+            if (technique.includes('Buteyko')) {
+                triggerText = 'Na voltooiing van Buteyko ademhalingsoefening (10 cycli)';
+            } else if (technique.includes('Afkoel Ritueel')) {
+                triggerText = 'Na voltooiing van Afkoel Ritueel (5 stappen)';
+            } else if (technique.includes('EMDR')) {
+                triggerText = 'Na voltooiing van EMDR zelfhulp sessie (5 stappen)';
+            } else if (technique.includes('Crisis Hulp')) {
+                triggerText = 'Tijdens/na gebruik van crisis hulp technieken';
+            } else {
+                triggerText = `Tijdens/na ${technique}`;
+            }
+        }
+        
+        document.getElementById('entry-trigger').value = triggerText;
+        
+        if (technique && (technique.includes('Voltooid') || technique.includes('Crisis Hulp'))) {
+            document.getElementById('entry-before').value = '7';
+            document.getElementById('entry-before-value').textContent = '7';
+            document.getElementById('entry-after').value = '3';
+            document.getElementById('entry-after-value').textContent = '3';
+        } else {
+            document.getElementById('entry-before').value = '5';
+            document.getElementById('entry-before-value').textContent = '5';
+            document.getElementById('entry-after').value = '5';
+            document.getElementById('entry-after-value').textContent = '5';
+        }
+        
+        document.getElementById('dagboek-modal').classList.add('show');
+        
+        setTimeout(() => {
+            const modal = document.getElementById('dagboek-modal');
+            if (modal) {
+                modal.scrollTop = 0;
+                const firstInput = modal.querySelector('input[type="text"], textarea');
+                if (firstInput) {
+                    firstInput.focus();
+                    if (window.innerWidth <= 768) {
+                        firstInput.click();
+                        setTimeout(() => {
+                            firstInput.focus();
+                            firstInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 100);
+                    }
+                }
+            }
+        }, 150);
+    };
+
+    window.closeDagboekModal = function() {
+        document.getElementById('dagboek-modal').classList.remove('show');
+        
+        document.getElementById('entry-trigger').value = '';
+        document.getElementById('entry-before').value = '5';
+        document.getElementById('entry-after').value = '5';
+        document.getElementById('entry-result').value = '';
+        document.getElementById('entry-notes').value = '';
+        
+        document.getElementById('entry-before-value').textContent = '5';
+        document.getElementById('entry-after-value').textContent = '5';
+        
+        appState.currentTechnique = '';
+    };
+
+    // Setup event listeners
+    function setupEventListeners() {
+        log('INFO', 'Setting up event listeners...');
+        
+        const googleLoginBtn = document.getElementById('google-login-btn');
+        if (googleLoginBtn) {
+            googleLoginBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                log('INFO', 'Google login button clicked!');
+                signInWithGoogle();
+            });
+            log('SUCCESS', 'Google login button event listener attached');
+        } else {
+            log('ERROR', 'Google login button not found!');
+        }
+
+        const showRegisterBtn = document.getElementById('show-register-btn');
+        if (showRegisterBtn) {
+            showRegisterBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showRegisterForm();
+            });
+        }
+
+        const closeRegisterBtn = document.getElementById('close-register-btn');
+        if (closeRegisterBtn) {
+            closeRegisterBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeRegisterModal();
+            });
+        }
+
+        const cancelRegisterBtn = document.getElementById('cancel-register-btn');
+        if (cancelRegisterBtn) {
+            cancelRegisterBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeRegisterModal();
+            });
+        }
+
+        const tipRefreshBtn = document.getElementById('tip-refresh-btn');
+        if (tipRefreshBtn) {
+            tipRefreshBtn.addEventListener('click', getNewTip);
+        }
+
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('show');
+            }
+        });
+
+        const saveDagboekBtn = document.getElementById('save-dagboek-entry-btn');
+        if (saveDagboekBtn) {
+            saveDagboekBtn.addEventListener('click', saveDagboekEntry);
+        }
+
+        // Audio controls
+        const volumeControl = document.getElementById('audio-volume');
+        if (volumeControl) {
+            volumeControl.addEventListener('input', function() {
+                if (isAudioPlaying && gainNode) {
+                    const volume = parseInt(this.value) / 100;
+                    gainNode.gain.setValueAtTime(volume * 0.3, audioContext.currentTime);
+                }
+            });
+        }
+
+        const frequencyControl = document.getElementById('audio-frequency');
+        if (frequencyControl) {
+            frequencyControl.addEventListener('input', function() {
+                if (isAudioPlaying && oscillator) {
+                    const frequency = parseInt(this.value);
+                    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                }
+            });
+        }
+
+        const speedControl = document.getElementById('audio-speed');
+        if (speedControl) {
+            speedControl.addEventListener('change', function() {
+                if (isAudioPlaying) {
+                    stopBilateralAudio();
+                    setTimeout(() => startBilateralAudio(), 100);
+                }
+            });
+        }
+    }
+
+    // Network status monitoring
+    function setupNetworkMonitoring() {
+        window.addEventListener('online', () => {
+            appState.isOnline = true;
+            appState.updateConnectionDisplay();
+            log('INFO', 'Network connection restored');
+            if (!appState.isFirebaseConnected && appState.authInitialized) {
+                initializeFirebase();
+            }
+        });
+
+        window.addEventListener('offline', () => {
+            appState.isOnline = false;
+            appState.setConnectionStatus(false);
+            log('WARNING', 'Network connection lost');
+            showUserMessage('Internetverbinding verloren.', 'warning');
+        });
+    }
+
+    // Keyboard navigation enhancements
+    function setupKeyboardNavigation() {
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                const activeTab = document.querySelector('.tab-btn.active');
+                if (activeTab && document.activeElement === activeTab) {
+                    e.preventDefault();
+                    
+                    const tabs = Array.from(document.querySelectorAll('.tab-btn'));
+                    const currentIndex = tabs.indexOf(activeTab);
+                    
+                    let nextIndex;
+                    if (e.key === 'ArrowLeft') {
+                        nextIndex = currentIndex > 0 ? currentIndex - 1 : tabs.length - 1;
+                    } else {
+                        nextIndex = currentIndex < tabs.length - 1 ? currentIndex + 1 : 0;
+                    }
+                    
+                    tabs[nextIndex].focus();
+                    tabs[nextIndex].click();
+                }
+            }
+            
+            if (e.key === 'Escape') {
+                const modal = document.querySelector('.modal.show');
+                if (modal) {
+                    modal.classList.remove('show');
+                }
+            }
+        });
+    }
+
+    // Range slider updates
+    function setupRangeSliders() {
+        const sliders = [
+            { input: 'emdr-intensity-slider', output: 'emdr-intensity-value' },
+            { input: 'entry-before', output: 'entry-before-value' },
+            { input: 'entry-after', output: 'entry-after-value' }
+        ];
+
+        sliders.forEach(slider => {
+            const input = document.getElementById(slider.input);
+            const output = document.getElementById(slider.output);
+            
+            if (input && output) {
+                input.addEventListener('input', function() {
+                    output.textContent = this.value;
+                });
+                output.textContent = input.value;
+            }
+        });
+    }
+
+    // Enhanced mobile focus handling
+    function setupMobileFocusHandling() {
+        document.addEventListener('touchstart', function(e) {
+            if (e.target.matches('.form-input, .form-textarea')) {
+                setTimeout(() => {
+                    e.target.focus();
+                }, 50);
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('.form-input, .form-textarea')) {
+                if (window.innerWidth <= 768) {
+                    setTimeout(() => {
+                        e.target.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'center',
+                            inline: 'nearest'
+                        });
+                    }, 300);
+                }
+            }
+        });
+    }
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', async function() {
+        log('INFO', 'Starting Ademruimte app initialization');
+        
+        try {
+            appState.updateConnectionDisplay();
+            appState.updateUI();
+
+            setupForms();
+            setupNetworkMonitoring();
+            setupKeyboardNavigation();
+            setupRangeSliders();
+            setupMobileFocusHandling();
+            setRandomTip();
+            
+            loadProgressData();
+            
+            updateBreathDisplay();
+            updateRitualDisplay();
+            updateEmdrDisplay();
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.getAttribute('data-tab');
+                    showTab(tab);
+                });
+            });
+            
+            setupEventListeners();
+
+            window.addEventListener('resize', () => {
+                if (progressChart && appState.currentTab === 'dagboek') {
+                    setTimeout(() => {
+                        progressChart.resize();
+                    }, 100);
+                }
+            });
+            
+            log('INFO', 'Attempting Firebase initialization...');
+            const success = await initializeFirebase();
+            
+            if (!success) {
+                log('WARNING', 'Firebase initialization failed during DOMContentLoaded. Showing login screen.');
+                showLoginScreen();
+            }
+            
+            log('SUCCESS', 'App initialization completed');
+            
+        } catch (error) {
+            log('ERROR', 'App initialization failed at a critical stage', error);
+            
+            const authLoading = document.getElementById('auth-loading');
+            if (authLoading) {
+                authLoading.style.display = 'none';
+            }
+            
+            showUserMessage('Er is een kritieke fout opgetreden bij het laden van de app. Herlaad de pagina om het opnieuw te proberen.', 'error');
+            showLoginScreen();
+        }
+    });
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        if (isAudioPlaying) stopBilateralAudio();
+        if (isEyeMovementActive) stopEyeMovements();
+        if (wakeLock) releaseWakeLock();
+        if (timerInterval) clearInterval(timerInterval);
+        if (breathInterval) clearInterval(breathInterval);
+        if (progressChart) progressChart.destroy();
+        if (usageChart) usageChart.destroy();
+        if (effectivenessChart) effectivenessChart.destroy();
+        if (resultsChart) resultsChart.destroy();
+        if (improvementChart) improvementChart.destroy();
+        
+        appState.cleanup();
+        
+        log('INFO', 'App shutting down');
+    });
+</script>
+
+</body>
+</html>

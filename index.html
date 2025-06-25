@@ -2343,6 +2343,180 @@
     let audioInterval = null;
     let isAudioPlaying = false;
     let panPosition = -1;
+    
+    // VOEG DEZE CODE TOE NA DE AUDIO FUNCTIES (rond regel 2000)
+
+```
+// Eye movement variables
+let eyeMovementInterval = null;
+let isEyeMovementActive = false;
+let eyePosition = { x: 50, y: 50 }; // Percentage positions
+let eyeAnimationFrame = null;
+let eyeMovementStartTime = 0;
+
+// Eye movement functions
+window.toggleEyeMovements = function() {
+    if (isEyeMovementActive) {
+        stopEyeMovements();
+    } else {
+        startEyeMovements();
+    }
+};
+
+window.resetEyeMovements = function() {
+    stopEyeMovements();
+    eyePosition = { x: 50, y: 50 };
+    updateEyeDotPosition();
+};
+
+function startEyeMovements() {
+    if (isEyeMovementActive) return;
+
+    const display = document.getElementById('eye-movement-display');
+    const dot = document.getElementById('eye-dot');
+    const instructions = document.getElementById('eye-instructions');
+    const btn = document.getElementById('eye-btn');
+    const status = document.getElementById('eye-status');
+
+    // Show dot and hide instructions
+    dot.style.display = 'block';
+    instructions.style.display = 'none';
+
+    // Update button and status
+    btn.innerHTML = '⏸️ Stop Oogbewegingen';
+    btn.className = 'btn btn-red';
+    status.textContent = 'Actief';
+    status.style.color = '#059669';
+
+    isEyeMovementActive = true;
+    eyeMovementStartTime = Date.now();
+
+    // Start animation loop
+    animateEyeMovement();
+
+    log('SUCCESS', 'Eye movements started');
+}
+
+function stopEyeMovements() {
+    if (!isEyeMovementActive) return;
+
+    const dot = document.getElementById('eye-dot');
+    const instructions = document.getElementById('eye-instructions');
+    const btn = document.getElementById('eye-btn');
+    const status = document.getElementById('eye-status');
+
+    // Hide dot and show instructions
+    dot.style.display = 'none';
+    instructions.style.display = 'block';
+
+    // Update button and status
+    btn.innerHTML = '👁️ Start Oogbewegingen';
+    btn.className = 'btn btn-cyan';
+    status.textContent = 'Gestopt';
+    status.style.color = 'var(--text-light)';
+
+    isEyeMovementActive = false;
+
+    // Stop animation
+    if (eyeAnimationFrame) {
+        cancelAnimationFrame(eyeAnimationFrame);
+        eyeAnimationFrame = null;
+    }
+
+    log('SUCCESS', 'Eye movements stopped');
+}
+
+function animateEyeMovement() {
+    if (!isEyeMovementActive) return;
+
+    const speed = parseInt(document.getElementById('eye-speed').value); // movements per minute
+    const pattern = document.getElementById('eye-pattern').value;
+    const amplitude = parseInt(document.getElementById('eye-amplitude').value);
+
+    // Calculate time-based position (convert speed from movements/min to radians/ms)
+    const currentTime = Date.now();
+    const elapsed = currentTime - eyeMovementStartTime;
+    const radiansPerMs = (speed * 2 * Math.PI) / (60 * 1000); // Convert to radians per millisecond
+    const t = elapsed * radiansPerMs;
+
+    // Calculate position based on pattern
+    let newX = 50, newY = 50; // Center positions (in percentage)
+    const amplitudePercent = amplitude / 100;
+
+    switch (pattern) {
+        case 'horizontal':
+            newX = 50 + (amplitudePercent * 40 * Math.sin(t));
+            newY = 50;
+            break;
+        case 'vertical':
+            newX = 50;
+            newY = 50 + (amplitudePercent * 30 * Math.sin(t));
+            break;
+        case 'diagonal':
+            newX = 50 + (amplitudePercent * 35 * Math.sin(t));
+            newY = 50 + (amplitudePercent * 25 * Math.sin(t));
+            break;
+        case 'figure8':
+            newX = 50 + (amplitudePercent * 35 * Math.sin(t));
+            newY = 50 + (amplitudePercent * 20 * Math.sin(2 * t));
+            break;
+        case 'circle':
+            newX = 50 + (amplitudePercent * 30 * Math.sin(t));
+            newY = 50 + (amplitudePercent * 30 * Math.cos(t));
+            break;
+    }
+
+    // Clamp positions to stay within bounds
+    eyePosition.x = Math.max(5, Math.min(95, newX));
+    eyePosition.y = Math.max(5, Math.min(95, newY));
+
+    updateEyeDotPosition();
+
+    // Schedule next frame
+    eyeAnimationFrame = requestAnimationFrame(animateEyeMovement);
+}
+
+function updateEyeDotPosition() {
+    const dot = document.getElementById('eye-dot');
+    if (dot) {
+        dot.style.left = `${eyePosition.x}%`;
+        dot.style.top = `${eyePosition.y}%`;
+    }
+}
+
+// Setup eye movement controls
+function setupEyeMovementControls() {
+    // Speed slider
+    const speedSlider = document.getElementById('eye-speed');
+    const speedValue = document.getElementById('eye-speed-value');
+    if (speedSlider && speedValue) {
+        speedSlider.addEventListener('input', function() {
+            speedValue.textContent = this.value;
+        });
+    }
+
+    // Amplitude slider
+    const amplitudeSlider = document.getElementById('eye-amplitude');
+    const amplitudeValue = document.getElementById('eye-amplitude-value');
+    if (amplitudeSlider && amplitudeValue) {
+        amplitudeSlider.addEventListener('input', function() {
+            amplitudeValue.textContent = this.value + '%';
+        });
+    }
+
+    // Pattern selector - restart movement if active when changed
+    const patternSelect = document.getElementById('eye-pattern');
+    if (patternSelect) {
+        patternSelect.addEventListener('change', function() {
+            if (isEyeMovementActive) {
+                // Restart movement with new pattern
+                stopEyeMovements();
+                setTimeout(startEyeMovements, 100);
+            }
+        });
+    }
+}
+```
 
     // Eye movement variables
     let eyeMovementInterval = null;

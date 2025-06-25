@@ -3505,14 +3505,159 @@ let eyeAnimationId = null;
         }, updateInterval);
     }
 
-    // Eye movement functions for EMDR
-    window.toggleEyeMovements = function() {
-        if (isEyeMovementActive) {
-            stopEyeMovements();
-        } else {
-            startEyeMovements();
+
+// STAP 2: VERVANG ALLEEN de toggleEyeMovements functie
+window.toggleEyeMovements = function() {
+    if (isEyeMovementActive) {
+        stopEyeMovements();
+    } else {
+        startEyeMovements();
+    }
+};
+
+// STAP 3: VOEG DEZE FUNCTIES TOE NA de toggleEyeMovements functie
+function startEyeMovements() {
+    try {
+        const speed = document.getElementById('eye-speed')?.value || 'medium';
+        const pattern = document.getElementById('eye-pattern')?.value || 'horizontal';
+        
+        const speeds = {
+            'very-slow': 4000,
+            'slow': 2000,
+            'medium': 1000,
+            'fast': 500,
+            'very-fast': 250,
+            'ultra-fast': 150
+        };
+        
+        const patterns = {
+            horizontal: [{ x: 15, y: 50 }, { x: 85, y: 50 }],
+            vertical: [{ x: 50, y: 20 }, { x: 50, y: 80 }],
+            diagonal: [{ x: 20, y: 20 }, { x: 80, y: 80 }, { x: 80, y: 20 }, { x: 20, y: 80 }],
+            circle: generateCirclePoints(),
+            figure8: [
+                { x: 30, y: 40 }, { x: 50, y: 30 }, { x: 70, y: 40 }, { x: 50, y: 50 },
+                { x: 30, y: 60 }, { x: 50, y: 70 }, { x: 70, y: 60 }, { x: 50, y: 50 }
+            ]
+        };
+        
+        const moveDuration = speeds[speed] || 1000;
+        const movements = patterns[pattern] || patterns.horizontal;
+        
+        isEyeMovementActive = true;
+        let currentIndex = 0;
+        
+        const eyeDot = document.getElementById('eye-dot');
+        const instructions = document.getElementById('eye-instructions');
+        
+        if (eyeDot) eyeDot.style.display = 'block';
+        if (instructions) instructions.style.display = 'none';
+        
+        const btn = document.getElementById('eye-btn');
+        if (btn) {
+            btn.innerHTML = '⏸️ Stop Oogbewegingen';
+            btn.className = 'btn btn-red';
         }
-    };
+        
+        const status = document.getElementById('eye-status');
+        if (status) {
+            status.textContent = 'Actief - ' + pattern;
+            status.style.color = '#059669';
+        }
+        
+        function animate() {
+            if (!isEyeMovementActive) return;
+            
+            const target = movements[currentIndex];
+            const startTime = performance.now();
+            
+            function moveToTarget(timestamp) {
+                if (!isEyeMovementActive) return;
+                
+                const elapsed = timestamp - startTime;
+                const progress = Math.min(elapsed / moveDuration, 1);
+                
+                const eased = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+                
+                const newX = eyePosition.x + (target.x - eyePosition.x) * eased;
+                const newY = eyePosition.y + (target.y - eyePosition.y) * eased;
+                
+                if (eyeDot) {
+                    eyeDot.style.left = newX + '%';
+                    eyeDot.style.top = newY + '%';
+                }
+                
+                if (progress < 1) {
+                    eyeAnimationId = requestAnimationFrame(moveToTarget);
+                } else {
+                    eyePosition.x = target.x;
+                    eyePosition.y = target.y;
+                    currentIndex = (currentIndex + 1) % movements.length;
+                    
+                    if (isEyeMovementActive) {
+                        setTimeout(animate, 50);
+                    }
+                }
+            }
+            
+            eyeAnimationId = requestAnimationFrame(moveToTarget);
+        }
+        
+        animate();
+        console.log('✅ Eye movements started successfully');
+        
+    } catch (error) {
+        console.error('❌ Error starting eye movements:', error);
+        isEyeMovementActive = false;
+    }
+}
+
+function stopEyeMovements() {
+    try {
+        isEyeMovementActive = false;
+        
+        if (eyeAnimationId) {
+            cancelAnimationFrame(eyeAnimationId);
+            eyeAnimationId = null;
+        }
+        
+        const eyeDot = document.getElementById('eye-dot');
+        const instructions = document.getElementById('eye-instructions');
+        
+        if (eyeDot) eyeDot.style.display = 'none';
+        if (instructions) instructions.style.display = 'block';
+        
+        const btn = document.getElementById('eye-btn');
+        if (btn) {
+            btn.innerHTML = '👁️ Start Oogbewegingen';
+            btn.className = 'btn btn-cyan';
+        }
+        
+        const status = document.getElementById('eye-status');
+        if (status) {
+            status.textContent = 'Gestopt';
+            status.style.color = 'var(--text-light)';
+        }
+        
+        eyePosition = { x: 50, y: 50 };
+        console.log('✅ Eye movements stopped successfully');
+        
+    } catch (error) {
+        console.error('❌ Error stopping eye movements:', error);
+    }
+}
+
+function generateCirclePoints() {
+    const points = [];
+    const centerX = 50, centerY = 50, radius = 25;
+    for (let i = 0; i < 12; i++) {
+        const angle = (i / 12) * 2 * Math.PI;
+        const x = centerX + radius * Math.cos(angle);
+        const y = centerY + radius * Math.sin(angle);
+        points.push({ x: Math.max(10, Math.min(90, x)), y: Math.max(10, Math.min(90, y)) });
+    }
+    return points;
+}
 
     function startEyeMovements() {
         const display = document.getElementById('eye-movement-display');

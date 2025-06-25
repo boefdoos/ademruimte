@@ -5183,6 +5183,50 @@ function generateCirclePoints() {
                 }
             });
         }
+        // STAP 4: VOEG DIT TOE AAN DE setupEventListeners functie (VEILIG)
+// Zoek naar setupEventListeners en voeg dit HELEMAAL ONDERAAN toe, voor de sluitende }
+function setupEyeMovementControlsSafe() {
+    try {
+        const speedControl = document.getElementById('eye-speed');
+        const patternControl = document.getElementById('eye-pattern');
+        
+        if (speedControl) {
+            speedControl.addEventListener('change', function() {
+                if (isEyeMovementActive) {
+                    stopEyeMovements();
+                    setTimeout(() => startEyeMovements(), 100);
+                }
+            });
+        }
+        
+        if (patternControl) {
+            patternControl.addEventListener('change', function() {
+                if (isEyeMovementActive) {
+                    stopEyeMovements();
+                    setTimeout(() => startEyeMovements(), 100);
+                }
+            });
+        }
+        
+        console.log('✅ Eye movement controls setup complete');
+    } catch (error) {
+        console.error('❌ Error setting up eye movement controls:', error);
+    }
+}
+
+// Roep dit aan in setupEventListeners
+if (typeof setupEventListeners === 'function') {
+    const originalSetup = setupEventListeners;
+    setupEventListeners = function() {
+        originalSetup();
+        setupEyeMovementControlsSafe();
+    };
+} else {
+    // Als setupEventListeners nog niet bestaat, maak een veilige versie
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(setupEyeMovementControlsSafe, 1000);
+    });
+}
     }
 
     // Network status monitoring

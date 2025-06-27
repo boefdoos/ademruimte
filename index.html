@@ -1900,6 +1900,23 @@
     </button>
 </div>
 
+                    <!-- Eye Movement Display -->
+                    <div id="eye-movement-display" style="position: relative; height: 200px; background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-radius: 1rem; margin: 1rem 0; border: 2px solid #0ea5e9; overflow: hidden;">
+                        <div id="eye-dot" style="position: absolute; width: 20px; height: 20px; background: radial-gradient(circle, #ef4444, #dc2626); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3); transition: all 0.1s ease-out; display: none;">
+                            <div style="width: 8px; height: 8px; background: white; border-radius: 50%; position: absolute; top: 3px; left: 6px; opacity: 0.9;"></div>
+                        </div>
+                        <div id="eye-instructions" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #0ea5e9; font-weight: 600;">
+                            Klik op start om oogbewegingen te beginnen
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="eye-btn" class="btn btn-cyan" onclick="toggleEyeMovements()">
+                            👁️ Start Oogbewegingen
+                        </button>
+                    </div>
+                </div>
+
                 <div class="card">
                     <h3 id="emdr-title">Stap 1: Voorbereiding</h3>
                     <div id="emdr-content">
@@ -2343,46 +2360,6 @@
     let audioInterval = null;
     let isAudioPlaying = false;
     let panPosition = -1;
-    
-
-// Setup eye movement controls
-function setupEyeMovementControls() {
-    // Speed slider
-    const speedSlider = document.getElementById('eye-speed');
-    const speedValue = document.getElementById('eye-speed-value');
-    if (speedSlider && speedValue) {
-        speedSlider.addEventListener('input', function() {
-            speedValue.textContent = this.value;
-        });
-    }
-
-    // Amplitude slider
-    const amplitudeSlider = document.getElementById('eye-amplitude');
-    const amplitudeValue = document.getElementById('eye-amplitude-value');
-    if (amplitudeSlider && amplitudeValue) {
-        amplitudeSlider.addEventListener('input', function() {
-            amplitudeValue.textContent = this.value + '%';
-        });
-    }
-
-    // Pattern selector - restart movement if active when changed
-    const patternSelect = document.getElementById('eye-pattern');
-    if (patternSelect) {
-        patternSelect.addEventListener('change', function() {
-            if (isEyeMovementActive) {
-                // Restart movement with new pattern
-                stopEyeMovements();
-                setTimeout(startEyeMovements, 100);
-            }
-        });
-    }
-}
-
-// Plaats dit VOOR de bestaande functions, rond regel 800-900
-let eyeMovementInterval = null;
-let isEyeMovementActive = false;
-let eyePosition = { x: 50, y: 50 };
-let eyeAnimationId = null;
 
     // Eye movement variables
     let eyeMovementInterval = null;
@@ -3505,159 +3482,14 @@ let eyeAnimationId = null;
         }, updateInterval);
     }
 
-
-// STAP 2: VERVANG ALLEEN de toggleEyeMovements functie
-window.toggleEyeMovements = function() {
-    if (isEyeMovementActive) {
-        stopEyeMovements();
-    } else {
-        startEyeMovements();
-    }
-};
-
-// STAP 3: VOEG DEZE FUNCTIES TOE NA de toggleEyeMovements functie
-function startEyeMovements() {
-    try {
-        const speed = document.getElementById('eye-speed')?.value || 'medium';
-        const pattern = document.getElementById('eye-pattern')?.value || 'horizontal';
-        
-        const speeds = {
-            'very-slow': 4000,
-            'slow': 2000,
-            'medium': 1000,
-            'fast': 500,
-            'very-fast': 250,
-            'ultra-fast': 150
-        };
-        
-        const patterns = {
-            horizontal: [{ x: 15, y: 50 }, { x: 85, y: 50 }],
-            vertical: [{ x: 50, y: 20 }, { x: 50, y: 80 }],
-            diagonal: [{ x: 20, y: 20 }, { x: 80, y: 80 }, { x: 80, y: 20 }, { x: 20, y: 80 }],
-            circle: generateCirclePoints(),
-            figure8: [
-                { x: 30, y: 40 }, { x: 50, y: 30 }, { x: 70, y: 40 }, { x: 50, y: 50 },
-                { x: 30, y: 60 }, { x: 50, y: 70 }, { x: 70, y: 60 }, { x: 50, y: 50 }
-            ]
-        };
-        
-        const moveDuration = speeds[speed] || 1000;
-        const movements = patterns[pattern] || patterns.horizontal;
-        
-        isEyeMovementActive = true;
-        let currentIndex = 0;
-        
-        const eyeDot = document.getElementById('eye-dot');
-        const instructions = document.getElementById('eye-instructions');
-        
-        if (eyeDot) eyeDot.style.display = 'block';
-        if (instructions) instructions.style.display = 'none';
-        
-        const btn = document.getElementById('eye-btn');
-        if (btn) {
-            btn.innerHTML = '⏸️ Stop Oogbewegingen';
-            btn.className = 'btn btn-red';
+    // Eye movement functions for EMDR
+    window.toggleEyeMovements = function() {
+        if (isEyeMovementActive) {
+            stopEyeMovements();
+        } else {
+            startEyeMovements();
         }
-        
-        const status = document.getElementById('eye-status');
-        if (status) {
-            status.textContent = 'Actief - ' + pattern;
-            status.style.color = '#059669';
-        }
-        
-        function animate() {
-            if (!isEyeMovementActive) return;
-            
-            const target = movements[currentIndex];
-            const startTime = performance.now();
-            
-            function moveToTarget(timestamp) {
-                if (!isEyeMovementActive) return;
-                
-                const elapsed = timestamp - startTime;
-                const progress = Math.min(elapsed / moveDuration, 1);
-                
-                const eased = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-                
-                const newX = eyePosition.x + (target.x - eyePosition.x) * eased;
-                const newY = eyePosition.y + (target.y - eyePosition.y) * eased;
-                
-                if (eyeDot) {
-                    eyeDot.style.left = newX + '%';
-                    eyeDot.style.top = newY + '%';
-                }
-                
-                if (progress < 1) {
-                    eyeAnimationId = requestAnimationFrame(moveToTarget);
-                } else {
-                    eyePosition.x = target.x;
-                    eyePosition.y = target.y;
-                    currentIndex = (currentIndex + 1) % movements.length;
-                    
-                    if (isEyeMovementActive) {
-                        setTimeout(animate, 50);
-                    }
-                }
-            }
-            
-            eyeAnimationId = requestAnimationFrame(moveToTarget);
-        }
-        
-        animate();
-        console.log('✅ Eye movements started successfully');
-        
-    } catch (error) {
-        console.error('❌ Error starting eye movements:', error);
-        isEyeMovementActive = false;
-    }
-}
-
-function stopEyeMovements() {
-    try {
-        isEyeMovementActive = false;
-        
-        if (eyeAnimationId) {
-            cancelAnimationFrame(eyeAnimationId);
-            eyeAnimationId = null;
-        }
-        
-        const eyeDot = document.getElementById('eye-dot');
-        const instructions = document.getElementById('eye-instructions');
-        
-        if (eyeDot) eyeDot.style.display = 'none';
-        if (instructions) instructions.style.display = 'block';
-        
-        const btn = document.getElementById('eye-btn');
-        if (btn) {
-            btn.innerHTML = '👁️ Start Oogbewegingen';
-            btn.className = 'btn btn-cyan';
-        }
-        
-        const status = document.getElementById('eye-status');
-        if (status) {
-            status.textContent = 'Gestopt';
-            status.style.color = 'var(--text-light)';
-        }
-        
-        eyePosition = { x: 50, y: 50 };
-        console.log('✅ Eye movements stopped successfully');
-        
-    } catch (error) {
-        console.error('❌ Error stopping eye movements:', error);
-    }
-}
-
-function generateCirclePoints() {
-    const points = [];
-    const centerX = 50, centerY = 50, radius = 25;
-    for (let i = 0; i < 12; i++) {
-        const angle = (i / 12) * 2 * Math.PI;
-        const x = centerX + radius * Math.cos(angle);
-        const y = centerY + radius * Math.sin(angle);
-        points.push({ x: Math.max(10, Math.min(90, x)), y: Math.max(10, Math.min(90, y)) });
-    }
-    return points;
-}
+    };
 
     function startEyeMovements() {
         const display = document.getElementById('eye-movement-display');
@@ -5183,50 +5015,6 @@ function generateCirclePoints() {
                 }
             });
         }
-        // STAP 4: VOEG DIT TOE AAN DE setupEventListeners functie (VEILIG)
-// Zoek naar setupEventListeners en voeg dit HELEMAAL ONDERAAN toe, voor de sluitende }
-function setupEyeMovementControlsSafe() {
-    try {
-        const speedControl = document.getElementById('eye-speed');
-        const patternControl = document.getElementById('eye-pattern');
-        
-        if (speedControl) {
-            speedControl.addEventListener('change', function() {
-                if (isEyeMovementActive) {
-                    stopEyeMovements();
-                    setTimeout(() => startEyeMovements(), 100);
-                }
-            });
-        }
-        
-        if (patternControl) {
-            patternControl.addEventListener('change', function() {
-                if (isEyeMovementActive) {
-                    stopEyeMovements();
-                    setTimeout(() => startEyeMovements(), 100);
-                }
-            });
-        }
-        
-        console.log('✅ Eye movement controls setup complete');
-    } catch (error) {
-        console.error('❌ Error setting up eye movement controls:', error);
-    }
-}
-
-// Roep dit aan in setupEventListeners
-if (typeof setupEventListeners === 'function') {
-    const originalSetup = setupEventListeners;
-    setupEventListeners = function() {
-        originalSetup();
-        setupEyeMovementControlsSafe();
-    };
-} else {
-    // Als setupEventListeners nog niet bestaat, maak een veilige versie
-    document.addEventListener('DOMContentLoaded', function() {
-        setTimeout(setupEyeMovementControlsSafe, 1000);
-    });
-}
     }
 
     // Network status monitoring

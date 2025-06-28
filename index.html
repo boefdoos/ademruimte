@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="nl">
+    let app, db, auth;
+    let firebaseReady = false;
+    let firebaseInitPromise = null;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -2668,39 +2671,84 @@
     ];
 
     // Firebase initialization
-    async function initializeFirebase() {
-        if (appState.authInitialized) {
-            log('INFO', 'Firebase already initialized.');
-            return true;
+   async function initializeFirebaseInternal() {
+    try {
+        console.log('📦 Importing Firebase modules...');
+        
+        // Import modules (exact zoals in werkende test)
+        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
+        const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+        const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+
+        console.log('✅ Firebase modules imported');
+
+        // Initialize Firebase app
+        if (!app) {
+            app = initializeApp(firebaseConfig);
+            console.log('✅ Firebase app initialized');
         }
 
-        try {
-            log('INFO', 'Initializing Firebase...');
-            
-            // Firebase v9+ modular imports
-            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
-            const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
-            const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithRedirect, getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
-
-            // Initialize Firebase
-            app = initializeApp(firebaseConfig);
+        // Initialize Firestore
+        if (!db) {
             db = getFirestore(app);
+            console.log('✅ Firestore initialized');
+        }
+
+        // Initialize Auth
+        if (!auth) {
             auth = getAuth(app);
+            console.log('✅ Firebase Auth initialized');
 
-            // Set authentication persistence
+            // Set persistence
             await setPersistence(auth, browserLocalPersistence);
+            console.log('✅ Auth persistence set');
 
-            // Handle redirect result ON PAGE LOAD for Google Auth
-            try {
-                const result = await getRedirectResult(auth);
-                if (result) {
-                    log('SUCCESS', 'Google sign-in successful via redirect result:', result.user.email);
-                    return true;
+            // Setup auth state observer (exact zoals in test)
+            onAuthStateChanged(auth, (user) => {
+                console.log('🔧 Auth state changed:', user ? user.email : 'No user');
+                
+                // Update appState if available
+                if (typeof appState !== 'undefined' && appState.setUser) {
+                    appState.setUser(user);
                 }
-            } catch (redirectError) {
-                log('ERROR', 'Error getting redirect result:', redirectError);
-                showUserMessage(`Fout bij Google login: ${redirectError.message}`, 'error');
-            }
+
+                if (user) {
+                    console.log('✅ User authenticated:', user.email);
+                    if (typeof showMainApp === 'function') showMainApp();
+                } else {
+                    console.log('ℹ️ No user authenticated');
+                    if (typeof showLoginScreen === 'function') showLoginScreen();
+                }
+            });
+
+            console.log('✅ Auth state observer setup');
+        }
+
+        // Mark as ready
+        firebaseReady = true;
+        
+        // Update app state
+        if (typeof appState !== 'undefined') {
+            appState.setConnectionStatus(true);
+            appState.authInitialized = true;
+        }
+
+        console.log('🎉 Firebase initialization complete and ready!');
+        return auth;
+
+    } catch (error) {
+        console.error('❌ Firebase initialization failed:', error);
+        firebaseReady = false;
+        
+        // Update app state
+        if (typeof appState !== 'undefined') {
+            appState.setConnectionStatus(false);
+            appState.authInitialized = false;
+        }
+        
+        throw error;
+    }
+}
 
             // Setup auth state observer AFTER trying to get redirect result
             setupAuthStateObserver(onAuthStateChanged);

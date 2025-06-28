@@ -1661,13 +1661,13 @@
     <!-- Main App -->
     <div id="main-app" class="hidden">
         <nav class="nav-tabs" role="navigation" aria-label="Hoofdnavigatie">
-            <button class="tab-btn active" data-tab="dashboard" aria-selected="true">Dashboard</button>
-            <button class="tab-btn" data-tab="crisis" aria-selected="false">Crisis</button>
-            <button class="tab-btn" data-tab="buteyko" aria-selected="false">Buteyko</button>
-            <button class="tab-btn" data-tab="ritueel" aria-selected="false">Maag-Ademhaling</button>
-            <button class="tab-btn" data-tab="gapen" aria-selected="false">Gapen</button>
-            <button class="tab-btn" data-tab="emdr" aria-selected="false">EMDR</button>
-            <button class="tab-btn" data-tab="dagboek" aria-selected="false">Dagboek</button>
+            <button class="tab-btn active" data-tab="dashboard" aria-selected="true">🏠 Dashboard</button>
+            <button class="tab-btn" data-tab="crisis" aria-selected="false">🚨 Crisis</button>
+            <button class="tab-btn" data-tab="buteyko" aria-selected="false">🌬️ Buteyko</button>
+            <button class="tab-btn" data-tab="ritueel" aria-selected="false">🍃 Maag-Ademhaling</button>
+            <button class="tab-btn" data-tab="gapen" aria-selected="false">🥱 Gapen</button>
+            <button class="tab-btn" data-tab="emdr" aria-selected="false">💜 EMDR</button>
+            <button class="tab-btn" data-tab="dagboek" aria-selected="false">📖 Dagboek</button>
         </nav>
 
         <main id="main-content" class="container">
@@ -1687,7 +1687,7 @@
 
                 <div class="grid">
                     <div class="card">
-                        <h3>Crisis Hulp</h3>
+                        <h3>🚨 Crisis Hulp</h3>
                         <p>Voor wanneer je luchthonger voelt opkomen</p>
                         <button class="btn btn-red" onclick="showTab('crisis')">Open Crisis Hulp</button>
                     </div>
@@ -1750,7 +1750,7 @@
             <!-- Crisis Tab -->
             <div id="crisis" class="tab-content hidden" role="tabpanel" aria-labelledby="crisis-tab">
                 <div class="card">
-                    <h2>Crisis Hulp - Luchthonger</h2>
+                    <h2>🚨 Crisis Hulp - Luchthonger</h2>
                     <p>Voor wanneer je dat benauwde gevoel voelt opkomen</p>
                 </div>
 
@@ -4722,15 +4722,46 @@
                     });
                 }
                 
-                // Ensure text inputs work properly
+                // Ensure text inputs work properly - more aggressive fix for spaces
                 const textInputs = modal.querySelectorAll('input[type="text"], textarea');
                 textInputs.forEach(input => {
-                    input.style.whiteSpace = 'normal';
+                    // Reset all CSS that might interfere with text input
+                    input.style.whiteSpace = 'pre-wrap';
                     input.style.wordSpacing = 'normal';
-                    // Ensure input events work
-                    input.addEventListener('input', function(e) {
+                    input.style.letterSpacing = 'normal';
+                    input.style.textTransform = 'none';
+                    
+                    // Remove all existing event listeners by cloning
+                    const newInput = input.cloneNode(true);
+                    input.parentNode.replaceChild(newInput, input);
+                    
+                    // Add fresh event handlers that explicitly allow spaces
+                    newInput.addEventListener('keydown', function(e) {
+                        // Explicitly allow space key
+                        if (e.code === 'Space' || e.keyCode === 32) {
+                            e.stopPropagation();
+                            return true;
+                        }
+                    });
+                    
+                    newInput.addEventListener('keypress', function(e) {
+                        // Explicitly allow space character
+                        if (e.code === 'Space' || e.keyCode === 32 || e.char === ' ') {
+                            e.stopPropagation();
+                            return true;
+                        }
+                    });
+                    
+                    newInput.addEventListener('input', function(e) {
                         // Allow all input including spaces
                         e.stopPropagation();
+                        // Force the value to stay as entered
+                        const cursorPos = this.selectionStart;
+                        const val = this.value;
+                        setTimeout(() => {
+                            this.value = val;
+                            this.setSelectionRange(cursorPos, cursorPos);
+                        }, 0);
                     });
                 });
                 

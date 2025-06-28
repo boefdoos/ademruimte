@@ -2575,13 +2575,58 @@
 
     // Firebase configuration
     const firebaseConfig = {
-        apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
-        authDomain: "ademruimte.vercel.app", 
-        projectId: "ademruimte-12c09",
-        storageBucket: "ademruimte-12c09.firebasestorage.app",
-        messagingSenderId: "744941871331",
-        appId: "1:744941871331:web:c3ce24d814fe41314d25d6",
-        measurementId: "G-SD2ZEYNMNY"
+// Vervang de firebaseConfig met:
+const firebaseConfig = {
+    apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
+    authDomain: "ademruimte-12c09.firebaseapp.com", 
+    projectId: "ademruimte-12c09",
+    storageBucket: "ademruimte-12c09.firebasestorage.app",
+    messagingSenderId: "744941871331",
+    appId: "1:744941871331:web:c3ce24d814fe41314d25d6",
+    measurementId: "G-SD2ZEYNMNY"
+};
+
+// Voeg deze functie toe voor dynamische auth domain:
+function getAuthDomain() {
+    const hostname = window.location.hostname;
+    
+    // Voor productie
+    if (hostname === 'ademruimte-12c09.firebaseapp.com') {
+        return 'ademruimte-12c09.firebaseapp.com';
+    }
+    
+    // Voor ontwikkeling - gebruik altijd de Firebase authDomain
+    return 'ademruimte-12c09.firebaseapp.com';
+}
+
+// Update Firebase initialization:
+async function initializeFirebase() {
+    if (appState.authInitialized) {
+        log('INFO', 'Firebase already initialized.');
+        return true;
+    }
+
+    try {
+        log('INFO', 'Initializing Firebase...');
+        
+        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
+        const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+        const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+
+        // Initialize Firebase with dynamic auth domain
+        const config = {
+            ...firebaseConfig,
+            authDomain: getAuthDomain()
+        };
+        
+        app = initializeApp(config);
+        db = getFirestore(app);
+        auth = getAuth(app);
+
+        // Set authentication persistence
+        await setPersistence(auth, browserLocalPersistence);
+        
+        // Continue with rest of initialization...
     };
 
     // Enhanced Maag-Ademhaling Reset step data

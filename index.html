@@ -1,8 +1,5 @@
 <!DOCTYPE html>
 <html lang="nl">
-    let app, db, auth;
-    let firebaseReady = false;
-    let firebaseInitPromise = null;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -2671,84 +2668,39 @@
     ];
 
     // Firebase initialization
-   async function initializeFirebaseInternal() {
-    try {
-        console.log('📦 Importing Firebase modules...');
-        
-        // Import modules (exact zoals in werkende test)
-        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
-        const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
-        const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+    async function initializeFirebase() {
+        if (appState.authInitialized) {
+            log('INFO', 'Firebase already initialized.');
+            return true;
+        }
 
-        console.log('✅ Firebase modules imported');
+        try {
+            log('INFO', 'Initializing Firebase...');
+            
+            // Firebase v9+ modular imports
+            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
+            const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+            const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithRedirect, getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
 
-        // Initialize Firebase app
-        if (!app) {
+            // Initialize Firebase
             app = initializeApp(firebaseConfig);
-            console.log('✅ Firebase app initialized');
-        }
-
-        // Initialize Firestore
-        if (!db) {
             db = getFirestore(app);
-            console.log('✅ Firestore initialized');
-        }
-
-        // Initialize Auth
-        if (!auth) {
             auth = getAuth(app);
-            console.log('✅ Firebase Auth initialized');
 
-            // Set persistence
+            // Set authentication persistence
             await setPersistence(auth, browserLocalPersistence);
-            console.log('✅ Auth persistence set');
 
-            // Setup auth state observer (exact zoals in test)
-            onAuthStateChanged(auth, (user) => {
-                console.log('🔧 Auth state changed:', user ? user.email : 'No user');
-                
-                // Update appState if available
-                if (typeof appState !== 'undefined' && appState.setUser) {
-                    appState.setUser(user);
+            // Handle redirect result ON PAGE LOAD for Google Auth
+            try {
+                const result = await getRedirectResult(auth);
+                if (result) {
+                    log('SUCCESS', 'Google sign-in successful via redirect result:', result.user.email);
+                    return true;
                 }
-
-                if (user) {
-                    console.log('✅ User authenticated:', user.email);
-                    if (typeof showMainApp === 'function') showMainApp();
-                } else {
-                    console.log('ℹ️ No user authenticated');
-                    if (typeof showLoginScreen === 'function') showLoginScreen();
-                }
-            });
-
-            console.log('✅ Auth state observer setup');
-        }
-
-        // Mark as ready
-        firebaseReady = true;
-        
-        // Update app state
-        if (typeof appState !== 'undefined') {
-            appState.setConnectionStatus(true);
-            appState.authInitialized = true;
-        }
-
-        console.log('🎉 Firebase initialization complete and ready!');
-        return auth;
-
-    } catch (error) {
-        console.error('❌ Firebase initialization failed:', error);
-        firebaseReady = false;
-        
-        // Update app state
-        if (typeof appState !== 'undefined') {
-            appState.setConnectionStatus(false);
-            appState.authInitialized = false;
-        }
-        
-        throw error;
-    }
-}
+            } catch (redirectError) {
+                log('ERROR', 'Error getting redirect result:', redirectError);
+                showUserMessage(`Fout bij Google login: ${redirectError.message}`, 'error');
+            }
 
             // Setup auth state observer AFTER trying to get redirect result
             setupAuthStateObserver(onAuthStateChanged);
@@ -2843,58 +2795,61 @@
         log('INFO', 'Switched to main app');
     }
 
+    // Enhanced authentication functions
     window.signInWithGoogle = async function() {
-    console.log('🎯 VERCEL: Starting popup-only Google auth...');
-    
-    const btn = document.getElementById('google-login-btn');
-    const btnText = btn.querySelector('#google-btn-text');
-    const originalText = btnText.textContent;
-    
-    try {
-        btnText.textContent = 'Popup wordt geopend...';
-        btn.disabled = true;
+        const googleBtn = document.getElementById('google-login-btn');
+        const originalBtnText = googleBtn.querySelector('#google-btn-text').textContent;
+        googleBtn.querySelector('#google-btn-text').textContent = 'Bezig...';
+        googleBtn.disabled = true;
         
-        // Import alleen popup auth - GEEN redirect
-        const { GoogleAuthProvider, signInWithPopup } = await import(
-            "https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js"
-        );
-        
-        if (!window.auth) {
-            throw new Error('Firebase Auth niet geïnitialiseerd');
+        if (!appState.authInitialized || !auth) {
+            const initialized = await initializeFirebase();
+            if (!initialized) {
+                showUserMessage('Firebase is niet beschikbaar. Probeer email/wachtwoord login.', 'warning');
+                googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
+                googleBtn.disabled = false;
+                return;
+            }
         }
-        
-        const provider = new GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
-        
-        console.log('🔄 VERCEL: Attempting signInWithPopup...');
-        const result = await signInWithPopup(window.auth, provider);
-        
-        console.log('✅ VERCEL: Popup auth successful!', result.user.email);
-        showUserMessage('✅ Ingelogd!', 'success');
-        
-    } catch (error) {
-        console.error('❌ VERCEL: Popup auth failed:', error);
-        
-        if (error.code === 'auth/popup-blocked') {
-            showUserMessage(`
-🚫 Popup geblokkeerd!
 
-Oplossing:
-1. Klik op popup-icoon in adresbalk
-2. Kies "Popups toestaan voor ademruimte.vercel.app"  
-3. Probeer opnieuw
-
-Of gebruik email/wachtwoord login.
-            `, 'error');
-        } else {
-            showUserMessage(`Login fout: ${error.message}`, 'error');
+        try {
+            log('INFO', 'Starting Google sign-in with redirect...');
+            
+            const { GoogleAuthProvider, signInWithRedirect } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            
+            const provider = new GoogleAuthProvider();
+            provider.setCustomParameters({ 
+                prompt: 'select_account'
+            });
+            
+            await signInWithRedirect(auth, provider);
+            
+        } catch (error) {
+            log('ERROR', 'Google sign-in failed:', error);
+            
+            let message = 'Google inloggen mislukt';
+            if (error.code === 'auth/popup-blocked') {
+                message = 'Login werd geblokkeerd. Controleer popup instellingen of gebruik email/wachtwoord.';
+            } else if (error.code === 'auth/network-request-failed') {
+                message = 'Netwerkfout. Controleer je internetverbinding en probeer opnieuw.';
+            } else if (error.code === 'auth/cancelled-popup-request') {
+                log('INFO', 'Google sign-in cancelled by user');
+                message = 'Google inloggen geannuleerd.';
+                showUserMessage(message, 'info');
+                googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
+                googleBtn.disabled = false;
+                return; 
+            } else if (error.code === 'auth/too-many-requests') {
+                message = 'Te veel inlogpogingen. Probeer het later opnieuw.';
+            }
+            
+            showUserMessage(message, 'error');
+            
+        } finally {
+            googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
+            googleBtn.disabled = false;
         }
-        
-    } finally {
-        btnText.textContent = originalText;
-        btn.disabled = false;
-    }
-};
+    };
 
     window.performLogout = async function() {
         if (!confirm('Weet je zeker dat je wilt uitloggen?')) {
@@ -5249,73 +5204,31 @@ Of gebruik email/wachtwoord login.
             log('WARNING', 'Chart responsiveness setup failed:', error);
         }
         
-    // Update Firebase initialization om redirect result check over te slaan op Vercel:
-async function initializeFirebase() {
-    if (appState.authInitialized) {
-        log('INFO', 'Firebase already initialized.');
-        return true;
-    }
-
-    try {
-        log('INFO', 'Initializing Firebase for Vercel hosting...');
-        
-        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
-        const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
-        const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
-
-        // Initialize Firebase
-        app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
-
-        // Set authentication persistence
-        await setPersistence(auth, browserLocalPersistence);
-
-        // Skip redirect result check for Vercel hosting
-        // (alleen doen voor Firebase Hosting)
-        const isVercelHosting = window.location.hostname.includes('vercel.app');
-        
-        if (!isVercelHosting) {
-            try {
-                const { getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
-                const result = await getRedirectResult(auth);
-                if (result) {
-                    log('SUCCESS', 'Google sign-in successful via redirect:', result.user.email);
-                    return true;
-                }
-            } catch (redirectError) {
-                log('WARNING', 'Redirect result error (ignored for Vercel):', redirectError);
+        // Initialize Firebase - this is the only truly critical part
+        try {
+            log('INFO', 'Attempting Firebase initialization...');
+            const success = await initializeFirebase();
+            
+            if (!success) {
+                log('WARNING', 'Firebase initialization failed during DOMContentLoaded. Showing login screen.');
+                showLoginScreen();
             }
-        } else {
-            log('INFO', 'Vercel hosting detected - skipping redirect result check');
+            
+            log('SUCCESS', 'App initialization completed successfully');
+            
+        } catch (error) {
+            log('ERROR', 'Firebase initialization failed:', error);
+            
+            // Hide loading spinner
+            const authLoading = document.getElementById('auth-loading');
+            if (authLoading) {
+                authLoading.style.display = 'none';
+            }
+            
+            // Only show critical error for Firebase failures
+            showUserMessage('Verbinding met de server mislukt. Controleer je internetverbinding en herlaad de pagina.', 'error');
+            showLoginScreen();
         }
-
-        // Setup auth state observer
-        setupAuthStateObserver(onAuthStateChanged);
-
-        appState.setConnectionStatus(true);
-        appState.authInitialized = true;
-        
-        log('SUCCESS', 'Firebase initialized successfully for Vercel hosting');
-        return true;
-
-    } catch (error) {
-        log('ERROR', 'Firebase initialization failed:', error);
-        appState.setConnectionStatus(false);
-        appState.authInitialized = false;
-        
-        if (error.message.includes('network')) {
-            showUserMessage('Geen internetverbinding. Controleer je netwerk en herlaad de pagina.', 'error');
-        } else if (error.message.includes('API key')) {
-            showUserMessage('Firebase configuratie fout. Contacteer de beheerder.', 'error');
-        } else {
-            showUserMessage(`Firebase initialisatie mislukt: ${error.message}`, 'error');
-        }
-        
-        showLoginScreen();
-        return false;
-    }
-}
     });
 
     // Cleanup on page unload

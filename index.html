@@ -5037,39 +5037,94 @@
     document.addEventListener('DOMContentLoaded', async function() {
         log('INFO', 'Starting Ademruimte app initialization');
         
-        try {
-            // Initial UI setup before Firebase is ready
-            appState.updateConnectionDisplay();
-            appState.updateUI();
+        // Initial UI setup before Firebase is ready
+        appState.updateConnectionDisplay();
+        appState.updateUI();
 
-            // Initialize general components
+        // Initialize general components with individual error handling
+        try {
             setupForms();
+            log('SUCCESS', 'Forms initialized');
+        } catch (error) {
+            log('WARNING', 'Forms setup failed:', error);
+        }
+
+        try {
             setupNetworkMonitoring();
+            log('SUCCESS', 'Network monitoring initialized');
+        } catch (error) {
+            log('WARNING', 'Network monitoring setup failed:', error);
+        }
+
+        try {
             setupKeyboardNavigation();
+            log('SUCCESS', 'Keyboard navigation initialized');
+        } catch (error) {
+            log('WARNING', 'Keyboard navigation setup failed:', error);
+        }
+
+        try {
             setupRangeSliders();
+            log('SUCCESS', 'Range sliders initialized');
+        } catch (error) {
+            log('WARNING', 'Range sliders setup failed:', error);
+        }
+
+        try {
             setupMobileFocusHandling();
+            log('SUCCESS', 'Mobile focus handling initialized');
+        } catch (error) {
+            log('WARNING', 'Mobile focus handling setup failed:', error);
+        }
+
+        try {
             setRandomTip();
-            
-            // Load progress data (from localStorage or default)
+            log('SUCCESS', 'Random tip set');
+        } catch (error) {
+            log('WARNING', 'Random tip setup failed:', error);
+        }
+        
+        // Load progress data (from localStorage or default)
+        try {
             loadProgressData();
-            
-            // Initialize tab displays
+            log('SUCCESS', 'Progress data loaded');
+        } catch (error) {
+            log('WARNING', 'Progress data loading failed:', error);
+        }
+        
+        // Initialize tab displays
+        try {
             updateBreathDisplay();
             updateRitualDisplay();
             updateEmdrDisplay();
-            
-            // Setup tab navigation
+            log('SUCCESS', 'Tab displays initialized');
+        } catch (error) {
+            log('WARNING', 'Tab displays setup failed:', error);
+        }
+        
+        // Setup tab navigation
+        try {
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const tab = btn.getAttribute('data-tab');
                     showTab(tab);
                 });
             });
-            
-            // Setup all event listeners
+            log('SUCCESS', 'Tab navigation initialized');
+        } catch (error) {
+            log('WARNING', 'Tab navigation setup failed:', error);
+        }
+        
+        // Setup all event listeners
+        try {
             setupEventListeners();
+            log('SUCCESS', 'Event listeners initialized');
+        } catch (error) {
+            log('WARNING', 'Event listeners setup failed:', error);
+        }
 
-            // Chart responsiveness - redraw on window resize
+        // Chart responsiveness - redraw on window resize
+        try {
             window.addEventListener('resize', () => {
                 if (progressChart && appState.currentTab === 'dagboek') {
                     setTimeout(() => {
@@ -5077,8 +5132,13 @@
                     }, 100);
                 }
             });
-            
-            // Initialize Firebase
+            log('SUCCESS', 'Chart responsiveness initialized');
+        } catch (error) {
+            log('WARNING', 'Chart responsiveness setup failed:', error);
+        }
+        
+        // Initialize Firebase - this is the only truly critical part
+        try {
             log('INFO', 'Attempting Firebase initialization...');
             const success = await initializeFirebase();
             
@@ -5087,18 +5147,19 @@
                 showLoginScreen();
             }
             
-            log('SUCCESS', 'App initialization completed');
+            log('SUCCESS', 'App initialization completed successfully');
             
         } catch (error) {
-            log('ERROR', 'App initialization failed at a critical stage', error);
+            log('ERROR', 'Firebase initialization failed:', error);
             
-            // Hide loading spinner in case of critical failure
+            // Hide loading spinner
             const authLoading = document.getElementById('auth-loading');
             if (authLoading) {
                 authLoading.style.display = 'none';
             }
             
-            showUserMessage('Er is een kritieke fout opgetreden bij het laden van de app. Herlaad de pagina om het opnieuw te proberen.', 'error');
+            // Only show critical error for Firebase failures
+            showUserMessage('Verbinding met de server mislukt. Controleer je internetverbinding en herlaad de pagina.', 'error');
             showLoginScreen();
         }
     });

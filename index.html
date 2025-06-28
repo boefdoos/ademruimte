@@ -4704,10 +4704,36 @@
         
         document.getElementById('dagboek-modal').classList.add('show');
         
+        // Re-attach event listeners to ensure they work
         setTimeout(() => {
             const modal = document.getElementById('dagboek-modal');
             if (modal) {
                 modal.scrollTop = 0;
+                
+                // Ensure save button event listener is attached
+                const saveBtn = document.getElementById('save-dagboek-entry-btn');
+                if (saveBtn) {
+                    // Remove any existing listeners and add fresh one
+                    saveBtn.replaceWith(saveBtn.cloneNode(true));
+                    const newSaveBtn = document.getElementById('save-dagboek-entry-btn');
+                    newSaveBtn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        saveDagboekEntry();
+                    });
+                }
+                
+                // Ensure text inputs work properly
+                const textInputs = modal.querySelectorAll('input[type="text"], textarea');
+                textInputs.forEach(input => {
+                    input.style.whiteSpace = 'normal';
+                    input.style.wordSpacing = 'normal';
+                    // Ensure input events work
+                    input.addEventListener('input', function(e) {
+                        // Allow all input including spaces
+                        e.stopPropagation();
+                    });
+                });
+                
                 const firstInput = modal.querySelector('input[type="text"], textarea');
                 if (firstInput) {
                     firstInput.focus();

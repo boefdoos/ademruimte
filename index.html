@@ -2573,17 +2573,6 @@
         crisis: { sessions: 0, lastSession: null }
     };
 
-    // Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
-        authDomain: "ademruimte.vercel.app", 
-        projectId: "ademruimte-12c09",
-        storageBucket: "ademruimte-12c09.firebasestorage.app",
-        messagingSenderId: "744941871331",
-        appId: "1:744941871331:web:c3ce24d814fe41314d25d6",
-        measurementId: "G-SD2ZEYNMNY"
-    };
-
     // Enhanced Maag-Ademhaling Reset step data
     const ritualSteps = [
         {
@@ -2667,95 +2656,299 @@
         }
     ];
 
-    // Firebase initialization
-    async function initializeFirebase() {
-        if (appState.authInitialized) {
-            log('INFO', 'Firebase already initialized.');
-            return true;
+    //// VERVANG JE FIREBASE SECTION IN DE HOOFDAPP MET DEZE WERKENDE VERSIE:
+
+// =============================================================================
+// FIREBASE INITIALIZATION - WERKENDE VERSIE GEBASEERD OP SUCCESVOLLE TEST
+// =============================================================================
+
+// Global Firebase variables (zorg dat deze BOVEN alle andere code staan)
+let app, db, auth;
+let firebaseReady = false;
+let firebaseInitPromise = null;
+
+// Firebase configuration (bestaande config)
+const firebaseConfig = {
+    apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
+    authDomain: "ademruimte-12c09.firebaseapp.com", 
+    projectId: "ademruimte-12c09",
+    storageBucket: "ademruimte-12c09.firebasestorage.app",
+    messagingSenderId: "744941871331",
+    appId: "1:744941871331:web:c3ce24d814fe41314d25d6",
+    measurementId: "G-SD2ZEYNMNY"
+};
+
+// GARANTEER Firebase beschikbaarheid - gebaseerd op werkende test
+async function ensureFirebaseReady() {
+    // Als Firebase al ready is, return het direct
+    if (firebaseReady && auth) {
+        console.log('✅ Firebase already ready');
+        return auth;
+    }
+    
+    // Als er al een initialisatie bezig is, wacht daarop
+    if (firebaseInitPromise) {
+        console.log('⏳ Firebase initialization in progress, waiting...');
+        return await firebaseInitPromise;
+    }
+    
+    // Start nieuwe initialisatie
+    console.log('🚀 Starting Firebase initialization...');
+    firebaseInitPromise = initializeFirebaseInternal();
+    
+    try {
+        const result = await firebaseInitPromise;
+        firebaseInitPromise = null; // Reset promise
+        return result;
+    } catch (error) {
+        firebaseInitPromise = null; // Reset promise on error
+        throw error;
+    }
+}
+
+// Interne Firebase initialisatie (gebaseerd op succesvolle test)
+async function initializeFirebaseInternal() {
+    try {
+        console.log('📦 Importing Firebase modules...');
+        
+        // Import modules (exact zoals in werkende test)
+        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
+        const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+        const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+
+        console.log('✅ Firebase modules imported');
+
+        // Initialize Firebase app
+        if (!app) {
+            app = initializeApp(firebaseConfig);
+            console.log('✅ Firebase app initialized');
         }
 
-        try {
-            log('INFO', 'Initializing Firebase...');
-            
-            // Firebase v9+ modular imports
-            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
-            const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
-            const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithRedirect, getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
-
-            // Initialize Firebase
-            app = initializeApp(firebaseConfig);
+        // Initialize Firestore
+        if (!db) {
             db = getFirestore(app);
+            console.log('✅ Firestore initialized');
+        }
+
+        // Initialize Auth
+        if (!auth) {
             auth = getAuth(app);
+            console.log('✅ Firebase Auth initialized');
 
-            // Set authentication persistence
+            // Set persistence
             await setPersistence(auth, browserLocalPersistence);
+            console.log('✅ Auth persistence set');
 
-            // Handle redirect result ON PAGE LOAD for Google Auth
-            try {
-                const result = await getRedirectResult(auth);
-                if (result) {
-                    log('SUCCESS', 'Google sign-in successful via redirect result:', result.user.email);
-                    return true;
+            // Setup auth state observer (exact zoals in test)
+            onAuthStateChanged(auth, (user) => {
+                console.log('🔧 Auth state changed:', user ? user.email : 'No user');
+                
+                // Update appState if available
+                if (typeof appState !== 'undefined' && appState.setUser) {
+                    appState.setUser(user);
                 }
-            } catch (redirectError) {
-                log('ERROR', 'Error getting redirect result:', redirectError);
-                showUserMessage(`Fout bij Google login: ${redirectError.message}`, 'error');
-            }
 
-            // Setup auth state observer AFTER trying to get redirect result
-            setupAuthStateObserver(onAuthStateChanged);
+                if (user) {
+                    console.log('✅ User authenticated:', user.email);
+                    if (typeof showMainApp === 'function') showMainApp();
+                } else {
+                    console.log('ℹ️ No user authenticated');
+                    if (typeof showLoginScreen === 'function') showLoginScreen();
+                }
+            });
 
+            console.log('✅ Auth state observer setup');
+        }
+
+        // Mark as ready
+        firebaseReady = true;
+        
+        // Update app state
+        if (typeof appState !== 'undefined') {
             appState.setConnectionStatus(true);
             appState.authInitialized = true;
-            
-            log('SUCCESS', 'Firebase initialized successfully');
-            return true;
+        }
 
-        } catch (error) {
-            log('ERROR', 'Firebase initialization failed:', error);
+        console.log('🎉 Firebase initialization complete and ready!');
+        return auth;
+
+    } catch (error) {
+        console.error('❌ Firebase initialization failed:', error);
+        firebaseReady = false;
+        
+        // Update app state
+        if (typeof appState !== 'undefined') {
             appState.setConnectionStatus(false);
             appState.authInitialized = false;
-            
-            showUserMessage('Firebase kon niet worden geïnitialiseerd. Controleer je internetverbinding.', 'error');
-            showLoginScreen();
-            
-            return false;
-        }
-    }
-
-    function setupAuthStateObserver(onAuthStateChanged) {
-        if (!auth) {
-            log('ERROR', 'Auth not initialized - cannot setup observer');
-            return;
         }
         
-        // Auth state observer
-        appState.authUnsubscribe = onAuthStateChanged(auth, (user) => {
-            appState.updateUI();
-            
-            if (user) {
-                log('SUCCESS', 'User authenticated:', user.email);
-                appState.setUser(user);
-                showMainApp();
-                
-                setTimeout(() => {
-                    loadDagboekEntries().catch(error => {
-                        log('WARNING', 'Could not load entries on login:', error);
-                    });
-                }, 500);
-            } else {
-                log('INFO', 'User not authenticated');
-                appState.setUser(null);
-                showLoginScreen();
-            }
-        }, (error) => {
-            log('ERROR', 'Auth state observer error:', error);
-            appState.updateUI();
-            showUserMessage('Authenticatie fout: ' + error.message, 'error');
-            showLoginScreen();
-        });
+        throw error;
     }
+}
 
+// VERVANG JE GOOGLE SIGN IN FUNCTIE MET DEZE WERKENDE VERSIE:
+window.signInWithGoogle = async function() {
+    console.log('🎯 Google Sign In: Starting (using proven working method)...');
+    
+    const googleBtn = document.getElementById('google-login-btn');
+    if (!googleBtn) {
+        console.error('❌ Google button not found');
+        return;
+    }
+    
+    const btnText = googleBtn.querySelector('#google-btn-text');
+    if (!btnText) {
+        console.error('❌ Button text element not found');
+        return;
+    }
+    
+    const originalText = btnText.textContent;
+    
+    try {
+        // Update button state
+        btnText.textContent = 'Firebase checken...';
+        googleBtn.disabled = true;
+        
+        // GARANTEER Firebase is ready (exact zoals succesvolle test)
+        console.log('🔧 Ensuring Firebase is ready...');
+        const authInstance = await ensureFirebaseReady();
+        
+        if (!authInstance) {
+            throw new Error('Firebase Auth kon niet geïnitialiseerd worden');
+        }
+        
+        console.log('✅ Firebase Auth confirmed ready');
+        btnText.textContent = 'Google popup openen...';
+        
+        // Import Google Auth (exact zoals werkende test)
+        console.log('📦 Importing Google Auth modules...');
+        const { GoogleAuthProvider, signInWithPopup } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+        console.log('✅ Google Auth modules imported');
+        
+        // Create provider (exact zoals test)
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+        console.log('✅ Google provider configured');
+        
+        // Attempt popup sign in (exact zoals werkende test)
+        btnText.textContent = 'Wachten op Google...';
+        console.log('🔄 Attempting signInWithPopup...');
+        
+        const result = await signInWithPopup(authInstance, provider);
+        
+        console.log('🎉 Google popup sign in successful!');
+        console.log('👤 User:', result.user.email);
+        
+        // Show success message
+        if (typeof showUserMessage === 'function') {
+            showUserMessage('✅ Succesvol ingelogd met Google!', 'success');
+        }
+        
+    } catch (error) {
+        console.error('❌ Google sign in failed:', error);
+        
+        let message = 'Google inloggen mislukt:\n\n';
+        
+        if (error.code === 'auth/popup-blocked') {
+            message += `🚫 Popup geblokkeerd door browser
+
+Oplossing:
+1. Klik op popup-icoon (🚫) in je adresbalk
+2. Kies "Popups toestaan voor ademruimte.vercel.app"
+3. Probeer opnieuw
+
+Of gebruik email/wachtwoord login.`;
+            
+        } else if (error.code === 'auth/popup-closed-by-user') {
+            message += '⏹️ Login popup werd gesloten. Probeer opnieuw.';
+            
+            // Don't show error for user cancellation
+            if (typeof showUserMessage === 'function') {
+                showUserMessage(message, 'info');
+            }
+            btnText.textContent = originalText;
+            googleBtn.disabled = false;
+            return;
+            
+        } else if (error.code === 'auth/unauthorized-domain') {
+            message += `🔒 Domain niet geautoriseerd
+
+Contacteer de beheerder - ademruimte.vercel.app moet toegevoegd worden aan Firebase settings.`;
+            
+        } else if (error.message.includes('Firebase Auth kon niet geïnitialiseerd worden')) {
+            message += `🔧 Firebase probleem
+
+Probeer:
+1. Pagina herladen
+2. Check internetverbinding  
+3. Email/wachtwoord login gebruiken`;
+            
+        } else {
+            message += `❌ Technische fout:
+${error.message}
+
+Probeer email/wachtwoord login als alternatief.`;
+        }
+        
+        if (typeof showUserMessage === 'function') {
+            showUserMessage(message, 'error');
+        }
+        
+    } finally {
+        btnText.textContent = originalText;
+        googleBtn.disabled = false;
+    }
+};
+
+// VERVANG JE INITIALIZEFIREBASE FUNCTIE MET DEZE:
+async function initializeFirebase() {
+    console.log('🔧 initializeFirebase called (delegating to ensureFirebaseReady)');
+    
+    try {
+        await ensureFirebaseReady();
+        console.log('✅ Firebase initialization completed successfully');
+        return true;
+        
+    } catch (error) {
+        console.error('❌ Firebase initialization failed in main init:', error);
+        
+        if (typeof showUserMessage === 'function') {
+            showUserMessage('Firebase kon niet worden geïnitialiseerd. Check internetverbinding en herlaad.', 'error');
+        }
+        
+        if (typeof showLoginScreen === 'function') {
+            showLoginScreen();
+        }
+        
+        return false;
+    }
+}
+
+// DEBUG FUNCTIE - om Firebase status te checken
+window.debugFirebaseStatus = function() {
+    console.log('🔍 FIREBASE DEBUG STATUS:');
+    console.log('🔥 App:', !!app);
+    console.log('🔐 Auth:', !!auth);
+    console.log('🗄️ DB:', !!db);
+    console.log('✅ Ready:', firebaseReady);
+    console.log('⏳ Promise active:', !!firebaseInitPromise);
+    console.log('👤 Current user:', auth?.currentUser?.email || 'None');
+    
+    return {
+        app: !!app,
+        auth: !!auth, 
+        db: !!db,
+        ready: firebaseReady,
+        user: auth?.currentUser?.email || null
+    };
+};
+
+console.log('🎯 Firebase system initialized with working test code!');
+
+// =============================================================================
+// EINDE FIREBASE SECTION
+// =============================================================================
+    
     // Enhanced screen management
     function showLoginScreen() {
         const loginScreen = document.getElementById('login-screen');

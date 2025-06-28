@@ -1727,10 +1727,12 @@
                     <strong>💡 Tip van de dag:</strong> 
                     <span id="daily-tip">Maagklachten en ademhalingsproblemen zijn vaak verbonden via de nervus vagus - behandel ze samen voor betere resultaten.</span>
                     <button id="tip-refresh-btn" 
+                            type="button"
                             style="background: none; border: none; color: #0891b2; cursor: pointer; margin-left: 0.5rem; font-weight: 600; padding: 0.25rem; border-radius: 0.25rem; transition: var(--transition-base);" 
                             onmouseover="this.style.background='rgba(8,145,178,0.1)'" 
                             onmouseout="this.style.background='none'" 
-                            aria-label="Nieuwe tip laden">🔄</button>
+                            aria-label="Nieuwe tip laden"
+                            title="Klik voor een nieuwe tip">🔄</button>
                 </div>
 
                 <!-- Account Settings -->
@@ -4394,8 +4396,8 @@
         const container = document.getElementById('eye-movement-display');
         const containerRect = container.getBoundingClientRect();
         
-        // Calculate position with margins
-        const margin = 20; // 20px margin from edges
+        // Calculate position with smaller margins for full width usage
+        const margin = 10; // Reduced from 20px to 10px
         const maxX = containerRect.width - margin * 2;
         const maxY = containerRect.height - margin * 2;
         
@@ -4410,8 +4412,8 @@
     function updateFullscreenEyePosition(position) {
         const fullscreenDot = document.getElementById('fullscreen-eye-dot');
         
-        // For fullscreen, use viewport dimensions with larger margins
-        const margin = 100; // Larger margin for fullscreen
+        // For fullscreen, use almost full viewport dimensions
+        const margin = 50; // Reduced from 100px to 50px
         const maxX = window.innerWidth - margin * 2;
         const maxY = window.innerHeight - margin * 2;
         
@@ -4430,23 +4432,23 @@
         switch (pattern) {
             case 'horizontal':
                 return {
-                    x: 50 + 40 * Math.sin(t), // Oscillate horizontally
+                    x: 50 + 45 * Math.sin(t), // Increased from 40 to 45 for more range
                     y: 50 // Stay in middle vertically
                 };
             case 'vertical':
                 return {
                     x: 50, // Stay in middle horizontally
-                    y: 50 + 40 * Math.sin(t) // Oscillate vertically
+                    y: 50 + 45 * Math.sin(t) // Increased from 40 to 45 for more range
                 };
             case 'diagonal':
                 return {
-                    x: 50 + 40 * Math.sin(t),
-                    y: 50 + 40 * Math.sin(t) // Same pattern for diagonal
+                    x: 50 + 45 * Math.sin(t), // Increased range
+                    y: 50 + 45 * Math.sin(t) // Increased range
                 };
             case 'figure8':
                 return {
-                    x: 50 + 30 * Math.sin(t),
-                    y: 50 + 20 * Math.sin(2 * t) // Different frequency for figure-8
+                    x: 50 + 35 * Math.sin(t), // Increased from 30 to 35
+                    y: 50 + 25 * Math.sin(2 * t) // Increased from 20 to 25
                 };
             default:
                 return { x: 50, y: 50 };
@@ -4986,7 +4988,13 @@
         // Tip refresh button
         const tipRefreshBtn = document.getElementById('tip-refresh-btn');
         if (tipRefreshBtn) {
-            tipRefreshBtn.addEventListener('click', getNewTip);
+            tipRefreshBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                getNewTip();
+            });
+            log('SUCCESS', 'Tip refresh button event listener attached');
+        } else {
+            log('WARNING', 'Tip refresh button not found');
         }
 
         // Modal close on background click

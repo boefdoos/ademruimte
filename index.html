@@ -2796,98 +2796,99 @@
     }
 
     // Enhanced authentication functions
-    window.signInWithGoogle = async function() {
-        const googleBtn = document.getElementById('google-login-btn');
-        const originalBtnText = googleBtn.querySelector('#google-btn-text').textContent;
-        googleBtn.querySelector('#google-btn-text').textContent = 'Bezig...';
-        googleBtn.disabled = true;
-        
-        if (!appState.authInitialized || !auth) {
-            const initialized = await initializeFirebase();
-            if (!initialized) {
-                showUserMessage('Firebase is niet beschikbaar. Probeer email/wachtwoord login.', 'warning');
-                googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
-                googleBtn.disabled = false;
-                return;
-            }
-        }
-
-        try {
-            log('INFO', 'Starting Google sign-in with redirect...');
-            
-            const { GoogleAuthProvider, signInWithRedirect } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
-            
-            const provider = new GoogleAuthProvider();
-            provider.setCustomParameters({ 
-                prompt: 'select_account'
-            });
-            
-            await signInWithRedirect(auth, provider);
-            
-        } catch (error) {
-            log('ERROR', 'Google sign-in failed:', error);
-            
-            let message = 'Google inloggen mislukt';
-            if (error.code === 'auth/popup-blocked') {
-                message = 'Login werd geblokkeerd. Controleer popup instellingen of gebruik email/wachtwoord.';
-            } else if (error.code === 'auth/network-request-failed') {
-                message = 'Netwerkfout. Controleer je internetverbinding en probeer opnieuw.';
-            } else if (error.code === 'auth/cancelled-popup-request') {
-                log('INFO', 'Google sign-in cancelled by user');
-                message = 'Google inloggen geannuleerd.';
-                showUserMessage(message, 'info');
-                googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
-                googleBtn.disabled = false;
-                return; 
-            } else if (error.code === 'auth/too-many-requests') {
-                message = 'Te veel inlogpogingen. Probeer het later opnieuw.';
-            }
-            
-            showUserMessage(message, 'error');
-            
-        } finally {
+window.signInWithGoogle = async function() {
+    const googleBtn = document.getElementById('google-login-btn');
+    const originalBtnText = googleBtn.querySelector('#google-btn-text').textContent;
+    googleBtn.querySelector('#google-btn-text').textContent = 'Bezig...';
+    googleBtn.disabled = true;
+    
+    if (!appState.authInitialized || !auth) {
+        const initialized = await initializeFirebase();
+        if (!initialized) {
+            showUserMessage('Firebase is niet beschikbaar. Probeer email/wachtwoord login.', 'warning');
             googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
             googleBtn.disabled = false;
-        }
-    };
-
-    window.performLogout = async function() {
-        if (!confirm('Weet je zeker dat je wilt uitloggen?')) {
             return;
         }
+    }
+
+    try {
+        log('INFO', 'Starting Google sign-in with popup (Vercel hosting)...');
         
-        try {
-            // Stop any running services immediately
-            if (isAudioPlaying) toggleBilateralAudio();
-            if (isEyeMovementActive) toggleEyeMovements();
-            if (isFullscreenMode) toggleFullscreenEMDR();
-            if (cpIsRunning) stopCPMeasurement();
-            if (wakeLock) releaseWakeLock();
-            if (audioWakeLock) releaseAudioWakeLock();
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
-            if (breathInterval) {
-                clearInterval(breathInterval);
-                breathInterval = null;
-            }
-            
-            if (auth && auth.currentUser) {
-                const { signOut } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
-                await signOut(auth);
-                log('SUCCESS', 'User logged out successfully');
-                showUserMessage('Je bent succesvol uitgelogd!', 'success');
-            } else {
-                log('INFO', 'No user logged in to log out.');
-                showUserMessage('Je bent al uitgelogd.', 'info');
-            }
-            
-        } catch (error) {
-            log('ERROR', 'Logout failed:', error);
-            showUserMessage('Uitloggen mislukt: ' + error.message, 'error');
+        // Debug info
+        console.log('Current origin:', window.location.origin);
+        console.log('Detected hosting: Vercel');
+        
+        const { GoogleAuthProvider, signInWithPopup } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+        
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ 
+            prompt: 'select_account'
+        });
+        
+        // Voor Vercel hosting: gebruik ALTIJD popup auth
+        log('INFO', 'Using popup auth for Vercel hosting');
+        const result = await signInWithPopup(auth, provider);
+        
+        log('SUCCESS', 'Google popup sign-in successful:', result.user.email);
+        showUserMessage('✅ Succesvol ingelogd met Google!', 'success');
+        
+    } catch (error) {
+        log('ERROR', 'Google sign-in failed:', error);
+        
+        let message = 'Google inloggen mislukt';
+        
+        // Specifieke error handling voor Vercel
+        if (error.code === 'auth/popup-blocked') {
+            message = `
+Popup werd geblokkeerd door je browser.
+
+Voor Vercel hosting heb je 2 opties:
+1. Sta popups toe voor ademruimte.vercel.app
+2. Gebruik email/wachtwoord login
+
+Hoe popups toestaan:
+• Chrome/Edge: Klik op popup icoon in adresbalk
+• Firefox: Klik op schild icoon in adresbalk  
+• Safari: Instellingen → Websites → Pop-upvensters
+            `;
+        } else if (error.code === 'auth/popup-closed-by-user') {
+            message = 'Login geannuleerd door gebruiker.';
+            showUserMessage(message, 'info');
+            googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
+            googleBtn.disabled = false;
+            return;
+        } else if (error.code === 'auth/unauthorized-domain') {
+            message = `
+Domein ademruimte.vercel.app is niet geautoriseerd.
+
+Je moet dit toevoegen aan:
+1. Firebase Console → Authentication → Settings → Authorized domains
+2. Google Cloud Console → OAuth Client ID → Authorized JavaScript origins
+
+Voeg toe: ademruimte.vercel.app
+            `;
+        } else if (error.code === 'auth/network-request-failed') {
+            message = 'Netwerkfout. Controleer je internetverbinding en probeer opnieuw.';
+        } else if (error.code === 'auth/too-many-requests') {
+            message = 'Te veel inlogpogingen. Probeer het later opnieuw.';
+        } else if (error.message.includes('redirect')) {
+            message = `
+Redirect auth werkt niet op Vercel hosting.
+
+Deze app gebruikt nu popup auth. Als dit niet werkt:
+1. Sta popups toe in je browser
+2. Of gebruik email/wachtwoord login
+            `;
         }
-    };
+        
+        showUserMessage(message, 'error');
+        
+    } finally {
+        googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
+        googleBtn.disabled = false;
+    }
+};
 
     // Enhanced tab management
     window.showTab = function(tabName) {
@@ -5204,50 +5205,72 @@
             log('WARNING', 'Chart responsiveness setup failed:', error);
         }
         
-        // Initialize Firebase - this is the only truly critical part
-        try {
-            log('INFO', 'Attempting Firebase initialization...');
-            const success = await initializeFirebase();
-            
-            if (!success) {
-                log('WARNING', 'Firebase initialization failed during DOMContentLoaded. Showing login screen.');
-                showLoginScreen();
-            }
-            
-            log('SUCCESS', 'App initialization completed successfully');
-            
-        } catch (error) {
-            log('ERROR', 'Firebase initialization failed:', error);
-            
-            // Hide loading spinner
-            const authLoading = document.getElementById('auth-loading');
-            if (authLoading) {
-                authLoading.style.display = 'none';
-            }
-            
-            // Only show critical error for Firebase failures
-            showUserMessage('Verbinding met de server mislukt. Controleer je internetverbinding en herlaad de pagina.', 'error');
-            showLoginScreen();
-        }
-    });
+ async function initializeFirebase() {
+    if (appState.authInitialized) {
+        log('INFO', 'Firebase already initialized.');
+        return true;
+    }
 
-    // Cleanup on page unload
-    window.addEventListener('beforeunload', () => {
-        if (isAudioPlaying) stopBilateralAudio();
-        if (isEyeMovementActive) stopEyeMovements();
-        if (isFullscreenMode) toggleFullscreenEMDR();
-        if (cpIsRunning) stopCPMeasurement();
-        if (wakeLock) releaseWakeLock();
-        if (audioWakeLock) releaseAudioWakeLock();
-        if (timerInterval) clearInterval(timerInterval);
-        if (breathInterval) clearInterval(breathInterval);
-        if (progressChart) progressChart.destroy();
+    try {
+        log('INFO', 'Initializing Firebase for Vercel hosting...');
         
-        // Clean up Firebase subscriptions
-        appState.cleanup();
+        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
+        const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+        const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+
+        // Initialize Firebase
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+
+        // Set authentication persistence
+        await setPersistence(auth, browserLocalPersistence);
+
+        // Skip redirect result check for Vercel hosting
+        // (alleen doen voor Firebase Hosting)
+        const isVercelHosting = window.location.hostname.includes('vercel.app');
         
-        log('INFO', 'App shutting down');
-    });
+        if (!isVercelHosting) {
+            try {
+                const { getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+                const result = await getRedirectResult(auth);
+                if (result) {
+                    log('SUCCESS', 'Google sign-in successful via redirect:', result.user.email);
+                    return true;
+                }
+            } catch (redirectError) {
+                log('WARNING', 'Redirect result error (ignored for Vercel):', redirectError);
+            }
+        } else {
+            log('INFO', 'Vercel hosting detected - skipping redirect result check');
+        }
+
+        // Setup auth state observer
+        setupAuthStateObserver(onAuthStateChanged);
+
+        appState.setConnectionStatus(true);
+        appState.authInitialized = true;
+        
+        log('SUCCESS', 'Firebase initialized successfully for Vercel hosting');
+        return true;
+
+    } catch (error) {
+        log('ERROR', 'Firebase initialization failed:', error);
+        appState.setConnectionStatus(false);
+        appState.authInitialized = false;
+        
+        if (error.message.includes('network')) {
+            showUserMessage('Geen internetverbinding. Controleer je netwerk en herlaad de pagina.', 'error');
+        } else if (error.message.includes('API key')) {
+            showUserMessage('Firebase configuratie fout. Contacteer de beheerder.', 'error');
+        } else {
+            showUserMessage(`Firebase initialisatie mislukt: ${error.message}`, 'error');
+        }
+        
+        showLoginScreen();
+        return false;
+    }
+}
 </script>
 
 </body>

@@ -1032,6 +1032,157 @@
         border: 1px solid #d1d5db;
     }
 
+    /* Fullscreen EMDR Eye Movement Styles */
+    .eye-movement-fullscreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(135deg, #1e1b4b, #0f172a);
+        z-index: 9999;
+        display: none;
+        overflow: hidden;
+    }
+
+    .eye-movement-fullscreen.show {
+        display: block;
+    }
+
+    .fullscreen-controls {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        display: flex;
+        gap: 10px;
+    }
+
+    .fullscreen-controls button {
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        font-size: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .fullscreen-controls button:hover {
+        background: rgba(255, 255, 255, 1);
+        transform: scale(1.1);
+    }
+
+    .fullscreen-eye-dot {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        background: radial-gradient(circle, #ff6b6b, #e74c3c);
+        border-radius: 50%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 8px 24px rgba(255, 107, 107, 0.5);
+        transition: all 0.1s ease-out;
+        display: none;
+    }
+
+    .fullscreen-eye-dot::after {
+        content: '';
+        width: 16px;
+        height: 16px;
+        background: white;
+        border-radius: 50%;
+        position: absolute;
+        top: 6px;
+        left: 12px;
+        opacity: 0.9;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .fullscreen-instructions {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.5rem;
+        font-weight: 300;
+        letter-spacing: 0.5px;
+    }
+
+    /* Buteyko CP (Control Pause) Styles */
+    .cp-measurement {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
+        border: 2px solid rgba(59, 130, 246, 0.2);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin: 1rem 0;
+        text-align: center;
+    }
+
+    .cp-timer {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #3b82f6;
+        margin: 1rem 0;
+        font-family: 'Courier New', monospace;
+        text-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+    }
+
+    .cp-instructions {
+        font-size: 0.9rem;
+        color: #4b5563;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+
+    .cp-result {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-top: 1rem;
+        display: none;
+    }
+
+    .cp-result.show {
+        display: block;
+    }
+
+    .cp-score {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #059669;
+        margin-bottom: 0.5rem;
+    }
+
+    .cp-interpretation {
+        font-size: 0.875rem;
+        color: #065f46;
+    }
+
+    /* CP Statistics in dagboek */
+    .cp-stats {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(16, 185, 129, 0.05));
+        border: 1px solid rgba(59, 130, 246, 0.1);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .cp-stats strong {
+        color: #3b82f6;
+    }
+
     /* Utility classes */
     .hidden {
         display: none !important;
@@ -1113,6 +1264,39 @@
         
         .breath-controls {
             grid-template-columns: 1fr 1fr;
+        }
+
+        /* CP Timer mobile */
+        .cp-timer {
+            font-size: 2rem;
+        }
+
+        /* Fullscreen controls mobile */
+        .fullscreen-controls {
+            top: 10px;
+            right: 10px;
+        }
+
+        .fullscreen-controls button {
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+        }
+
+        .fullscreen-eye-dot {
+            width: 30px;
+            height: 30px;
+        }
+
+        .fullscreen-eye-dot::after {
+            width: 12px;
+            height: 12px;
+            top: 4px;
+            left: 9px;
+        }
+
+        .fullscreen-instructions {
+            font-size: 1.2rem;
         }
     }
 
@@ -1617,6 +1801,37 @@
                     <strong>💡 Hoe het werkt:</strong> Buteyko ademhaling helpt je lichaam wennen aan hogere CO2 niveaus, wat hyperventilatie-episodes kan verminderen.
                 </div>
 
+                <!-- Control Pause Measurement -->
+                <div class="card">
+                    <h3>🎯 Controle Pauze (CP) Meting</h3>
+                    <div class="cp-measurement">
+                        <div class="cp-instructions">
+                            Zit rechtop en adem normaal. Na een normale uitademing, houd je adem in tot je de eerste neiging voelt om te ademen. Stop dan direct.
+                        </div>
+                        
+                        <div class="cp-timer" id="cp-timer">00:00</div>
+                        
+                        <div class="button-group">
+                            <button id="cp-start-btn" class="btn btn-cyan" onclick="startCPMeasurement()">
+                                ⏱️ Start CP Meting
+                            </button>
+                            <button id="cp-stop-btn" class="btn btn-red" onclick="stopCPMeasurement()" style="display: none;">
+                                ⏹️ Stop
+                            </button>
+                            <button class="btn btn-orange" onclick="resetCPMeasurement()">
+                                🔄 Reset
+                            </button>
+                        </div>
+                        
+                        <div class="cp-result" id="cp-result">
+                            <div class="cp-score" id="cp-score">20 seconden</div>
+                            <div class="cp-interpretation" id="cp-interpretation">
+                                Gemiddelde CO2 tolerantie. Doorgaan met oefenen kan dit verbeteren.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card">
                     <h3>Ademhalingsinstellingen</h3>
                     <div style="margin-bottom: 1rem;">
@@ -1711,6 +1926,12 @@
                     <div class="technique-card">
                         <h4>Comfortabele Pauze</h4>
                         <p>De adempauze na uitademing mag nooit geforceerd aanvoelen - stop als het oncomfortabel wordt.</p>
+                    </div>
+                    <div class="technique-card">
+                        <h4>Controle Pauze Interpretatie</h4>
+                        <p><strong>10-20 sec:</strong> Lage CO2 tolerantie, meer oefening nodig<br>
+                        <strong>20-40 sec:</strong> Gemiddelde tolerantie, goede basis voor verbetering<br>
+                        <strong>40+ sec:</strong> Goede CO2 tolerantie, houd dit niveau vast</p>
                     </div>
                 </div>
             </div>
@@ -1926,6 +2147,9 @@
                         <button id="eye-btn" class="btn btn-cyan" onclick="toggleEyeMovements()">
                             👁️ Start Oogbewegingen
                         </button>
+                        <button id="fullscreen-btn" class="btn btn-purple" onclick="toggleFullscreenEMDR()">
+                            🖥️ Volledig Scherm
+                        </button>
                     </div>
                 </div>
 
@@ -2015,6 +2239,14 @@
                     </div>
                 </div>
 
+                <!-- CP Statistics Section -->
+                <div class="card" id="cp-statistics" style="display: none;">
+                    <h3>🎯 Controle Pauze Statistieken</h3>
+                    <div id="cp-stats-content">
+                        <!-- CP statistics will be populated here -->
+                    </div>
+                </div>
+
                 <div id="dagboek-entries">
                     <!-- Entries worden hier geladen -->
                 </div>
@@ -2027,10 +2259,24 @@
                         <li>Verbanden tussen maagklachten en ademhalingsproblemen</li>
                         <li>Specifieke triggers (werk, stress, bepaalde gedachten)</li>
                         <li>Verbetering in intensiteit scores over tijd</li>
+                        <li>Verbetering in Controle Pauze metingen</li>
                     </ul>
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- Fullscreen EMDR Eye Movement Modal -->
+    <div id="fullscreen-emdr" class="eye-movement-fullscreen">
+        <div class="fullscreen-controls">
+            <button onclick="toggleFullscreenEMDR()" title="Sluit volledig scherm">
+                ✕
+            </button>
+        </div>
+        <div class="fullscreen-eye-dot" id="fullscreen-eye-dot"></div>
+        <div class="fullscreen-instructions" id="fullscreen-instructions">
+            Druk op start om de oogbewegingen in volledig scherm te beginnen
+        </div>
     </div>
 
     <!-- Dagboek Modal -->
@@ -2059,6 +2305,12 @@
                         <input type="range" min="1" max="10" value="5" class="range-input" id="entry-after">
                         <div class="range-value" id="entry-after-value">5</div>
                     </div>
+                </div>
+
+                <!-- CP Score field (only shown for Buteyko entries) -->
+                <div class="form-group" id="cp-score-group" style="display: none;">
+                    <label class="form-label" for="entry-cp-score">Controle Pauze Score (seconden):</label>
+                    <input type="number" id="entry-cp-score" class="form-input" placeholder="bijv. 25" min="1" max="300">
                 </div>
 
                 <div class="form-group">
@@ -2143,7 +2395,9 @@
                 "Zachte ademhaling is effectiever dan diepe ademhaling bij hyperventilatie.",
                 "De nervus vagus verbindt je maag met je ademhaling - activeer beide voor optimaal effect.",
                 "Het bijhouden van patronen in je dagboek helpt je triggers te identificeren.",
-                "Hyperventilatie kan maagzuurproductie verstoren via CO2-dysbalans."
+                "Hyperventilatie kan maagzuurproductie verstoren via CO2-dysbalans.",
+                "Een controle pauze van 40+ seconden duidt op goede CO2 tolerantie.",
+                "Regelmatige Buteyko oefening kan je controle pauze significant verbeteren."
             ];
             // Initialize auth-loading spinner to be visible initially
             const authLoading = document.getElementById('auth-loading');
@@ -2280,6 +2534,12 @@
     let breathingPattern = 'standard';
     let gentleBreathCount = 0;
 
+    // Control Pause (CP) variables
+    let cpInterval = null;
+    let cpStartTime = 0;
+    let cpCurrentTime = 0;
+    let cpIsRunning = false;
+
     // EMDR Audio variables - Enhanced for live updates
     let audioContext = null;
     let oscillator = null;
@@ -2296,6 +2556,7 @@
     let eyePosition = { x: 50, y: 50 };
     let eyeDirection = 1;
     let eyeStep = 0;
+    let isFullscreenMode = false;
 
     // Wake lock for keeping screen on
     let wakeLock = null;
@@ -2595,6 +2856,8 @@
             // Stop any running services immediately
             if (isAudioPlaying) toggleBilateralAudio();
             if (isEyeMovementActive) toggleEyeMovements();
+            if (isFullscreenMode) toggleFullscreenEMDR();
+            if (cpIsRunning) stopCPMeasurement();
             if (wakeLock) releaseWakeLock();
             if (audioWakeLock) releaseAudioWakeLock();
             if (timerInterval) {
@@ -2628,6 +2891,12 @@
         if (appState.currentTab === 'emdr' && tabName !== 'emdr') {
             if (isAudioPlaying) toggleBilateralAudio();
             if (isEyeMovementActive) toggleEyeMovements();
+            if (isFullscreenMode) toggleFullscreenEMDR();
+        }
+
+        // Stop CP measurement when leaving Buteyko tab
+        if (appState.currentTab === 'buteyko' && tabName !== 'buteyko') {
+            if (cpIsRunning) stopCPMeasurement();
         }
 
         // Hide all tabs
@@ -2710,6 +2979,109 @@
                 setTimeout(() => messageEl.remove(), 300);
             }
         }, delay);
+    }
+
+    // Control Pause (CP) Measurement Functions
+    window.startCPMeasurement = function() {
+        cpStartTime = Date.now();
+        cpCurrentTime = 0;
+        cpIsRunning = true;
+        
+        const startBtn = document.getElementById('cp-start-btn');
+        const stopBtn = document.getElementById('cp-stop-btn');
+        const result = document.getElementById('cp-result');
+        
+        startBtn.style.display = 'none';
+        stopBtn.style.display = 'inline-block';
+        result.classList.remove('show');
+        
+        cpInterval = setInterval(() => {
+            cpCurrentTime = Math.floor((Date.now() - cpStartTime) / 1000);
+            updateCPTimer();
+        }, 100);
+        
+        log('INFO', 'CP measurement started');
+    };
+
+    window.stopCPMeasurement = function() {
+        if (!cpIsRunning) return;
+        
+        const finalTime = Math.floor((Date.now() - cpStartTime) / 1000);
+        cpIsRunning = false;
+        
+        if (cpInterval) {
+            clearInterval(cpInterval);
+            cpInterval = null;
+        }
+        
+        const startBtn = document.getElementById('cp-start-btn');
+        const stopBtn = document.getElementById('cp-stop-btn');
+        const result = document.getElementById('cp-result');
+        
+        startBtn.style.display = 'inline-block';
+        stopBtn.style.display = 'none';
+        
+        displayCPResult(finalTime);
+        result.classList.add('show');
+        
+        // Store CP score for potential dagboek entry
+        window.lastCPScore = finalTime;
+        
+        log('SUCCESS', `CP measurement completed: ${finalTime} seconds`);
+    };
+
+    window.resetCPMeasurement = function() {
+        if (cpInterval) {
+            clearInterval(cpInterval);
+            cpInterval = null;
+        }
+        
+        cpIsRunning = false;
+        cpCurrentTime = 0;
+        cpStartTime = 0;
+        
+        const startBtn = document.getElementById('cp-start-btn');
+        const stopBtn = document.getElementById('cp-stop-btn');
+        const result = document.getElementById('cp-result');
+        const timer = document.getElementById('cp-timer');
+        
+        startBtn.style.display = 'inline-block';
+        stopBtn.style.display = 'none';
+        result.classList.remove('show');
+        timer.textContent = '00:00';
+        
+        window.lastCPScore = null;
+        
+        log('INFO', 'CP measurement reset');
+    };
+
+    function updateCPTimer() {
+        const timer = document.getElementById('cp-timer');
+        const minutes = Math.floor(cpCurrentTime / 60);
+        const seconds = cpCurrentTime % 60;
+        timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function displayCPResult(seconds) {
+        const scoreEl = document.getElementById('cp-score');
+        const interpretationEl = document.getElementById('cp-interpretation');
+        
+        scoreEl.textContent = `${seconds} seconden`;
+        
+        let interpretation;
+        if (seconds < 10) {
+            interpretation = 'Zeer lage CO2 tolerantie. Regelmatige Buteyko oefening wordt sterk aangeraden.';
+        } else if (seconds < 20) {
+            interpretation = 'Lage CO2 tolerantie. Meer oefening kan dit verbeteren.';
+        } else if (seconds < 40) {
+            interpretation = 'Gemiddelde CO2 tolerantie. Doorgaan met oefenen kan dit verbeteren.';
+        } else if (seconds < 60) {
+            interpretation = 'Goede CO2 tolerantie. Houd dit niveau vast met regelmatige oefening.';
+        } else {
+            interpretation = 'Uitstekende CO2 tolerantie! Dit is een zeer goede score.';
+        }
+        
+        interpretationEl.textContent = interpretation;
     }
 
     // Enhanced form handling
@@ -2876,11 +3248,6 @@
         }
     }
 
-    window.getNewTip = function() {
-        setRandomTip();
-        showUserMessage('Nieuwe tip geladen! 💡', 'success');
-    };
-
     // Firebase Firestore functions
     async function saveToFirestore(entry) {
         if (!appState.isFirebaseConnected) {
@@ -2970,8 +3337,14 @@
                 intensiteitNa: parseInt(document.getElementById('entry-after').value),
                 resultaat: document.getElementById('entry-result').value,
                 notities: document.getElementById('entry-notes').value,
-                clientTimestamp: new Date().toISOString() 
+                clientTimestamp: new Date().toISOString()
             };
+
+            // Add CP score if available
+            const cpScoreInput = document.getElementById('entry-cp-score');
+            if (cpScoreInput.value && !isNaN(parseInt(cpScoreInput.value))) {
+                entry.cpScore = parseInt(cpScoreInput.value);
+            }
 
             if (!entry.resultaat) {
                 showUserMessage('Selecteer een resultaat voor de dagboek entry.', 'warning');
@@ -3046,6 +3419,9 @@
             }
             document.getElementById('chart-empty').style.display = 'block';
             document.getElementById('chart-legend').style.display = 'none';
+            
+            // Hide CP statistics
+            document.getElementById('cp-statistics').style.display = 'none';
         }
     };
 
@@ -3053,6 +3429,7 @@
         const container = document.getElementById('dagboek-entries');
         
         createProgressChart(entries);
+        displayCPStatistics(entries);
         
         if (!entries || entries.length === 0) {
             container.innerHTML = 
@@ -3094,12 +3471,68 @@
                         '<span style="font-weight: 500; margin-left: 0.25rem; color: var(--text-dark);">' + entry.intensiteitNa + '/10</span>' +
                     '</div>' +
                 '</div>' +
+                (entry.cpScore ? '<div class="cp-stats"><strong>CP Score:</strong> ' + entry.cpScore + ' seconden</div>' : '') +
                 (entry.trigger ? '<p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--text-dark);"><strong>Trigger:</strong> ' + entry.trigger + '</p>' : '') +
                 (entry.notities ? '<p style="font-size: 0.85rem; color: var(--text-dark);"><strong>Notities:</strong> ' + entry.notities + '</p>' : '') +
             '</div>';
         }).join('');
         
         container.innerHTML = entriesHtml;
+    }
+
+    function displayCPStatistics(entries) {
+        const cpEntries = entries.filter(entry => entry.cpScore && entry.cpScore > 0);
+        const cpStatsContainer = document.getElementById('cp-statistics');
+        const cpStatsContent = document.getElementById('cp-stats-content');
+        
+        if (cpEntries.length === 0) {
+            cpStatsContainer.style.display = 'none';
+            return;
+        }
+        
+        cpStatsContainer.style.display = 'block';
+        
+        // Calculate statistics
+        const cpScores = cpEntries.map(entry => entry.cpScore);
+        const latestCP = cpScores[0];
+        const averageCP = Math.round(cpScores.reduce((sum, score) => sum + score, 0) / cpScores.length);
+        const bestCP = Math.max(...cpScores);
+        const improvement = cpScores.length > 1 ? latestCP - cpScores[cpScores.length - 1] : 0;
+        
+        // Trend calculation (last 5 measurements)
+        const recentScores = cpScores.slice(0, 5);
+        let trend = 'stabiel';
+        if (recentScores.length > 1) {
+            const firstHalf = recentScores.slice(0, Math.ceil(recentScores.length / 2));
+            const secondHalf = recentScores.slice(Math.ceil(recentScores.length / 2));
+            const firstAvg = firstHalf.reduce((sum, score) => sum + score, 0) / firstHalf.length;
+            const secondAvg = secondHalf.reduce((sum, score) => sum + score, 0) / secondHalf.length;
+            
+            if (firstAvg > secondAvg + 2) trend = 'stijgend 📈';
+            else if (secondAvg > firstAvg + 2) trend = 'dalend 📉';
+            else trend = 'stabiel ➡️';
+        }
+        
+        cpStatsContent.innerHTML = `
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                <div class="cp-stats">
+                    <strong>Laatste CP:</strong> ${latestCP} sec
+                </div>
+                <div class="cp-stats">
+                    <strong>Gemiddelde:</strong> ${averageCP} sec
+                </div>
+                <div class="cp-stats">
+                    <strong>Beste Score:</strong> ${bestCP} sec
+                </div>
+                <div class="cp-stats">
+                    <strong>Trend:</strong> ${trend}
+                </div>
+            </div>
+            <div class="cp-stats">
+                <strong>Totaal metingen:</strong> ${cpEntries.length} • 
+                <strong>Verbetering sinds start:</strong> ${improvement > 0 ? '+' : ''}${improvement} sec
+            </div>
+        `;
     }
 
     // Skip dagboek functions
@@ -3155,6 +3588,9 @@
                 exportText += 'Trigger: ' + (entry.trigger || 'Geen') + '\n';
                 exportText += 'Intensiteit vóór: ' + entry.intensiteitVoor + '/10\n';
                 exportText += 'Intensiteit ná: ' + entry.intensiteitNa + '/10\n';
+                if (entry.cpScore) {
+                    exportText += 'CP Score: ' + entry.cpScore + ' seconden\n';
+                }
                 exportText += 'Resultaat: ' + getResultaatText(entry.resultaat) + '\n';
                 exportText += 'Notities: ' + (entry.notities || 'Geen') + '\n';
                 exportText += '\n---\n\n';
@@ -3797,6 +4233,38 @@
         }
     };
 
+    // Fullscreen EMDR functionality
+    window.toggleFullscreenEMDR = function() {
+        const fullscreenModal = document.getElementById('fullscreen-emdr');
+        
+        if (isFullscreenMode) {
+            // Exit fullscreen
+            fullscreenModal.classList.remove('show');
+            isFullscreenMode = false;
+            
+            // Stop eye movements in fullscreen
+            stopFullscreenEyeMovements();
+            
+            log('INFO', 'Exited fullscreen EMDR mode');
+        } else {
+            // Enter fullscreen
+            fullscreenModal.classList.add('show');
+            isFullscreenMode = true;
+            
+            // Automatically start eye movements in fullscreen if regular eye movements were active
+            if (isEyeMovementActive) {
+                stopEyeMovements(); // Stop regular mode
+                startFullscreenEyeMovements(); // Start fullscreen mode
+            } else {
+                // Update instructions
+                document.getElementById('fullscreen-instructions').textContent = 
+                    'Start eerst de oogbewegingen in de normale weergave, dan schakel naar volledig scherm';
+            }
+            
+            log('INFO', 'Entered fullscreen EMDR mode');
+        }
+    };
+
     function startEyeMovements() {
         const eyeDot = document.getElementById('eye-dot');
         const eyeInstructions = document.getElementById('eye-instructions');
@@ -3832,6 +4300,7 @@
         
         eyeDot.style.display = 'none';
         eyeInstructions.style.display = 'block';
+        eyeInstructions.textContent = 'Klik op start om oogbewegingen te beginnen';
         eyeBtn.innerHTML = '👁️ Start Oogbewegingen';
         eyeBtn.className = 'btn btn-cyan';
         
@@ -3841,6 +4310,39 @@
         isEyeMovementActive = false;
         
         log('SUCCESS', 'Eye movements stopped');
+    }
+
+    function startFullscreenEyeMovements() {
+        const fullscreenDot = document.getElementById('fullscreen-eye-dot');
+        const fullscreenInstructions = document.getElementById('fullscreen-instructions');
+        
+        fullscreenDot.style.display = 'block';
+        fullscreenInstructions.style.display = 'none';
+        
+        isEyeMovementActive = true;
+        eyeStep = 0;
+        
+        updateFullscreenEyeMovementPattern();
+        
+        log('SUCCESS', 'Fullscreen eye movements started');
+    }
+
+    function stopFullscreenEyeMovements() {
+        const fullscreenDot = document.getElementById('fullscreen-eye-dot');
+        const fullscreenInstructions = document.getElementById('fullscreen-instructions');
+        
+        if (eyeMovementInterval) {
+            clearInterval(eyeMovementInterval);
+            eyeMovementInterval = null;
+        }
+        
+        fullscreenDot.style.display = 'none';
+        fullscreenInstructions.style.display = 'block';
+        fullscreenInstructions.textContent = 'Druk op start om de oogbewegingen in volledig scherm te beginnen';
+        
+        isEyeMovementActive = false;
+        
+        log('SUCCESS', 'Fullscreen eye movements stopped');
     }
 
     function updateEyeMovementPattern() {
@@ -3870,27 +4372,55 @@
             const progress = currentStep / steps;
             const position = calculateEyePosition(pattern, progress);
             
-            const eyeDot = document.getElementById('eye-dot');
-            const container = document.getElementById('eye-movement-display');
-            const containerRect = container.getBoundingClientRect();
-            
-            // Calculate position with margins
-            const margin = 20; // 20px margin from edges
-            const maxX = containerRect.width - margin * 2;
-            const maxY = containerRect.height - margin * 2;
-            
-            const x = margin + (position.x / 100) * maxX;
-            const y = margin + (position.y / 100) * maxY;
-            
-            eyeDot.style.left = x + 'px';
-            eyeDot.style.top = y + 'px';
-            eyeDot.style.transform = 'none'; // Override center transform
+            if (isFullscreenMode) {
+                updateFullscreenEyePosition(position);
+            } else {
+                updateRegularEyePosition(position);
+            }
             
             currentStep++;
             if (currentStep >= steps) {
                 currentStep = 0; // Loop the pattern
             }
         }, 50);
+    }
+
+    function updateFullscreenEyeMovementPattern() {
+        updateEyeMovementPattern(); // Use the same pattern logic
+    }
+
+    function updateRegularEyePosition(position) {
+        const eyeDot = document.getElementById('eye-dot');
+        const container = document.getElementById('eye-movement-display');
+        const containerRect = container.getBoundingClientRect();
+        
+        // Calculate position with margins
+        const margin = 20; // 20px margin from edges
+        const maxX = containerRect.width - margin * 2;
+        const maxY = containerRect.height - margin * 2;
+        
+        const x = margin + (position.x / 100) * maxX;
+        const y = margin + (position.y / 100) * maxY;
+        
+        eyeDot.style.left = x + 'px';
+        eyeDot.style.top = y + 'px';
+        eyeDot.style.transform = 'none'; // Override center transform
+    }
+
+    function updateFullscreenEyePosition(position) {
+        const fullscreenDot = document.getElementById('fullscreen-eye-dot');
+        
+        // For fullscreen, use viewport dimensions with larger margins
+        const margin = 100; // Larger margin for fullscreen
+        const maxX = window.innerWidth - margin * 2;
+        const maxY = window.innerHeight - margin * 2;
+        
+        const x = margin + (position.x / 100) * maxX;
+        const y = margin + (position.y / 100) * maxY;
+        
+        fullscreenDot.style.left = x + 'px';
+        fullscreenDot.style.top = y + 'px';
+        fullscreenDot.style.transform = 'none'; // Override center transform
     }
 
     function calculateEyePosition(pattern, progress) {
@@ -3988,6 +4518,9 @@
         if (isEyeMovementActive) {
             stopEyeMovements();
         }
+        if (isFullscreenMode) {
+            toggleFullscreenEMDR();
+        }
     }
 
     // Network status monitoring
@@ -4012,6 +4545,13 @@
     // Keyboard navigation enhancements
     function setupKeyboardNavigation() {
         document.addEventListener('keydown', (e) => {
+            // Handle fullscreen EMDR escape
+            if (e.key === 'Escape' && isFullscreenMode) {
+                e.preventDefault();
+                toggleFullscreenEMDR();
+                return;
+            }
+            
             if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
                 const activeTab = document.querySelector('.tab-btn.active');
                 if (activeTab && document.activeElement === activeTab) {
@@ -4036,6 +4576,17 @@
                 const modal = document.querySelector('.modal.show');
                 if (modal) {
                     modal.classList.remove('show');
+                }
+            }
+            
+            // CP measurement shortcuts
+            if (e.key === ' ' && appState.currentTab === 'buteyko') {
+                if (cpIsRunning) {
+                    e.preventDefault();
+                    stopCPMeasurement();
+                } else if (!cpIsRunning && document.getElementById('cp-start-btn').style.display !== 'none') {
+                    e.preventDefault();
+                    startCPMeasurement();
                 }
             }
         });
@@ -4124,6 +4675,19 @@
         
         document.getElementById('entry-trigger').value = triggerText;
         
+        // Show/hide CP score field based on technique
+        const cpScoreGroup = document.getElementById('cp-score-group');
+        if (technique && technique.includes('Buteyko')) {
+            cpScoreGroup.style.display = 'block';
+            // Pre-fill with last CP score if available
+            if (window.lastCPScore) {
+                document.getElementById('entry-cp-score').value = window.lastCPScore;
+            }
+        } else {
+            cpScoreGroup.style.display = 'none';
+            document.getElementById('entry-cp-score').value = '';
+        }
+        
         if (technique && (technique.includes('Voltooid') || technique.includes('Crisis Hulp'))) {
             document.getElementById('entry-before').value = '7';
             document.getElementById('entry-before-value').textContent = '7';
@@ -4165,9 +4729,13 @@
         document.getElementById('entry-after').value = '5';
         document.getElementById('entry-result').value = '';
         document.getElementById('entry-notes').value = '';
+        document.getElementById('entry-cp-score').value = '';
         
         document.getElementById('entry-before-value').textContent = '5';
         document.getElementById('entry-after-value').textContent = '5';
+        
+        // Hide CP score field
+        document.getElementById('cp-score-group').style.display = 'none';
         
         appState.currentTechnique = '';
     };
@@ -4294,11 +4862,17 @@
                                 afterBody: function(context) {
                                     const index = context[0].dataIndex;
                                     const entry = recentEntries[index];
-                                    return [
+                                    let result = [
                                         '',
                                         `Techniek: ${entry.techniekGebruikt}`,
                                         `Resultaat: ${getResultaatText(entry.resultaat)}`
                                     ];
+                                    
+                                    if (entry.cpScore) {
+                                        result.push(`CP Score: ${entry.cpScore} sec`);
+                                    }
+                                    
+                                    return result;
                                 }
                             }
                         }
@@ -4533,6 +5107,8 @@
     window.addEventListener('beforeunload', () => {
         if (isAudioPlaying) stopBilateralAudio();
         if (isEyeMovementActive) stopEyeMovements();
+        if (isFullscreenMode) toggleFullscreenEMDR();
+        if (cpIsRunning) stopCPMeasurement();
         if (wakeLock) releaseWakeLock();
         if (audioWakeLock) releaseAudioWakeLock();
         if (timerInterval) clearInterval(timerInterval);

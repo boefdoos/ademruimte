@@ -2215,9 +2215,17 @@
                     </div>
                 </div>
 
-                <!-- Vooruitgang Grafiek -->
+<!-- Vooruitgang Grafiek -->
                 <div class="card">
-                    <h3>📊 Je Vooruitgang</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <h3 style="margin: 0;">📊 Je Vooruitgang</h3>
+                        <div id="chart-controls" style="display: none;">
+                            <button id="chart-view-toggle" class="btn btn-cyan" onclick="toggleChartView()" style="font-size: 0.8rem; padding: 0.5rem 0.75rem;">
+                                📈 Toon Alles
+                            </button>
+                        </div>
+                    </div>
+                    
                     <p style="color: var(--text-light); margin-bottom: 1rem;">Intensiteit scores over tijd - lagere scores betekenen meer verbetering</p>
                     
                     <div class="chart-container" style="position: relative; height: 300px; margin: 1rem 0;">
@@ -2571,7 +2579,12 @@
         ritual: { sessions: 0, totalTime: 0, lastSession: null },
         emdr: { sessions: 0, totalTime: 0, lastSession: null },
         crisis: { sessions: 0, lastSession: null }
+
+    // Chart management with Chart.js
+    let progressChart = null;
+    async function createProgressChart(entries) {
     };
+
 
     // Firebase configuration
     const firebaseConfig = {
@@ -4813,6 +4826,7 @@
         if (!chartRelevantEntries || chartRelevantEntries.length === 0) {
             document.getElementById('chart-empty').style.display = 'block';
             document.getElementById('chart-legend').style.display = 'none';
+            document.getElementById('chart-controls').style.display = 'none';
             if (progressChart) {
                 progressChart.destroy();
                 progressChart = null;
@@ -4820,8 +4834,9 @@
             return;
         }
 
-        document.getElementById('chart-empty').style.display = 'none';
-        document.getElementById('chart-legend').style.display = 'block';
+            document.getElementById('chart-empty').style.display = 'none';
+            document.getElementById('chart-legend').style.display = 'block';
+            document.getElementById('chart-controls').style.display = 'block';
 
         try {
             if (!window.Chart) {
@@ -4837,9 +4852,46 @@
                 });
             }
 
-            const recentEntries = chartRelevantEntries.slice(0, 10).reverse();
+// Determine which entries to show based on view mode
+            let displayEntries;
+            if (chartViewMode === 'all') {
+                displayEntries = chartRelevantEntries.reverse(); // Show all entries
+            } else {
+                displayEntries = chartRelevantEntries.slice(0, 10).reverse(); // Show last 10
+            }
 
-            const labels = recentEntries.map((entry, index) => {
+            const labels = displayEntries.map((entry, index) => {
+                const date = entry.timestamp;
+                
+                if (chartViewMode === 'all') {
+                    // For all entries, show date/time more compactly
+                    if (window.innerWidth <= 768) {
+                        return date.toLocaleDateString('nl-BE', { 
+                            month: 'numeric', 
+                            day: 'numeric'
+                        });
+                    } else {
+                        return date.toLocaleDateString('nl-BE', { 
+                            month: 'short', 
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                    }
+                } else {
+                    // For recent entries, use existing format
+                    const shortDate = date.toLocaleDateString('nl-BE', { 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: window.innerWidth <= 768 ? undefined : '2-digit',
+                        minute: window.innerWidth <= 768 ? undefined : '2-digit'
+                    });
+                    return window.innerWidth <= 768 ? `${index + 1}` : shortDate;
+                }
+            });
+
+            const beforeData = displayEntries.map(entry => entry.intensiteitVoor);
+            const afterData = displayEntries.map(entry => entry.intensiteitNa);
                 const date = entry.timestamp;
                 const shortDate = date.toLocaleDateString('nl-BE', { 
                     month: 'short', 
@@ -4955,7 +5007,7 @@
                             },
                             title: {
                                 display: window.innerWidth > 768,
-                                text: 'Sessies (meest recente)',
+                                text: chartViewMode === 'all' ? 'Alle sessies (chronologisch)' : 'Sessies (meest recente)',
                                 color: '#6b7280',
                                 font: {
                                     size: 12,
@@ -4994,13 +5046,32 @@
                 }
             });
 
-            log('SUCCESS', `Progress chart created with ${recentEntries.length} data points`);
+log('SUCCESS', `Progress chart created with ${displayEntries.length} data points (${chartViewMode} view)`);
         } catch (error) {
             log('ERROR', 'Failed to create chart:', error);
             document.getElementById('chart-empty').style.display = 'block';
             document.getElementById('chart-legend').style.display = 'none';
+            document.getElementById('chart-controls').style.display = 'none';
         }
     }
+
+    // Chart view mode toggle functions
+    window.toggleChartView = function() {
+        chartViewMode = chartViewMode === 'recent' ? 'all' : 'recent';
+        
+        // Update button text
+        const toggleBtn = document.getElementById('chart-view-toggle');
+        if (toggleBtn) {
+            toggleBtn.textContent = chartViewMode === 'all' ? '📊 Toon Laatste 10' : '📈 Toon Alles';
+        }
+        
+        // Recreate chart with new view mode
+        if (appState.currentTab === 'dagboek') {
+            loadDagboekEntries().catch(error => {
+                log('WARNING', 'Could not reload entries for chart view change:', error);
+            });
+        }
+    };
 
     // Comprehensive event listener setup
     function setupEventListeners() {

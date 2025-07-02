@@ -3577,23 +3577,27 @@ let allDagboekEntries = [];
         }
     };
 
-    function displayDagboekEntries(entries) {
-        const container = document.getElementById('dagboek-entries');
-        
-        createProgressChart(entries);
-        displayCPStatistics(entries);
-        
-        if (!entries || entries.length === 0) {
-            container.innerHTML = 
-                '<div class="card">' +
-                    '<h3>Nog geen entries</h3>' +
-                    '<p>Maak een dagboekentry na het gebruiken van oefeningen om patronen bij te houden.</p>' +
-                    '<button class="btn btn-primary" onclick="openDagboekModal(\'Eerste Entry\')">' +
-                        'Maak je eerste entry' +
-                    '</button>' +
-                '</div>';
-            return;
-        }
+// Verbeterde displayDagboekEntries functie met wekelijkse groepering
+function displayDagboekEntries(entries) {
+    const container = document.getElementById('dagboek-entries');
+    
+    // Store entries globally for chart filtering
+    allDagboekEntries = entries;
+    
+    createProgressChart(entries);
+    displayCPStatistics(entries);
+    
+    if (!entries || entries.length === 0) {
+        container.innerHTML = 
+            '<div class="card">' +
+                '<h3>Nog geen entries</h3>' +
+                '<p>Maak een dagboekentry na het gebruiken van oefeningen om patronen bij te houden.</p>' +
+                '<button class="btn btn-primary" onclick="openDagboekModal(\'Eerste Entry\')">' +
+                    'Maak je eerste entry' +
+                '</button>' +
+            '</div>';
+        return;
+    }
         
         let entriesHtml = '<div class="card"><h3>📝 Alle Dagboek Entries</h3><p style="color: var(--text-light); margin-bottom: 1.5rem;">Chronologisch overzicht van je sessies</p></div>';
         
@@ -4952,21 +4956,23 @@ let allDagboekEntries = [];
     // Chart management with Chart.js
     let progressChart = null;
 
-    async function createProgressChart(entries) {
-        const chartRelevantEntries = entries.filter(entry => 
-            entry.intensiteitVoor !== undefined && entry.intensiteitNa !== undefined && 
-            entry.intensiteitVoor !== null && entry.intensiteitNa !== null
-        );
+// Verbeterde createProgressChart functie met filtering
+async function createProgressChart(entries) {
+    const chartRelevantEntries = entries.filter(entry => 
+        entry.intensiteitVoor !== undefined && entry.intensiteitNa !== undefined && 
+        entry.intensiteitVoor !== null && entry.intensiteitNa !== null
+    );
 
-        if (!chartRelevantEntries || chartRelevantEntries.length === 0) {
-            document.getElementById('chart-empty').style.display = 'block';
-            document.getElementById('chart-legend').style.display = 'none';
-            if (progressChart) {
-                progressChart.destroy();
-                progressChart = null;
-            }
-            return;
+    if (!chartRelevantEntries || chartRelevantEntries.length === 0) {
+        document.getElementById('chart-empty').style.display = 'block';
+        document.getElementById('chart-legend').style.display = 'none';
+        document.getElementById('chart-info').textContent = '';
+        if (progressChart) {
+            progressChart.destroy();
+            progressChart = null;
         }
+        return;
+    }
 
         document.getElementById('chart-empty').style.display = 'none';
         document.getElementById('chart-legend').style.display = 'block';

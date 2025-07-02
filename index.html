@@ -2345,6 +2345,24 @@
         </div>
     </div>
 
+<!-- Dagboek Tab - Verbeterde versie -->
+<div id="dagboek" class="tab-content hidden" role="tabpanel" aria-labelledby="dagboek-tab">
+    <div class="card">
+        <h2>Dagboek</h2>
+        <p>Overzicht van je sessies en vooruitgang</p>
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="openDagboekModal('Handmatige Entry')">
+                ➕ Nieuwe Entry
+            </button>
+            <button class="btn btn-green" onclick="loadDagboekEntries()">
+                🔄 Vernieuw
+            </button>
+            <button class="btn btn-orange" onclick="exportDagboek()">
+                📥 Export Dagboek
+            </button>
+        </div>
+    </div>
+
     <!-- Vooruitgang Grafiek met Filters -->
     <div class="card">
         <h3>📊 Je Vooruitgang</h3>
@@ -2415,6 +2433,7 @@
         </ul>
     </div>
 </div>
+            
     <!-- Fullscreen EMDR Eye Movement Modal -->
     <div id="fullscreen-emdr" class="eye-movement-fullscreen">
         <div class="fullscreen-controls">
@@ -2663,6 +2682,213 @@
             return 'Gebruiker';
         }
     }
+    // Verbeterde chart filtering functionaliteit
+window.updateChartFilter = function(filter) {
+    currentChartFilter = filter;
+    
+    // Update button states
+    document.querySelectorAll('.btn-chart-filter').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    if (filter === 'last10') {
+        document.getElementById('chart-filter-10').classList.add('active');
+    } else if (filter === 'last30') {
+        document.getElementById('chart-filter-30').classList.add('active');
+    } else if (filter === 'all') {
+        document.getElementById('chart-filter-all').classList.add('active');
+    }
+    
+    // Recreate chart with new filter
+    if (allDagboekEntries.length > 0) {
+        createProgressChart(allDagboekEntries);
+    }
+};
+
+// Functie om entries per week te groeperen
+function groupEntriesByWeek(entries) {
+    const weekGroups = {};
+    
+    entries.forEach(entry => {
+        const entryDate = entry.timestamp instanceof Date ? entry.timestamp : new Date(entry.clientTimestamp || 0);
+        
+        // Bereken het begin van de week (maandag)
+        const monday = new Date(entryDate);
+        const dayOfWeek = monday.getDay() || 7; // Zondag = 7
+        monday.setDate(monday.getDate() - (dayOfWeek - 1));
+        monday.setHours(0, 0, 0, 0);
+        
+        // Bereken het einde van de week (zondag)
+        const sunday = new Date(monday);
+        sunday.setDate(sunday.getDate() + 6);
+        sunday.setHours(23, 59, 59, 999);
+        
+        const weekKey = `${monday.getTime()}-${sunday.getTime()}`;
+        
+        if (!weekGroups[weekKey]) {
+            weekGroups[weekKey] = {
+                startDate: monday,
+                endDate: sunday,
+                entries: [],
+                totalSessions: 0,
+                avgImprovement: 0,
+                techniques: new Set()
+            };
+        }
+        
+        weekGroups[weekKey].entries.push(entry);
+        weekGroups[weekKey].totalSessions++;
+        weekGroups[weekKey].techniques.add(entry.techniekGebruikt);
+        
+        // Bereken verbetering (positief getal = verbetering)
+        const improvement = entry.intensiteitVoor - entry.intensiteitNa;
+        weekGroups[weekKey].avgImprovement += improvement;
+    });
+    
+    // Bereken gemiddelde verbeteringen
+    Object.values(weekGroups).forEach(group => {
+        group.avgImprovement = group.avgImprovement / group.totalSessions;
+    });
+    
+    // Sorteer weken van nieuw naar oud
+    const sortedWeekGroups = {};
+    Object.keys(weekGroups)
+        .sort((a, b) => weekGroups[b].startDate.getTime() - weekGroups[a].startDate.getTime())
+        .forEach(key => {
+            sortedWeekGroups[key] = weekGroups[key];
+        });
+    
+    return sortedWeekGroups;
+}
+
+// Functie om week group HTML te maken
+function createWeekGroupHTML(weekKey, weekData, isExpanded) {
+    const { startDate, endDate, entries, totalSessions, avgImprovement, techniques } = weekData;
+    
+    // Format week range
+    const weekRange = formatWeekRange(startDate, endDate);
+    
+    // Maak samenvatting
+    const improvementText = avgImprovement > 0 ? 
+        `↗️ Gem. verbetering: ${avgImprovement.toFixed(1)} punt${avgImprovement > 1 ? 'en' : ''}` :
+        avgImprovement < 0 ? 
+        `↘️ Gem. verslechtering: ${Math.abs(avgImprovement).toFixed(1)} punt${Math.abs(avgImprovement) > 1 ? 'en' : ''}` :
+        '➡️ Geen gem. verandering';
+    
+    const weekId = `week-${weekKey}`;
+    
+    return `
+        <div class="week-group">
+            <div class="week-header" onclick="toggleWeek('${weekId}')">
+                <div>
+                    <div style="font-size: 1rem; margin-bottom: 0.25rem;">${weekRange}</div>
+                    <div style="font-size: 0.8rem; font-weight: 400; opacity: 0.9;">
+                        ${totalSessions} sessie${totalSessions > 1 ? 's' : ''} • ${techniques.size} techniek${techniques.size > 1 ? 'en' : ''}
+                    </div>
+                </div>
+                <span class="week-toggle ${isExpanded ? '' : 'collapsed'}">▼</span>
+            </div>
+            
+            <div class="week-content ${isExpanded ? '' : 'collapsed'}" id="${weekId}">
+                <div class="week-summary">
+                    <strong>${improvementText}</strong> • 
+                    Gebruikte technieken: ${Array.from(techniques).join(', ')}
+                </div>
+                
+                <div class="week-entries">
+                    ${entries.map(entry => createEntryCardHTML(entry)).join('')}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Functie om individuele entry card HTML te maken
+function createEntryCardHTML(entry) {
+    const displayDate = entry.timestamp instanceof Date ? entry.timestamp : new Date(entry.clientTimestamp || 0);
+
+    return `
+        <div class="entry-card">
+            <div class="entry-header">
+                <div>
+                    <div class="entry-title">${entry.techniekGebruikt}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-light);">
+                        ${displayDate.toLocaleString('nl-BE')} • 
+                        <span style="color: #0891b2; font-size: 0.75rem;">${entry.bron || 'Onbekend'}</span>
+                    </div>
+                </div>
+                <div class="entry-result ${entry.resultaat}">
+                    ${getResultaatText(entry.resultaat)}
+                </div>
+            </div>
+            <div class="intensity-grid">
+                <div style="font-size: 0.85rem;">
+                    <span style="color: var(--text-light);">Vóór:</span>
+                    <span style="font-weight: 500; margin-left: 0.25rem; color: var(--text-dark);">${entry.intensiteitVoor}/10</span>
+                </div>
+                <div style="font-size: 0.85rem;">
+                    <span style="color: var(--text-light);">Ná:</span>
+                    <span style="font-weight: 500; margin-left: 0.25rem; color: var(--text-dark);">${entry.intensiteitNa}/10</span>
+                </div>
+            </div>
+            ${entry.cpScore ? `<div class="cp-stats"><strong>CP Score:</strong> ${entry.cpScore} seconden</div>` : ''}
+            ${entry.trigger ? `<p style="font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--text-dark);"><strong>Trigger:</strong> ${entry.trigger}</p>` : ''}
+            ${entry.notities ? `<p style="font-size: 0.85rem; color: var(--text-dark);"><strong>Notities:</strong> ${entry.notities}</p>` : ''}
+        </div>
+    `;
+}
+
+// Functie om week range te formatteren
+function formatWeekRange(startDate, endDate) {
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+    const twoWeeksAgo = new Date(now.getTime() - (14 * 24 * 60 * 60 * 1000));
+    
+    // Check if it's this week
+    const thisWeekStart = new Date(now);
+    const dayOfWeek = thisWeekStart.getDay() || 7;
+    thisWeekStart.setDate(thisWeekStart.getDate() - (dayOfWeek - 1));
+    thisWeekStart.setHours(0, 0, 0, 0);
+    
+    if (startDate.getTime() === thisWeekStart.getTime()) {
+        return '📅 Deze week';
+    } else if (startDate >= oneWeekAgo) {
+        return '📅 Vorige week';
+    } else if (startDate >= twoWeeksAgo) {
+        return '📅 2 weken geleden';
+    } else {
+        // Format as date range
+        const sameMonth = startDate.getMonth() === endDate.getMonth();
+        const sameYear = startDate.getFullYear() === endDate.getFullYear();
+        
+        if (sameMonth && sameYear) {
+            return `📅 ${startDate.getDate()}-${endDate.getDate()} ${startDate.toLocaleDateString('nl-BE', { month: 'short', year: 'numeric' })}`;
+        } else {
+            return `📅 ${startDate.toLocaleDateString('nl-BE', { day: 'numeric', month: 'short' })} - ${endDate.toLocaleDateString('nl-BE', { day: 'numeric', month: 'short', year: 'numeric' })}`;
+        }
+    }
+}
+
+// Functie om week toggle te handelen
+window.toggleWeek = function(weekId) {
+    const content = document.getElementById(weekId);
+    const toggle = content.parentElement.querySelector('.week-toggle');
+    
+    if (content.classList.contains('collapsed')) {
+        content.classList.remove('collapsed');
+        toggle.classList.remove('collapsed');
+    } else {
+        content.classList.add('collapsed');
+        toggle.classList.add('collapsed');
+    }
+};
+
+// Setup week toggles (aangeroepen na het renderen van entries)
+function setupWeekToggles() {
+    // Event listeners worden al toegevoegd via onclick in de HTML
+    // Deze functie kan worden uitgebreid voor extra functionaliteit
+    log('SUCCESS', 'Week toggles setup completed');
+}
 
     // Initialize app state
     const appState = new AppState();
@@ -2716,10 +2942,12 @@
         ritual: { sessions: 0, totalTime: 0, lastSession: null },
         emdr: { sessions: 0, totalTime: 0, lastSession: null },
         crisis: { sessions: 0, lastSession: null }
-    };
+            
     // Globale variabelen voor chart filtering
-let currentChartFilter = 'last10';
-let allDagboekEntries = [];
+    let currentChartFilter = 'last10';
+    let allDagboekEntries = [];
+    };
+
 
     // Firebase configuration
     const firebaseConfig = {

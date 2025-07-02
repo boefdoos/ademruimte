@@ -4428,8 +4428,9 @@
     // Buteyko breathing exercise functions
     window.updateBreathingPattern = function() {
         breathingPattern = document.getElementById('breathing-pattern').value;
-        const standardControls = document.getElementById('standard-controls');
         const gentleControls = document.getElementById('gentle-controls');
+        const standardControls = document.getElementById('standard-controls');
+
         
         if (breathingPattern === 'gentle') {
             standardControls.classList.add('hidden');

@@ -3840,6 +3840,17 @@
         log('SUCCESS', 'Week toggles setup completed');
     }
 
+    function checkScrollableContent() {
+    document.querySelectorAll('.week-entries').forEach(container => {
+        if (container.scrollHeight > container.clientHeight) {
+            container.classList.add('scrollable', 'has-scroll');
+        }
+    });
+}
+
+// Roep aan na het laden van entries
+setTimeout(checkScrollableContent, 100);
+
     function displayCPStatistics(entries) {
         const cpEntries = entries.filter(entry => entry.cpScore && entry.cpScore > 0);
         const cpStatsContainer = document.getElementById('cp-statistics');

@@ -400,8 +400,12 @@
     }
 
     .week-entries {
-        padding: 1rem 1.5rem;
-    }
+    padding: 1rem 1.5rem;
+    max-height: 70vh; /* Scroll na deze hoogte */
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
 
     .week-entries .entry-card {
         margin-bottom: 1rem;
@@ -410,6 +414,7 @@
     .week-entries .entry-card:last-child {
         margin-bottom: 0;
     }
+
 
     /* Verbeterde grid layout */
     .grid {

@@ -3798,61 +3798,60 @@ function setupAuthStateObserver(onAuthStateChanged) {
         log('INFO', 'Switched to main app');
     }
 
-    // Enhanced authentication functions
-    window.signInWithGoogle = async function() {
-        const googleBtn = document.getElementById('google-login-btn');
-        const originalBtnText = googleBtn.querySelector('#google-btn-text').textContent;
-        googleBtn.querySelector('#google-btn-text').textContent = 'Bezig...';
-        googleBtn.disabled = true;
-        
-        if (!appState.authInitialized || !auth) {
-            const initialized = await initializeFirebase();
-            if (!initialized) {
-                showUserMessage('Firebase is niet beschikbaar. Probeer email/wachtwoord login.', 'warning');
-                googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
-                googleBtn.disabled = false;
-                return;
-            }
-        }
-
-        try {
-            log('INFO', 'Starting Google sign-in with redirect...');
-            
-            const { GoogleAuthProvider, signInWithRedirect } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
-            
-            const provider = new GoogleAuthProvider();
-            provider.setCustomParameters({ 
-                prompt: 'select_account'
-            });
-            
-            await signInWithRedirect(auth, provider);
-            
-        } catch (error) {
-            log('ERROR', 'Google sign-in failed:', error);
-            
-            let message = 'Google inloggen mislukt';
-            if (error.code === 'auth/popup-blocked') {
-                message = 'Login werd geblokkeerd. Controleer popup instellingen of gebruik email/wachtwoord.';
-            } else if (error.code === 'auth/network-request-failed') {
-                message = 'Netwerkfout. Controleer je internetverbinding en probeer opnieuw.';
-            } else if (error.code === 'auth/cancelled-popup-request') {
-                log('INFO', 'Google sign-in cancelled by user');
-                message = 'Google inloggen geannuleerd.';
-                showUserMessage(message, 'info');
-                googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
-                googleBtn.disabled = false;
-                return; 
-            } else if (error.code === 'auth/too-many-requests') {
-                message = 'Te veel inlogpogingen. Probeer het later opnieuw.';
-            }
-            
-            showUserMessage(message, 'error');
-            
-        } finally {
+// ❌ PROBLEEM: Mogelijk ontbreekt er een accolade na deze functie
+window.signInWithGoogle = async function() {
+    const googleBtn = document.getElementById('google-login-btn');
+    const originalBtnText = googleBtn.querySelector('#google-btn-text').textContent;
+    googleBtn.querySelector('#google-btn-text').textContent = 'Bezig...';
+    googleBtn.disabled = true;
+    
+    if (!appState.authInitialized || !auth) {
+        const initialized = await initializeFirebase();
+        if (!initialized) {
+            showUserMessage('Firebase is niet beschikbaar. Probeer email/wachtwoord login.', 'warning');
             googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
             googleBtn.disabled = false;
+            return; // ✅ Dit return is correct
         }
-    };
+    }
+
+    try {
+        log('INFO', 'Starting Google sign-in with redirect...');
+        
+        const { GoogleAuthProvider, signInWithRedirect } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+        
+        const provider = new GoogleAuthProvider();
+        provider.setCustomParameters({ 
+            prompt: 'select_account'
+        });
+        
+        await signInWithRedirect(auth, provider);
+        
+    } catch (error) {
+        log('ERROR', 'Google sign-in failed:', error);
+        
+        let message = 'Google inloggen mislukt';
+        if (error.code === 'auth/popup-blocked') {
+            message = 'Login werd geblokkeerd. Controleer popup instellingen of gebruik email/wachtwoord.';
+        } else if (error.code === 'auth/network-request-failed') {
+            message = 'Netwerkfout. Controleer je internetverbinding en probeer opnieuw.';
+        } else if (error.code === 'auth/cancelled-popup-request') {
+            log('INFO', 'Google sign-in cancelled by user');
+            message = 'Google inloggen geannuleerd.';
+            showUserMessage(message, 'info');
+            googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
+            googleBtn.disabled = false;
+            return; // ✅ Dit return is correct
+        } else if (error.code === 'auth/too-many-requests') {
+            message = 'Te veel inlogpogingen. Probeer het later opnieuw.';
+        }
+        
+        showUserMessage(message, 'error');
+        
+    } finally {
+        googleBtn.querySelector('#google-btn-text').textContent = originalBtnText;
+        googleBtn.disabled = false;
+    }
 
     window.performLogout = async function() {
         if (!confirm('Weet je zeker dat je wilt uitloggen?')) {

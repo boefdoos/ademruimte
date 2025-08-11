@@ -5911,7 +5911,16 @@ setTimeout(checkScrollableContent, 100);
             showUserMessage('Verbinding met de server mislukt. Controleer je internetverbinding en herlaad de pagina.', 'error');
             showLoginScreen();
         }
+        // Voeg toe aan het einde van je DOMContentLoaded event:
+try {
+    initButeykoTracking();
+    log('SUCCESS', 'Buteyko tracking system loaded');
+} catch (error) {
+    log('ERROR', 'Buteyko tracking initialization failed:', error);
+}
     });
+
+    
 
     // Cleanup on page unload
     window.addEventListener('beforeunload', () => {

@@ -3473,7 +3473,7 @@ window.createSimpleTestWidget = createSimpleTestWidget;
     // Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
-        authDomain: "ademruimte.vercel.app", 
+        authDomain: "ademruimte-12c09.firebaseapp.com", 
         projectId: "ademruimte-12c09",
         storageBucket: "ademruimte-12c09.firebasestorage.app",
         messagingSenderId: "744941871331",
@@ -3588,11 +3588,57 @@ window.createSimpleTestWidget = createSimpleTestWidget;
     };
 
     // Firebase initialization
-    async function initializeFirebase() {
-        if (appState.authInitialized) {
-            log('INFO', 'Firebase already initialized.');
-            return true;
-        }
+async function initializeFirebase() {
+    if (appState.authInitialized) {
+        log('INFO', 'Firebase already initialized.');
+        return true;
+    }
+
+    try {
+        log('INFO', 'Initializing Firebase...');
+        
+        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
+        const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+        const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+
+        // Initialize Firebase
+        app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+
+        // Set persistence EERST
+        await setPersistence(auth, browserLocalPersistence);
+
+        // Setup auth state observer EERST
+        setupAuthStateObserver(onAuthStateChanged);
+
+        // Wacht even voordat redirect result wordt gecheckt
+        setTimeout(async () => {
+            try {
+                const { getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+                const result = await getRedirectResult(auth);
+                if (result) {
+                    log('SUCCESS', 'Google sign-in successful via redirect result:', result.user.email);
+                }
+            } catch (redirectError) {
+                log('WARNING', 'Redirect result error (niet kritiek):', redirectError);
+            }
+        }, 1000);
+
+        appState.setConnectionStatus(true);
+        appState.authInitialized = true;
+        
+        log('SUCCESS', 'Firebase initialized successfully');
+        return true;
+
+    } catch (error) {
+        log('ERROR', 'Firebase initialization failed:', error);
+        appState.setConnectionStatus(false);
+        appState.authInitialized = false;
+        
+        throw error; // Re-throw voor verdere error handling
+    }
+}
 
         try {
             log('INFO', 'Initializing Firebase...');

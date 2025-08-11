@@ -6339,144 +6339,90 @@ setTimeout(checkScrollableContent, 100);
     }
 
     // Initialize app
-    document.addEventListener('DOMContentLoaded', async function() {
-        log('INFO', 'Starting Ademruimte app initialization');
+// ✅ VERBETERDE INITIALISATIE
+document.addEventListener('DOMContentLoaded', async function() {
+    log('INFO', 'Starting Ademruimte app initialization');
+    
+    // Basis UI setup eerst
+    appState.updateConnectionDisplay();
+    appState.updateUI();
+
+    // Alle niet-Firebase componenten eerst laden
+    try {
+        setupForms();
+        setupNetworkMonitoring();
+        setupKeyboardNavigation();
+        setupRangeSliders();
+        setupMobileFocusHandling();
+        setRandomTip();
+        loadProgressData();
+        updateBreathDisplay();
+        updateRitualDisplay();
+        updateEmdrDisplay();
         
-        // Initial UI setup before Firebase is ready
-        appState.updateConnectionDisplay();
-        appState.updateUI();
-
-        // Initialize general components with individual error handling
-        try {
-            setupForms();
-            log('SUCCESS', 'Forms initialized');
-        } catch (error) {
-            log('WARNING', 'Forms setup failed:', error);
-        }
-
-        try {
-            setupNetworkMonitoring();
-            log('SUCCESS', 'Network monitoring initialized');
-        } catch (error) {
-            log('WARNING', 'Network monitoring setup failed:', error);
-        }
-
-        try {
-            setupKeyboardNavigation();
-            log('SUCCESS', 'Keyboard navigation initialized');
-        } catch (error) {
-            log('WARNING', 'Keyboard navigation setup failed:', error);
-        }
-
-        try {
-            setupRangeSliders();
-            log('SUCCESS', 'Range sliders initialized');
-        } catch (error) {
-            log('WARNING', 'Range sliders setup failed:', error);
-        }
-
-        try {
-            setupMobileFocusHandling();
-            log('SUCCESS', 'Mobile focus handling initialized');
-        } catch (error) {
-            log('WARNING', 'Mobile focus handling setup failed:', error);
-        }
-
-        try {
-            setRandomTip();
-            log('SUCCESS', 'Random tip set');
-        } catch (error) {
-            log('WARNING', 'Random tip setup failed:', error);
-        }
-        
-        // Load progress data (from localStorage or default)
-        try {
-            loadProgressData();
-            log('SUCCESS', 'Progress data loaded');
-        } catch (error) {
-            log('WARNING', 'Progress data loading failed:', error);
-        }
-        
-        // Initialize tab displays
-        try {
-            updateBreathDisplay();
-            updateRitualDisplay();
-            updateEmdrDisplay();
-            log('SUCCESS', 'Tab displays initialized');
-        } catch (error) {
-            log('WARNING', 'Tab displays setup failed:', error);
-        }
-        
-        // Setup tab navigation
-        try {
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const tab = btn.getAttribute('data-tab');
-                    showTab(tab);
-                });
+        // Tab navigation
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.getAttribute('data-tab');
+                showTab(tab);
             });
-            log('SUCCESS', 'Tab navigation initialized');
-        } catch (error) {
-            log('WARNING', 'Tab navigation setup failed:', error);
-        }
+        });
         
-        // Setup all event listeners
-        try {
-            setupEventListeners();
-            log('SUCCESS', 'Event listeners initialized');
-        } catch (error) {
-            log('WARNING', 'Event listeners setup failed:', error);
-        }
+        setupEventListeners();
+        
+        log('SUCCESS', 'Non-Firebase components initialized');
+    } catch (error) {
+        log('WARNING', 'Some non-Firebase components failed:', error);
+        // Continue anyway
+    }
 
-        // Chart responsiveness - redraw on window resize
+    // Firebase initialisatie als laatste, met betere error handling
+    let initRetryCount = 0;
+    const maxInitRetries = 3;
+    
+    while (initRetryCount < maxInitRetries) {
         try {
-            window.addEventListener('resize', () => {
-                if (progressChart && appState.currentTab === 'dagboek') {
-                    setTimeout(() => {
-                        progressChart.resize();
-                    }, 100);
-                }
-            });
-            log('SUCCESS', 'Chart responsiveness initialized');
-        } catch (error) {
-            log('WARNING', 'Chart responsiveness setup failed:', error);
-        }
-        
-        // Initialize Firebase - this is the only truly critical part
-        try {
-            log('INFO', 'Attempting Firebase initialization...');
+            log('INFO', `Firebase initialization attempt ${initRetryCount + 1}`);
             const success = await initializeFirebase();
             
-            if (!success) {
-                log('WARNING', 'Firebase initialization failed during DOMContentLoaded. Showing login screen.');
-                showLoginScreen();
+            if (success) {
+                log('SUCCESS', 'App initialization completed successfully');
+                break;
             }
-            
-            log('SUCCESS', 'App initialization completed successfully');
-            
         } catch (error) {
-            log('ERROR', 'Firebase initialization failed:', error);
+            initRetryCount++;
+            log('ERROR', `Firebase init attempt ${initRetryCount} failed:`, error);
             
-            // Hide loading spinner
-            const authLoading = document.getElementById('auth-loading');
-            if (authLoading) {
-                authLoading.style.display = 'none';
+            if (initRetryCount >= maxInitRetries) {
+                // Na maximum pogingen, toon offline mode
+                log('ERROR', 'Max Firebase init retries reached, showing offline mode');
+                
+                const authLoading = document.getElementById('auth-loading');
+                if (authLoading) authLoading.style.display = 'none';
+                
+                showUserMessage('Kan geen verbinding maken met de server. App werkt in offline modus.', 'warning');
+                showLoginScreen();
+                break;
+            } else {
+                // Wacht voordat je opnieuw probeert
+                await new Promise(resolve => setTimeout(resolve, 2000 * initRetryCount));
             }
-            
-            // Only show critical error for Firebase failures
-            showUserMessage('Verbinding met de server mislukt. Controleer je internetverbinding en herlaad de pagina.', 'error');
-            showLoginScreen();
         }
-        // Voeg toe aan het einde van je DOMContentLoaded event:
-try {
-    if (typeof initButeykoTracking === 'function') {
-        initButeykoTracking();
-        console.log('✅ Buteyko tracking system loaded');
     }
-} catch (error) {
-    console.log('❌ Buteyko tracking initialization failed:', error);
-}
-    });
+    
+    // Buteyko tracking initialisatie
+    try {
+        if (typeof initButeykoTracking === 'function') {
+            initButeykoTracking();
+            if (typeof initDashboardWidget === 'function') {
+                initDashboardWidget();
+            }
+            log('SUCCESS', 'Buteyko tracking system loaded');
+        }
+    } catch (error) {
+        log('WARNING', 'Buteyko tracking initialization failed:', error);
+    }
+});
 
     // Cleanup on page unload
     window.addEventListener('beforeunload', () => {

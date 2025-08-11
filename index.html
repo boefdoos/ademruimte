@@ -3689,11 +3689,48 @@ async function initializeFirebase() {
         }
     }
 
-    function setupAuthStateObserver(onAuthStateChanged) {
-        if (!auth) {
-            log('ERROR', 'Auth not initialized - cannot setup observer');
-            return;
+// ✅ VERBETERDE setupAuthStateObserver
+function setupAuthStateObserver(onAuthStateChanged) {
+    if (!auth) {
+        log('ERROR', 'Auth not initialized - cannot setup observer');
+        throw new Error('Auth not initialized');
+    }
+    
+    appState.authUnsubscribe = onAuthStateChanged(auth, (user) => {
+        log('INFO', 'Auth state changed:', user ? user.email : 'no user');
+        appState.updateUI();
+        
+        if (user) {
+            appState.setUser(user);
+            showMainApp();
+            
+            // Load data na een korte delay
+            setTimeout(() => {
+                loadDagboekEntries().catch(error => {
+                    log('WARNING', 'Could not load entries on login:', error);
+                    showUserMessage('Entries laden mislukt: ' + error.message, 'warning');
+                });
+            }, 1000);
+        } else {
+            appState.setUser(null);
+            showLoginScreen();
         }
+    }, (error) => {
+        log('ERROR', 'Auth state observer error:', error);
+        appState.updateUI();
+        
+        // Meer specifieke error handling
+        if (error.code === 'auth/network-request-failed') {
+            showUserMessage('Netwerkfout - controleer je internetverbinding', 'error');
+        } else if (error.code === 'auth/too-many-requests') {
+            showUserMessage('Te veel verzoeken - probeer het later opnieuw', 'error');
+        } else {
+            showUserMessage('Authenticatie fout: ' + error.message, 'error');
+        }
+        
+        showLoginScreen();
+    });
+}
         
         // Auth state observer
         appState.authUnsubscribe = onAuthStateChanged(auth, (user) => {

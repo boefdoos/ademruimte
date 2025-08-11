@@ -3396,13 +3396,12 @@ function initDashboardWidget() {
     
     log('SUCCESS', 'Dashboard widget system initialized');
 }
-    // =====================================
-// DEBUG WIDGET PLACEMENT
+// =====================================
+// DEBUG FUNCTIES - CONFLICT VRIJ
 // =====================================
 
-// Voeg deze functie toe aan je script om te debuggen
-
-function debugWidgetPlacement() {
+// Debug functie voor widget placement
+function debugWidgetStatus() {
     console.log('=== DASHBOARD WIDGET DEBUG ===');
     
     // Check if we're on dashboard tab
@@ -3415,6 +3414,11 @@ function debugWidgetPlacement() {
     if (dashboard) {
         console.log('Dashboard innerHTML length:', dashboard.innerHTML.length);
         console.log('Dashboard children count:', dashboard.children.length);
+        
+        // List all children
+        Array.from(dashboard.children).forEach((child, index) => {
+            console.log(`Child ${index}:`, child.className, child.id || 'no-id');
+        });
     }
     
     // Check for hero section
@@ -3422,7 +3426,7 @@ function debugWidgetPlacement() {
     console.log('Hero section found:', !!heroSection);
     
     if (heroSection) {
-        console.log('Hero section text content preview:', heroSection.textContent.substring(0, 100));
+        console.log('Hero section text preview:', heroSection.textContent.substring(0, 50) + '...');
     }
     
     // Check if widget already exists
@@ -3432,11 +3436,153 @@ function debugWidgetPlacement() {
     if (existingWidget) {
         console.log('Widget display style:', window.getComputedStyle(existingWidget).display);
         console.log('Widget visibility:', window.getComputedStyle(existingWidget).visibility);
-        console.log('Widget position in parent:', Array.from(existingWidget.parentNode.children).indexOf(existingWidget));
+        console.log('Widget innerHTML length:', existingWidget.innerHTML.length);
     }
     
     console.log('=== END DEBUG ===');
 }
+
+// Functie om widget handmatig te maken met simpele content
+function createTestWidget() {
+    console.log('🧪 Creating test widget...');
+    
+    // Remove existing widget first
+    const existing = document.getElementById('buteyko-dashboard-widget');
+    if (existing) {
+        existing.remove();
+        console.log('Removed existing widget');
+    }
+    
+    // Create new widget
+    const widget = document.createElement('div');
+    widget.id = 'buteyko-dashboard-widget';
+    widget.className = 'card';
+    widget.style.cssText = `
+        margin-bottom: 1.5rem;
+        background: #f0f9ff !important;
+        border: 3px solid #06b6d4 !important;
+        padding: 1.5rem !important;
+    `;
+    
+    // Simple test content
+    widget.innerHTML = `
+        <h3 style="color: #06b6d4; text-align: center;">🫁 TEST WIDGET</h3>
+        <div style="background: white; padding: 1rem; border-radius: 0.5rem; text-align: center;">
+            <p><strong>Widget werkt!</strong> ✅</p>
+            <p>Buteyko data geladen: ${buteykoData ? 'JA' : 'NEE'}</p>
+            <p>Vandaag gemeten: ${getTodaysMeasurementCount ? getTodaysMeasurementCount() : 'ERROR'}</p>
+        </div>
+    `;
+    
+    // Try different placement strategies
+    let placed = false;
+    
+    // Strategy 1: After hero card
+    const dashboard = document.getElementById('dashboard');
+    if (dashboard) {
+        const cards = dashboard.querySelectorAll('.card');
+        if (cards.length > 0) {
+            // Insert after first card (hero section)
+            cards[0].parentNode.insertBefore(widget, cards[0].nextSibling);
+            console.log('✅ Widget placed after hero card');
+            placed = true;
+        }
+    }
+    
+    // Strategy 2: Before grid (fallback)
+    if (!placed) {
+        const grid = document.querySelector('#dashboard .grid');
+        if (grid) {
+            grid.parentNode.insertBefore(widget, grid);
+            console.log('✅ Widget placed before grid');
+            placed = true;
+        }
+    }
+    
+    // Strategy 3: At beginning of dashboard
+    if (!placed && dashboard) {
+        dashboard.insertBefore(widget, dashboard.firstChild);
+        console.log('✅ Widget placed at beginning of dashboard');
+        placed = true;
+    }
+    
+    if (placed) {
+        console.log('🎉 Test widget created successfully!');
+        
+        // Scroll widget into view
+        setTimeout(() => {
+            widget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+    } else {
+        console.log('❌ Failed to place test widget');
+    }
+    
+    return placed;
+}
+
+// Test alle buteyko functies
+function testButeykoFunctions() {
+    console.log('=== BUTEYKO FUNCTIONS TEST ===');
+    
+    try {
+        console.log('buteykoData exists:', typeof buteykoData !== 'undefined');
+        console.log('getTodaysMeasurementCount exists:', typeof getTodaysMeasurementCount !== 'undefined');
+        console.log('getLastCPScore exists:', typeof getLastCPScore !== 'undefined');
+        console.log('calculateAverageCP exists:', typeof calculateAverageCP !== 'undefined');
+        
+        if (typeof buteykoData !== 'undefined') {
+            console.log('buteykoData:', buteykoData);
+        }
+        
+        if (typeof getTodaysMeasurementCount !== 'undefined') {
+            console.log('Today count:', getTodaysMeasurementCount());
+        }
+        
+        if (typeof getLastCPScore !== 'undefined') {
+            console.log('Last CP:', getLastCPScore());
+        }
+        
+    } catch (error) {
+        console.log('Error testing functions:', error);
+    }
+    
+    console.log('=== END FUNCTION TEST ===');
+}
+
+// Comprehensive test functie
+function runFullDiagnostic() {
+    console.log('🔍 Running full diagnostic...');
+    
+    // Ensure we're on dashboard
+    if (appState.currentTab !== 'dashboard') {
+        showTab('dashboard');
+        setTimeout(() => {
+            runFullDiagnosticActual();
+        }, 500);
+    } else {
+        runFullDiagnosticActual();
+    }
+}
+
+function runFullDiagnosticActual() {
+    debugWidgetStatus();
+    testButeykoFunctions();
+    
+    console.log('📝 Creating test widget...');
+    const success = createTestWidget();
+    
+    if (success) {
+        console.log('🎉 DIAGNOSTIC COMPLETE - Check for blue test widget on dashboard!');
+    } else {
+        console.log('❌ DIAGNOSTIC FAILED - Widget could not be created');
+    }
+}
+
+// Voeg functies toe aan window voor console toegang
+window.debugWidgetStatus = debugWidgetStatus;
+window.createTestWidget = createTestWidget;
+window.testButeykoFunctions = testButeykoFunctions;
+window.runFullDiagnostic = runFullDiagnostic;
 
 // Verbeterde createDashboardWidget functie met meer logging
 function createDashboardWidgetDebug() {

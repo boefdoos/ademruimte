@@ -2521,48 +2521,6 @@
 
 <script type="module">
 
-    // =====================================
-// DEBUG WIDGET PLACEMENT
-// =====================================
-
-// Voeg deze functie toe aan je script om te debuggen
-
-function debugWidgetPlacement() {
-    console.log('=== DASHBOARD WIDGET DEBUG ===');
-    
-    // Check if we're on dashboard tab
-    console.log('Current tab:', appState.currentTab);
-    
-    // Check dashboard container
-    const dashboard = document.getElementById('dashboard');
-    console.log('Dashboard container found:', !!dashboard);
-    
-    if (dashboard) {
-        console.log('Dashboard innerHTML length:', dashboard.innerHTML.length);
-        console.log('Dashboard children count:', dashboard.children.length);
-    }
-    
-    // Check for hero section
-    const heroSection = document.querySelector('#dashboard .card');
-    console.log('Hero section found:', !!heroSection);
-    
-    if (heroSection) {
-        console.log('Hero section text content preview:', heroSection.textContent.substring(0, 100));
-    }
-    
-    // Check if widget already exists
-    const existingWidget = document.getElementById('buteyko-dashboard-widget');
-    console.log('Existing widget found:', !!existingWidget);
-    
-    if (existingWidget) {
-        console.log('Widget display style:', window.getComputedStyle(existingWidget).display);
-        console.log('Widget visibility:', window.getComputedStyle(existingWidget).visibility);
-        console.log('Widget position in parent:', Array.from(existingWidget.parentNode.children).indexOf(existingWidget));
-    }
-    
-    console.log('=== END DEBUG ===');
-}
-
 // Verbeterde createDashboardWidget functie met meer logging
 function createDashboardWidgetDebug() {
     console.log('🔍 Creating dashboard widget...');
@@ -3438,6 +3396,168 @@ function initDashboardWidget() {
     
     log('SUCCESS', 'Dashboard widget system initialized');
 }
+    // =====================================
+// DEBUG WIDGET PLACEMENT
+// =====================================
+
+// Voeg deze functie toe aan je script om te debuggen
+
+function debugWidgetPlacement() {
+    console.log('=== DASHBOARD WIDGET DEBUG ===');
+    
+    // Check if we're on dashboard tab
+    console.log('Current tab:', appState.currentTab);
+    
+    // Check dashboard container
+    const dashboard = document.getElementById('dashboard');
+    console.log('Dashboard container found:', !!dashboard);
+    
+    if (dashboard) {
+        console.log('Dashboard innerHTML length:', dashboard.innerHTML.length);
+        console.log('Dashboard children count:', dashboard.children.length);
+    }
+    
+    // Check for hero section
+    const heroSection = document.querySelector('#dashboard .card');
+    console.log('Hero section found:', !!heroSection);
+    
+    if (heroSection) {
+        console.log('Hero section text content preview:', heroSection.textContent.substring(0, 100));
+    }
+    
+    // Check if widget already exists
+    const existingWidget = document.getElementById('buteyko-dashboard-widget');
+    console.log('Existing widget found:', !!existingWidget);
+    
+    if (existingWidget) {
+        console.log('Widget display style:', window.getComputedStyle(existingWidget).display);
+        console.log('Widget visibility:', window.getComputedStyle(existingWidget).visibility);
+        console.log('Widget position in parent:', Array.from(existingWidget.parentNode.children).indexOf(existingWidget));
+    }
+    
+    console.log('=== END DEBUG ===');
+}
+
+// Verbeterde createDashboardWidget functie met meer logging
+function createDashboardWidgetDebug() {
+    console.log('🔍 Creating dashboard widget...');
+    
+    // Check if widget already exists
+    let widget = document.getElementById('buteyko-dashboard-widget');
+    
+    if (widget) {
+        console.log('✅ Widget already exists, updating...');
+        return widget;
+    }
+    
+    // Create new widget
+    widget = document.createElement('div');
+    widget.id = 'buteyko-dashboard-widget';
+    widget.className = 'card';
+    widget.style.cssText = `
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
+        border: 2px solid #06b6d4;
+        box-shadow: 0 4px 15px rgba(6, 182, 212, 0.1);
+    `;
+    
+    console.log('✅ Widget element created');
+    
+    // Try multiple placement strategies
+    let placed = false;
+    
+    // Strategy 1: After hero section
+    const heroSection = document.querySelector('#dashboard .card');
+    if (heroSection && heroSection.parentNode) {
+        try {
+            heroSection.parentNode.insertBefore(widget, heroSection.nextSibling);
+            console.log('✅ Widget placed after hero section');
+            placed = true;
+        } catch (error) {
+            console.log('❌ Strategy 1 failed:', error);
+        }
+    }
+    
+    // Strategy 2: Before grid (fallback)
+    if (!placed) {
+        const grid = document.querySelector('#dashboard .grid');
+        if (grid && grid.parentNode) {
+            try {
+                grid.parentNode.insertBefore(widget, grid);
+                console.log('✅ Widget placed before grid (fallback)');
+                placed = true;
+            } catch (error) {
+                console.log('❌ Strategy 2 failed:', error);
+            }
+        }
+    }
+    
+    // Strategy 3: Append to dashboard (last resort)
+    if (!placed) {
+        const dashboard = document.getElementById('dashboard');
+        if (dashboard) {
+            try {
+                dashboard.appendChild(widget);
+                console.log('✅ Widget appended to dashboard (last resort)');
+                placed = true;
+            } catch (error) {
+                console.log('❌ Strategy 3 failed:', error);
+            }
+        }
+    }
+    
+    if (!placed) {
+        console.log('❌ All placement strategies failed!');
+        return null;
+    }
+    
+    return widget;
+}
+
+// Simplified update function for debugging
+function updateDashboardWidgetDebug() {
+    console.log('🔄 Updating dashboard widget...');
+    
+    const widget = createDashboardWidgetDebug();
+    if (!widget) {
+        console.log('❌ No widget to update!');
+        return;
+    }
+    
+    // Simple content for debugging
+    widget.innerHTML = `
+        <h3 style="color: #06b6d4; margin-bottom: 1rem;">🫁 Buteyko Status (DEBUG)</h3>
+        <div style="padding: 1rem; background: #f0f9ff; border-radius: 0.5rem; margin-bottom: 1rem;">
+            <p><strong>Widget is working!</strong> ✅</p>
+            <p>Vandaag gemeten: ${getTodaysMeasurementCount()} keer</p>
+            <p>Huidige streak: ${buteykoData.streakData.currentStreak} dagen</p>
+            <p>Laatste CP: ${getLastCPScore()} seconden</p>
+        </div>
+        <button class="btn btn-cyan" onclick="showTab('buteyko')" style="width: 100%;">
+            📏 Naar Buteyko Tab
+        </button>
+    `;
+    
+    console.log('✅ Widget content updated');
+}
+
+// Test functie om handmatig te activeren
+function forceCreateWidget() {
+    // Ensure we're on dashboard
+    showTab('dashboard');
+    
+    // Wait a bit then create widget
+    setTimeout(() => {
+        console.log('🚀 Force creating widget...');
+        updateDashboardWidgetDebug();
+        debugWidgetPlacement();
+    }, 500);
+}
+
+// Voeg aan window toe voor console access
+window.debugWidgetPlacement = debugWidgetPlacement;
+window.updateDashboardWidgetDebug = updateDashboardWidgetDebug;
+window.forceCreateWidget = forceCreateWidget;
 
     // Breath exercise variables
     let breathInterval = null;

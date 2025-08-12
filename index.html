@@ -6159,6 +6159,12 @@ try {
 } catch (error) {
     log('ERROR', 'Buteyko tracking initialization failed:', error);
 }
+try {
+    initDashboardWidget();
+    log('SUCCESS', 'Dashboard widget system loaded');
+} catch (error) {
+    log('ERROR', 'Dashboard widget initialization failed:', error);
+}
         
         // Load progress data (from localStorage or default)
         try {

@@ -2983,6 +2983,325 @@ function onCPMeasurementCompleted(score) {
     
     log('INFO', `CP measurement completed: ${score}s, streak: ${buteykoData.streakData.currentStreak}`);
 }
+    // ============================================
+// STAP 2: DASHBOARD WIDGET
+// ============================================
+
+// Voeg toe aan je bestaande script, na stap 1 code
+
+// =====================================
+// DASHBOARD WIDGET FUNCTIONS
+// =====================================
+
+function createDashboardWidget() {
+    // Check if widget already exists
+    let widget = document.getElementById('buteyko-dashboard-widget');
+    
+    if (!widget) {
+        widget = document.createElement('div');
+        widget.id = 'buteyko-dashboard-widget';
+        widget.className = 'card';
+        widget.style.marginBottom = '1.5rem';
+        
+        // Find the hero greeting section and insert widget after it
+        const heroSection = document.querySelector('#dashboard .card');
+        if (heroSection && heroSection.parentNode) {
+            heroSection.parentNode.insertBefore(widget, heroSection.nextSibling);
+            log('SUCCESS', 'Dashboard widget created and positioned');
+        } else {
+            // Fallback: add to dashboard container
+            const dashboard = document.getElementById('dashboard');
+            if (dashboard) {
+                dashboard.appendChild(widget);
+                log('WARNING', 'Dashboard widget added to container (fallback position)');
+            }
+        }
+    }
+    
+    return widget;
+}
+
+function updateDashboardWidget() {
+    const widget = createDashboardWidget();
+    if (!widget) return;
+    
+    // Get current data
+    const todayCount = getTodaysMeasurementCount();
+    const lastCP = getLastCPScore();
+    const averageCP = calculateAverageCP(30);
+    const streak = buteykoData.streakData.currentStreak;
+    const dailyGoal = buteykoData.streakData.dailyGoal;
+    
+    // Calculate progress percentage
+    const progressPercentage = Math.min((todayCount / dailyGoal) * 100, 100);
+    
+    // Determine next reminder
+    const nextReminder = getNextReminderTime();
+    
+    // Generate widget HTML
+    widget.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+            <h3 style="margin: 0; color: var(--text-dark);">🫁 Buteyko Status</h3>
+            <div style="font-size: 0.8rem; color: var(--text-light);">
+                ${nextReminder ? `Volgende: ${nextReminder}` : 'Alle reminders voltooid'}
+            </div>
+        </div>
+        
+        <!-- Daily Progress Bar -->
+        <div style="margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.9rem; font-weight: 500;">Vandaag: ${todayCount}/${dailyGoal} metingen</span>
+                <span style="font-size: 0.8rem; color: var(--text-light);">${Math.round(progressPercentage)}%</span>
+            </div>
+            <div class="progress-bar" style="height: 8px; margin-bottom: 0;">
+                <div class="progress-fill" style="width: ${progressPercentage}%; background: ${progressPercentage === 100 ? '#10b981' : '#06b6d4'}; transition: width 0.3s ease;"></div>
+            </div>
+        </div>
+        
+        <!-- Status Grid -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div class="cp-stats" style="text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: bold; color: #06b6d4; margin-bottom: 0.25rem;">
+                    ${streak}
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-light);">
+                    Dagen streak ${streak > 0 ? '🔥' : '💤'}
+                </div>
+            </div>
+            <div class="cp-stats" style="text-align: center;">
+                <div style="font-size: 1.5rem; font-weight: bold; color: #10b981; margin-bottom: 0.25rem;">
+                    ${lastCP || '---'}
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-light);">
+                    Laatste CP (sec)
+                </div>
+            </div>
+        </div>
+        
+        <!-- Additional Stats -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 0.75rem; background: rgba(6, 182, 212, 0.05); border-radius: 0.5rem; border: 1px solid rgba(6, 182, 212, 0.1);">
+            <div style="font-size: 0.85rem;">
+                <strong>30-dagen gemiddelde:</strong> ${averageCP || '---'} sec
+            </div>
+            <div style="font-size: 0.85rem;">
+                <strong>Totaal metingen:</strong> ${buteykoData.streakData.totalMeasurements}
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+            <button class="btn btn-cyan" onclick="quickStartCP()" style="font-size: 0.9rem; padding: 0.75rem;">
+                📏 Meet CP Nu
+            </button>
+            <button class="btn btn-purple" onclick="showTab('buteyko')" style="font-size: 0.9rem; padding: 0.75rem;">
+                🫁 Naar Buteyko
+            </button>
+        </div>
+        
+        <!-- Achievement Preview -->
+        ${getNextAchievementPreview()}
+    `;
+    
+    log('SUCCESS', 'Dashboard widget updated with current data');
+}
+
+// =====================================
+// WIDGET HELPER FUNCTIONS
+// =====================================
+
+function getNextReminderTime() {
+    const now = new Date();
+    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    
+    const reminders = [
+        { time: buteykoData.reminders.morning.time, enabled: buteykoData.reminders.morning.enabled, name: 'Ochtend' },
+        { time: buteykoData.reminders.afternoon.time, enabled: buteykoData.reminders.afternoon.enabled, name: 'Middag' },
+        { time: buteykoData.reminders.evening.time, enabled: buteykoData.reminders.evening.enabled, name: 'Avond' }
+    ];
+    
+    // Find next reminder after current time
+    for (const reminder of reminders) {
+        if (reminder.enabled && reminder.time > currentTime) {
+            return `${reminder.time} (${reminder.name})`;
+        }
+    }
+    
+    // If no more today, show first one tomorrow
+    const firstReminder = reminders.find(r => r.enabled);
+    return firstReminder ? `${firstReminder.time} (morgen)` : null;
+}
+
+function getNextAchievementPreview() {
+    const streak = buteykoData.streakData.currentStreak;
+    const totalMeasurements = buteykoData.streakData.totalMeasurements;
+    const lastCP = getLastCPScore();
+    
+    let nextAchievement = null;
+    
+    // Check streak achievements
+    if (streak < 3) {
+        nextAchievement = { 
+            title: 'First Steps 🔥', 
+            progress: streak, 
+            goal: 3, 
+            description: '3 dagen streak' 
+        };
+    } else if (streak < 7) {
+        nextAchievement = { 
+            title: 'Building Momentum ⚡', 
+            progress: streak, 
+            goal: 7, 
+            description: '7 dagen streak' 
+        };
+    } else if (streak < 14) {
+        nextAchievement = { 
+            title: 'Dedicated Tracker 💪', 
+            progress: streak, 
+            goal: 14, 
+            description: '14 dagen streak' 
+        };
+    } else if (streak < 30) {
+        nextAchievement = { 
+            title: 'Consistency Champion 🌟', 
+            progress: streak, 
+            goal: 30, 
+            description: '30 dagen streak' 
+        };
+    }
+    
+    // Check CP achievements if no streak achievement
+    if (!nextAchievement && lastCP < 40) {
+        nextAchievement = { 
+            title: 'Excellent Control 💎', 
+            progress: lastCP, 
+            goal: 40, 
+            description: '40+ seconden CP' 
+        };
+    }
+    
+    if (!nextAchievement) {
+        return `
+            <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(16, 185, 129, 0.05); border-radius: 0.5rem; border: 1px solid rgba(16, 185, 129, 0.1); text-align: center;">
+                <div style="font-size: 0.85rem; color: #059669;">
+                    🏆 <strong>Geweldig bezig!</strong> Je hebt de belangrijkste mijlpalen behaald!
+                </div>
+            </div>
+        `;
+    }
+    
+    const progressPercentage = Math.min((nextAchievement.progress / nextAchievement.goal) * 100, 100);
+    
+    return `
+        <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(102, 126, 234, 0.05); border-radius: 0.5rem; border: 1px solid rgba(102, 126, 234, 0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <div style="font-size: 0.85rem; font-weight: 500;">Volgende Achievement:</div>
+                <div style="font-size: 0.8rem; color: var(--text-light);">${nextAchievement.progress}/${nextAchievement.goal}</div>
+            </div>
+            <div style="font-size: 0.9rem; font-weight: 600; color: #667eea; margin-bottom: 0.5rem;">
+                ${nextAchievement.title}
+            </div>
+            <div style="background: #f1f5f9; border-radius: 0.25rem; height: 6px; overflow: hidden;">
+                <div style="background: #667eea; height: 100%; width: ${progressPercentage}%; transition: width 0.3s ease;"></div>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.25rem;">
+                ${nextAchievement.description}
+            </div>
+        </div>
+    `;
+}
+
+// =====================================
+// QUICK ACTIONS
+// =====================================
+
+function quickStartCP() {
+    // Navigate to Buteyko tab and start CP measurement
+    showTab('buteyko');
+    
+    // Small delay to ensure tab is loaded
+    setTimeout(() => {
+        const cpStartBtn = document.getElementById('cp-start-btn');
+        if (cpStartBtn && cpStartBtn.style.display !== 'none') {
+            // Focus and highlight the start button
+            cpStartBtn.focus();
+            cpStartBtn.style.animation = 'pulse 0.5s ease-in-out 2';
+            
+            // Optional: Auto-start after another small delay
+            setTimeout(() => {
+                showUserMessage('💡 Klik op "Start CP Meting" om te beginnen!', 'info');
+            }, 500);
+        }
+    }, 200);
+    
+    log('INFO', 'Quick CP start initiated');
+}
+
+// =====================================
+// AUTO-UPDATE SYSTEM
+// =====================================
+
+function scheduleWidgetUpdates() {
+    // Update widget every 30 seconds when on dashboard
+    setInterval(() => {
+        if (appState.currentTab === 'dashboard') {
+            updateDashboardWidget();
+        }
+    }, 30000);
+    
+    // Update immediately when switching to dashboard
+    const originalShowTab = window.showTab;
+    window.showTab = function(tabName) {
+        originalShowTab(tabName);
+        
+        if (tabName === 'dashboard') {
+            setTimeout(updateDashboardWidget, 100);
+        }
+    };
+    
+    log('SUCCESS', 'Widget auto-update system scheduled');
+}
+
+// =====================================
+// ENHANCED CP MEASUREMENT INTEGRATION
+// =====================================
+
+// Update the onCPMeasurementCompleted function from step 1
+function onCPMeasurementCompleted(score) {
+    // Update streak when CP measurement is completed
+    updateStreakData();
+    
+    // Update dashboard widget if we're on dashboard tab
+    if (appState.currentTab === 'dashboard') {
+        setTimeout(updateDashboardWidget, 500);
+    }
+    
+    // Show celebration message
+    const todayCount = getTodaysMeasurementCount();
+    if (todayCount === 1) {
+        showUserMessage(`🎉 Eerste meting van vandaag voltooid! ${score}s`, 'success');
+    } else if (todayCount === buteykoData.streakData.dailyGoal) {
+        showUserMessage(`🏆 Dagdoel behaald! ${todayCount}/${buteykoData.streakData.dailyGoal} metingen voltooid!`, 'success');
+    }
+    
+    log('INFO', `CP measurement completed: ${score}s, today: ${todayCount}/${buteykoData.streakData.dailyGoal}`);
+}
+
+// =====================================
+// INITIALIZATION FOR STEP 2
+// =====================================
+
+function initDashboardWidget() {
+    // Create and update widget
+    updateDashboardWidget();
+    
+    // Schedule automatic updates
+    scheduleWidgetUpdates();
+    
+    // Add global function for quick access
+    window.quickStartCP = quickStartCP;
+    
+    log('SUCCESS', 'Dashboard widget system initialized');
+}
 
     // Wake lock for keeping screen on
     let wakeLock = null;

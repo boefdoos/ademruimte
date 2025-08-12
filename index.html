@@ -2976,12 +2976,32 @@ function initButeykoTracking() {
 // INTEGRATION HOOK
 // =====================================
 
-// Hook into bestaande CP measurement completion
-function onCPMeasurementCompleted(score) {
-    // Update streak when CP measurement is completed
-    updateStreakData();
-    
-    log('INFO', `CP measurement completed: ${score}s, streak: ${buteykoData.streakData.currentStreak}`);
+// =====================================
+// ENHANCED CP MEASUREMENT INTEGRATION
+// =====================================
+
+// Update the existing onCPMeasurementCompleted function from step 1
+function updateOnCPMeasurementCompleted() {
+    // Override the existing function with enhanced version
+    window.onCPMeasurementCompleted = function(score) {
+        // Update streak when CP measurement is completed
+        updateStreakData();
+        
+        // Update dashboard widget if we're on dashboard tab
+        if (appState.currentTab === 'dashboard') {
+            setTimeout(updateDashboardWidget, 500);
+        }
+        
+        // Show celebration message
+        const todayCount = getTodaysMeasurementCount();
+        if (todayCount === 1) {
+            showUserMessage(`🎉 Eerste meting van vandaag voltooid! ${score}s`, 'success');
+        } else if (todayCount === buteykoData.streakData.dailyGoal) {
+            showUserMessage(`🏆 Dagdoel behaald! ${todayCount}/${buteykoData.streakData.dailyGoal} metingen voltooid!`, 'success');
+        }
+        
+        log('INFO', `CP measurement completed: ${score}s, today: ${todayCount}/${buteykoData.streakData.dailyGoal}`);
+    };
 }
     // ============================================
 // STAP 2: DASHBOARD WIDGET

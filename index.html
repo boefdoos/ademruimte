@@ -3235,25 +3235,35 @@ function getNextAchievementPreview() {
 // =====================================
 
 function quickStartCP() {
-    // Navigate to Buteyko tab and start CP measurement
+    // Navigate to Buteyko tab
     showTab('buteyko');
     
-    // Small delay to ensure tab is loaded
+    // Small delay to ensure tab is loaded, then auto-start CP measurement
     setTimeout(() => {
         const cpStartBtn = document.getElementById('cp-start-btn');
-        if (cpStartBtn && cpStartBtn.style.display !== 'none') {
-            // Focus and highlight the start button
+        const cpStopBtn = document.getElementById('cp-stop-btn');
+        
+        // Check if CP measurement is not already running
+        if (cpStartBtn && cpStartBtn.style.display !== 'none' && !cpIsRunning) {
+            // Focus the button first
             cpStartBtn.focus();
             cpStartBtn.style.animation = 'pulse 0.5s ease-in-out 2';
             
-            // Optional: Auto-start after another small delay
+            // Auto-start the measurement after a brief highlight
             setTimeout(() => {
-                showUserMessage('💡 Klik op "Start CP Meting" om te beginnen!', 'info');
-            }, 500);
+                startCPMeasurement();
+                showUserMessage('🏃‍♂️ CP meting automatisch gestart! Stop wanneer je de eerste ademhaling-neiging voelt.', 'info');
+            }, 300);
+        } else if (cpIsRunning) {
+            // If already running, just show message
+            showUserMessage('⏱️ CP meting loopt al! Klik "Stop" wanneer je de eerste ademhaling-neiging voelt.', 'info');
+        } else {
+            // Fallback: show help message
+            showUserMessage('💡 Klik op "Start CP Meting" om te beginnen!', 'info');
         }
     }, 200);
     
-    log('INFO', 'Quick CP start initiated');
+    console.log('🚀 Quick CP start: auto-starting measurement');
 }
 
 // =====================================

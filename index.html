@@ -3335,42 +3335,22 @@ function initDashboardWidget() {
     
     log('SUCCESS', 'Dashboard widget system initialized');
 }
-    // ============================================
-// CP TRACKING FIX - AUTOMATISCHE OPSLAG
+// ============================================
+// CP TRACKING FIX - ALLEEN NIEUWE FUNCTIES
 // ============================================
 
-// Voeg deze nieuwe data structuur toe aan je buteykoData
-// (Update je bestaande buteykoData object)
+// =====================================
+// EXTEND EXISTING BUTEYKO DATA
+// =====================================
 
-let buteykoData = {
-    // Bestaande properties...
-    reminders: {
-        morning: { time: "08:00", enabled: true, message: "Start je dag met een CP meting! 🌅" },
-        afternoon: { time: "14:00", enabled: true, message: "Tijd voor je middag CP check 🌞" },
-        evening: { time: "20:00", enabled: true, message: "Sluit je dag af met een CP meting 🌙" }
-    },
-    
-    streakData: {
-        currentStreak: 0,
-        longestStreak: 0,
-        lastMeasurement: null,
-        totalMeasurements: 0,
-        dailyGoal: 3
-    },
-    
-    achievements: [],
-    
-    settings: {
-        notificationsEnabled: false,
-        reminderSound: true
-    },
-    
-    // 🆕 NIEUWE SECTIE: Direct CP storage
-    cpMeasurements: []  // Array om alle CP metingen op te slaan
-};
+// Add cpMeasurements array to existing buteykoData (if not exists)
+if (!buteykoData.cpMeasurements) {
+    buteykoData.cpMeasurements = [];
+    saveButeykoData(); // Save the updated structure
+}
 
 // =====================================
-// VERBETERDE CP TRACKING FUNCTIONS
+// NIEUWE CP TRACKING FUNCTIONS
 // =====================================
 
 function saveCPMeasurement(score, notes = '') {
@@ -3378,7 +3358,7 @@ function saveCPMeasurement(score, notes = '') {
         id: Date.now(), // Unique ID
         timestamp: new Date().toISOString(),
         score: score,
-        timeOfDay: getTimeOfDay(new Date()),
+        timeOfDay: getTimeOfDayFromDate(new Date()),
         notes: notes,
         hasJournalEntry: false  // Track if user made journal entry
     };
@@ -3398,7 +3378,7 @@ function saveCPMeasurement(score, notes = '') {
     return measurement.id;
 }
 
-function getTimeOfDay(date) {
+function getTimeOfDayFromDate(date) {
     const hour = date.getHours();
     if (hour < 11) return 'morning';
     if (hour < 17) return 'afternoon';
@@ -3406,10 +3386,11 @@ function getTimeOfDay(date) {
 }
 
 // =====================================
-// VERBETERDE COUNTING FUNCTIONS
+// OVERRIDE EXISTING COUNTING FUNCTIONS
 // =====================================
 
-function getTodaysMeasurementCount() {
+// Override the existing getTodaysMeasurementCount function
+window.getTodaysMeasurementCount = function() {
     const today = new Date();
     
     // Count from our direct CP storage (primary source)
@@ -3430,9 +3411,10 @@ function getTodaysMeasurementCount() {
     
     // Use the higher count (handles duplicates better than addition)
     return Math.max(directCount, journalCount);
-}
+};
 
-function getLastCPScore() {
+// Override the existing getLastCPScore function
+window.getLastCPScore = function() {
     // Try direct storage first
     if (buteykoData.cpMeasurements.length > 0) {
         return buteykoData.cpMeasurements[0].score;
@@ -3450,9 +3432,10 @@ function getLastCPScore() {
     });
     
     return cpEntries[0].cpScore;
-}
+};
 
-function calculateAverageCP(days = 30) {
+// Override the existing calculateAverageCP function
+window.calculateAverageCP = function(days = 30) {
     const cutoffDate = new Date(Date.now() - (days * 24 * 60 * 60 * 1000));
     
     // Use direct storage first
@@ -3480,51 +3463,10 @@ function calculateAverageCP(days = 30) {
     
     const total = recentCPEntries.reduce((sum, entry) => sum + entry.cpScore, 0);
     return Math.round(total / recentCPEntries.length);
-}
-
-function getAllCPMeasurements() {
-    // Combine direct measurements with dagboek entries
-    let allMeasurements = [];
-    
-    // Add direct measurements
-    buteykoData.cpMeasurements.forEach(measurement => {
-        allMeasurements.push({
-            timestamp: measurement.timestamp,
-            score: measurement.score,
-            source: 'direct',
-            notes: measurement.notes || ''
-        });
-    });
-    
-    // Add dagboek measurements (avoid duplicates by checking timestamps)
-    allDagboekEntries.forEach(entry => {
-        if (entry.cpScore && entry.cpScore > 0) {
-            const entryTimestamp = entry.timestamp instanceof Date ? 
-                entry.timestamp.toISOString() : entry.clientTimestamp;
-            
-            // Check if we already have this measurement
-            const isDuplicate = allMeasurements.some(measurement => {
-                const timeDiff = Math.abs(new Date(measurement.timestamp) - new Date(entryTimestamp));
-                return timeDiff < 60000 && measurement.score === entry.cpScore; // Within 1 minute
-            });
-            
-            if (!isDuplicate) {
-                allMeasurements.push({
-                    timestamp: entryTimestamp,
-                    score: entry.cpScore,
-                    source: 'journal',
-                    notes: entry.notities || ''
-                });
-            }
-        }
-    });
-    
-    // Sort by timestamp descending
-    return allMeasurements.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-}
+};
 
 // =====================================
-// VERBETERDE CP MEASUREMENT INTEGRATION
+// ENHANCED CP MEASUREMENT INTEGRATION
 // =====================================
 
 function enhancedOnCPMeasurementCompleted(score) {
@@ -3562,6 +3504,9 @@ function enhancedOnCPMeasurementCompleted(score) {
 // =====================================
 
 function showOptionalJournalPrompt(measurementId, score) {
+    // Don't show if there's already a prompt
+    if (document.querySelector('.journal-prompt')) return;
+    
     // Non-intrusive prompt for journal entry
     const prompt = document.createElement('div');
     prompt.className = 'journal-prompt';
@@ -3579,33 +3524,56 @@ function showOptionalJournalPrompt(measurementId, score) {
         animation: slideInUp 0.3s ease-out;
     `;
     
-    prompt.innerHTML = `
-        <div style="margin-bottom: 0.75rem;">
-            <strong>📏 CP ${score}s opgeslagen!</strong><br>
-            <span style="font-size: 0.85rem; opacity: 0.9;">Wil je notities toevoegen?</span>
-        </div>
-        <div style="display: flex; gap: 0.5rem;">
-            <button onclick="openJournalFromPrompt(${measurementId}, ${score})" style="
-                background: white; 
-                color: #06b6d4; 
-                border: none; 
-                padding: 0.5rem 1rem; 
-                border-radius: 0.375rem; 
-                cursor: pointer;
-                font-size: 0.8rem;
-                font-weight: 600;
-            ">📝 Ja</button>
-            <button onclick="this.parentElement.parentElement.remove()" style="
-                background: rgba(255,255,255,0.2); 
-                color: white; 
-                border: none; 
-                padding: 0.5rem 1rem; 
-                border-radius: 0.375rem; 
-                cursor: pointer;
-                font-size: 0.8rem;
-            ">Later</button>
-        </div>
+    // Create content without innerHTML to avoid TrustedHTML issues
+    const title = document.createElement('div');
+    title.style.marginBottom = '0.75rem';
+    
+    const strongText = document.createElement('strong');
+    strongText.textContent = `📏 CP ${score}s opgeslagen!`;
+    
+    const subText = document.createElement('span');
+    subText.style.cssText = 'font-size: 0.85rem; opacity: 0.9;';
+    subText.textContent = 'Wil je notities toevoegen?';
+    
+    title.appendChild(strongText);
+    title.appendChild(document.createElement('br'));
+    title.appendChild(subText);
+    
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.cssText = 'display: flex; gap: 0.5rem;';
+    
+    const yesButton = document.createElement('button');
+    yesButton.textContent = '📝 Ja';
+    yesButton.style.cssText = `
+        background: white; 
+        color: #06b6d4; 
+        border: none; 
+        padding: 0.5rem 1rem; 
+        border-radius: 0.375rem; 
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 600;
     `;
+    yesButton.onclick = () => openJournalFromPrompt(measurementId, score);
+    
+    const laterButton = document.createElement('button');
+    laterButton.textContent = 'Later';
+    laterButton.style.cssText = `
+        background: rgba(255,255,255,0.2); 
+        color: white; 
+        border: none; 
+        padding: 0.5rem 1rem; 
+        border-radius: 0.375rem; 
+        cursor: pointer;
+        font-size: 0.8rem;
+    `;
+    laterButton.onclick = () => prompt.remove();
+    
+    buttonContainer.appendChild(yesButton);
+    buttonContainer.appendChild(laterButton);
+    
+    prompt.appendChild(title);
+    prompt.appendChild(buttonContainer);
     
     document.body.appendChild(prompt);
     
@@ -3667,35 +3635,13 @@ if (!document.querySelector('#journal-prompt-animations')) {
 // UPDATE EXISTING INTEGRATION
 // =====================================
 
-// Update the onCPMeasurementCompleted function to use enhanced version
+// Override the existing onCPMeasurementCompleted function
 window.onCPMeasurementCompleted = enhancedOnCPMeasurementCompleted;
 
-    // Wake lock for keeping screen on
-    let wakeLock = null;
-
-    // Progress tracking
-    let progressData = {
-        buteyko: { sessions: 0, totalTime: 0, lastSession: null },
-        ritual: { sessions: 0, totalTime: 0, lastSession: null },
-        emdr: { sessions: 0, totalTime: 0, lastSession: null },
-        crisis: { sessions: 0, lastSession: null }
-    };
-
-    // Globale variabelen voor chart filtering
-    let currentChartFilter = 'last10';
-    let allDagboekEntries = [];
-
-    // Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
-        authDomain: "ademruimte.vercel.app", 
-        projectId: "ademruimte-12c09",
-        storageBucket: "ademruimte-12c09.firebasestorage.app",
-        messagingSenderId: "744941871331",
-        appId: "1:744941871331:web:c3ce24d814fe41314d25d6",
-        measurementId: "G-SD2ZEYNMNY"
-    };
-
+// Make new functions available globally
+window.saveCPMeasurement = saveCPMeasurement;
+window.showOptionalJournalPrompt = showOptionalJournalPrompt;
+window.openJournalFromPrompt = openJournalFromPrompt;
     // Enhanced Maag-Ademhaling Reset step data
     const ritualSteps = [
         {

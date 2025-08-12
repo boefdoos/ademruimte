@@ -2716,6 +2716,274 @@
     let eyeStep = 0;
     let isFullscreenMode = false;
 
+    // ============================================
+// STAP 1: BASIS DATA STRUCTUUR & STORAGE
+// ============================================
+
+// Voeg dit toe aan je bestaande script sectie, na de bestaande globale variabelen
+
+// Buteyko tracking data structure
+let buteykoData = {
+    // Reminder instellingen
+    reminders: {
+        morning: { time: "08:00", enabled: true, message: "Start je dag met een CP meting! 🌅" },
+        afternoon: { time: "14:00", enabled: true, message: "Tijd voor je middag CP check 🌞" },
+        evening: { time: "20:00", enabled: true, message: "Sluit je dag af met een CP meting 🌙" }
+    },
+    
+    // Streak en progress tracking
+    streakData: {
+        currentStreak: 0,
+        longestStreak: 0,
+        lastMeasurement: null,
+        totalMeasurements: 0,
+        dailyGoal: 3
+    },
+    
+    // Achievements array
+    achievements: [],
+    
+    // Settings
+    settings: {
+        notificationsEnabled: false,
+        reminderSound: true
+    }
+};
+
+// =====================================
+// DATA PERSISTENCE FUNCTIONS
+// =====================================
+
+function saveButeykoData() {
+    try {
+        if (typeof Storage !== "undefined" && window.localStorage) {
+            const dataToSave = {
+                ...buteykoData,
+                lastUpdated: new Date().toISOString()
+            };
+            localStorage.setItem('ademruimte-buteyko-data', JSON.stringify(dataToSave));
+            log('SUCCESS', 'Buteyko data saved to localStorage');
+            return true;
+        }
+    } catch (error) {
+        log('WARNING', 'Could not save Buteyko data to localStorage:', error);
+        return false;
+    }
+}
+
+function loadButeykoData() {
+    try {
+        if (typeof Storage !== "undefined" && window.localStorage) {
+            const stored = localStorage.getItem('ademruimte-buteyko-data');
+            if (stored) {
+                const loadedData = JSON.parse(stored);
+                
+                // Merge met defaults om backwards compatibility te behouden
+                buteykoData = {
+                    ...buteykoData,
+                    ...loadedData
+                };
+                
+                log('SUCCESS', 'Buteyko data loaded from localStorage');
+                return true;
+            }
+        }
+        log('INFO', 'No existing Buteyko data found, using defaults');
+        return false;
+    } catch (error) {
+        log('WARNING', 'Could not load Buteyko data from localStorage:', error);
+        return false;
+    }
+}
+
+// =====================================
+// BASIC TRACKING FUNCTIONS
+// =====================================
+
+function getTodaysMeasurementCount() {
+    const today = new Date();
+    
+    // Check dagboek entries for today with CP scores
+    const todaysMeasurements = allDagboekEntries.filter(entry => {
+        if (!entry.cpScore || entry.cpScore <= 0) return false;
+        
+        const entryDate = entry.timestamp instanceof Date ? 
+            entry.timestamp : new Date(entry.clientTimestamp || 0);
+        
+        return entryDate.toDateString() === today.toDateString();
+    });
+    
+    return todaysMeasurements.length;
+}
+
+function getLastCPScore() {
+    // Get laatste CP score van dagboek entries
+    const cpEntries = allDagboekEntries.filter(entry => entry.cpScore && entry.cpScore > 0);
+    
+    if (cpEntries.length === 0) return 0;
+    
+    // Sort by timestamp descending
+    cpEntries.sort((a, b) => {
+        const dateA = a.timestamp instanceof Date ? a.timestamp : new Date(a.clientTimestamp || 0);
+        const dateB = b.timestamp instanceof Date ? b.timestamp : new Date(b.clientTimestamp || 0);
+        return dateB - dateA;
+    });
+    
+    return cpEntries[0].cpScore;
+}
+
+function calculateAverageCP(days = 30) {
+    const cutoffDate = new Date(Date.now() - (days * 24 * 60 * 60 * 1000));
+    
+    const recentCPEntries = allDagboekEntries.filter(entry => {
+        if (!entry.cpScore || entry.cpScore <= 0) return false;
+        
+        const entryDate = entry.timestamp instanceof Date ? 
+            entry.timestamp : new Date(entry.clientTimestamp || 0);
+        
+        return entryDate >= cutoffDate;
+    });
+    
+    if (recentCPEntries.length === 0) return 0;
+    
+    const total = recentCPEntries.reduce((sum, entry) => sum + entry.cpScore, 0);
+    return Math.round(total / recentCPEntries.length);
+}
+
+// =====================================
+// STREAK CALCULATION
+// =====================================
+
+function updateStreakData() {
+    const today = new Date();
+    const todayCount = getTodaysMeasurementCount();
+    
+    // Als er vandaag al metingen zijn
+    if (todayCount > 0) {
+        const lastMeasurement = buteykoData.streakData.lastMeasurement ? 
+            new Date(buteykoData.streakData.lastMeasurement) : null;
+        
+        // Check of we vandaag al een streak update hebben gehad
+        if (!lastMeasurement || lastMeasurement.toDateString() !== today.toDateString()) {
+            
+            // Check of we gisteren ook gemeten hebben
+            const yesterday = new Date(today.getTime() - (24 * 60 * 60 * 1000));
+            const yesterdayCount = allDagboekEntries.filter(entry => {
+                if (!entry.cpScore || entry.cpScore <= 0) return false;
+                
+                const entryDate = entry.timestamp instanceof Date ? 
+                    entry.timestamp : new Date(entry.clientTimestamp || 0);
+                
+                return entryDate.toDateString() === yesterday.toDateString();
+            }).length;
+            
+            if (yesterdayCount > 0 || !lastMeasurement) {
+                // Continue streak
+                buteykoData.streakData.currentStreak++;
+            } else {
+                // Streak broken, start new
+                buteykoData.streakData.currentStreak = 1;
+            }
+            
+            // Update longest streak
+            if (buteykoData.streakData.currentStreak > buteykoData.streakData.longestStreak) {
+                buteykoData.streakData.longestStreak = buteykoData.streakData.currentStreak;
+            }
+            
+            // Update last measurement date
+            buteykoData.streakData.lastMeasurement = today.toISOString();
+            
+            // Update total measurements
+            buteykoData.streakData.totalMeasurements++;
+            
+            saveButeykoData();
+            
+            log('SUCCESS', `Streak updated: ${buteykoData.streakData.currentStreak} days`);
+        }
+    }
+}
+
+// =====================================
+// TESTING FUNCTIONS
+// =====================================
+
+// Functie om data te testen en resetten (voor development)
+function testButeykoData() {
+    console.log('=== BUTEYKO DATA TEST ===');
+    console.log('Current data:', buteykoData);
+    console.log('Today\'s measurements:', getTodaysMeasurementCount());
+    console.log('Last CP score:', getLastCPScore());
+    console.log('30-day average CP:', calculateAverageCP(30));
+    console.log('Current streak:', buteykoData.streakData.currentStreak);
+}
+
+function resetButeykoData() {
+    if (confirm('⚠️ Dit wist alle Buteyko progress data. Weet je het zeker?')) {
+        localStorage.removeItem('ademruimte-buteyko-data');
+        
+        // Reset to defaults
+        buteykoData = {
+            reminders: {
+                morning: { time: "08:00", enabled: true, message: "Start je dag met een CP meting! 🌅" },
+                afternoon: { time: "14:00", enabled: true, message: "Tijd voor je middag CP check 🌞" },
+                evening: { time: "20:00", enabled: true, message: "Sluit je dag af met een CP meting 🌙" }
+            },
+            streakData: {
+                currentStreak: 0,
+                longestStreak: 0,
+                lastMeasurement: null,
+                totalMeasurements: 0,
+                dailyGoal: 3
+            },
+            achievements: [],
+            settings: {
+                notificationsEnabled: false,
+                reminderSound: true
+            }
+        };
+        
+        log('INFO', 'Buteyko data reset to defaults');
+        return true;
+    }
+    return false;
+}
+
+// =====================================
+// INITIALIZATION
+// =====================================
+
+// Functie om basis systeem te initialiseren
+function initButeykoTracking() {
+    // Load existing data
+    loadButeykoData();
+    
+    // Update streak data based on existing dagboek entries
+    updateStreakData();
+    
+    // Save any updates
+    saveButeykoData();
+    
+    log('SUCCESS', 'Buteyko tracking initialized');
+    
+    // Voor testing - voeg functies toe aan window
+    window.testButeykoData = testButeykoData;
+    window.resetButeykoData = resetButeykoData;
+    
+    return true;
+}
+
+// =====================================
+// INTEGRATION HOOK
+// =====================================
+
+// Hook into bestaande CP measurement completion
+function onCPMeasurementCompleted(score) {
+    // Update streak when CP measurement is completed
+    updateStreakData();
+    
+    log('INFO', `CP measurement completed: ${score}s, streak: ${buteykoData.streakData.currentStreak}`);
+}
+
     // Wake lock for keeping screen on
     let wakeLock = null;
 
@@ -5564,6 +5832,12 @@ setTimeout(checkScrollableContent, 100);
         } catch (error) {
             log('WARNING', 'Random tip setup failed:', error);
         }
+try {
+    initButeykoTracking();
+    log('SUCCESS', 'Buteyko tracking system loaded');
+} catch (error) {
+    log('ERROR', 'Buteyko tracking initialization failed:', error);
+}
         
         // Load progress data (from localStorage or default)
         try {

@@ -3497,6 +3497,19 @@ function enhancedOnCPMeasurementCompleted(score) {
     }, 2000);
     
     console.log(`📏 CP measurement auto-saved: ${score}s, today: ${todayCount}/${buteykoData.streakData.dailyGoal}`);
+        // 🆕 FORCE IMMEDIATE WIDGET UPDATE
+    console.log('🔄 Forcing widget update...');
+    setTimeout(() => {
+        updateDashboardWidget();
+        console.log('✅ Widget force updated');
+    }, 100);
+    
+    // Also update if we switch to dashboard later
+    setTimeout(() => {
+        if (appState.currentTab === 'dashboard') {
+            updateDashboardWidget();
+        }
+    }, 1000);
 }
 
 // =====================================
@@ -4147,6 +4160,7 @@ window.stopCPMeasurement = function() {
     window.lastCPScore = finalTime;
     
     console.log(`SUCCESS: CP measurement completed: ${finalTime} seconds`);
+};
     
     const startBtn = document.getElementById('cp-start-btn');
     const stopBtn = document.getElementById('cp-stop-btn');

@@ -3335,7 +3335,7 @@ function initDashboardWidget() {
     
     log('SUCCESS', 'Dashboard widget system initialized');
 }
-// ============================================
+    // ============================================
 // CP TRACKING FIX - ALLEEN NIEUWE FUNCTIES
 // ============================================
 
@@ -3642,6 +3642,33 @@ window.onCPMeasurementCompleted = enhancedOnCPMeasurementCompleted;
 window.saveCPMeasurement = saveCPMeasurement;
 window.showOptionalJournalPrompt = showOptionalJournalPrompt;
 window.openJournalFromPrompt = openJournalFromPrompt;
+
+    // Wake lock for keeping screen on
+    let wakeLock = null;
+
+    // Progress tracking
+    let progressData = {
+        buteyko: { sessions: 0, totalTime: 0, lastSession: null },
+        ritual: { sessions: 0, totalTime: 0, lastSession: null },
+        emdr: { sessions: 0, totalTime: 0, lastSession: null },
+        crisis: { sessions: 0, lastSession: null }
+    };
+
+    // Globale variabelen voor chart filtering
+    let currentChartFilter = 'last10';
+    let allDagboekEntries = [];
+
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
+        authDomain: "ademruimte.vercel.app", 
+        projectId: "ademruimte-12c09",
+        storageBucket: "ademruimte-12c09.firebasestorage.app",
+        messagingSenderId: "744941871331",
+        appId: "1:744941871331:web:c3ce24d814fe41314d25d6",
+        measurementId: "G-SD2ZEYNMNY"
+    };
+
     // Enhanced Maag-Ademhaling Reset step data
     const ritualSteps = [
         {

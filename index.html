@@ -3316,6 +3316,436 @@ function onCPMeasurementCompleted(score) {
     log('INFO', `CP measurement completed: ${score}s, today: ${todayCount}/${buteykoData.streakData.dailyGoal}`);
 }
 // ============================================
+// CP TRACKING FIX - UNIEKE FUNCTIENAMEN
+// ============================================
+
+// =====================================
+// EXTEND EXISTING BUTEYKO DATA
+// =====================================
+
+// Add cpMeasurements array to existing buteykoData (if not exists)
+if (!buteykoData.cpMeasurements) {
+    buteykoData.cpMeasurements = [];
+    saveButeykoData(); // Save the updated structure
+}
+
+// =====================================
+// NIEUWE CP TRACKING FUNCTIONS
+// =====================================
+
+function recordCPMeasurement(score, notes = '') {
+    const measurement = {
+        id: Date.now(), // Unique ID
+        timestamp: new Date().toISOString(),
+        score: score,
+        timeOfDay: determineTimeOfDay(new Date()),
+        notes: notes,
+        hasJournalEntry: false  // Track if user made journal entry
+    };
+    
+    // Add to our direct storage
+    buteykoData.cpMeasurements.unshift(measurement); // Add to beginning
+    
+    // Keep only last 1000 measurements to prevent storage bloat
+    if (buteykoData.cpMeasurements.length > 1000) {
+        buteykoData.cpMeasurements = buteykoData.cpMeasurements.slice(0, 1000);
+    }
+    
+    // Save to localStorage
+    saveButeykoData();
+    
+    console.log('✅ CP measurement auto-recorded:', measurement);
+    return measurement.id;
+}
+
+function determineTimeOfDay(date) {
+    const hour = date.getHours();
+    if (hour < 11) return 'morning';
+    if (hour < 17) return 'afternoon';
+    return 'evening';
+}
+
+// =====================================
+// NIEUWE COUNTING FUNCTIONS
+// =====================================
+
+function countTodaysDirectMeasurements() {
+    const today = new Date();
+    
+    // Count from our direct CP storage
+    const directCount = buteykoData.cpMeasurements.filter(measurement => {
+        const measurementDate = new Date(measurement.timestamp);
+        return measurementDate.toDateString() === today.toDateString();
+    }).length;
+    
+    return directCount;
+}
+
+function countTodaysJournalMeasurements() {
+    const today = new Date();
+    
+    // Count from dagboek entries
+    const journalCount = allDagboekEntries.filter(entry => {
+        if (!entry.cpScore || entry.cpScore <= 0) return false;
+        
+        const entryDate = entry.timestamp instanceof Date ? 
+            entry.timestamp : new Date(entry.clientTimestamp || 0);
+        
+        return entryDate.toDateString() === today.toDateString();
+    }).length;
+    
+    return journalCount;
+}
+
+function getMostRecentCPScore() {
+    // Try direct storage first
+    if (buteykoData.cpMeasurements.length > 0) {
+        return buteykoData.cpMeasurements[0].score;
+    }
+    
+    // Fallback to dagboek entries
+    const cpEntries = allDagboekEntries.filter(entry => entry.cpScore && entry.cpScore > 0);
+    
+    if (cpEntries.length === 0) return 0;
+    
+    cpEntries.sort((a, b) => {
+        const dateA = a.timestamp instanceof Date ? a.timestamp : new Date(a.clientTimestamp || 0);
+        const dateB = b.timestamp instanceof Date ? b.timestamp : new Date(b.clientTimestamp || 0);
+        return dateB - dateA;
+    });
+    
+    return cpEntries[0].cpScore;
+}
+
+function computeAverageCPScore(days = 30) {
+    const cutoffDate = new Date(Date.now() - (days * 24 * 60 * 60 * 1000));
+    
+    // Use direct storage first
+    const recentDirectMeasurements = buteykoData.cpMeasurements.filter(measurement => {
+        const measurementDate = new Date(measurement.timestamp);
+        return measurementDate >= cutoffDate;
+    });
+    
+    if (recentDirectMeasurements.length > 0) {
+        const total = recentDirectMeasurements.reduce((sum, measurement) => sum + measurement.score, 0);
+        return Math.round(total / recentDirectMeasurements.length);
+    }
+    
+    // Fallback to dagboek entries
+    const recentCPEntries = allDagboekEntries.filter(entry => {
+        if (!entry.cpScore || entry.cpScore <= 0) return false;
+        
+        const entryDate = entry.timestamp instanceof Date ? 
+            entry.timestamp : new Date(entry.clientTimestamp || 0);
+        
+        return entryDate >= cutoffDate;
+    });
+    
+    if (recentCPEntries.length === 0) return 0;
+    
+    const total = recentCPEntries.reduce((sum, entry) => sum + entry.cpScore, 0);
+    return Math.round(total / recentCPEntries.length);
+}
+
+// =====================================
+// REPLACEMENT FUNCTIONS
+// =====================================
+
+function replaceTodaysMeasurementCount() {
+    const directCount = countTodaysDirectMeasurements();
+    const journalCount = countTodaysJournalMeasurements();
+    
+    // Use the higher count (handles duplicates better than addition)
+    return Math.max(directCount, journalCount);
+}
+
+function replaceLastCPScore() {
+    return getMostRecentCPScore();
+}
+
+function replaceAverageCPCalculation(days = 30) {
+    return computeAverageCPScore(days);
+}
+
+// =====================================
+// ENHANCED CP MEASUREMENT INTEGRATION
+// =====================================
+
+function handleCPMeasurementComplete(score) {
+    // 1. Save measurement directly (automatic)
+    const measurementId = recordCPMeasurement(score);
+    
+    // 2. Update streak data (using existing function)
+    if (typeof updateStreakData === 'function') {
+        updateStreakData();
+    }
+    
+    // 3. Update dashboard widget if visible
+    if (appState && appState.currentTab === 'dashboard') {
+        setTimeout(() => {
+            if (typeof updateDashboardWidget === 'function') {
+                updateDashboardWidget();
+            }
+        }, 500);
+    }
+    
+    // 4. Show celebration message
+    const todayCount = replaceTodaysMeasurementCount();
+    const dailyGoal = buteykoData.streakData.dailyGoal || 3;
+    
+    if (todayCount === 1) {
+        if (typeof showUserMessage === 'function') {
+            showUserMessage(`🎉 Eerste meting van vandaag voltooid! ${score}s`, 'success');
+        }
+    } else if (todayCount === dailyGoal) {
+        if (typeof showUserMessage === 'function') {
+            showUserMessage(`🏆 Dagdoel behaald! ${todayCount}/${dailyGoal} metingen voltooid!`, 'success');
+        }
+    }
+    
+    // 5. Offer optional journal entry (non-intrusive)
+    setTimeout(() => {
+        if (score >= 20) { // Only for decent measurements
+            displayJournalPrompt(measurementId, score);
+        }
+    }, 2000);
+    
+    console.log(`📏 CP measurement auto-saved: ${score}s, today: ${todayCount}/${dailyGoal}`);
+}
+
+// =====================================
+// OPTIONAL JOURNAL ENTRY SYSTEM
+// =====================================
+
+function displayJournalPrompt(measurementId, score) {
+    // Don't show if there's already a prompt
+    if (document.querySelector('.cp-journal-prompt')) return;
+    
+    // Non-intrusive prompt for journal entry
+    const prompt = document.createElement('div');
+    prompt.className = 'cp-journal-prompt';
+    prompt.style.cssText = `
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: linear-gradient(135deg, #06b6d4, #0891b2);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        z-index: 1001;
+        max-width: 300px;
+        animation: cpSlideInUp 0.3s ease-out;
+    `;
+    
+    // Create content without innerHTML to avoid TrustedHTML issues
+    const title = document.createElement('div');
+    title.style.marginBottom = '0.75rem';
+    
+    const strongText = document.createElement('strong');
+    strongText.textContent = `📏 CP ${score}s opgeslagen!`;
+    
+    const subText = document.createElement('span');
+    subText.style.cssText = 'font-size: 0.85rem; opacity: 0.9;';
+    subText.textContent = 'Wil je notities toevoegen?';
+    
+    title.appendChild(strongText);
+    title.appendChild(document.createElement('br'));
+    title.appendChild(subText);
+    
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.cssText = 'display: flex; gap: 0.5rem;';
+    
+    const yesButton = document.createElement('button');
+    yesButton.textContent = '📝 Ja';
+    yesButton.style.cssText = `
+        background: white; 
+        color: #06b6d4; 
+        border: none; 
+        padding: 0.5rem 1rem; 
+        border-radius: 0.375rem; 
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 600;
+    `;
+    yesButton.onclick = () => launchJournalFromPrompt(measurementId, score);
+    
+    const laterButton = document.createElement('button');
+    laterButton.textContent = 'Later';
+    laterButton.style.cssText = `
+        background: rgba(255,255,255,0.2); 
+        color: white; 
+        border: none; 
+        padding: 0.5rem 1rem; 
+        border-radius: 0.375rem; 
+        cursor: pointer;
+        font-size: 0.8rem;
+    `;
+    laterButton.onclick = () => prompt.remove();
+    
+    buttonContainer.appendChild(yesButton);
+    buttonContainer.appendChild(laterButton);
+    
+    prompt.appendChild(title);
+    prompt.appendChild(buttonContainer);
+    
+    document.body.appendChild(prompt);
+    
+    // Auto-remove after 10 seconds
+    setTimeout(() => {
+        if (prompt.parentNode) {
+            prompt.style.animation = 'cpSlideOutDown 0.3s ease-in';
+            setTimeout(() => prompt.remove(), 300);
+        }
+    }, 10000);
+}
+
+function launchJournalFromPrompt(measurementId, score) {
+    // Remove the prompt
+    document.querySelector('.cp-journal-prompt')?.remove();
+    
+    // Mark measurement as having journal entry
+    const measurement = buteykoData.cpMeasurements.find(m => m.id === measurementId);
+    if (measurement) {
+        measurement.hasJournalEntry = true;
+        saveButeykoData();
+    }
+    
+    // Open journal modal with pre-filled CP score
+    if (typeof openDagboekModal === 'function') {
+        if (appState) {
+            appState.currentTechnique = 'Buteyko CP Meting';
+        }
+        openDagboekModal('Buteyko CP Meting');
+        
+        // Pre-fill the CP score
+        setTimeout(() => {
+            const cpScoreInput = document.getElementById('entry-cp-score');
+            if (cpScoreInput) {
+                cpScoreInput.value = score;
+            }
+        }, 100);
+    }
+}
+
+// =====================================
+// ANIMATION STYLES
+// =====================================
+
+// Add CSS animations if not exists
+if (!document.querySelector('#cp-journal-animations')) {
+    const style = document.createElement('style');
+    style.id = 'cp-journal-animations';
+    style.textContent = `
+        @keyframes cpSlideInUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes cpSlideOutDown {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(100%); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// =====================================
+// SAFE FUNCTION REPLACEMENT
+// =====================================
+
+function initializeCPTracking() {
+    try {
+        // Override existing functions safely
+        if (typeof window !== 'undefined') {
+            // Store original functions as backup
+            window._originalGetTodaysMeasurementCount = window.getTodaysMeasurementCount;
+            window._originalGetLastCPScore = window.getLastCPScore;
+            window._originalCalculateAverageCP = window.calculateAverageCP;
+            window._originalOnCPMeasurementCompleted = window.onCPMeasurementCompleted;
+            
+            // Replace with new functions
+            window.getTodaysMeasurementCount = replaceTodaysMeasurementCount;
+            window.getLastCPScore = replaceLastCPScore;
+            window.calculateAverageCP = replaceAverageCPCalculation;
+            window.onCPMeasurementCompleted = handleCPMeasurementComplete;
+            
+            // Make new functions available globally
+            window.recordCPMeasurement = recordCPMeasurement;
+            window.displayJournalPrompt = displayJournalPrompt;
+            window.launchJournalFromPrompt = launchJournalFromPrompt;
+            window.countTodaysDirectMeasurements = countTodaysDirectMeasurements;
+            window.getMostRecentCPScore = getMostRecentCPScore;
+            window.computeAverageCPScore = computeAverageCPScore;
+            
+            console.log('✅ CP Tracking enhancement initialized successfully');
+            return true;
+        }
+    } catch (error) {
+        console.error('❌ Failed to initialize CP tracking:', error);
+        return false;
+    }
+}
+
+// =====================================
+// TESTING AND DEBUG FUNCTIONS
+// =====================================
+
+function debugCPTrackingData() {
+    console.log('=== CP TRACKING DEBUG ===');
+    console.log('Direct measurements count:', countTodaysDirectMeasurements());
+    console.log('Journal measurements count:', countTodaysJournalMeasurements());
+    console.log('Total today:', replaceTodaysMeasurementCount());
+    console.log('Last CP score:', replaceLastCPScore());
+    console.log('30-day average:', replaceAverageCPCalculation(30));
+    console.log('All direct measurements:', buteykoData.cpMeasurements);
+    console.log('Streak data:', buteykoData.streakData);
+}
+
+function resetCPTrackingData() {
+    if (confirm('⚠️ Dit wist alle CP tracking data. Weet je het zeker?')) {
+        buteykoData.cpMeasurements = [];
+        saveButeykoData();
+        console.log('✅ CP tracking data reset');
+        return true;
+    }
+    return false;
+}
+
+// =====================================
+// AUTO-INITIALIZATION
+// =====================================
+
+// Initialize when script loads
+if (typeof buteykoData !== 'undefined') {
+    initializeCPTracking();
+    
+    // Make debug functions available
+    window.debugCPTrackingData = debugCPTrackingData;
+    window.resetCPTrackingData = resetCPTrackingData;
+    window.initializeCPTracking = initializeCPTracking;
+} else {
+    console.warn('⚠️ buteykoData not found - CP tracking will initialize when available');
+}
+// =====================================
+// INITIALIZATION FOR STEP 2
+// =====================================
+
+function initDashboardWidget() {
+    // Update the CP measurement handler
+    updateOnCPMeasurementCompleted();
+    
+    // Create and update widget
+    updateDashboardWidget();
+    
+    // Schedule automatic updates
+    scheduleWidgetUpdates();
+    
+    // Add global function for quick access
+    window.quickStartCP = quickStartCP;
+    
+    log('SUCCESS', 'Dashboard widget system initialized');
+}
+    // ============================================
 // CP TRACKING FIX - ALLEEN NIEUWE FUNCTIES
 // ============================================
 
@@ -3620,332 +4050,6 @@ window.onCPMeasurementCompleted = enhancedOnCPMeasurementCompleted;
 
 // Make new functions available globally
 window.saveCPMeasurement = saveCPMeasurement;
-window.showOptionalJournalPrompt = showOptionalJournalPrompt;
-window.openJournalFromPrompt = openJournalFromPrompt;
-// =====================================
-// INITIALIZATION FOR STEP 2
-// =====================================
-
-function initDashboardWidget() {
-    // Update the CP measurement handler
-    updateOnCPMeasurementCompleted();
-    
-    // Create and update widget
-    updateDashboardWidget();
-    
-    // Schedule automatic updates
-    scheduleWidgetUpdates();
-    
-    // Add global function for quick access
-    window.quickStartCP = quickStartCP;
-    
-    log('SUCCESS', 'Dashboard widget system initialized');
-}
-    // ============================================
-// CP TRACKING FIX - ALLEEN NIEUWE FUNCTIES
-// ============================================
-
-// =====================================
-// EXTEND EXISTING BUTEYKO DATA
-// =====================================
-
-// Add cpMeasurements array to existing buteykoData (if not exists)
-if (!buteykoData.cpMeasurements) {
-    buteykoData.cpMeasurements = [];
-    saveButeykoData(); // Save the updated structure
-}
-
-// =====================================
-// NIEUWE CP TRACKING FUNCTIONS
-// =====================================
-
-function altsaveCPMeasurement(score, notes = '') {
-    const measurement = {
-        id: Date.now(), // Unique ID
-        timestamp: new Date().toISOString(),
-        score: score,
-        timeOfDay: getTimeOfDayFromDate(new Date()),
-        notes: notes,
-        hasJournalEntry: false  // Track if user made journal entry
-    };
-    
-    // Add to our direct storage
-    buteykoData.cpMeasurements.unshift(measurement); // Add to beginning
-    
-    // Keep only last 1000 measurements to prevent storage bloat
-    if (buteykoData.cpMeasurements.length > 1000) {
-        buteykoData.cpMeasurements = buteykoData.cpMeasurements.slice(0, 1000);
-    }
-    
-    // Save to localStorage
-    saveButeykoData();
-    
-    console.log('✅ CP measurement saved directly:', measurement);
-    return measurement.id;
-}
-
-function getTimeOfDayFromDate(date) {
-    const hour = date.getHours();
-    if (hour < 11) return 'morning';
-    if (hour < 17) return 'afternoon';
-    return 'evening';
-}
-
-// =====================================
-// OVERRIDE EXISTING COUNTING FUNCTIONS
-// =====================================
-
-// Override the existing getTodaysMeasurementCount function
-window.getTodaysMeasurementCount = function() {
-    const today = new Date();
-    
-    // Count from our direct CP storage (primary source)
-    const directCount = buteykoData.cpMeasurements.filter(measurement => {
-        const measurementDate = new Date(measurement.timestamp);
-        return measurementDate.toDateString() === today.toDateString();
-    }).length;
-    
-    // Also count from dagboek (for backwards compatibility)
-    const journalCount = allDagboekEntries.filter(entry => {
-        if (!entry.cpScore || entry.cpScore <= 0) return false;
-        
-        const entryDate = entry.timestamp instanceof Date ? 
-            entry.timestamp : new Date(entry.clientTimestamp || 0);
-        
-        return entryDate.toDateString() === today.toDateString();
-    }).length;
-    
-    // Use the higher count (handles duplicates better than addition)
-    return Math.max(directCount, journalCount);
-};
-
-// Override the existing getLastCPScore function
-window.getLastCPScore = function() {
-    // Try direct storage first
-    if (buteykoData.cpMeasurements.length > 0) {
-        return buteykoData.cpMeasurements[0].score;
-    }
-    
-    // Fallback to dagboek entries
-    const cpEntries = allDagboekEntries.filter(entry => entry.cpScore && entry.cpScore > 0);
-    
-    if (cpEntries.length === 0) return 0;
-    
-    cpEntries.sort((a, b) => {
-        const dateA = a.timestamp instanceof Date ? a.timestamp : new Date(a.clientTimestamp || 0);
-        const dateB = b.timestamp instanceof Date ? b.timestamp : new Date(b.clientTimestamp || 0);
-        return dateB - dateA;
-    });
-    
-    return cpEntries[0].cpScore;
-};
-
-// Override the existing calculateAverageCP function
-window.calculateAverageCP = function(days = 30) {
-    const cutoffDate = new Date(Date.now() - (days * 24 * 60 * 60 * 1000));
-    
-    // Use direct storage first
-    const recentDirectMeasurements = buteykoData.cpMeasurements.filter(measurement => {
-        const measurementDate = new Date(measurement.timestamp);
-        return measurementDate >= cutoffDate;
-    });
-    
-    if (recentDirectMeasurements.length > 0) {
-        const total = recentDirectMeasurements.reduce((sum, measurement) => sum + measurement.score, 0);
-        return Math.round(total / recentDirectMeasurements.length);
-    }
-    
-    // Fallback to dagboek entries
-    const recentCPEntries = allDagboekEntries.filter(entry => {
-        if (!entry.cpScore || entry.cpScore <= 0) return false;
-        
-        const entryDate = entry.timestamp instanceof Date ? 
-            entry.timestamp : new Date(entry.clientTimestamp || 0);
-        
-        return entryDate >= cutoffDate;
-    });
-    
-    if (recentCPEntries.length === 0) return 0;
-    
-    const total = recentCPEntries.reduce((sum, entry) => sum + entry.cpScore, 0);
-    return Math.round(total / recentCPEntries.length);
-};
-
-// =====================================
-// ENHANCED CP MEASUREMENT INTEGRATION
-// =====================================
-
-function enhancedOnCPMeasurementCompleted(score) {
-    // 1. Save measurement directly (automatic)
-    const measurementId = altsaveCPMeasurement(score);
-    
-    // 2. Update streak data
-    updateStreakData();
-    
-    // 3. Update dashboard widget if visible
-    if (appState.currentTab === 'dashboard') {
-        setTimeout(updateDashboardWidget, 500);
-    }
-    
-    // 4. Show celebration message
-    const todayCount = getTodaysMeasurementCount();
-    if (todayCount === 1) {
-        showUserMessage(`🎉 Eerste meting van vandaag voltooid! ${score}s`, 'success');
-    } else if (todayCount === buteykoData.streakData.dailyGoal) {
-        showUserMessage(`🏆 Dagdoel behaald! ${todayCount}/${buteykoData.streakData.dailyGoal} metingen voltooid!`, 'success');
-    }
-    
-    // 5. Offer optional journal entry (non-intrusive)
-    setTimeout(() => {
-        if (score >= 20) { // Only for decent measurements
-            showOptionalJournalPrompt(measurementId, score);
-        }
-    }, 2000);
-    
-    console.log(`📏 CP measurement auto-saved: ${score}s, today: ${todayCount}/${buteykoData.streakData.dailyGoal}`);
-}
-
-// =====================================
-// OPTIONAL JOURNAL ENTRY SYSTEM
-// =====================================
-
-function showOptionalJournalPrompt(measurementId, score) {
-    // Don't show if there's already a prompt
-    if (document.querySelector('.journal-prompt')) return;
-    
-    // Non-intrusive prompt for journal entry
-    const prompt = document.createElement('div');
-    prompt.className = 'journal-prompt';
-    prompt.style.cssText = `
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        background: linear-gradient(135deg, #06b6d4, #0891b2);
-        color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 0.75rem;
-        box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
-        z-index: 1001;
-        max-width: 300px;
-        animation: slideInUp 0.3s ease-out;
-    `;
-    
-    // Create content without innerHTML to avoid TrustedHTML issues
-    const title = document.createElement('div');
-    title.style.marginBottom = '0.75rem';
-    
-    const strongText = document.createElement('strong');
-    strongText.textContent = `📏 CP ${score}s opgeslagen!`;
-    
-    const subText = document.createElement('span');
-    subText.style.cssText = 'font-size: 0.85rem; opacity: 0.9;';
-    subText.textContent = 'Wil je notities toevoegen?';
-    
-    title.appendChild(strongText);
-    title.appendChild(document.createElement('br'));
-    title.appendChild(subText);
-    
-    const buttonContainer = document.createElement('div');
-    buttonContainer.style.cssText = 'display: flex; gap: 0.5rem;';
-    
-    const yesButton = document.createElement('button');
-    yesButton.textContent = '📝 Ja';
-    yesButton.style.cssText = `
-        background: white; 
-        color: #06b6d4; 
-        border: none; 
-        padding: 0.5rem 1rem; 
-        border-radius: 0.375rem; 
-        cursor: pointer;
-        font-size: 0.8rem;
-        font-weight: 600;
-    `;
-    yesButton.onclick = () => openJournalFromPrompt(measurementId, score);
-    
-    const laterButton = document.createElement('button');
-    laterButton.textContent = 'Later';
-    laterButton.style.cssText = `
-        background: rgba(255,255,255,0.2); 
-        color: white; 
-        border: none; 
-        padding: 0.5rem 1rem; 
-        border-radius: 0.375rem; 
-        cursor: pointer;
-        font-size: 0.8rem;
-    `;
-    laterButton.onclick = () => prompt.remove();
-    
-    buttonContainer.appendChild(yesButton);
-    buttonContainer.appendChild(laterButton);
-    
-    prompt.appendChild(title);
-    prompt.appendChild(buttonContainer);
-    
-    document.body.appendChild(prompt);
-    
-    // Auto-remove after 10 seconds
-    setTimeout(() => {
-        if (prompt.parentNode) {
-            prompt.style.animation = 'slideOutDown 0.3s ease-in';
-            setTimeout(() => prompt.remove(), 300);
-        }
-    }, 10000);
-}
-
-function openJournalFromPrompt(measurementId, score) {
-    // Remove the prompt
-    document.querySelector('.journal-prompt')?.remove();
-    
-    // Mark measurement as having journal entry
-    const measurement = buteykoData.cpMeasurements.find(m => m.id === measurementId);
-    if (measurement) {
-        measurement.hasJournalEntry = true;
-        saveButeykoData();
-    }
-    
-    // Open journal modal with pre-filled CP score
-    appState.currentTechnique = 'Buteyko CP Meting';
-    openDagboekModal('Buteyko CP Meting');
-    
-    // Pre-fill the CP score
-    setTimeout(() => {
-        const cpScoreInput = document.getElementById('entry-cp-score');
-        if (cpScoreInput) {
-            cpScoreInput.value = score;
-        }
-    }, 100);
-}
-
-// =====================================
-// ANIMATION STYLES
-// =====================================
-
-// Add CSS animations if not exists
-if (!document.querySelector('#journal-prompt-animations')) {
-    const style = document.createElement('style');
-    style.id = 'journal-prompt-animations';
-    style.textContent = `
-        @keyframes slideInUp {
-            from { transform: translateY(100%); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        @keyframes slideOutDown {
-            from { transform: translateY(0); opacity: 1; }
-            to { transform: translateY(100%); opacity: 0; }
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-// =====================================
-// UPDATE EXISTING INTEGRATION
-// =====================================
-
-// Override the existing onCPMeasurementCompleted function
-window.onCPMeasurementCompleted = enhancedOnCPMeasurementCompleted;
-
-// Make new functions available globally
-window.altsaveCPMeasurement = altsaveCPMeasurement;
 window.showOptionalJournalPrompt = showOptionalJournalPrompt;
 window.openJournalFromPrompt = openJournalFromPrompt;
 

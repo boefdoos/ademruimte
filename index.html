@@ -3659,7 +3659,7 @@ if (!buteykoData.cpMeasurements) {
 // NIEUWE CP TRACKING FUNCTIONS
 // =====================================
 
-function saveCPMeasurement(score, notes = '') {
+function altsaveCPMeasurement(score, notes = '') {
     const measurement = {
         id: Date.now(), // Unique ID
         timestamp: new Date().toISOString(),
@@ -3777,7 +3777,7 @@ window.calculateAverageCP = function(days = 30) {
 
 function enhancedOnCPMeasurementCompleted(score) {
     // 1. Save measurement directly (automatic)
-    const measurementId = saveCPMeasurement(score);
+    const measurementId = altsaveCPMeasurement(score);
     
     // 2. Update streak data
     updateStreakData();
@@ -3945,7 +3945,7 @@ if (!document.querySelector('#journal-prompt-animations')) {
 window.onCPMeasurementCompleted = enhancedOnCPMeasurementCompleted;
 
 // Make new functions available globally
-window.saveCPMeasurement = saveCPMeasurement;
+window.altsaveCPMeasurement = altsaveCPMeasurement;
 window.showOptionalJournalPrompt = showOptionalJournalPrompt;
 window.openJournalFromPrompt = openJournalFromPrompt;
 

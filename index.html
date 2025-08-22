@@ -3659,39 +3659,66 @@
         return;
     }
 
-    // Verbeterde Chart.js loading
+    // GEFIXTE Chart.js loading - gebruik UMD versie
     try {
         if (!window.Chart) {
-            log('INFO', 'Loading Chart.js...');
+            log('INFO', 'Loading Chart.js UMD version...');
             
-            // Probeer eerst via CDN
+            // Verwijder eventuele bestaande Chart.js scripts om conflicten te voorkomen
+            const existingScripts = document.querySelectorAll('script[src*="chart"]');
+            existingScripts.forEach(script => script.remove());
+            
             await new Promise((resolve, reject) => {
                 const script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js';
+                // Gebruik de UMD versie van Chart.js (niet ES module)
+                script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js';
+                script.type = 'text/javascript'; // Expliciet geen module
+                
                 script.onload = () => {
-                    log('SUCCESS', 'Chart.js loaded via CDN');
-                    resolve();
+                    // Wacht even extra om zeker te zijn dat Chart beschikbaar is
+                    setTimeout(() => {
+                        if (window.Chart) {
+                            log('SUCCESS', 'Chart.js UMD loaded successfully');
+                            resolve();
+                        } else {
+                            log('ERROR', 'Chart.js loaded but not available globally');
+                            reject(new Error('Chart.js not globally available'));
+                        }
+                    }, 100);
                 };
+                
                 script.onerror = () => {
                     log('WARNING', 'Primary CDN failed, trying fallback...');
-                    // Fallback CDN
+                    
+                    // Fallback naar een andere CDN
                     const fallbackScript = document.createElement('script');
-                    fallbackScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js';
+                    fallbackScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js';
+                    fallbackScript.type = 'text/javascript';
+                    
                     fallbackScript.onload = () => {
-                        log('SUCCESS', 'Chart.js loaded via fallback CDN');
-                        resolve();
+                        setTimeout(() => {
+                            if (window.Chart) {
+                                log('SUCCESS', 'Chart.js fallback loaded successfully');
+                                resolve();
+                            } else {
+                                reject(new Error('Chart.js fallback failed'));
+                            }
+                        }, 100);
                     };
+                    
                     fallbackScript.onerror = () => {
-                        log('ERROR', 'Failed to load Chart.js from all sources');
-                        reject(new Error('Chart.js unavailable'));
+                        log('ERROR', 'All Chart.js sources failed');
+                        reject(new Error('Chart.js unavailable from all sources'));
                     };
+                    
                     document.head.appendChild(fallbackScript);
                 };
+                
                 document.head.appendChild(script);
             });
         }
 
-        // Wacht even extra om zeker te zijn dat Chart.js beschikbaar is
+        // Dubbele check dat Chart.js beschikbaar is
         if (!window.Chart) {
             throw new Error('Chart.js not available after loading');
         }
@@ -3760,6 +3787,7 @@
 
         if (progressChart) {
             progressChart.destroy();
+            progressChart = null;
         }
 
         const ctx = chartContainer.getContext('2d');
@@ -3929,20 +3957,30 @@
         log('ERROR', 'Failed to create enhanced chart:', error);
         chartEmpty.style.display = 'block';
         document.getElementById('chart-legend').style.display = 'none';
+        
+        // Toon een gebruiksvriendelijke foutmelding
         chartEmpty.innerHTML = `
-            <div class="alert alert-warning">
-                <strong>📊 Grafiek niet beschikbaar</strong><br>
-                Er was een probleem met het laden van de grafiekbibliotheek. 
-                Je data is wel opgeslagen en je kunt deze zien in de dagboek entries hieronder.
-                <br><br>
-                <button onclick="location.reload()" class="btn btn-primary" style="margin-top: 1rem;">
-                    🔄 Pagina Herladen
-                </button>
+            <div class="alert alert-warning" style="text-align: center; padding: 2rem;">
+                <strong>📊 Grafiek tijdelijk niet beschikbaar</strong><br><br>
+                <p style="margin: 1rem 0;">Er was een technisch probleem met het laden van de grafiekbibliotheek. 
+                Je data is wel veilig opgeslagen en je kunt alle entries bekijken in de dagboek sectie hieronder.</p>
+                
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem;">
+                    <button onclick="location.reload()" class="btn btn-primary">
+                        🔄 Pagina Herladen
+                    </button>
+                    <button onclick="createEnhancedProgressChart(allDagboekEntries)" class="btn btn-cyan">
+                        📊 Grafiek Opnieuw Proberen
+                    </button>
+                </div>
+                
+                <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 1rem;">
+                    Als dit probleem aanhoudt, werkt de app verder normaal zonder grafiek.
+                </p>
             </div>
         `;
     }
 }
-
     // ============================================
     // FIREBASE INITIALIZATION
     // ============================================

@@ -3634,24 +3634,69 @@
         }
     };
 
-    async function createEnhancedProgressChart(entries) {
-        const chartRelevantEntries = entries.filter(entry => 
-            entry.intensiteitVoor !== undefined && entry.intensiteitNa !== undefined && 
-            entry.intensiteitVoor !== null && entry.intensiteitNa !== null
-        );
+  async function createEnhancedProgressChart(entries) {
+    const chartRelevantEntries = entries.filter(entry => 
+        entry.intensiteitVoor !== undefined && entry.intensiteitNa !== undefined && 
+        entry.intensiteitVoor !== null && entry.intensiteitNa !== null
+    );
 
-        if (!chartRelevantEntries || chartRelevantEntries.length === 0) {
-            document.getElementById('chart-empty').style.display = 'block';
-            document.getElementById('chart-legend').style.display = 'none';
-            document.getElementById('chart-info').textContent = '';
-            if (progressChart) {
-                progressChart.destroy();
-                progressChart = null;
-            }
-            return;
+    const chartContainer = document.getElementById('progress-chart');
+    const chartEmpty = document.getElementById('chart-empty');
+    
+    if (!chartContainer) {
+        log('ERROR', 'Chart canvas element not found');
+        return;
+    }
+
+    if (!chartRelevantEntries || chartRelevantEntries.length === 0) {
+        chartEmpty.style.display = 'block';
+        document.getElementById('chart-legend').style.display = 'none';
+        document.getElementById('chart-info').textContent = '';
+        if (progressChart) {
+            progressChart.destroy();
+            progressChart = null;
+        }
+        return;
+    }
+
+    // Verbeterde Chart.js loading
+    try {
+        if (!window.Chart) {
+            log('INFO', 'Loading Chart.js...');
+            
+            // Probeer eerst via CDN
+            await new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js';
+                script.onload = () => {
+                    log('SUCCESS', 'Chart.js loaded via CDN');
+                    resolve();
+                };
+                script.onerror = () => {
+                    log('WARNING', 'Primary CDN failed, trying fallback...');
+                    // Fallback CDN
+                    const fallbackScript = document.createElement('script');
+                    fallbackScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js';
+                    fallbackScript.onload = () => {
+                        log('SUCCESS', 'Chart.js loaded via fallback CDN');
+                        resolve();
+                    };
+                    fallbackScript.onerror = () => {
+                        log('ERROR', 'Failed to load Chart.js from all sources');
+                        reject(new Error('Chart.js unavailable'));
+                    };
+                    document.head.appendChild(fallbackScript);
+                };
+                document.head.appendChild(script);
+            });
         }
 
-        // Filter entries based on current filter
+        // Wacht even extra om zeker te zijn dat Chart.js beschikbaar is
+        if (!window.Chart) {
+            throw new Error('Chart.js not available after loading');
+        }
+
+        // Filter entries gebaseerd op huidige filter
         let filteredEntries = [];
         const now = new Date();
         
@@ -3668,7 +3713,7 @@
         }
 
         if (filteredEntries.length === 0) {
-            document.getElementById('chart-empty').style.display = 'block';
+            chartEmpty.style.display = 'block';
             document.getElementById('chart-legend').style.display = 'none';
             document.getElementById('chart-info').textContent = 'Geen data voor deze periode';
             if (progressChart) {
@@ -3678,7 +3723,7 @@
             return;
         }
 
-        document.getElementById('chart-empty').style.display = 'none';
+        chartEmpty.style.display = 'none';
         document.getElementById('chart-legend').style.display = 'block';
 
         // Update chart info
@@ -3687,218 +3732,216 @@
             chartInfo.textContent = `${filteredEntries.length} ${filteredEntries.length === 1 ? 'entry' : 'entries'}`;
         }
 
-        try {
-            if (!window.Chart) {
-                log('INFO', 'Loading Chart.js...');
-                const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js';
-                script.async = false;
-                document.head.appendChild(script);
-                
-                await new Promise((resolve, reject) => {
-                    script.onload = () => { log('SUCCESS', 'Chart.js loaded.'); resolve(); };
-                    script.onerror = () => { log('ERROR', 'Failed to load Chart.js'); reject(new Error('Chart.js failed to load.')); };
+        // Reverse voor chronologische volgorde (oudste naar nieuwste)
+        const displayEntries = filteredEntries.slice().reverse();
+
+        const labels = displayEntries.map((entry, index) => {
+            const date = entry.timestamp instanceof Date ? entry.timestamp : new Date(entry.clientTimestamp || 0);
+            
+            if (currentChartFilter === 'last10' && window.innerWidth <= 768) {
+                return `${index + 1}`;
+            } else if (currentChartFilter === 'all' && displayEntries.length > 20) {
+                return date.toLocaleDateString('nl-BE', { 
+                    month: 'short', 
+                    day: 'numeric'
+                });
+            } else {
+                return date.toLocaleDateString('nl-BE', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: window.innerWidth <= 768 ? undefined : '2-digit',
+                    minute: window.innerWidth <= 768 ? undefined : '2-digit'
                 });
             }
+        });
 
-            // Reverse for chronological order (oldest to newest)
-            const displayEntries = filteredEntries.slice().reverse();
+        const beforeData = displayEntries.map(entry => entry.intensiteitVoor);
+        const afterData = displayEntries.map(entry => entry.intensiteitNa);
 
-            const labels = displayEntries.map((entry, index) => {
-                const date = entry.timestamp instanceof Date ? entry.timestamp : new Date(entry.clientTimestamp || 0);
-                
-                if (currentChartFilter === 'last10' && window.innerWidth <= 768) {
-                    return `${index + 1}`;
-                } else if (currentChartFilter === 'all' && displayEntries.length > 20) {
-                    return date.toLocaleDateString('nl-BE', { 
-                        month: 'short', 
-                        day: 'numeric'
-                    });
-                } else {
-                    return date.toLocaleDateString('nl-BE', { 
-                        month: 'short', 
-                        day: 'numeric',
-                        hour: window.innerWidth <= 768 ? undefined : '2-digit',
-                        minute: window.innerWidth <= 768 ? undefined : '2-digit'
-                    });
-                }
-            });
+        if (progressChart) {
+            progressChart.destroy();
+        }
 
-            const beforeData = displayEntries.map(entry => entry.intensiteitVoor);
-            const afterData = displayEntries.map(entry => entry.intensiteitNa);
-
-            if (progressChart) {
-                progressChart.destroy();
-            }
-
-            const ctx = document.getElementById('progress-chart').getContext('2d');
-            
-            progressChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Vóór oefening',
-                            data: beforeData,
-                            borderColor: '#ef4444',
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            borderWidth: window.innerWidth <= 768 ? 3 : 4,
-                            pointRadius: window.innerWidth <= 768 ? 4 : 6,
-                            pointHoverRadius: window.innerWidth <= 768 ? 6 : 8,
-                            pointBackgroundColor: '#ef4444',
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 2,
-                            tension: 0.4, // Enhanced curve smoothness
-                            fill: false,
-                            pointHoverBorderWidth: 3
-                        },
-                        {
-                            label: 'Ná oefening',
-                            data: afterData,
-                            borderColor: '#10b981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            borderWidth: window.innerWidth <= 768 ? 3 : 4,
-                            pointRadius: window.innerWidth <= 768 ? 4 : 6,
-                            pointHoverRadius: window.innerWidth <= 768 ? 6 : 8,
-                            pointBackgroundColor: '#10b981',
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 2,
-                            tension: 0.4, // Enhanced curve smoothness
-                            fill: false,
-                            pointHoverBorderWidth: 3
-                        }
-                    ]
+        const ctx = chartContainer.getContext('2d');
+        
+        progressChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Vóór oefening',
+                        data: beforeData,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: window.innerWidth <= 768 ? 3 : 4,
+                        pointRadius: window.innerWidth <= 768 ? 4 : 6,
+                        pointHoverRadius: window.innerWidth <= 768 ? 6 : 8,
+                        pointBackgroundColor: '#ef4444',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        tension: 0.4,
+                        fill: false,
+                        pointHoverBorderWidth: 3
+                    },
+                    {
+                        label: 'Ná oefening',
+                        data: afterData,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: window.innerWidth <= 768 ? 3 : 4,
+                        pointRadius: window.innerWidth <= 768 ? 4 : 6,
+                        pointHoverRadius: window.innerWidth <= 768 ? 6 : 8,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        tension: 0.4,
+                        fill: false,
+                        pointHoverBorderWidth: 3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 1500,
+                    easing: 'easeInOutQuart'
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: {
-                        duration: 1500, // Smoother animations
-                        easing: 'easeInOutQuart'
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                plugins: {
+                    legend: {
+                        display: false
                     },
-                    interaction: {
-                        intersect: false,
-                        mode: 'index'
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                        titleColor: '#ffffff',
+                        bodyColor: '#ffffff',
+                        borderColor: 'var(--buteyko-primary)',
+                        borderWidth: 2,
+                        cornerRadius: 12,
+                        displayColors: true,
+                        padding: 12,
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
                         },
-                        tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
-                            titleColor: '#ffffff',
-                            bodyColor: '#ffffff',
-                            borderColor: 'var(--buteyko-primary)',
-                            borderWidth: 2,
-                            cornerRadius: 12,
-                            displayColors: true,
-                            padding: 12,
-                            titleFont: {
-                                size: 14,
-                                weight: 'bold'
+                        bodyFont: {
+                            size: 13
+                        },
+                        callbacks: {
+                            title: function(context) {
+                                const index = context[0].dataIndex;
+                                const entry = displayEntries[index];
+                                const date = entry.timestamp instanceof Date ? entry.timestamp : new Date(entry.clientTimestamp || 0);
+                                return date.toLocaleDateString('nl-BE', { 
+                                    weekday: 'short',
+                                    month: 'short', 
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
                             },
-                            bodyFont: {
-                                size: 13
-                            },
-                            callbacks: {
-                                title: function(context) {
-                                    const index = context[0].dataIndex;
-                                    const entry = displayEntries[index];
-                                    const date = entry.timestamp instanceof Date ? entry.timestamp : new Date(entry.clientTimestamp || 0);
-                                    return date.toLocaleDateString('nl-BE', { 
-                                        weekday: 'short',
-                                        month: 'short', 
-                                        day: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit'
-                                    });
-                                },
-                                afterBody: function(context) {
-                                    const index = context[0].dataIndex;
-                                    const entry = displayEntries[index];
-                                    let result = [
-                                        '',
-                                        `Techniek: ${entry.techniekGebruikt}`,
-                                        `Resultaat: ${getResultaatText(entry.resultaat)}`,
-                                        `Verbetering: ${entry.intensiteitVoor - entry.intensiteitNa} punt${entry.intensiteitVoor - entry.intensiteitNa !== 1 ? 'en' : ''}`
-                                    ];
-                                    
-                                    if (entry.cpScore) {
-                                        result.push(`CP Score: ${entry.cpScore} sec`);
-                                    }
-                                    
-                                    return result;
+                            afterBody: function(context) {
+                                const index = context[0].dataIndex;
+                                const entry = displayEntries[index];
+                                let result = [
+                                    '',
+                                    `Techniek: ${entry.techniekGebruikt}`,
+                                    `Resultaat: ${getResultaatText(entry.resultaat)}`,
+                                    `Verbetering: ${entry.intensiteitVoor - entry.intensiteitNa} punt${entry.intensiteitVoor - entry.intensiteitNa !== 1 ? 'en' : ''}`
+                                ];
+                                
+                                if (entry.cpScore) {
+                                    result.push(`CP Score: ${entry.cpScore} sec`);
                                 }
+                                
+                                return result;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(6, 182, 212, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#6b7280',
+                            font: {
+                                size: window.innerWidth <= 768 ? 10 : 12,
+                                weight: '500'
+                            },
+                            maxRotation: displayEntries.length > 15 ? 45 : 0,
+                            autoSkip: true,
+                            maxTicksLimit: window.innerWidth <= 768 ? 6 : 12
+                        },
+                        title: {
+                            display: window.innerWidth > 768,
+                            text: currentChartFilter === 'last10' ? 'Sessies (meest recente)' : 
+                                  currentChartFilter === 'last30' ? 'Laatste 30 dagen' : 'Alle sessies',
+                            color: 'var(--buteyko-primary)',
+                            font: {
+                                size: 13,
+                                weight: '600'
                             }
                         }
                     },
-                    scales: {
-                        x: {
-                            grid: {
-                                color: 'rgba(6, 182, 212, 0.1)',
-                                drawBorder: false
+                    y: {
+                        min: 0,
+                        max: 10,
+                        grid: {
+                            color: 'rgba(6, 182, 212, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            color: '#6b7280',
+                            font: {
+                                size: window.innerWidth <= 768 ? 10 : 12,
+                                weight: '500'
                             },
-                            ticks: {
-                                color: '#6b7280',
-                                font: {
-                                    size: window.innerWidth <= 768 ? 10 : 12,
-                                    weight: '500'
-                                },
-                                maxRotation: displayEntries.length > 15 ? 45 : 0,
-                                autoSkip: true,
-                                maxTicksLimit: window.innerWidth <= 768 ? 6 : 12
-                            },
-                            title: {
-                                display: window.innerWidth > 768,
-                                text: currentChartFilter === 'last10' ? 'Sessies (meest recente)' : 
-                                      currentChartFilter === 'last30' ? 'Laatste 30 dagen' : 'Alle sessies',
-                                color: 'var(--buteyko-primary)',
-                                font: {
-                                    size: 13,
-                                    weight: '600'
-                                }
+                            stepSize: 1,
+                            callback: function(value) {
+                                return value + '/10';
                             }
                         },
-                        y: {
-                            min: 0,
-                            max: 10,
-                            grid: {
-                                color: 'rgba(6, 182, 212, 0.1)',
-                                drawBorder: false
-                            },
-                            ticks: {
-                                color: '#6b7280',
-                                font: {
-                                    size: window.innerWidth <= 768 ? 10 : 12,
-                                    weight: '500'
-                                },
-                                stepSize: 1,
-                                callback: function(value) {
-                                    return value + '/10';
-                                }
-                            },
-                            title: {
-                                display: window.innerWidth > 768,
-                                text: 'Intensiteit Score',
-                                color: 'var(--buteyko-primary)',
-                                font: {
-                                    size: 13,
-                                    weight: '600'
-                                }
+                        title: {
+                            display: window.innerWidth > 768,
+                            text: 'Intensiteit Score',
+                            color: 'var(--buteyko-primary)',
+                            font: {
+                                size: 13,
+                                weight: '600'
                             }
                         }
                     }
                 }
-            });
+            }
+        });
 
-            log('SUCCESS', `Enhanced progress chart created with ${displayEntries.length} data points (filter: ${currentChartFilter})`);
-        } catch (error) {
-            log('ERROR', 'Failed to create enhanced chart:', error);
-            document.getElementById('chart-empty').style.display = 'block';
-            document.getElementById('chart-legend').style.display = 'none';
-        }
+        log('SUCCESS', `Enhanced progress chart created with ${displayEntries.length} data points (filter: ${currentChartFilter})`);
+        
+    } catch (error) {
+        log('ERROR', 'Failed to create enhanced chart:', error);
+        chartEmpty.style.display = 'block';
+        document.getElementById('chart-legend').style.display = 'none';
+        chartEmpty.innerHTML = `
+            <div class="alert alert-warning">
+                <strong>📊 Grafiek niet beschikbaar</strong><br>
+                Er was een probleem met het laden van de grafiekbibliotheek. 
+                Je data is wel opgeslagen en je kunt deze zien in de dagboek entries hieronder.
+                <br><br>
+                <button onclick="location.reload()" class="btn btn-primary" style="margin-top: 1rem;">
+                    🔄 Pagina Herladen
+                </button>
+            </div>
+        `;
     }
+}
 
     // ============================================
     // FIREBASE INITIALIZATION

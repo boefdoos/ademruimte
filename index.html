@@ -3101,26 +3101,52 @@
         }
     }
 
-    function saveCPMeasurement(score, notes = '') {
-        const measurement = {
-            id: Date.now(),
-            timestamp: new Date().toISOString(),
-            score: score,
-            timeOfDay: getTimeOfDayFromDate(new Date()),
-            notes: notes,
-            hasJournalEntry: false
-        };
-        
-        buteykoData.cpMeasurements.unshift(measurement);
-        
-        if (buteykoData.cpMeasurements.length > 1000) {
-            buteykoData.cpMeasurements = buteykoData.cpMeasurements.slice(0, 1000);
-        }
-        
-        saveButeykoData();
-        log('SUCCESS', 'CP measurement saved:', measurement);
-        return measurement.id;
+async function saveCPMeasurement(score, notes = '') {
+    const measurement = {
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        score: score,
+        timeOfDay: getTimeOfDayFromDate(new Date()),
+        notes: notes,
+        hasJournalEntry: false,
+        clientTimestamp: new Date().toISOString()
+    };
+    
+    // Opslaan in lokale storage (immediate)
+    buteykoData.cpMeasurements.unshift(measurement);
+    
+    if (buteykoData.cpMeasurements.length > 1000) {
+        buteykoData.cpMeasurements = buteykoData.cpMeasurements.slice(0, 1000);
     }
+    
+    saveButeykoData();
+    
+    // Probeer ook op te slaan in Firebase (async)
+    if (appState.isFirebaseConnected && appState.currentUser) {
+        try {
+            const result = await saveCPToFirestore({
+                score: score,
+                timeOfDay: measurement.timeOfDay,
+                notes: notes,
+                clientTimestamp: measurement.timestamp
+            });
+            
+            // Update lokale measurement met Firebase ID
+            measurement.firebaseId = result.id;
+            saveButeykoData();
+            
+            log('SUCCESS', 'CP measurement saved to both local and Firebase');
+            
+        } catch (error) {
+            log('WARNING', 'CP measurement saved locally but Firebase sync failed:', error);
+            // Toon geen error - lokale opslag werkte wel
+        }
+    } else {
+        log('INFO', 'CP measurement saved locally only (not connected to Firebase)');
+    }
+    
+    return measurement.id;
+}
 
     function getTimeOfDayFromDate(date) {
         const hour = date.getHours();
@@ -3262,77 +3288,95 @@
         return widget;
     }
 
-    function updateDashboardWidget() {
-        const widget = createDashboardWidget();
-        if (!widget) return;
+function updateDashboardWidget() {
+    const widget = createDashboardWidget();
+    if (!widget) return;
+    
+    const todayCount = getTodaysMeasurementCount();
+    const lastCP = getLastCPScore();
+    const averageCP = calculateAverageCP(30);
+    const streak = buteykoData.streakData.currentStreak;
+    const dailyGoal = buteykoData.streakData.dailyGoal;
+    
+    const progressPercentage = Math.min((todayCount / dailyGoal) * 100, 100);
+    const nextReminder = getNextReminderTime();
+    
+    // Check hoeveel CP metingen gesynchroniseerd zijn
+    const totalCPMeasurements = buteykoData.cpMeasurements.length;
+    const syncedMeasurements = buteykoData.cpMeasurements.filter(m => m.firebaseId).length;
+    const syncStatus = appState.isFirebaseConnected && appState.currentUser ? 
+        (syncedMeasurements === totalCPMeasurements ? '☁️ Gesynchroniseerd' : `☁️ ${syncedMeasurements}/${totalCPMeasurements} gesync`) :
+        '💾 Alleen lokaal opgeslagen';
+    
+    widget.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+            <h3 style="margin: 0; color: var(--buteyko-primary); font-size: 1.5rem;">🫁 Buteyko Status</h3>
+            <div style="font-size: 0.85rem; color: var(--text-light);">
+                ${nextReminder ? `Volgende: ${nextReminder}` : 'Alle reminders voltooid'}
+            </div>
+        </div>
         
-        const todayCount = getTodaysMeasurementCount();
-        const lastCP = getLastCPScore();
-        const averageCP = calculateAverageCP(30);
-        const streak = buteykoData.streakData.currentStreak;
-        const dailyGoal = buteykoData.streakData.dailyGoal;
+        <div style="margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                <span style="font-size: 1rem; font-weight: 600;">Vandaag: ${todayCount}/${dailyGoal} metingen</span>
+                <span style="font-size: 0.9rem; color: var(--text-light);">${Math.round(progressPercentage)}%</span>
+            </div>
+            <div class="progress-bar" style="height: 10px; margin-bottom: 0;">
+                <div class="progress-fill" style="width: ${progressPercentage}%; background: ${progressPercentage === 100 ? '#10b981' : 'var(--buteyko-primary)'}; transition: width 0.3s ease;"></div>
+            </div>
+        </div>
         
-        const progressPercentage = Math.min((todayCount / dailyGoal) * 100, 100);
-        const nextReminder = getNextReminderTime();
-        
-        widget.innerHTML = `
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
-                <h3 style="margin: 0; color: var(--buteyko-primary); font-size: 1.5rem;">🫁 Buteyko Status</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div class="cp-stats" style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: bold; color: var(--buteyko-primary); margin-bottom: 0.5rem;">
+                    ${streak}
+                </div>
                 <div style="font-size: 0.85rem; color: var(--text-light);">
-                    ${nextReminder ? `Volgende: ${nextReminder}` : 'Alle reminders voltooid'}
+                    Dagen streak ${streak > 0 ? '🔥' : '💤'}
                 </div>
             </div>
-            
-            <div style="margin-bottom: 1.5rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                    <span style="font-size: 1rem; font-weight: 600;">Vandaag: ${todayCount}/${dailyGoal} metingen</span>
-                    <span style="font-size: 0.9rem; color: var(--text-light);">${Math.round(progressPercentage)}%</span>
+            <div class="cp-stats" style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: bold; color: #10b981; margin-bottom: 0.5rem;">
+                    ${lastCP || '---'}
                 </div>
-                <div class="progress-bar" style="height: 10px; margin-bottom: 0;">
-                    <div class="progress-fill" style="width: ${progressPercentage}%; background: ${progressPercentage === 100 ? '#10b981' : 'var(--buteyko-primary)'}; transition: width 0.3s ease;"></div>
+                <div style="font-size: 0.85rem; color: var(--text-light);">
+                    Laatste CP (sec)
                 </div>
             </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
-                <div class="cp-stats" style="text-align: center;">
-                    <div style="font-size: 2rem; font-weight: bold; color: var(--buteyko-primary); margin-bottom: 0.5rem;">
-                        ${streak}
-                    </div>
-                    <div style="font-size: 0.85rem; color: var(--text-light);">
-                        Dagen streak ${streak > 0 ? '🔥' : '💤'}
-                    </div>
-                </div>
-                <div class="cp-stats" style="text-align: center;">
-                    <div style="font-size: 2rem; font-weight: bold; color: #10b981; margin-bottom: 0.5rem;">
-                        ${lastCP || '---'}
-                    </div>
-                    <div style="font-size: 0.85rem; color: var(--text-light);">
-                        Laatste CP (sec)
-                    </div>
-                </div>
-            </div>
-            
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding: 1rem; background: rgba(6, 182, 212, 0.08); border-radius: 0.75rem; border: 1px solid rgba(6, 182, 212, 0.15);">
-                <div style="font-size: 0.9rem;">
-                    <strong>30-dagen gemiddelde:</strong> ${averageCP || '---'} sec
-                </div>
-                <div style="font-size: 0.9rem;">
-                    <strong>Totaal metingen:</strong> ${buteykoData.streakData.totalMeasurements}
-                </div>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <button class="btn btn-buteyko" onclick="quickStartCP()" style="font-size: 0.95rem; padding: 1rem;">
-                    📏 Meet CP Nu
-                </button>
-                <button class="btn btn-primary" onclick="showTab('buteyko')" style="font-size: 0.95rem; padding: 1rem;">
-                    🫁 Naar Buteyko
-                </button>
-            </div>
-        `;
+        </div>
         
-        log('SUCCESS', 'Dashboard widget updated with current data');
-    }
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding: 1rem; background: rgba(6, 182, 212, 0.08); border-radius: 0.75rem; border: 1px solid rgba(6, 182, 212, 0.15);">
+            <div style="font-size: 0.9rem;">
+                <strong>30-dagen gemiddelde:</strong> ${averageCP || '---'} sec
+            </div>
+            <div style="font-size: 0.9rem;">
+                <strong>Totaal metingen:</strong> ${buteykoData.streakData.totalMeasurements}
+            </div>
+        </div>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding: 0.75rem; background: rgba(16, 185, 129, 0.05); border-radius: 0.75rem; border: 1px solid rgba(16, 185, 129, 0.1); font-size: 0.8rem; color: var(--text-light);">
+            <span>📊 CP Data Status:</span>
+            <span style="font-weight: 600;">${syncStatus}</span>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <button class="btn btn-buteyko" onclick="quickStartCP()" style="font-size: 0.95rem; padding: 1rem;">
+                📏 Meet CP Nu
+            </button>
+            <button class="btn btn-primary" onclick="showTab('buteyko')" style="font-size: 0.95rem; padding: 1rem;">
+                🫁 Naar Buteyko
+            </button>
+        </div>
+        
+        ${!appState.isFirebaseConnected || !appState.currentUser ? `
+            <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(245, 158, 11, 0.1); border-radius: 0.75rem; border: 1px solid rgba(245, 158, 11, 0.2); font-size: 0.8rem; color: #92400e; text-align: center;">
+                ⚠️ CP metingen worden alleen lokaal opgeslagen. Log in voor cloud backup.
+            </div>
+        ` : ''}
+    `;
+    
+    log('SUCCESS', 'Dashboard widget updated with Firebase sync status');
+}
 
     function getNextReminderTime() {
         const now = new Date();
@@ -3995,37 +4039,201 @@
         }
     }
 
-    function setupAuthStateObserver(onAuthStateChanged) {
-        if (!auth) {
-            log('ERROR', 'Auth not initialized - cannot setup observer');
-            return;
+function setupAuthStateObserver(onAuthStateChanged) {
+    if (!auth) {
+        log('ERROR', 'Auth not initialized - cannot setup observer');
+        return;
+    }
+    
+    appState.authUnsubscribe = onAuthStateChanged(auth, async (user) => {
+        appState.updateUI();
+        
+        if (user) {
+            log('SUCCESS', 'User authenticated:', user.email);
+            appState.setUser(user);
+            showMainApp();
+            
+            setTimeout(async () => {
+                try {
+                    // Laad dagboek entries
+                    await loadDagboekEntries();
+                    
+                    // Synchroniseer CP metingen
+                    await syncCPMeasurements();
+                    
+                    // Update dashboard widget met gesynchroniseerde data
+                    if (appState.currentTab === 'dashboard') {
+                        updateDashboardWidget();
+                    }
+                    
+                } catch (error) {
+                    log('WARNING', 'Could not fully sync data on login:', error);
+                }
+            }, 500);
+        } else {
+            log('INFO', 'User not authenticated');
+            appState.setUser(null);
+            showLoginScreen();
+        }
+    }, (error) => {
+        log('ERROR', 'Auth state observer error:', error);
+        appState.updateUI();
+        showUserMessage('Authenticatie fout: ' + error.message, 'error');
+        showLoginScreen();
+    });
+}
+
+    // ============================================
+// CP MEASUREMENT FIREBASE FUNCTIONS
+// ============================================
+
+async function saveCPToFirestore(cpMeasurement) {
+    if (!appState.isFirebaseConnected) {
+        throw new Error('Firebase niet verbonden. Controleer je internetverbinding.');
+    }
+    
+    if (!appState.currentUser) {
+        throw new Error('Je moet ingelogd zijn om CP metingen op te slaan.');
+    }
+
+    try {
+        log('INFO', 'Saving CP measurement to Firestore...');
+
+        const { addDoc, collection, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+
+        const docRef = await addDoc(collection(db, "cpMeasurements"), {
+            ...cpMeasurement,
+            timestamp: serverTimestamp(),
+            userId: appState.currentUser.uid,
+            userEmail: appState.currentUser.email,
+            version: 1
+        });
+        
+        log('SUCCESS', 'CP measurement saved to Firestore with ID:', docRef.id);
+        return { id: docRef.id, success: true };
+        
+    } catch (error) {
+        log('ERROR', 'Firestore CP save error:', error);
+        throw error;
+    }
+}
+
+async function loadCPFromFirestore() {
+    if (!appState.isFirebaseConnected || !appState.currentUser) {
+        throw new Error('Je moet ingelogd zijn en verbonden met internet om CP metingen te laden.');
+    }
+
+    try {
+        log('INFO', 'Loading CP measurements from Firestore for user:', appState.currentUser.email);
+        
+        const { getDocs, collection, query, where, orderBy, limit } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+        
+        const q = query(
+            collection(db, "cpMeasurements"), 
+            where("userId", "==", appState.currentUser.uid),
+            orderBy("timestamp", "desc"),
+            limit(200) // Laatste 200 metingen
+        );
+        
+        const querySnapshot = await getDocs(q);
+        
+        const measurements = [];
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            measurements.push({
+                id: doc.id,
+                ...data,
+                timestamp: data.timestamp ? data.timestamp.toDate().toISOString() : data.clientTimestamp,
+                firebaseId: doc.id
+            });
+        });
+        
+        log('SUCCESS', `Loaded ${measurements.length} CP measurements from Firestore`);
+        return measurements;
+        
+    } catch (error) {
+        log('ERROR', 'Firestore CP query error:', error);
+        
+        if (error.code === 'permission-denied') {
+            throw new Error('Geen toestemming om CP data te laden. Log opnieuw in.');
+        } else if (error.code === 'unavailable') {
+            throw new Error('Firebase service tijdelijk niet beschikbaar. Probeer het later opnieuw.');
+        } else {
+            throw new Error('Fout bij laden van CP metingen: ' + error.message);
+        }
+    }
+}
+
+async function syncCPMeasurements() {
+    if (!appState.isFirebaseConnected || !appState.currentUser) {
+        log('WARNING', 'Cannot sync CP measurements - not connected or not logged in');
+        return;
+    }
+
+    try {
+        // Laad CP metingen van Firebase
+        const firebaseCPMeasurements = await loadCPFromFirestore();
+        
+        // Combineer met lokale metingen
+        const localMeasurements = buteykoData.cpMeasurements || [];
+        
+        // Maak een map van Firebase metingen voor snelle lookup
+        const firebaseMap = new Map();
+        firebaseCPMeasurements.forEach(measurement => {
+            firebaseMap.set(measurement.id, measurement);
+        });
+        
+        // Vind lokale metingen die nog niet in Firebase staan
+        const unsyncedLocal = localMeasurements.filter(local => 
+            !local.firebaseId && !firebaseMap.has(local.id)
+        );
+        
+        // Upload unsynced lokale metingen naar Firebase
+        for (const localMeasurement of unsyncedLocal) {
+            try {
+                const result = await saveCPToFirestore({
+                    score: localMeasurement.score,
+                    timeOfDay: localMeasurement.timeOfDay,
+                    notes: localMeasurement.notes || '',
+                    clientTimestamp: localMeasurement.timestamp
+                });
+                
+                // Update lokale measurement met Firebase ID
+                localMeasurement.firebaseId = result.id;
+                
+            } catch (error) {
+                log('WARNING', 'Failed to sync CP measurement:', error);
+            }
         }
         
-        appState.authUnsubscribe = onAuthStateChanged(auth, (user) => {
-            appState.updateUI();
-            
-            if (user) {
-                log('SUCCESS', 'User authenticated:', user.email);
-                appState.setUser(user);
-                showMainApp();
-                
-                setTimeout(() => {
-                    loadDagboekEntries().catch(error => {
-                        log('WARNING', 'Could not load entries on login:', error);
-                    });
-                }, 500);
-            } else {
-                log('INFO', 'User not authenticated');
-                appState.setUser(null);
-                showLoginScreen();
+        // Combineer alle metingen (Firebase + lokale) en sorteer
+        const allMeasurements = [...firebaseCPMeasurements];
+        
+        // Voeg lokale metingen toe die niet in Firebase staan
+        localMeasurements.forEach(local => {
+            if (!firebaseMap.has(local.id)) {
+                allMeasurements.push(local);
             }
-        }, (error) => {
-            log('ERROR', 'Auth state observer error:', error);
-            appState.updateUI();
-            showUserMessage('Authenticatie fout: ' + error.message, 'error');
-            showLoginScreen();
         });
+        
+        // Sorteer op timestamp (nieuwste eerst)
+        allMeasurements.sort((a, b) => {
+            const dateA = new Date(a.timestamp);
+            const dateB = new Date(b.timestamp);
+            return dateB - dateA;
+        });
+        
+        // Update lokale storage met gecombineerde data
+        buteykoData.cpMeasurements = allMeasurements.slice(0, 200); // Behoud laatste 200
+        saveButeykoData();
+        
+        log('SUCCESS', `Synchronized ${allMeasurements.length} CP measurements`);
+        
+    } catch (error) {
+        log('ERROR', 'CP synchronization failed:', error);
+        // Toon geen error aan gebruiker - sync op achtergrond
     }
+}
 
     // ============================================
     // SCREEN MANAGEMENT

@@ -364,11 +364,31 @@
         padding: 1.5rem;
         text-align: center;
         transition: var(--transition);
+        position: relative;
     }
 
     .stat-card:hover {
         border-color: var(--primary-color);
         background: rgba(6, 182, 212, 0.15);
+        transform: translateY(-2px);
+    }
+
+    #cp-dashboard-card {
+        position: relative;
+        overflow: hidden;
+    }
+
+    #cp-dashboard-card.improving {
+        animation: subtle-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes subtle-pulse {
+        0%, 100% { 
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+        }
+        50% { 
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
     }
 
     .stat-number {
@@ -545,6 +565,16 @@
             padding: 0.5rem;
         }
         
+        .logo-animation {
+            width: 2.5rem;
+            height: 2.5rem;
+            margin-right: 0.75rem;
+        }
+        
+        .logo-animation::before {
+            font-size: 1.25rem;
+        }
+        
         .nav-tabs {
             padding: 0.5rem;
             gap: 0.5rem;
@@ -570,6 +600,26 @@
         
         .stat-number {
             font-size: 2rem;
+        }
+        
+        .dashboard-cards {
+            grid-template-columns: 1fr;
+        }
+        
+        /* Journal filter mobile styling */
+        .journal-filter-container {
+            flex-direction: column;
+            align-items: stretch !important;
+            gap: 0.75rem !important;
+        }
+        
+        .journal-filter-container > div {
+            margin-left: 0 !important;
+            justify-content: center;
+        }
+        
+        .journal-filter-container label {
+            text-align: center;
         }
     }
 
@@ -758,9 +808,12 @@
                             <div class="stat-number" id="avg-improvement">-</div>
                             <div class="stat-label">Gem. verbetering</div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card" id="cp-dashboard-card">
                             <div class="stat-number" id="last-cp">-</div>
                             <div class="stat-label">Laatste CP (sec)</div>
+                            <div id="cp-trend" style="font-size: 0.8rem; margin-top: 0.5rem; font-weight: 600;">
+                                <!-- CP trend wordt hier getoond -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -854,6 +907,22 @@
                             <div id="cp-interpretation">
                                 Gemiddelde CO2 tolerantie. Doorgaan met oefenen kan dit verbeteren.
                             </div>
+                            <div id="cp-progress-indicator" style="margin-top: 1rem; font-size: 0.9rem; color: var(--primary-dark);">
+                                <!-- Progress info wordt hier getoond -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CP Progress Chart -->
+                    <div id="cp-progress-section" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1)); 
+                                border: 2px solid var(--success-color); border-radius: 1.5rem; padding: 2rem; 
+                                text-align: center; margin: 2rem 0; display: none;">
+                        <h3>📈 CP Vooruitgang</h3>
+                        <div class="chart-container" style="background: white; margin-top: 1rem;">
+                            <canvas id="cp-progress-chart" width="400" height="200" style="max-height: 200px;"></canvas>
+                        </div>
+                        <div id="cp-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                            <!-- CP statistieken worden hier getoond -->
                         </div>
                     </div>
 
@@ -933,7 +1002,7 @@
                         Track je symptomen en vooruitgang. Vroege interventie en patroonherkenning zijn cruciaal voor herstel.
                     </p>
                     
-                    <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                    <div class="journal-filter-container" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; align-items: center;">
                         <button class="btn btn-primary" onclick="openJournalModal('Handmatige Entry')">
                             ➕ Nieuwe Entry
                         </button>
@@ -943,6 +1012,15 @@
                         <button class="btn btn-warning" onclick="exportJournal()">
                             📥 Export
                         </button>
+                        
+                        <div style="margin-left: auto; display: flex; align-items: center; gap: 0.5rem;">
+                            <label style="font-weight: 600; color: var(--text-dark); white-space: nowrap;">Periode:</label>
+                            <select id="journal-filter" class="form-select" onchange="updateJournalFilter()" style="width: auto; min-width: 150px;">
+                                <option value="all">Alle entries</option>
+                                <option value="recent" selected>Laatste 10</option>
+                                <!-- Maandopties worden dynamisch toegevoegd -->
+                            </select>
+                        </div>
                     </div>
                 </div>
 
@@ -1178,6 +1256,8 @@
     let currentTab = 'dashboard';
     let allJournalEntries = [];
     let currentChartFilter = 'last15';
+    let currentJournalFilter = 'recent';
+    let allCPMeasurements = [];
     
     // Buteyko state
     let cpInterval = null;
@@ -1348,7 +1428,7 @@
     }
 
     // Tab management
-    window.showTab = function(tabName) {
+    function showTab(tabName) {
         // Hide all tabs
         document.querySelectorAll('.tab-content').forEach(tab => {
             tab.classList.remove('active');
@@ -1373,11 +1453,14 @@
             loadJournalEntries();
         } else if (tabName === 'dashboard') {
             updateDashboard();
+        } else if (tabName === 'buteyko') {
+            // Update CP progress when switching to Buteyko tab
+            updateCPProgress();
         }
-    };
+    }
 
     // Buteyko functions
-    window.startCP = function() {
+    function startCP() {
         cpStartTime = Date.now();
         cpIsRunning = true;
         
@@ -1392,9 +1475,9 @@
             document.getElementById('cp-timer').textContent = 
                 `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }, 100);
-    };
+    }
 
-    window.stopCP = function() {
+    async function stopCP() {
         if (!cpIsRunning) return;
         
         const finalTime = Math.floor((Date.now() - cpStartTime) / 1000);
@@ -1405,22 +1488,40 @@
         document.getElementById('cp-start-btn').style.display = 'inline-block';
         document.getElementById('cp-stop-btn').style.display = 'none';
         
-        displayCPResult(finalTime);
+        await displayCPResult(finalTime);
         
-        // Store CP measurement
-        userStats.cpMeasurements.push({
+        // Store CP measurement locally and in Firebase
+        const cpMeasurement = {
             score: finalTime,
-            timestamp: new Date().toISOString()
-        });
+            timestamp: new Date(),
+            userId: currentUser?.uid,
+            userEmail: currentUser?.email
+        };
+        
+        userStats.cpMeasurements.push(cpMeasurement);
+        allCPMeasurements.push(cpMeasurement);
+        
+        // Save to Firebase
+        if (currentUser) {
+            try {
+                const { addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+                await addDoc(collection(db, "cpMeasurements"), cpMeasurement);
+                console.log('CP measurement saved to Firebase');
+            } catch (error) {
+                console.error('Error saving CP measurement:', error);
+                showUserMessage('CP score opgeslagen lokaal (sync probleem)', 'warning');
+            }
+        }
         
         // Set for journal entry
         window.lastCPScore = finalTime;
         
         saveUserStats();
-        updateDashboard();
-    };
+        updateDashboard(); // This now includes CP trend update
+        updateCPProgress();
+    }
 
-    window.resetCP = function() {
+    function resetCP() {
         if (cpInterval) {
             clearInterval(cpInterval);
             cpInterval = null;
@@ -1433,11 +1534,12 @@
         document.getElementById('cp-result').style.display = 'none';
         
         window.lastCPScore = null;
-    };
+    }
 
-    function displayCPResult(seconds) {
+    async function displayCPResult(seconds) {
         const scoreEl = document.getElementById('cp-score');
         const interpretationEl = document.getElementById('cp-interpretation');
+        const progressIndicator = document.getElementById('cp-progress-indicator');
         
         scoreEl.textContent = `${seconds} seconden`;
         
@@ -1455,13 +1557,38 @@
         }
         
         interpretationEl.textContent = interpretation;
+        
+        // Show progress compared to previous measurement
+        const recentCPMeasurements = [...userStats.cpMeasurements, ...allCPMeasurements]
+            .filter(cp => cp.score !== undefined)
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        if (recentCPMeasurements.length > 1) {
+            const previousScore = recentCPMeasurements[1].score;
+            const improvement = seconds - previousScore;
+            
+            if (improvement > 0) {
+                progressIndicator.innerHTML = `📈 <strong>Vooruitgang:</strong> +${improvement}s ten opzichte van vorige meting`;
+                progressIndicator.style.color = 'var(--success-color)';
+            } else if (improvement < 0) {
+                progressIndicator.innerHTML = `📉 <strong>Verschil:</strong> ${improvement}s ten opzichte van vorige meting`;
+                progressIndicator.style.color = 'var(--warning-color)';
+            } else {
+                progressIndicator.innerHTML = `➡️ <strong>Stabiel:</strong> Zelfde score als vorige meting`;
+                progressIndicator.style.color = 'var(--text-light)';
+            }
+        } else {
+            progressIndicator.innerHTML = `🎯 <strong>Eerste meting:</strong> Dit vormt je baseline voor toekomstige vergelijking`;
+            progressIndicator.style.color = 'var(--primary-color)';
+        }
+        
         document.getElementById('cp-result').style.display = 'block';
         
         showUserMessage(`CP Meting voltooid: ${seconds} seconden!`, 'success');
     }
 
     // Breathing exercise
-    window.updateBreathingPattern = function() {
+    function updateBreathingPattern() {
         breathingPattern = document.getElementById('breathing-pattern').value;
         const explanation = document.getElementById('pattern-explanation');
         
@@ -1475,15 +1602,15 @@
         if (breathInterval) {
             resetBreathing();
         }
-    };
+    }
 
-    window.toggleBreathing = function() {
+    function toggleBreathing() {
         if (breathInterval) {
             stopBreathing();
         } else {
             startBreathing();
         }
-    };
+    }
 
     function startBreathing() {
         breathCycle = 1;
@@ -1628,22 +1755,22 @@
         document.getElementById('breath-progress').style.width = Math.min(progress, 100) + '%';
     }
 
-    window.resetBreathing = function() {
+    function resetBreathing() {
         stopBreathing();
         breathCycle = 1;
         gentleBreathCount = 0;
         breathPhase = breathingPattern === 'gentle' ? 'gentle-breath' : 'inhale';
         document.getElementById('breath-counter').textContent = 'Cyclus: 1/20';
         document.getElementById('breath-complete').style.display = 'none';
-    };
+    }
 
-    window.completeBreathing = function() {
+    function completeBreathing() {
         document.getElementById('breath-complete').style.display = 'none';
         resetBreathing();
-    };
+    }
 
     // Chart filter functionality
-    window.updateChartFilter = function(filter) {
+    function updateChartFilter(filter) {
         currentChartFilter = filter;
         
         // Update button states
@@ -1663,10 +1790,10 @@
         if (allJournalEntries.length > 0) {
             createProgressChart();
         }
-    };
+    }
 
     // Crisis protocol
-    window.startCrisis = function() {
+    function startCrisis() {
         crisisActive = true;
         crisisStep = 1;
         crisisTimeLeft = 60;
@@ -1694,9 +1821,9 @@
                 }
             }
         }, 1000);
-    };
+    }
 
-    window.stopCrisis = function() {
+    function stopCrisis() {
         crisisActive = false;
         
         if (crisisInterval) {
@@ -1719,7 +1846,7 @@
         updateStreak();
         saveUserStats();
         updateDashboard();
-    };
+    }
 
     function updateCrisisStep() {
         document.querySelectorAll('.crisis-step').forEach(step => {
@@ -1845,17 +1972,17 @@
         try {
             const { getDocs, collection, query, where, orderBy, limit } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
             
-            const q = query(
+            // Load journal entries
+            const journalQuery = query(
                 collection(db, "dagboekEntries"),
                 where("userId", "==", currentUser.uid),
-                orderBy("timestamp", "desc"),
-                limit(50)
+                orderBy("timestamp", "desc")
             );
             
-            const snapshot = await getDocs(q);
+            const journalSnapshot = await getDocs(journalQuery);
             allJournalEntries = [];
             
-            snapshot.forEach((doc) => {
+            journalSnapshot.forEach((doc) => {
                 const data = doc.data();
                 allJournalEntries.push({
                     id: doc.id,
@@ -1863,10 +1990,38 @@
                     timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
                 });
             });
+
+            // Load CP measurements
+            try {
+                const cpQuery = query(
+                    collection(db, "cpMeasurements"),
+                    where("userId", "==", currentUser.uid),
+                    orderBy("timestamp", "desc")
+                );
+                
+                const cpSnapshot = await getDocs(cpQuery);
+                allCPMeasurements = [];
+                
+                cpSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    allCPMeasurements.push({
+                        id: doc.id,
+                        ...data,
+                        timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
+                    });
+                });
+
+                console.log(`Loaded ${allCPMeasurements.length} CP measurements from Firebase`);
+            } catch (error) {
+                console.warn('Error loading CP measurements:', error);
+                allCPMeasurements = [];
+            }
             
+            populateJournalFilter();
             displayJournalEntries();
             generateInsights();
             createProgressChart();
+            updateCPProgress();
             
         } catch (error) {
             console.error('Load entries failed:', error);
@@ -1890,9 +2045,34 @@
             return;
         }
         
-        let html = '<div class="card"><h3>📝 Recente Entries</h3>';
+        // Apply current filter
+        let filteredEntries = [];
+        if (currentJournalFilter === 'all') {
+            filteredEntries = allJournalEntries;
+        } else if (currentJournalFilter === 'recent') {
+            filteredEntries = allJournalEntries.slice(0, 10);
+        } else {
+            // Month filter (format: YYYY-MM)
+            const [year, month] = currentJournalFilter.split('-').map(n => parseInt(n));
+            filteredEntries = allJournalEntries.filter(entry => {
+                const entryDate = new Date(entry.timestamp);
+                return entryDate.getFullYear() === year && entryDate.getMonth() === (month - 1);
+            });
+        }
         
-        allJournalEntries.slice(0, 10).forEach(entry => {
+        if (!filteredEntries.length) {
+            container.innerHTML = `
+                <div class="card">
+                    <h3>Geen entries voor deze periode</h3>
+                    <p>Selecteer een andere periode of maak nieuwe entries.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = `<div class="card"><h3>📝 ${filteredEntries.length} ${filteredEntries.length === 1 ? 'Entry' : 'Entries'}</h3>`;
+        
+        filteredEntries.forEach(entry => {
             const improvement = entry.intensiteitVoor - entry.intensiteitNa;
             const improvementClass = improvement > 0 ? 'success' : improvement < 0 ? 'danger' : 'warning';
             const improvementText = improvement > 0 ? `↗️ +${improvement}` : improvement < 0 ? `↘️ ${improvement}` : '➡️ 0';
@@ -1947,7 +2127,7 @@
         insightsCard.style.display = 'block';
         
         // Calculate insights based on research
-        const recentEntries = allJournalEntries.slice(0, 10);
+        const recentEntries = allJournalEntries.slice(0, 20);
         const improvements = recentEntries.map(e => e.intensiteitVoor - e.intensiteitNa);
         const avgImprovement = improvements.reduce((sum, imp) => sum + imp, 0) / improvements.length;
         const successRate = (improvements.filter(imp => imp > 0).length / improvements.length) * 100;
@@ -1975,6 +2155,9 @@
             const bestAvg = techniques[best] ? techniques[best].reduce((s, v) => s + v, 0) / techniques[best].length : -999;
             return avgTechImprovement > bestAvg ? technique : best;
         }, Object.keys(techniques)[0]);
+
+        // TEXT ANALYSIS - New advanced insights
+        const textInsights = analyzeJournalTexts(recentEntries);
 
         let insights = `
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
@@ -2008,6 +2191,44 @@
             </div>`;
         }
 
+        // ADVANCED TEXT ANALYSIS INSIGHTS
+        if (textInsights.commonTriggers.length > 0) {
+            insights += `<div class="alert alert-warning">
+                <strong>⚠️ Terugkerende triggers:</strong> Je triggers tonen een patroon: ${textInsights.commonTriggers.slice(0, 3).join(', ')}. 
+                Herken je deze patronen? Vroege herkenning kan aanvallen voorkomen.
+            </div>`;
+        }
+
+        if (textInsights.stressKeywords.length > 2) {
+            insights += `<div class="alert alert-warning">
+                <strong>🎯 Stresspatroon gedetecteerd:</strong> Woorden zoals "${textInsights.stressKeywords.slice(0, 3).join('", "')}" komen vaak voor. 
+                Overweeg stressreductie technieken naast ademhalingsoefeningen.
+            </div>`;
+        }
+
+        if (textInsights.successPatterns.length > 0) {
+            insights += `<div class="alert alert-success">
+                <strong>✅ Succesfactoren:</strong> Bij je beste resultaten zie je vaak: ${textInsights.successPatterns.join(', ')}. 
+                Probeer deze factoren bewust te herhalen.
+            </div>`;
+        }
+
+        if (textInsights.timePatterns.length > 0) {
+            insights += `<div class="alert alert-info">
+                <strong>🕐 Tijdpatronen:</strong> ${textInsights.timePatterns.join(' ')} 
+                Timing lijkt belangrijk voor jou - overweeg dit bij je dagelijkse routine.
+            </div>`;
+        }
+
+        if (textInsights.improvements.length > 0) {
+            insights += `<div class="alert alert-info" style="border-left-color: #8b5cf6;">
+                <strong>💬 Verbeterpunten op basis van je notities:</strong>
+                <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                    ${textInsights.improvements.map(tip => `<li>${tip}</li>`).join('')}
+                </ul>
+            </div>`;
+        }
+
         // Early intervention message
         if (allJournalEntries.length <= 10) {
             insights += `<div class="alert alert-success">
@@ -2016,6 +2237,99 @@
         }
 
         insightsContent.innerHTML = insights;
+    }
+
+    // Advanced text analysis function
+    function analyzeJournalTexts(entries) {
+        const triggers = entries.map(e => e.trigger).filter(Boolean).map(t => t.toLowerCase());
+        const notes = entries.map(e => e.notities).filter(Boolean).map(n => n.toLowerCase());
+        const allText = [...triggers, ...notes].join(' ');
+        
+        // Common trigger patterns
+        const commonTriggers = [];
+        const triggerWords = {};
+        triggers.forEach(trigger => {
+            trigger.split(/\s+/).forEach(word => {
+                if (word.length > 3) {
+                    triggerWords[word] = (triggerWords[word] || 0) + 1;
+                }
+            });
+        });
+        
+        Object.entries(triggerWords)
+            .filter(([word, count]) => count >= 2)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3)
+            .forEach(([word]) => commonTriggers.push(word));
+
+        // Stress-related keywords
+        const stressWords = ['stress', 'druk', 'spanning', 'nerveus', 'onrust', 'angst', 'paniek', 'zorgen', 'werk', 'deadline', 'conflict', 'ruzie'];
+        const stressKeywords = stressWords.filter(word => 
+            allText.includes(word) && (allText.match(new RegExp(word, 'g')) || []).length >= 2
+        );
+
+        // Success patterns (from high-improvement entries)
+        const successfulEntries = entries.filter(e => (e.intensiteitVoor - e.intensiteitNa) >= 3);
+        const successPatterns = [];
+        if (successfulEntries.length > 0) {
+            const successText = successfulEntries.map(e => [e.trigger, e.notities].filter(Boolean).join(' ')).join(' ').toLowerCase();
+            const positiveWords = ['rust', 'ontspanning', 'kalm', 'rustig', 'thuis', 'stil', 'focus', 'concentratie', 'langzaam', 'diep'];
+            positiveWords.forEach(word => {
+                if (successText.includes(word)) {
+                    successPatterns.push(word);
+                }
+            });
+        }
+
+        // Time patterns
+        const timePatterns = [];
+        const morningEntries = entries.filter(e => {
+            const hour = new Date(e.timestamp).getHours();
+            return hour >= 6 && hour < 12;
+        });
+        const eveningEntries = entries.filter(e => {
+            const hour = new Date(e.timestamp).getHours();
+            return hour >= 18 || hour < 6;
+        });
+        
+        if (morningEntries.length > entries.length * 0.6) {
+            timePatterns.push('Je ervaart vaak klachten \'s ochtends.');
+        }
+        if (eveningEntries.length > entries.length * 0.6) {
+            timePatterns.push('\'s Avonds en \'s nachts komen klachten vaker voor.');
+        }
+
+        // Improvement suggestions based on text analysis
+        const improvements = [];
+        
+        if (stressKeywords.length > 2) {
+            improvements.push('Overweeg stressmanagement technieken zoals mindfulness of progressive muscle relaxation.');
+        }
+        
+        if (allText.includes('werk') && allText.includes('stress')) {
+            improvements.push('Werkgerelateerde stress lijkt een trigger - korte ademhalingspauzes tijdens werk kunnen helpen.');
+        }
+        
+        if (allText.includes('avond') || allText.includes('bed')) {
+            improvements.push('Avondklachten: probeer een rustiger bedtime routine met zachte ademhalingsoefeningen.');
+        }
+        
+        if (allText.includes('eten') || allText.includes('maaltijd')) {
+            improvements.push('Eet-gerelateerde triggers: probeer langzamer eten en bewust ademen na maaltijden.');
+        }
+
+        const unsuccessfulEntries = entries.filter(e => (e.intensiteitVoor - e.intensiteitNa) < 1);
+        if (unsuccessfulEntries.length > entries.length * 0.3) {
+            improvements.push('Bij lagere effectiviteit: controleer of je de technieken niet forceert - zachte ademhaling werkt beter.');
+        }
+
+        return {
+            commonTriggers,
+            stressKeywords,
+            successPatterns,
+            timePatterns,
+            improvements
+        };
     }
 
     async function createProgressChart() {
@@ -2356,18 +2670,143 @@
     function updateDashboard() {
         if (!currentUser) return;
         
-        // Calculate stats
+        // Combine all data sources for comprehensive statistics
+        const allCPData = [...userStats.cpMeasurements, ...allCPMeasurements]
+            .filter(cp => cp.score !== undefined)
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        // Calculate comprehensive stats from ALL entries (not just recent)
         const avgImprovement = allJournalEntries.length > 0 ? 
             allJournalEntries.reduce((sum, e) => sum + (e.intensiteitVoor - e.intensiteitNa), 0) / allJournalEntries.length : 0;
         
-        const lastCP = userStats.cpMeasurements.length > 0 ? 
-            userStats.cpMeasurements[userStats.cpMeasurements.length - 1].score : '-';
+        const lastCP = allCPData.length > 0 ? allCPData[0].score : '-';
+
+        // Update total sessions to include all journal entries + saved sessions
+        const totalJournalSessions = allJournalEntries.length;
+        const comprehensiveTotalSessions = userStats.totalSessions + totalJournalSessions;
+        
+        // Update streak calculation based on actual journal entries
+        updateStreakFromJournalEntries();
 
         // Update dashboard stats
-        document.getElementById('total-sessions').textContent = userStats.totalSessions;
+        document.getElementById('total-sessions').textContent = Math.max(comprehensiveTotalSessions, totalJournalSessions);
         document.getElementById('streak-days').textContent = userStats.streakDays;
         document.getElementById('avg-improvement').textContent = avgImprovement > 0 ? '+' + avgImprovement.toFixed(1) : avgImprovement.toFixed(1);
         document.getElementById('last-cp').textContent = lastCP === '-' ? '-' : lastCP + 's';
+
+        // Update CP trend information
+        updateCPTrendDisplay(allCPData);
+    }
+
+    function updateCPTrendDisplay(allCPData) {
+        const cpTrendEl = document.getElementById('cp-trend');
+        const cpCard = document.getElementById('cp-dashboard-card');
+        
+        if (!cpTrendEl || allCPData.length === 0) {
+            if (cpTrendEl) cpTrendEl.innerHTML = '<span style="color: var(--text-light);">Geen CP metingen</span>';
+            return;
+        }
+
+        if (allCPData.length === 1) {
+            cpTrendEl.innerHTML = '<span style="color: var(--primary-color);">🎯 Eerste meting</span>';
+            return;
+        }
+
+        // Calculate trend
+        const latest = allCPData[0].score;
+        const previous = allCPData[1].score;
+        const improvement = latest - previous;
+        
+        // Calculate overall trend (last 5 measurements)
+        const recentMeasurements = allCPData.slice(0, Math.min(5, allCPData.length));
+        const trendData = recentMeasurements.map(cp => cp.score);
+        const overallTrend = recentMeasurements.length > 2 ? 
+            (trendData[0] - trendData[trendData.length - 1]) / (trendData.length - 1) : 0;
+
+        let trendHTML = '';
+        let cardStyle = '';
+        
+        if (improvement > 5) {
+            trendHTML = `<span style="color: var(--success-color);">📈 Sterke verbetering (+${improvement}s)</span>`;
+            cardStyle = 'border: 2px solid var(--success-color); background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), white);';
+        } else if (improvement > 0) {
+            trendHTML = `<span style="color: var(--success-color);">📈 Vooruitgang (+${improvement}s)</span>`;
+            cardStyle = 'border: 2px solid var(--success-color); background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), white);';
+        } else if (improvement < -5) {
+            trendHTML = `<span style="color: var(--warning-color);">📉 Terugval (${improvement}s)</span>`;
+            cardStyle = 'border: 2px solid var(--warning-color);';
+        } else if (improvement < 0) {
+            trendHTML = `<span style="color: var(--warning-color);">📉 Daling (${improvement}s)</span>`;
+        } else {
+            trendHTML = `<span style="color: var(--text-light);">➡️ Stabiel (${improvement}s)</span>`;
+        }
+
+        // Add overall trend context
+        if (Math.abs(overallTrend) > 1) {
+            const trendDirection = overallTrend > 0 ? 'stijgende' : 'dalende';
+            trendHTML += `<br><small style="opacity: 0.8;">Algemene trend: ${trendDirection}</small>`;
+        }
+
+        // Add measurement count
+        trendHTML += `<br><small style="opacity: 0.7;">${allCPData.length} metingen totaal</small>`;
+
+        cpTrendEl.innerHTML = trendHTML;
+        
+        // Apply visual styling to the card based on trend
+        cpCard.className = 'stat-card'; // Reset classes
+        if (cardStyle) {
+            cpCard.style.cssText += cardStyle;
+        }
+        
+        // Add special animation for strong improvements
+        if (improvement > 5) {
+            cpCard.classList.add('improving');
+        }
+    }
+
+    function updateStreakFromJournalEntries() {
+        if (allJournalEntries.length === 0) {
+            userStats.streakDays = 0;
+            return;
+        }
+
+        // Sort entries by date (most recent first)
+        const sortedEntries = allJournalEntries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        // Get unique dates from journal entries
+        const uniqueDates = [...new Set(sortedEntries.map(entry => {
+            return new Date(entry.timestamp).toDateString();
+        }))].sort((a, b) => new Date(b) - new Date(a));
+
+        let streak = 0;
+        const today = new Date().toDateString();
+        
+        // Check if there's activity today or yesterday
+        const todayIndex = uniqueDates.indexOf(today);
+        const yesterdayIndex = uniqueDates.indexOf(new Date(Date.now() - 86400000).toDateString());
+        
+        if (todayIndex === -1 && yesterdayIndex === -1) {
+            // No recent activity
+            userStats.streakDays = 0;
+            return;
+        }
+        
+        // Start counting from most recent activity date
+        const startIndex = todayIndex !== -1 ? todayIndex : yesterdayIndex;
+        
+        for (let i = startIndex; i < uniqueDates.length; i++) {
+            const currentDate = new Date(uniqueDates[i]);
+            const expectedDate = new Date(Date.now() - (i - startIndex) * 86400000);
+            
+            // Allow for same day
+            if (currentDate.toDateString() === expectedDate.toDateString()) {
+                streak++;
+            } else {
+                break;
+            }
+        }
+        
+        userStats.streakDays = streak;
     }
 
     function saveUserStats() {
@@ -2442,11 +2881,14 @@
         if (breathInterval) clearInterval(breathInterval);
         if (crisisInterval) clearInterval(crisisInterval);
         if (window.progressChart) window.progressChart.destroy();
+        if (window.cpProgressChart) window.cpProgressChart.destroy();
     });
 
     // Make functions globally available
+    window.signInWithGoogle = signInWithGoogle;
     window.updateBreathingPattern = updateBreathingPattern;
     window.updateChartFilter = updateChartFilter;
+    window.updateJournalFilter = updateJournalFilter;
     window.startCP = startCP;
     window.stopCP = stopCP;
     window.resetCP = resetCP;
@@ -2459,6 +2901,8 @@
     window.closeJournalModal = closeJournalModal;
     window.saveJournalEntry = saveJournalEntry;
     window.exportJournal = exportJournal;
+    window.showTab = showTab;
+    window.logout = logout;
 </script>
 
 </body>

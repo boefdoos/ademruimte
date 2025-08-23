@@ -1984,30 +1984,129 @@
         if (!currentUser) return;
         
         try {
-            console.log('Loading journal entries for user:', currentUser.uid);
+            console.log('🔍 Loading journal entries for user:', currentUser.uid);
+            console.log('🔍 User email:', currentUser.email);
+            console.log('🔍 User display name:', currentUser.displayName);
             
             const { getDocs, collection, query, where, orderBy } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
             
-            // Load journal entries
-            const journalQuery = query(
-                collection(db, "dagboekEntries"),
-                where("userId", "==", currentUser.uid),
-                orderBy("timestamp", "desc")
-            );
-            
-            const journalSnapshot = await getDocs(journalQuery);
-            allJournalEntries = [];
-            
-            journalSnapshot.forEach((doc) => {
-                const data = doc.data();
-                allJournalEntries.push({
-                    id: doc.id,
-                    ...data,
-                    timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
+            // First try: Load journal entries with orderBy
+            try {
+                const journalQuery = query(
+                    collection(db, "dagboekEntries"),
+                    where("userId", "==", currentUser.uid),
+                    orderBy("timestamp", "desc")
+                );
+                
+                const journalSnapshot = await getDocs(journalQuery);
+                allJournalEntries = [];
+                
+                journalSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    console.log('📝 Found journal entry:', {
+                        id: doc.id,
+                        technique: data.techniekGebruikt,
+                        timestamp: data.timestamp,
+                        userId: data.userId
+                    });
+                    allJournalEntries.push({
+                        id: doc.id,
+                        ...data,
+                        timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
+                    });
                 });
-            });
 
-            console.log(`Loaded ${allJournalEntries.length} journal entries`);
+                console.log(`✅ Loaded ${allJournalEntries.length} journal entries with orderBy`);
+                
+            } catch (orderByError) {
+                console.warn('⚠️ OrderBy failed, trying without orderBy:', orderByError.message);
+                
+                // Fallback: Try without orderBy (in case of index issues)
+                const simpleQuery = query(
+                    collection(db, "dagboekEntries"),
+                    where("userId", "==", currentUser.uid)
+                );
+                
+                const simpleSnapshot = await getDocs(simpleQuery);
+                allJournalEntries = [];
+                
+                simpleSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    console.log('📝 Found journal entry (simple):', {
+                        id: doc.id,
+                        technique: data.techniekGebruikt,
+                        timestamp: data.timestamp,
+                        userId: data.userId
+                    });
+                    allJournalEntries.push({
+                        id: doc.id,
+                        ...data,
+                        timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
+                    });
+                });
+                
+                // Sort manually by timestamp
+                allJournalEntries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                console.log(`✅ Loaded ${allJournalEntries.length} journal entries without orderBy`);
+            }
+
+            // If still no entries, try alternative user ID strategies
+            if (allJournalEntries.length === 0) {
+                console.log('🔍 No entries found with current userId, trying alternative queries...');
+                
+                // Try with email as userId (in case old entries used email)
+                try {
+                    const emailQuery = query(
+                        collection(db, "dagboekEntries"),
+                        where("userId", "==", currentUser.email)
+                    );
+                    
+                    const emailSnapshot = await getDocs(emailQuery);
+                    emailSnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        console.log('📧 Found entry with email userId:', doc.id);
+                        allJournalEntries.push({
+                            id: doc.id,
+                            ...data,
+                            timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
+                        });
+                    });
+                    
+                    if (allJournalEntries.length > 0) {
+                        console.log(`✅ Found ${allJournalEntries.length} entries using email as userId`);
+                    }
+                } catch (emailError) {
+                    console.log('Email query failed:', emailError.message);
+                }
+                
+                // Try with userEmail field
+                if (allJournalEntries.length === 0) {
+                    try {
+                        const userEmailQuery = query(
+                            collection(db, "dagboekEntries"),
+                            where("userEmail", "==", currentUser.email)
+                        );
+                        
+                        const userEmailSnapshot = await getDocs(userEmailQuery);
+                        userEmailSnapshot.forEach((doc) => {
+                            const data = doc.data();
+                            console.log('📧 Found entry with userEmail field:', doc.id);
+                            allJournalEntries.push({
+                                id: doc.id,
+                                ...data,
+                                timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
+                            });
+                        });
+                        
+                        if (allJournalEntries.length > 0) {
+                            console.log(`✅ Found ${allJournalEntries.length} entries using userEmail field`);
+                        }
+                    } catch (userEmailError) {
+                        console.log('UserEmail query failed:', userEmailError.message);
+                    }
+                }
+            }
 
             // Load CP measurements (with better error handling for permissions)
             try {
@@ -2049,17 +2148,25 @@
             updateCPProgress();
             
         } catch (error) {
-            console.error('Load entries failed:', error);
+            console.error('❌ Load entries failed:', error);
             showUserMessage('❌ Laden van entries mislukt: ' + error.message, 'danger');
             
-            // Show empty state instead of error
+            // Show debugging info for troubleshooting
             document.getElementById('journal-entries').innerHTML = `
                 <div class="card">
-                    <h3>Verbindingsprobleem</h3>
-                    <p>Kon entries niet laden. Controleer je internetverbinding en probeer opnieuw.</p>
-                    <button class="btn btn-primary" onclick="loadJournalEntries()">
-                        🔄 Opnieuw proberen
-                    </button>
+                    <h3>🔧 Debugging Informatie</h3>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p><strong>User ID:</strong> ${currentUser?.uid}</p>
+                    <p><strong>Email:</strong> ${currentUser?.email}</p>
+                    
+                    <div style="margin: 1rem 0;">
+                        <button class="btn btn-primary" onclick="loadJournalEntries()">
+                            🔄 Opnieuw proberen
+                        </button>
+                        <button class="btn btn-warning" onclick="debugFirebaseData()">
+                            🔍 Debug Firebase Data
+                        </button>
+                    </div>
                 </div>
             `;
         }
@@ -2923,6 +3030,10 @@
         if (window.progressChart) window.progressChart.destroy();
         if (window.cpProgressChart) window.cpProgressChart.destroy();
     });
+
+    // Export debug functions globally  
+    window.debugFirebaseData = debugFirebaseData;
+    window.fixOldEntries = fixOldEntries;
 
     // Make functions globally available
     window.signInWithGoogle = signInWithGoogle;

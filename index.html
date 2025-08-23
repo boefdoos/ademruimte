@@ -3031,9 +3031,10 @@
         if (window.cpProgressChart) window.cpProgressChart.destroy();
     });
 
-    // Export debug functions globally  
+    // Export all functions that are called from HTML onclick handlers
     window.debugFirebaseData = debugFirebaseData;
     window.fixOldEntries = fixOldEntries;
+    window.loadJournalEntries = loadJournalEntries;
 
     // Make functions globally available
     window.signInWithGoogle = signInWithGoogle;

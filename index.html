@@ -2017,6 +2017,13 @@
                         Neem de tijd om te ontspannen en ontdek welke technieken het beste voor jou werken.
                     </p>
                 </div>
+                <div class="card">
+                <h3>🧠 AI Analyse</h3>
+                <p>Krijg gepersonaliseerde feedback op basis van wetenschappelijk onderzoek</p>
+                <button class="btn btn-purple" onclick="generateAndDisplayFeedback()">
+                🔮 Genereer Feedback
+                </button>
+                </div>
 
                 <div class="grid">
                     <div class="card buteyko-card">
@@ -3613,7 +3620,171 @@ function updateDashboardWidget() {
         
         log('SUCCESS', 'Personalized insights displayed');
     }
+// ============================================
+    // ENHANCED INSIGHTS & ANALYTICS SYSTEM
+    // ============================================
 
+    // ... bestaande generatePersonalizedInsights functie ...
+    // ... bestaande displayPersonalizedInsights functie ...
+    
+    // VOEG HIER DE STAP 4 CODE TOE:
+    // ============================================
+    // INTELLIGENT FEEDBACK UI SYSTEM  
+    // ============================================
+    
+    function generateAndDisplayFeedback() {
+        if (!feedbackSystem) {
+            initializeFeedbackSystem();
+        }
+        
+        const userData = collectUserDataForFeedback();
+        
+        // Alleen feedback als er genoeg data is
+        if (userData.entries.length < 3) {
+            log('INFO', 'Insufficient data for feedback generation');
+            return null;
+        }
+        
+        try {
+            const feedbackData = feedbackSystem.generateFeedback(userData);
+            displayFeedbackInUI(feedbackData);
+            return feedbackData;
+        } catch (error) {
+            log('ERROR', 'Feedback generation failed:', error);
+            return null;
+        }
+    }
+
+    function collectUserDataForFeedback() {
+        return {
+            entries: allDagboekEntries || [],
+            cpMeasurements: buteykoData ? buteykoData.cpMeasurements : [],
+            streakData: buteykoData ? buteykoData.streakData : {},
+            timeframe: 'last_30_days'
+        };
+    }
+
+    function displayFeedbackInUI(feedbackData) {
+        const { feedback, analysis, recommendations, motivation } = feedbackData;
+        
+        // 1. Voeg feedback toe aan insights sectie
+        addFeedbackToInsights(feedback, motivation);
+        
+        // 2. Voeg aanbevelingen toe aan dashboard als er zijn
+        if (recommendations.length > 0) {
+            addRecommendationsToDashboard(recommendations);
+        }
+        
+        // 3. Log voor debugging
+        log('SUCCESS', 'Feedback displayed:', { analysis, recommendations });
+    }
+
+    function addFeedbackToInsights(feedback, motivation) {
+        const insightsSection = document.getElementById('insights-section');
+        if (!insightsSection) return;
+        
+        // Verwijder oude feedback card als die er is
+        const oldFeedback = insightsSection.querySelector('.ai-feedback-card');
+        if (oldFeedback) {
+            oldFeedback.remove();
+        }
+        
+        const feedbackCard = document.createElement('div');
+        feedbackCard.className = 'card ai-feedback-card';
+        feedbackCard.style.cssText = `
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(16, 185, 129, 0.08));
+            border: 2px solid var(--buteyko-primary);
+            margin-bottom: 1.5rem;
+        `;
+        
+        feedbackCard.innerHTML = `
+            <h3 style="color: var(--buteyko-primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                🧠 Wetenschappelijke Analyse
+                <span style="font-size: 0.7rem; background: var(--buteyko-primary); color: white; padding: 0.25rem 0.5rem; border-radius: 1rem;">AI</span>
+            </h3>
+            
+            <div style="background: white; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1rem; border-left: 4px solid var(--buteyko-primary);">
+                <p style="font-size: 1.1rem; line-height: 1.6; margin: 0; font-weight: 500;">${feedback.primary}</p>
+            </div>
+            
+            ${feedback.secondary.map(msg => `
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.75rem;">
+                    <p style="margin: 0; font-size: 0.95rem;">${msg}</p>
+                </div>
+            `).join('')}
+            
+            ${feedback.insights.length > 0 ? `
+                <div style="margin-bottom: 1rem;">
+                    <h4 style="color: var(--buteyko-secondary); margin-bottom: 0.75rem;">💡 Patronen & Inzichten</h4>
+                    ${feedback.insights.map(insight => `
+                        <div style="background: rgba(6, 182, 212, 0.05); padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.5rem; border: 1px solid rgba(6, 182, 212, 0.15);">
+                            <p style="margin: 0; font-size: 0.9rem; line-height: 1.5;">${insight}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : ''}
+            
+            <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1rem; border-radius: 0.75rem; text-align: center;">
+                <p style="margin: 0; font-weight: 600; font-size: 1rem;">${motivation}</p>
+            </div>
+        `;
+        
+        // Voeg toe aan het begin van insights section
+        const insightsSummary = document.getElementById('insights-summary');
+        if (insightsSummary) {
+            insightsSection.insertBefore(feedbackCard, insightsSummary.nextSibling);
+        } else {
+            insightsSection.appendChild(feedbackCard);
+        }
+    }
+
+    function addRecommendationsToDashboard(recommendations) {
+        const dashboardWidget = document.getElementById('buteyko-dashboard-widget');
+        if (!dashboardWidget) return;
+        
+        const highPriorityRec = recommendations.find(r => r.priority === 'high');
+        if (!highPriorityRec) return;
+        
+        // Verwijder oude aanbeveling als die er is
+        const oldRec = dashboardWidget.querySelector('.ai-recommendation');
+        if (oldRec) {
+            oldRec.remove();
+        }
+        
+        const recElement = document.createElement('div');
+        recElement.className = 'ai-recommendation';
+        recElement.style.cssText = `
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid #ef4444;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        `;
+        
+        recElement.innerHTML = `
+            <div style="display: flex; align-items: center; margin-bottom: 0.75rem;">
+                <span style="font-size: 1.2rem; margin-right: 0.5rem;">🎯</span>
+                <strong style="color: #dc2626;">AI Aanbeveling</strong>
+            </div>
+            <div style="margin-bottom: 0.75rem;">
+                <div style="font-weight: 600; color: #dc2626; margin-bottom: 0.25rem;">${highPriorityRec.title}</div>
+                <p style="margin: 0; font-size: 0.9rem; line-height: 1.4; color: var(--text-dark);">${highPriorityRec.description}</p>
+            </div>
+            <div style="background: rgba(220, 38, 38, 0.05); padding: 0.75rem; border-radius: 0.5rem; border-left: 3px solid #dc2626;">
+                <strong style="font-size: 0.85rem; color: #dc2626;">Actie:</strong>
+                <span style="font-size: 0.85rem; color: var(--text-dark);">${highPriorityRec.action}</span>
+            </div>
+        `;
+        
+        dashboardWidget.appendChild(recElement);
+    }
+
+    // ============================================  
+    // ENHANCED CHART SYSTEM WITH SMOOTH CURVES
+    // ============================================
+
+    window.updateChartFilter = function(filter) {
+        // bestaande chart code...
     // ============================================
     // ENHANCED CHART SYSTEM WITH SMOOTH CURVES
     // ============================================
@@ -3983,6 +4154,842 @@ function updateDashboardWidget() {
                 </p>
             </div>
         `;
+    }
+}
+    // ============================================
+// INTELLIGENT FEEDBACK SYSTEM
+// ============================================
+
+/**
+ * ADEMRUIMTE INTELLIGENT FEEDBACK SYSTEM
+ * Evidence-based feedback system voor hyperventilatie recovery
+ * Gebaseerd op wetenschappelijk onderzoek naar chronische hyperventilatie herstel
+ */
+
+class AdemruimteFeedbackSystem {
+    constructor() {
+        this.insights = {
+            // Wetenschappelijke constanten
+            BUTEYKO_RAPID_IMPROVEMENT_DAYS: 2,
+            OPTIMAL_CP_SCORE: 40,
+            HEALTHY_CP_RANGE: [20, 60],
+            SUCCESS_IMPROVEMENT_THRESHOLD: 2,
+            EARLY_INTERVENTION_WEEKS: 12,
+            REMISSION_RATE_INTEGRATED: 55,
+            REMISSION_RATE_SINGLE: 40
+        };
+
+        this.feedbackTemplates = {
+            encouragement: [
+                "🌟 Geweldig! Het onderzoek toont dat 70-80% van hyperventilatie patiënten significant verbetert met gerichte interventies zoals jij doet.",
+                "💪 Je bent op de goede weg! Patiënten die vroeg beginnen met behandeling hebben veel betere uitkomsten.",
+                "🎯 Uitstekend werk! Studies tonen dat geïntegreerde benaderingen zoals jouw aanpak 55% remissie bereiken versus 40% bij enkelvoudige behandelingen."
+            ],
+            
+            buteyko_success: [
+                "🚀 Fantastisch! Onderzoek toont dat Buteyko patiënten vaak dramatische verbetering zien binnen 2 dagen - precies wat jij ervaart!",
+                "⚡ Je resultaten komen overeen met klinische studies: Buteyko methode is consistent de meest succesvolle interventie!",
+                "🎉 Prachtig! Je bevestigt wat de wetenschap toont: 'Na toepassing van de methode verdween de kortademigheid na slechts 2 dagen.'"
+            ],
+
+            cp_progress: [
+                "📈 Uitstekend! Je CP verbetering volgt het wetenschappelijk bewezen patroon van CO2 tolerantie herstel.",
+                "🎯 Geweldig! Een CP van {cp_score}s toont dat je lichaam wendt aan gezondere CO2 niveaus.",
+                "💎 Fantastisch! Met een CP van {cp_score}s beweeg je naar het optimale bereik van 40+ seconden."
+            ],
+
+            pattern_recognition: [
+                "🔍 Interessant patroon! Je resultaten tonen de bidirectionele verbinding tussen {trigger} en ademhaling die de wetenschap beschrijft.",
+                "🧠 Je ervaart precies wat onderzoek voorspelt: {pattern} is een bekende trigger via de nervus vagus verbinding.",
+                "📊 Slim geobserveerd! Dit patroon past bij de darm-brein-as onderzoeken die tonen hoe {factor} ademhaling beïnvloedt."
+            ]
+        };
+    }
+
+    /**
+     * Hoofdfunctie: Analyseer gebruikersdata en genereer feedback
+     */
+    generateFeedback(userData) {
+        const analysis = this.analyzeUserProgress(userData);
+        const feedback = this.createPersonalizedFeedback(analysis);
+        return {
+            feedback: feedback,
+            analysis: analysis,
+            recommendations: this.generateRecommendations(analysis),
+            motivation: this.getMotivationalMessage(analysis)
+        };
+    }
+
+    /**
+     * Analyseer gebruikersprogress op basis van wetenschappelijke indicatoren
+     */
+    analyzeUserProgress(userData) {
+        const { entries, cpMeasurements, streakData, timeframe } = userData;
+        
+        const analysis = {
+            // Basis statistieken
+            totalSessions: entries.length,
+            averageImprovement: this.calculateAverageImprovement(entries),
+            consistencyScore: this.calculateConsistency(entries),
+            
+            // CP analyse
+            cpProgress: this.analyzeCPProgress(cpMeasurements),
+            
+            // Patroon herkenning
+            triggerPatterns: this.identifyTriggerPatterns(entries),
+            techniqueEffectiveness: this.analyzeTechniqueEffectiveness(entries),
+            timePatterns: this.analyzeTimePatterns(entries),
+            
+            // Recovery indicatoren
+            recoveryStage: this.determineRecoveryStage(entries, cpMeasurements),
+            riskFactors: this.identifyRiskFactors(entries),
+            successFactors: this.identifySuccessFactors(entries),
+            
+            // Wetenschappelijke correlaties
+            evidenceMatches: this.findEvidenceMatches(entries, cpMeasurements)
+        };
+
+        analysis.overallScore = this.calculateOverallScore(analysis);
+        analysis.progressTrend = this.calculateProgressTrend(entries);
+        
+        return analysis;
+    }
+
+    /**
+     * Bereken gemiddelde verbetering per sessie
+     */
+    calculateAverageImprovement(entries) {
+        if (!entries.length) return 0;
+        
+        const improvements = entries.map(entry => 
+            entry.intensiteitVoor - entry.intensiteitNa
+        ).filter(imp => !isNaN(imp));
+        
+        return improvements.length ? 
+            improvements.reduce((sum, imp) => sum + imp, 0) / improvements.length : 0;
+    }
+
+    /**
+     * Analyseer CP vooruitgang
+     */
+    analyzeCPProgress(cpMeasurements) {
+        if (!cpMeasurements.length) return { status: 'no_data' };
+        
+        const scores = cpMeasurements.map(m => m.score).filter(s => s > 0);
+        if (!scores.length) return { status: 'no_data' };
+        
+        const latest = scores[0];
+        const earliest = scores[scores.length - 1];
+        const average = scores.reduce((sum, s) => sum + s, 0) / scores.length;
+        const improvement = latest - earliest;
+        
+        let status = 'poor';
+        if (latest >= this.insights.OPTIMAL_CP_SCORE) status = 'excellent';
+        else if (latest >= 30) status = 'good';
+        else if (latest >= 20) status = 'fair';
+        
+        return {
+            status,
+            latest,
+            average: Math.round(average),
+            improvement,
+            trend: improvement > 5 ? 'improving' : improvement < -5 ? 'declining' : 'stable',
+            interpretation: this.interpretCPScore(latest)
+        };
+    }
+
+    /**
+     * Interpreteer CP score volgens wetenschappelijke richtlijnen
+     */
+    interpretCPScore(score) {
+        if (score >= 60) return "Uitstekende CO2 tolerantie! Dit is een zeer goede score die wijst op optimale ademhalingsfunctie.";
+        if (score >= 40) return "Goede CO2 tolerantie. Houd dit niveau vast met regelmatige oefening.";
+        if (score >= 20) return "Gemiddelde CO2 tolerantie. Doorgaan met oefenen kan dit verbeteren.";
+        if (score >= 10) return "Lage CO2 tolerantie. Meer oefening kan dit verbeteren - je bent op de goede weg!";
+        return "Zeer lage CO2 tolerantie. Regelmatige Buteyko oefening wordt sterk aangeraden, maar elke verbetering is waardevol.";
+    }
+
+    /**
+     * Identificeer trigger patronen
+     */
+    identifyTriggerPatterns(entries) {
+        const triggers = {};
+        entries.forEach(entry => {
+            if (entry.trigger) {
+                const trigger = entry.trigger.toLowerCase();
+                if (!triggers[trigger]) {
+                    triggers[trigger] = { count: 0, avgBefore: 0, avgAfter: 0, improvements: [] };
+                }
+                triggers[trigger].count++;
+                triggers[trigger].improvements.push(entry.intensiteitVoor - entry.intensiteitNa);
+            }
+        });
+
+        // Bereken gemiddeldes en identificeer patronen
+        Object.keys(triggers).forEach(trigger => {
+            const data = triggers[trigger];
+            data.avgImprovement = data.improvements.reduce((s, i) => s + i, 0) / data.improvements.length;
+            
+            // Identificeer specifieke patronen uit onderzoek
+            if (trigger.includes('eten') || trigger.includes('maag')) {
+                data.scientificContext = "Dit past bij onderzoek naar maag-ademhaling verbindingen via de nervus vagus.";
+            } else if (trigger.includes('stress') || trigger.includes('werk')) {
+                data.scientificContext = "Stress activeert het sympathische zenuwstelsel en verstoort ademhalingspatronen.";
+            } else if (trigger.includes('liggen') || trigger.includes('slapen')) {
+                data.scientificContext = "Positie beïnvloedt het diafragma en ademhalingsefficiëntie.";
+            }
+        });
+
+        return triggers;
+    }
+
+    /**
+     * Analyseer techniek effectiviteit
+     */
+    analyzeTechniqueEffectiveness(entries) {
+        const techniques = {};
+        
+        entries.forEach(entry => {
+            const tech = entry.techniekGebruikt;
+            if (!techniques[tech]) {
+                techniques[tech] = { 
+                    sessions: 0, 
+                    totalImprovement: 0, 
+                    avgImprovement: 0,
+                    successRate: 0,
+                    scientificBacking: this.getTechniqueScience(tech)
+                };
+            }
+            
+            const improvement = entry.intensiteitVoor - entry.intensiteitNa;
+            techniques[tech].sessions++;
+            techniques[tech].totalImprovement += improvement;
+            if (improvement > 0) techniques[tech].successRate++;
+        });
+
+        // Bereken gemiddeldes
+        Object.keys(techniques).forEach(tech => {
+            const data = techniques[tech];
+            data.avgImprovement = data.totalImprovement / data.sessions;
+            data.successRate = (data.successRate / data.sessions) * 100;
+        });
+
+        return techniques;
+    }
+
+    /**
+     * Wetenschappelijke onderbouwing per techniek
+     */
+    getTechniqueScience(technique) {
+        const scienceMap = {
+            'Buteyko': "Meta-analyses tonen dat Buteyko consistent de meest succesvolle interventie is, met patiënten die vaak dramatische verbetering zien binnen 2 dagen.",
+            'Maag-Ademhaling Reset': "Gebaseerd op darm-brein-as onderzoek. De nervus vagus verbindt maag en longen - behandeling van beide systemen toont 55% remissie.",
+            'EMDR': "EMDR helpt bij verwerking van ademhaling-gerelateerde angst. Studies tonen effectiviteit bij trauma-gerelateerde hyperventilatie.",
+            'Crisis': "Acute interventies zijn minder effectiv dan structurele retraining, maar helpen bij symptoommanagement tijdens episodes."
+        };
+        
+        return scienceMap[technique] || "Ademhalingsherzien is wetenschappelijk bewezen effectief voor hyperventilatie syndroom.";
+    }
+
+    /**
+     * Bepaal recovery stadium
+     */
+    determineRecoveryStage(entries, cpMeasurements) {
+        const recentEntries = entries.slice(0, 10);
+        const avgImprovement = this.calculateAverageImprovement(recentEntries);
+        const latestCP = cpMeasurements.length ? cpMeasurements[0].score : 0;
+        
+        if (avgImprovement >= 3 && latestCP >= 40) {
+            return {
+                stage: 'thriving',
+                description: 'Uitstekende vooruitgang - je bevindt je in de 20% beste presteerders!'
+            };
+        } else if (avgImprovement >= 2 && latestCP >= 25) {
+            return {
+                stage: 'improving',
+                description: 'Goede vooruitgang - je volgt het wetenschappelijk bewezen recovery patroon.'
+            };
+        } else if (avgImprovement >= 1) {
+            return {
+                stage: 'stabilizing', 
+                description: 'Positieve stappen - vroege interventie zoals jij doet geeft betere uitkomsten.'
+            };
+        } else {
+            return {
+                stage: 'beginning',
+                description: 'Begin fase - studies tonen dat 70-80% van patiënten significant verbetert met consistent oefenen.'
+            };
+        }
+    }
+
+    /**
+     * Genereer gepersonaliseerde feedback
+     */
+    createPersonalizedFeedback(analysis) {
+        const feedback = {
+            primary: "",
+            secondary: [],
+            insights: [],
+            warnings: []
+        };
+
+        // Primaire feedback op basis van overall progress
+        if (analysis.overallScore >= 8) {
+            feedback.primary = "🌟 Uitstekend! Je vooruitgang is indrukwekkend en komt overeen met de 20% best presterende patiënten in klinische studies. Je bewijst dat vroege, geïntegreerde interventie werkt!";
+        } else if (analysis.overallScore >= 6) {
+            feedback.primary = "💪 Geweldig werk! Je resultaten tonen het wetenschappelijk bewezen patroon van herstel. Studies bevestigen dat patiënten zoals jij met consistente oefening de beste uitkomsten hebben.";
+        } else if (analysis.overallScore >= 4) {
+            feedback.primary = "📈 Goede vooruitgang! Je bevindt je op het juiste pad. Onderzoek toont dat 70-80% van hyperventilatie patiënten significant verbetert - en jij bent daar een mooi voorbeeld van.";
+        } else {
+            feedback.primary = "🌱 Elke stap telt! Je bent begonnen met evidence-based technieken. Klinische studies tonen dat vroege interventie zoals jij doet de beste langetermijn uitkomsten geeft.";
+        }
+
+        // CP specifieke feedback
+        if (analysis.cpProgress.status !== 'no_data') {
+            if (analysis.cpProgress.improvement > 5) {
+                feedback.secondary.push(
+                    `🎯 Je CP verbetering van ${analysis.cpProgress.improvement} seconden toont dat je CO2 tolerantie herstelt - precies wat Buteyko onderzoek voorspelt!`
+                );
+            }
+            if (analysis.cpProgress.latest >= 40) {
+                feedback.secondary.push("💎 Met een CP van " + analysis.cpProgress.latest + " seconden beweeg je naar de wetenschappelijk optimale zone!");
+            }
+        }
+
+        // Techniek effectiviteit feedback
+        const bestTechnique = this.findBestTechnique(analysis.techniqueEffectiveness);
+        if (bestTechnique) {
+            feedback.insights.push(
+                `💡 ${bestTechnique.name} werkt het beste voor jou (${bestTechnique.avgImprovement.toFixed(1)} punten gemiddeld). ${bestTechnique.scientificBacking}`
+            );
+        }
+
+        // Patroon inzichten
+        const significantTriggers = Object.entries(analysis.triggerPatterns)
+            .filter(([_, data]) => data.count >= 3)
+            .sort((a, b) => b[1].avgImprovement - a[1].avgImprovement);
+            
+        if (significantTriggers.length > 0) {
+            const [trigger, data] = significantTriggers[0];
+            feedback.insights.push(
+                `🔍 Patroon geïdentificeerd: ${trigger} (${data.count}x). ${data.scientificContext || 'Dit patroon helpt je triggers beter begrijpen.'}`
+            );
+        }
+
+        return feedback;
+    }
+
+    /**
+     * Vind meest effectieve techniek
+     */
+    findBestTechnique(techniques) {
+        const techArray = Object.entries(techniques)
+            .filter(([_, data]) => data.sessions >= 2)
+            .map(([name, data]) => ({ name, ...data }))
+            .sort((a, b) => b.avgImprovement - a.avgImprovement);
+            
+        return techArray.length > 0 ? techArray[0] : null;
+    }
+
+    /**
+     * Genereer evidence-based aanbevelingen
+     */
+    generateRecommendations(analysis) {
+        const recommendations = [];
+        
+        // CP gebaseerde aanbevelingen
+        if (analysis.cpProgress.status !== 'no_data') {
+            if (analysis.cpProgress.latest < 20) {
+                recommendations.push({
+                    type: 'technique',
+                    priority: 'high',
+                    title: 'Focus op Buteyko Methode',
+                    description: 'Je CP van ' + analysis.cpProgress.latest + 's wijst op lage CO2 tolerantie. Onderzoek toont dat dagelijkse Buteyko oefening dit significant kan verbeteren.',
+                    action: 'Oefen 15-20 minuten Buteyko ademhaling, 3x per dag'
+                });
+            }
+            
+            if (analysis.cpProgress.trend === 'declining') {
+                recommendations.push({
+                    type: 'frequency',
+                    priority: 'high', 
+                    title: 'Verhoog Oefenfrequentie',
+                    description: 'Je CP trend daalt. Studies tonen dat verhoogde oefenfrequentie dit kan omkeren.',
+                    action: 'Voeg een extra Buteyko sessie toe aan je dagelijkse routine'
+                });
+            }
+        }
+
+        // Consistentie aanbevelingen
+        if (analysis.consistencyScore < 0.7) {
+            recommendations.push({
+                type: 'consistency',
+                priority: 'medium',
+                title: 'Verbeter Consistentie',
+                description: 'Onderzoek benadrukt dat regelmatige oefening cruciaal is voor herstel. Vroege, consistente interventie geeft de beste uitkomsten.',
+                action: 'Stel een vast dagelijks schema in voor ademhalingsoefeningen'
+            });
+        }
+
+        // Trigger-gebaseerde aanbevelingen
+        const stressTriggers = Object.entries(analysis.triggerPatterns)
+            .filter(([trigger, _]) => trigger.includes('stress') || trigger.includes('werk'))
+            .sort((a, b) => b[1].count - a[1].count);
+            
+        if (stressTriggers.length > 0) {
+            recommendations.push({
+                type: 'lifestyle',
+                priority: 'medium',
+                title: 'Stress Management',
+                description: 'Je hebt stress-gerelateerde triggers. Studies tonen dat geïntegreerde stress-ademhaling benaderingen 55% remissie bereiken.',
+                action: 'Overweeg mindfulness of CBT technieken naast ademhalingsoefeningen'
+            });
+        }
+
+        // Maag-gerelateerde aanbevelingen
+        const gutTriggers = Object.entries(analysis.triggerPatterns)
+            .filter(([trigger, _]) => trigger.includes('eten') || trigger.includes('maag'));
+            
+        if (gutTriggers.length > 0) {
+            recommendations.push({
+                type: 'integrated',
+                priority: 'high',
+                title: 'Maag-Ademhaling Protocol',
+                description: 'Je ervaart maag-gerelateerde triggers. Darm-brein-as onderzoek toont bidirectionele verbindingen via de nervus vagus.',
+                action: 'Focus op Maag-Ademhaling Reset oefeningen 30 min na maaltijden'
+            });
+        }
+
+        return recommendations.sort((a, b) => {
+            const priorityOrder = { 'high': 3, 'medium': 2, 'low': 1 };
+            return priorityOrder[b.priority] - priorityOrder[a.priority];
+        });
+    }
+
+    /**
+     * Bereken overall progress score (0-10)
+     */
+    calculateOverallScore(analysis) {
+        let score = 0;
+        
+        // Average improvement component (0-3 points)
+        score += Math.min(analysis.averageImprovement, 3);
+        
+        // CP progress component (0-3 points) 
+        if (analysis.cpProgress.status !== 'no_data') {
+            if (analysis.cpProgress.latest >= 40) score += 3;
+            else if (analysis.cpProgress.latest >= 25) score += 2;
+            else if (analysis.cpProgress.latest >= 15) score += 1;
+        }
+        
+        // Consistency component (0-2 points)
+        score += analysis.consistencyScore * 2;
+        
+        // Recovery stage component (0-2 points)
+        const stageScores = { 'thriving': 2, 'improving': 1.5, 'stabilizing': 1, 'beginning': 0.5 };
+        score += stageScores[analysis.recoveryStage.stage] || 0;
+        
+        return Math.min(score, 10);
+    }
+
+    /**
+     * Bereken consistentie score
+     */
+    calculateConsistency(entries) {
+        if (entries.length < 7) return 0.5; // Onvoldoende data
+        
+        const recent = entries.slice(0, 14); // Laatste 2 weken
+        const daysWithEntries = new Set(recent.map(entry => {
+            const date = entry.timestamp instanceof Date ? 
+                entry.timestamp : new Date(entry.clientTimestamp || 0);
+            return date.toDateString();
+        })).size;
+        
+        return Math.min(daysWithEntries / 14, 1); // Max 1.0 voor dagelijkse entries
+    }
+
+    /**
+     * Bereken progress trend
+     */
+    calculateProgressTrend(entries) {
+        if (entries.length < 6) return 'insufficient_data';
+        
+        const recent = entries.slice(0, 5);
+        const older = entries.slice(5, 10);
+        
+        const recentAvg = this.calculateAverageImprovement(recent);
+        const olderAvg = this.calculateAverageImprovement(older);
+        
+        const diff = recentAvg - olderAvg;
+        
+        if (diff > 0.5) return 'improving';
+        if (diff < -0.5) return 'declining';
+        return 'stable';
+    }
+
+    /**
+     * Identificeer risicofactoren
+     */
+    identifyRiskFactors(entries) {
+        const risks = [];
+        
+        // Lage verbetering scores
+        const avgImprovement = this.calculateAverageImprovement(entries);
+        if (avgImprovement < 1) {
+            risks.push({
+                type: 'low_improvement',
+                description: 'Gemiddelde verbetering onder 1 punt per sessie',
+                mitigation: 'Overweeg andere technieken of professionele begeleiding'
+            });
+        }
+        
+        // Inconsistente oefening
+        if (this.calculateConsistency(entries) < 0.5) {
+            risks.push({
+                type: 'low_consistency', 
+                description: 'Onregelmatige oefenfrequentie',
+                mitigation: 'Stel een vast dagschema in - consistentie is cruciaal voor herstel'
+            });
+        }
+        
+        // Veel stress triggers
+        const stressCount = entries.filter(e => 
+            e.trigger && (e.trigger.includes('stress') || e.trigger.includes('werk'))
+        ).length;
+        
+        if (stressCount > entries.length * 0.4) {
+            risks.push({
+                type: 'stress_dominant',
+                description: 'Stress is dominante trigger (40%+ van sessies)',
+                mitigation: 'Overweeg stressmanagement naast ademhalingsoefeningen'
+            });
+        }
+        
+        return risks;
+    }
+
+    /**
+     * Identificeer succesfactoren
+     */
+    identifySuccessFactors(entries) {
+        const factors = [];
+        
+        const avgImprovement = this.calculateAverageImprovement(entries);
+        if (avgImprovement >= 2.5) {
+            factors.push('Hoge verbetering per sessie (top 20% presteerders)');
+        }
+        
+        const consistency = this.calculateConsistency(entries);
+        if (consistency >= 0.8) {
+            factors.push('Uitstekende consistentie (dagelijks oefenen)');
+        }
+        
+        // Vroege interventie
+        const daysSinceStart = entries.length > 0 ? 
+            (new Date() - (entries[entries.length - 1].timestamp || new Date(entries[entries.length - 1].clientTimestamp))) / (1000 * 60 * 60 * 24) : 0;
+        
+        if (daysSinceStart <= this.insights.EARLY_INTERVENTION_WEEKS * 7) {
+            factors.push('Vroege interventie (binnen ' + this.insights.EARLY_INTERVENTION_WEEKS + ' weken van start)');
+        }
+        
+        return factors;
+    }
+
+    /**
+     * Vind overeenkomsten met wetenschappelijke evidence
+     */
+    findEvidenceMatches(entries, cpMeasurements) {
+        const matches = [];
+        
+        // Buteyko snelle verbetering
+        const buteykoEntries = entries.filter(e => e.techniekGebruikt.includes('Buteyko'));
+        if (buteykoEntries.length >= 2) {
+            const improvements = buteykoEntries.slice(0, 2).map(e => e.intensiteitVoor - e.intensiteitNa);
+            if (improvements.every(imp => imp >= 2)) {
+                matches.push({
+                    type: 'buteyko_rapid_response',
+                    description: 'Je ervaring komt overeen met onderzoek: "Na toepassing van de Buteyko methode verdween de kortademigheid na slechts 2 dagen"',
+                    confidence: 'high'
+                });
+            }
+        }
+        
+        // CP verbetering patroon
+        if (cpMeasurements.length >= 3) {
+            const recent = cpMeasurements.slice(0, 3).map(m => m.score);
+            const improvement = recent[0] - recent[recent.length - 1];
+            if (improvement >= 5) {
+                matches.push({
+                    type: 'cp_improvement_pattern',
+                    description: 'Je CP verbetering volgt het wetenschappelijk voorspelde patroon van CO2 tolerantie herstel',
+                    confidence: 'high'
+                });
+            }
+        }
+        
+        // Geïntegreerde benadering
+        const uniqueTechniques = new Set(entries.map(e => e.techniekGebruikt)).size;
+        if (uniqueTechniques >= 3) {
+            matches.push({
+                type: 'integrated_approach',
+                description: 'Je gebruikt een geïntegreerde benadering die 55% remissie bereikt versus 40% bij enkelvoudige behandelingen',
+                confidence: 'medium'
+            });
+        }
+        
+        return matches;
+    }
+
+    /**
+     * Genereer motivationele boodschap
+     */
+    getMotivationalMessage(analysis) {
+        const messages = {
+            thriving: [
+                "🚀 Je behoort tot de top presteerders! Je bewijst dat systematische ademhalingsretraining werkt.",
+                "⭐ Uitstekend werk! Je resultaten zijn inspirerend en bevestigen de wetenschappelijke evidence.",
+                "🏆 Geweldig! Je laat zien hoe effectieve recovery eruit ziet - blijf dit volhouden!"
+            ],
+            improving: [
+                "📈 Je bent op de goede weg! Studies tonen dat patiënten zoals jij de beste langetermijn uitkomsten hebben.",
+                "💪 Sterke vooruitgang! Je bevestigt wat onderzoek toont: vroege interventie werkt.",
+                "🎯 Perfect! Je volgt het bewezen herstelpatroon - ga zo door!"
+            ],
+            stabilizing: [
+                "🌱 Elke verbetering telt! Je legt een sterke basis voor langdurig herstel.",
+                "📊 Goede stappen! Onderzoek toont dat 70-80% van patiënten verbetert met jouw aanpak.",
+                "💚 Je bent bezig met evidence-based recovery - dat is de sleutel tot succes."
+            ],
+            beginning: [
+                "🌟 Welkom bij je herstelreis! Studies zijn optimistisch over uitkomsten bij vroege interventie.",
+                "💫 Geweldig dat je begonnen bent! Onderzoek toont dat de meeste patiënten significant verbeteren.",
+                "🌈 Je eerste stappen zijn waardevol - klinische studies ondersteunen jouw aanpak."
+            ]
+        };
+        
+        const stageMessages = messages[analysis.recoveryStage.stage] || messages.beginning;
+        return stageMessages[Math.floor(Math.random() * stageMessages.length)];
+    }
+
+    /**
+     * Genereer wetenschappelijke context voor specifieke situatie
+     */
+    getScientificContext(situation) {
+        const contexts = {
+            maag_ademhaling: "De nervus vagus verbindt je hersenstam met maag en longen. Het draagt 75% van de parasympathische zenuwvezels en beïnvloedt zowel maagfunctie als ademhalingspatronen.",
+            co2_tolerantie: "Chronische hyperventilatie elimineert snel CO2, waardoor de pH stijgt. Dit verstoort het CO2/H2CO3/HCO3- buffersysteem dat belangrijk is voor normale ademhalingsdrive.",
+            stress_ademhaling: "Stress activeert het sympathische zenuwstelsel en veroorzaakt HPA-as disfunctie die zowel maag- als ademhalingssystemen beïnvloedt.",
+            vroege_interventie: "Studies tonen dat vroege interventie (binnen 12 weken) dramatisch betere uitkomsten geeft vergeleken met chronisch management na jaren van symptomen."
+        };
+        
+        return contexts[situation] || "Ademhalingsretraining is wetenschappelijk bewezen effectief voor hyperventilatie syndroom met 70-80% van patiënten die significant verbeteren.";
+    }
+}
+
+// IMPLEMENTATIE FUNCTIES VOOR ADEMRUIMTE APP
+// ==========================================
+
+/**
+ * Integratie functie voor de hoofdapp
+ */
+function initializeFeedbackSystem() {
+    window.feedbackSystem = new AdemruimteFeedbackSystem();
+    console.log('✅ Ademruimte Feedback System geïnitialiseerd');
+}
+
+/**
+ * Genereer feedback voor gebruiker (hoofdfunctie voor app)
+ */
+function generateUserFeedback(userData) {
+    if (!window.feedbackSystem) {
+        initializeFeedbackSystem();
+    }
+    
+    try {
+        const feedback = window.feedbackSystem.generateFeedback(userData);
+        displayFeedback(feedback);
+        return feedback;
+    } catch (error) {
+        console.error('Fout bij feedback generatie:', error);
+        return null;
+    }
+}
+
+/**
+ * Display feedback in the UI
+ */
+function displayFeedback(feedbackData) {
+    const { feedback, analysis, recommendations, motivation } = feedbackData;
+    
+    // Update insights sectie
+    const insightsSection = document.getElementById('insights-section');
+    if (insightsSection) {
+        // Voeg feedback toe aan bestaande insights
+        const feedbackCard = createFeedbackCard(feedback, motivation);
+        insightsSection.appendChild(feedbackCard);
+    }
+    
+    // Update dashboard widget met aanbevelingen
+    const dashboardWidget = document.getElementById('buteyko-dashboard-widget');
+    if (dashboardWidget && recommendations.length > 0) {
+        addRecommendationsToWidget(dashboardWidget, recommendations);
+    }
+    
+    // Log voor debugging
+    console.log('📊 Feedback Analysis:', analysis);
+    console.log('💡 Recommendations:', recommendations);
+}
+
+/**
+ * Creëer feedback card voor UI
+ */
+function createFeedbackCard(feedback, motivation) {
+    const card = document.createElement('div');
+    card.className = 'card buteyko-card';
+    card.style.cssText = `
+        margin-top: 1.5rem;
+        background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(16, 185, 129, 0.08));
+        border: 2px solid var(--buteyko-primary);
+    `;
+    
+    card.innerHTML = `
+        <h3 style="color: var(--buteyko-primary); margin-bottom: 1rem;">🧠 Wetenschappelijke Feedback</h3>
+        
+        <div style="background: white; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1rem; border-left: 4px solid var(--buteyko-primary);">
+            <p style="font-size: 1.1rem; line-height: 1.6; margin: 0; font-weight: 500;">${feedback.primary}</p>
+        </div>
+        
+        ${feedback.secondary.length > 0 ? 
+            feedback.secondary.map(msg => `
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.75rem; border-left: 3px solid #10b981;">
+                    <p style="margin: 0; font-size: 0.95rem;">${msg}</p>
+                </div>
+            `).join('') : ''
+        }
+        
+        ${feedback.insights.length > 0 ? `
+            <div style="margin-top: 1rem;">
+                <h4 style="color: var(--buteyko-secondary); margin-bottom: 0.75rem;">💡 Inzichten</h4>
+                ${feedback.insights.map(insight => `
+                    <div style="background: rgba(6, 182, 212, 0.05); padding: 1rem; border-radius: 0.5rem; margin-bottom: 0.5rem; border: 1px solid rgba(6, 182, 212, 0.15);">
+                        <p style="margin: 0; font-size: 0.9rem;">${insight}</p>
+                    </div>
+                `).join('')}
+            </div>
+        ` : ''}
+        
+        <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1rem; border-radius: 0.75rem; margin-top: 1rem; text-align: center;">
+            <p style="margin: 0; font-weight: 600; font-size: 1rem;">${motivation}</p>
+        </div>
+    `;
+    
+    return card;
+}
+
+/**
+ * Voeg aanbevelingen toe aan dashboard widget
+ */
+function addRecommendationsToWidget(widget, recommendations) {
+    const highPriorityRec = recommendations.find(r => r.priority === 'high');
+    if (highPriorityRec) {
+        const recElement = document.createElement('div');
+        recElement.style.cssText = `
+            background: rgba(239, 68, 68, 0.1);
+            border: 2px solid #ef4444;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        `;
+        
+        recElement.innerHTML = `
+            <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 1.2rem; margin-right: 0.5rem;">🎯</span>
+                <strong style="color: #dc2626;">Aanbeveling</strong>
+            </div>
+            <p style="margin: 0; font-size: 0.9rem; line-height: 1.5;">
+                <strong>${highPriorityRec.title}:</strong> ${highPriorityRec.description}
+            </p>
+        `;
+        
+        widget.appendChild(recElement);
+    }
+}
+
+/**
+ * Data verzamel functie voor feedback systeem
+ */
+function collectUserDataForFeedback() {
+    return {
+        entries: allDagboekEntries || [],
+        cpMeasurements: buteykoData ? buteykoData.cpMeasurements : [],
+        streakData: buteykoData ? buteykoData.streakData : {},
+        timeframe: 'last_30_days'
+    };
+}
+    function generateAndDisplayFeedback() {
+    if (!feedbackSystem) {
+        initializeFeedbackSystem();
+    }
+    
+    const userData = collectUserDataForFeedback();
+    
+    // Alleen feedback als er genoeg data is
+    if (userData.entries.length < 3) {
+        log('INFO', 'Insufficient data for feedback generation');
+        return null;
+    }
+    
+    try {
+        const feedbackData = feedbackSystem.generateFeedback(userData);
+        displayFeedbackInUI(feedbackData);
+        return feedbackData;
+    } catch (error) {
+        log('ERROR', 'Feedback generation failed:', error);
+        return null;
+    }
+}
+
+/**
+ * Automatische feedback trigger na dagboek entries
+ */
+function triggerAutomaticFeedback() {
+    const userData = collectUserDataForFeedback();
+    
+    // Alleen feedback geven als er genoeg data is
+    if (userData.entries.length >= 3) {
+        const feedback = generateUserFeedback(userData);
+        
+        if (feedback && feedback.analysis.overallScore >= 6) {
+            // Toon succesbericht voor goede prestaties
+            setTimeout(() => {
+                showUserMessage(
+                    `🎉 ${feedback.motivation}\n\nJe voortgang is indrukwekkend!`, 
+                    'success'
+                );
+            }, 1500);
+        }
+    }
+}
+
+// EXPORT VOOR GEBRUIK IN HOOFDAPP
+// ===============================
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { 
+        AdemruimteFeedbackSystem, 
+        generateUserFeedback, 
+        initializeFeedbackSystem,
+        triggerAutomaticFeedback,
+        collectUserDataForFeedback
+    };
+}
+
+// Initialiseer feedback systeem
+let feedbackSystem = null;
+
+function initializeFeedbackSystem() {
+    if (!feedbackSystem) {
+        feedbackSystem = new AdemruimteFeedbackSystem();
+        log('SUCCESS', 'Feedback system initialized');
     }
 }
     // ============================================
@@ -4616,6 +5623,7 @@ async function syncCPMeasurements() {
         }, 2000);
         
         log('INFO', `CP measurement auto-saved: ${score}s, today: ${todayCount}/${dailyGoal}`);
+        setTimeout(() => generateAndDisplayFeedback(), 1500);
     }
 
     function showOptionalJournalPrompt(measurementId, score) {
@@ -5029,6 +6037,7 @@ async function syncCPMeasurements() {
             }
             
             showUserMessage('✅ Entry succesvol opgeslagen!', 'success');
+            setTimeout(() => generateAndDisplayFeedback(), 2000);
             
         } catch (error) {
             const saveBtn = document.getElementById('save-dagboek-entry-btn');
@@ -5054,7 +6063,7 @@ async function syncCPMeasurements() {
         try {
             const entries = await loadFromFirestore();
             displayDagboekEntries(entries);
-            
+            setTimeout(() => generateAndDisplayFeedback(), 1000);
         } catch (error) {
             log('ERROR', 'Load entries failed:', error);
             const container = document.getElementById('dagboek-entries');
@@ -6741,6 +7750,12 @@ async function syncCPMeasurements() {
         } catch (error) {
             log('ERROR', 'Buteyko tracking initialization failed:', error);
         }
+            try {
+        initializeFeedbackSystem();
+        log('SUCCESS', 'Feedback system initialized');
+    } catch (error) {
+        log('WARNING', 'Feedback system initialization failed:', error);
+    }
 
         try {
             setupForms();

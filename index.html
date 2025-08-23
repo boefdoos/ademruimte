@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#06b6d4">
-    <meta name="description" content="Ademruimte - Your safe breathing space">
+    <meta name="description" content="Ademruimte - Evidence-based hulp bij hyperventilatie en maagklachten">
     <title>Ademruimte - Hyperventilatie Helper</title>
 
 <style>
@@ -679,7 +679,7 @@
             </h2>
             
             <p style="text-align: center; margin-bottom: 2rem; color: var(--text-light);">
-                Your safe breathing space
+                Evidence-based hulp bij hyperventilatie en maagklachten
             </p>
 
             <button id="google-login-btn" class="google-btn">
@@ -721,8 +721,11 @@
             <div class="user-info" id="user-info">
                 <div class="spinner"></div>
             </div>
-            <h1>Ademruimte</h1>
-            <p>Evidence-based hulp bij hyperventilatie en maagklachten</p>
+            <div class="logo-animation"></div>
+            <div class="header-title">
+                <h1>Ademruimte</h1>
+                <p>Evidence-based hulp bij hyperventilatie en maagklachten</p>
+            </div>
         </header>
 
         <nav class="nav-tabs">
@@ -768,22 +771,27 @@
                     Buteyko ademhaling helpt bij beide problemen door CO2 tolerantie te verbeteren.
                 </div>
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
-                    <div class="card">
-                        <h3>💨 Buteyko Training</h3>
-                        <p>Wetenschappelijk bewezen effectief - symptomen kunnen binnen 2 dagen verbeteren</p>
-                        <button class="btn btn-cyan" onclick="showTab('buteyko')">Start Buteyko</button>
+                <div class="dashboard-cards">
+                    <div class="card dashboard-card">
+                        <div class="card-content">
+                            <h3>💨 Buteyko Training</h3>
+                            <p>Wetenschappelijk bewezen effectief - symptomen kunnen binnen 2 dagen verbeteren</p>
+                            <button class="btn btn-cyan" onclick="showTab('buteyko')">Start Buteyko</button>
+                        </div>
                     </div>
-                    <div class="card">
-                        <h3>📊 Dagboek & Inzichten</h3>
-                        <p>Track je vooruitgang en ontdek patronen</p>
-                         <p></p>
-                        <button class="btn btn-primary" onclick="showTab('dagboek')">Open Dagboek</button>
+                    <div class="card dashboard-card">
+                        <div class="card-content">
+                            <h3>📊 Dagboek & Inzichten</h3>
+                            <p>Track je vooruitgang en ontdek patronen</p>
+                            <button class="btn btn-primary" onclick="showTab('dagboek')">Open Dagboek</button>
+                        </div>
                     </div>
-                    <div class="card">
-                        <h3>🚨 Crisis Hulp</h3>
-                        <p>Stap-voor-stap begeleiding tijdens acute klachten</p>
-                        <button class="btn btn-danger" onclick="showTab('crisis')">Crisis Protocol</button>
+                    <div class="card dashboard-card">
+                        <div class="card-content">
+                            <h3>🚨 Crisis Hulp</h3>
+                            <p>Stap-voor-stap begeleiding tijdens acute klachten</p>
+                            <button class="btn btn-danger" onclick="showTab('crisis')">Crisis Protocol</button>
+                        </div>
                     </div>
                 </div>
 
@@ -853,7 +861,7 @@
                     <div style="margin: 2rem 0;">
                         <h3>🫁 Ademhalingsoefening</h3>
                         <p style="margin-bottom: 1rem; color: var(--text-light);">
-                            Volg het ritme van de oefening.
+                            Volg het ritme: 4 sec inademen, 6 sec uitademen, 3 sec pauze
                         </p>
                         
                         <div class="breath-display rest" id="breath-display">

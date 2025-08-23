@@ -824,6 +824,11 @@
                     Buteyko ademhaling helpt bij beide problemen door CO2 tolerantie te verbeteren.
                 </div>
 
+                <div id="cp-permissions-notice" class="alert alert-warning" style="display: none;">
+                    <strong>💾 Lokale Opslag:</strong> 
+                    CP metingen worden lokaal opgeslagen. Voor sync tussen apparaten zijn Firebase permissies nodig voor de 'cpMeasurements' collectie.
+                </div>
+
                 <div class="dashboard-cards">
                     <div class="card dashboard-card">
                         <div class="card-content">
@@ -1016,8 +1021,8 @@
                         <div style="margin-left: auto; display: flex; align-items: center; gap: 0.5rem;">
                             <label style="font-weight: 600; color: var(--text-dark); white-space: nowrap;">Periode:</label>
                             <select id="journal-filter" class="form-select" onchange="updateJournalFilter()" style="width: auto; min-width: 150px;">
-                                <option value="all">Alle entries</option>
                                 <option value="recent" selected>Laatste 10</option>
+                                <option value="all">Alle entries</option>
                                 <!-- Maandopties worden dynamisch toegevoegd -->
                             </select>
                         </div>
@@ -1325,8 +1330,11 @@
                 if (user) {
                     currentUser = user;
                     showMainApp();
-                    loadJournalEntries();
-                    updateDashboard();
+                    // Load all data when user logs in
+                    setTimeout(() => {
+                        loadJournalEntries();
+                        updateDashboard();
+                    }, 500);
                 } else {
                     currentUser = null;
                     showLoginScreen();
@@ -1460,7 +1468,7 @@
     }
 
     // Buteyko functions
-    function startCP() {
+    window.startCP = function() {
         cpStartTime = Date.now();
         cpIsRunning = true;
         
@@ -1475,9 +1483,9 @@
             document.getElementById('cp-timer').textContent = 
                 `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }, 100);
-    }
+    };
 
-    async function stopCP() {
+    window.stopCP = async function() {
         if (!cpIsRunning) return;
         
         const finalTime = Math.floor((Date.now() - cpStartTime) / 1000);
@@ -1490,7 +1498,7 @@
         
         await displayCPResult(finalTime);
         
-        // Store CP measurement locally and in Firebase
+        // Store CP measurement locally
         const cpMeasurement = {
             score: finalTime,
             timestamp: new Date(),
@@ -1501,15 +1509,21 @@
         userStats.cpMeasurements.push(cpMeasurement);
         allCPMeasurements.push(cpMeasurement);
         
-        // Save to Firebase
+        // Try to save to Firebase (graceful failure if permissions missing)
         if (currentUser) {
             try {
                 const { addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
                 await addDoc(collection(db, "cpMeasurements"), cpMeasurement);
-                console.log('CP measurement saved to Firebase');
+                console.log('✅ CP measurement saved to Firebase');
             } catch (error) {
-                console.error('Error saving CP measurement:', error);
-                showUserMessage('CP score opgeslagen lokaal (sync probleem)', 'warning');
+                console.warn('⚠️ CP measurement saved locally only:', error.message);
+                
+                if (error.message.includes('permission') || error.message.includes('Permission')) {
+                    // Don't show error message for permissions - just log it
+                    console.info('💡 Firebase permissions needed for CP measurement sync');
+                } else {
+                    showUserMessage('CP score opgeslagen lokaal (sync probleem)', 'warning');
+                }
             }
         }
         
@@ -1519,9 +1533,9 @@
         saveUserStats();
         updateDashboard(); // This now includes CP trend update
         updateCPProgress();
-    }
+    };
 
-    function resetCP() {
+    window.resetCP = function() {
         if (cpInterval) {
             clearInterval(cpInterval);
             cpInterval = null;
@@ -1534,7 +1548,7 @@
         document.getElementById('cp-result').style.display = 'none';
         
         window.lastCPScore = null;
-    }
+    };
 
     async function displayCPResult(seconds) {
         const scoreEl = document.getElementById('cp-score');
@@ -1793,7 +1807,7 @@
     }
 
     // Crisis protocol
-    function startCrisis() {
+    window.startCrisis = function() {
         crisisActive = true;
         crisisStep = 1;
         crisisTimeLeft = 60;
@@ -1821,9 +1835,9 @@
                 }
             }
         }, 1000);
-    }
+    };
 
-    function stopCrisis() {
+    window.stopCrisis = function() {
         crisisActive = false;
         
         if (crisisInterval) {
@@ -1846,7 +1860,7 @@
         updateStreak();
         saveUserStats();
         updateDashboard();
-    }
+    };
 
     function updateCrisisStep() {
         document.querySelectorAll('.crisis-step').forEach(step => {
@@ -1970,7 +1984,9 @@
         if (!currentUser) return;
         
         try {
-            const { getDocs, collection, query, where, orderBy, limit } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+            console.log('Loading journal entries for user:', currentUser.uid);
+            
+            const { getDocs, collection, query, where, orderBy } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
             
             // Load journal entries
             const journalQuery = query(
@@ -1991,7 +2007,9 @@
                 });
             });
 
-            // Load CP measurements
+            console.log(`Loaded ${allJournalEntries.length} journal entries`);
+
+            // Load CP measurements (with better error handling for permissions)
             try {
                 const cpQuery = query(
                     collection(db, "cpMeasurements"),
@@ -2011,10 +2029,17 @@
                     });
                 });
 
-                console.log(`Loaded ${allCPMeasurements.length} CP measurements from Firebase`);
-            } catch (error) {
-                console.warn('Error loading CP measurements:', error);
+                console.log(`✅ Loaded ${allCPMeasurements.length} CP measurements from Firebase`);
+            } catch (cpError) {
+                console.warn('⚠️ CP measurements not accessible:', cpError.message);
                 allCPMeasurements = [];
+                
+                if (cpError.message.includes('permission') || cpError.message.includes('Permission')) {
+                    console.info('💡 CP measurements will be stored locally only until Firebase permissions are configured');
+                    showUserMessage('CP metingen worden lokaal opgeslagen (Firebase configuratie nodig)', 'info');
+                } else {
+                    console.error('Unexpected CP error:', cpError);
+                }
             }
             
             populateJournalFilter();
@@ -2026,11 +2051,24 @@
         } catch (error) {
             console.error('Load entries failed:', error);
             showUserMessage('❌ Laden van entries mislukt: ' + error.message, 'danger');
+            
+            // Show empty state instead of error
+            document.getElementById('journal-entries').innerHTML = `
+                <div class="card">
+                    <h3>Verbindingsprobleem</h3>
+                    <p>Kon entries niet laden. Controleer je internetverbinding en probeer opnieuw.</p>
+                    <button class="btn btn-primary" onclick="loadJournalEntries()">
+                        🔄 Opnieuw proberen
+                    </button>
+                </div>
+            `;
         }
     }
 
     function displayJournalEntries() {
         const container = document.getElementById('journal-entries');
+        
+        console.log(`Displaying entries. Total: ${allJournalEntries.length}, Filter: ${currentJournalFilter}`);
         
         if (!allJournalEntries.length) {
             container.innerHTML = `
@@ -2059,6 +2097,8 @@
                 return entryDate.getFullYear() === year && entryDate.getMonth() === (month - 1);
             });
         }
+        
+        console.log(`Filtered entries: ${filteredEntries.length}`);
         
         if (!filteredEntries.length) {
             container.innerHTML = `

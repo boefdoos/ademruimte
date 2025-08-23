@@ -771,6 +771,19 @@
                         <strong>Patiënten rapporteren vaak verbetering binnen 2 dagen</strong> van juiste toepassing.
                     </p>
 
+                    <!-- Breathing Pattern Selection -->
+                    <div style="margin-bottom: 2rem;">
+                        <label class="form-label">Ademhalingspatroon:</label>
+                        <select id="breathing-pattern" class="form-select" onchange="updateBreathingPattern()">
+                            <option value="standard">Standaard (4-6-3 sec)</option>
+                            <option value="gentle">Zachte Ademhaling (2x adem + pauze)</option>
+                        </select>
+                        
+                        <div id="pattern-explanation" style="margin-top: 0.75rem; padding: 1rem; background: rgba(6, 182, 212, 0.1); border-radius: 0.75rem; font-size: 0.9rem; color: var(--text-dark);">
+                            <strong>Standaard patroon:</strong> 4 seconden inademen, 6 seconden uitademen, 3 seconden pauze
+                        </div>
+                    </div>
+
                     <!-- CP Measurement -->
                     <div style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(16, 185, 129, 0.1)); 
                                 border: 3px solid var(--primary-color); border-radius: 1.5rem; padding: 2rem; 
@@ -1115,6 +1128,8 @@
     let breathPhase = 'rest';
     let breathCycle = 1;
     let breathPhaseTime = 0;
+    let breathingPattern = 'standard';
+    let gentleBreathCount = 0;
     
     // Crisis state
     let crisisInterval = null;
@@ -1387,6 +1402,22 @@
     }
 
     // Breathing exercise
+    window.updateBreathingPattern = function() {
+        breathingPattern = document.getElementById('breathing-pattern').value;
+        const explanation = document.getElementById('pattern-explanation');
+        
+        if (breathingPattern === 'gentle') {
+            explanation.innerHTML = '<strong>Zachte Ademhaling:</strong> 2 zeer zachte ademhalingen (elk ~5 sec) gevolgd door een pauze (4 sec)';
+        } else {
+            explanation.innerHTML = '<strong>Standaard patroon:</strong> 4 seconden inademen, 6 seconden uitademen, 3 seconden pauze';
+        }
+        
+        // Reset if currently breathing
+        if (breathInterval) {
+            resetBreathing();
+        }
+    };
+
     window.toggleBreathing = function() {
         if (breathInterval) {
             stopBreathing();
@@ -1397,14 +1428,25 @@
 
     function startBreathing() {
         breathCycle = 1;
-        breathPhase = 'inhale';
+        gentleBreathCount = 0;
+        
+        if (breathingPattern === 'gentle') {
+            breathPhase = 'gentle-breath';
+        } else {
+            breathPhase = 'inhale';
+        }
+        
         breathPhaseTime = 0;
         
         document.getElementById('breath-btn').innerHTML = '⏸️ Stop Oefening';
         document.getElementById('breath-btn').className = 'btn btn-danger';
         
         breathInterval = setInterval(() => {
-            updateBreathCycle();
+            if (breathingPattern === 'gentle') {
+                updateGentleBreathCycle();
+            } else {
+                updateStandardBreathCycle();
+            }
         }, 100);
     }
 
@@ -1421,11 +1463,10 @@
         document.getElementById('breath-progress').style.width = '0%';
     }
 
-    function updateBreathCycle() {
+    function updateStandardBreathCycle() {
         const inhaleDuration = 4;
         const exhaleDuration = 6;
         const holdDuration = 3;
-        const totalDuration = inhaleDuration + exhaleDuration + holdDuration;
         
         breathPhaseTime += 0.1;
         
@@ -1474,9 +1515,65 @@
         document.getElementById('breath-progress').style.width = Math.min(progress, 100) + '%';
     }
 
+    function updateGentleBreathCycle() {
+        const breathDuration = 5; // Each gentle breath is ~5 seconds
+        const pauseDuration = 4;  // Pause between cycles
+        
+        breathPhaseTime += 0.1;
+        
+        let progress = 0;
+        const display = document.getElementById('breath-display');
+        
+        if (breathPhase === 'gentle-breath') {
+            progress = (breathPhaseTime / breathDuration) * 100;
+            display.className = 'breath-display inhale';
+            display.textContent = `🌬️ Zachte Ademhaling ${gentleBreathCount + 1}/2`;
+            
+            if (breathPhaseTime >= breathDuration) {
+                gentleBreathCount++;
+                breathPhaseTime = 0;
+                
+                if (gentleBreathCount >= 2) {
+                    // Move to pause after 2 breaths
+                    breathPhase = 'hold';
+                    gentleBreathCount = 0;
+                } else {
+                    // Continue with next gentle breath
+                    breathPhase = 'gentle-breath';
+                }
+            }
+        } else if (breathPhase === 'hold') {
+            progress = (breathPhaseTime / pauseDuration) * 100;
+            display.className = 'breath-display hold';
+            display.textContent = '⏸️ Pauze';
+            
+            if (breathPhaseTime >= pauseDuration) {
+                breathPhase = 'gentle-breath';
+                breathPhaseTime = 0;
+                breathCycle++;
+                document.getElementById('breath-counter').textContent = `Cyclus: ${breathCycle}/10`;
+                
+                if (breathCycle > 10) {
+                    stopBreathing();
+                    document.getElementById('breath-complete').style.display = 'block';
+                    userStats.totalSessions++;
+                    updateStreak();
+                    saveUserStats();
+                    updateDashboard();
+                    showUserMessage('Zachte Buteyko sessie voltooid! 🎉', 'success');
+                    return;
+                }
+            }
+        }
+        
+        document.getElementById('breath-progress').style.width = Math.min(progress, 100) + '%';
+    }
+
     window.resetBreathing = function() {
         stopBreathing();
         breathCycle = 1;
+        gentleBreathCount = 0;
+        breathPhase = breathingPattern === 'gentle' ? 'gentle-breath' : 'inhale';
         document.getElementById('breath-counter').textContent = 'Cyclus: 1/10';
         document.getElementById('breath-complete').style.display = 'none';
     };
@@ -1847,6 +1944,7 @@
         if (allJournalEntries.length < 2) {
             canvas.style.display = 'none';
             chartEmpty.style.display = 'flex';
+            chartEmpty.textContent = 'Nog geen data beschikbaar. Maak enkele dagboekentries om je vooruitgang te zien!';
             return;
         }
 
@@ -1854,29 +1952,64 @@
         canvas.style.display = 'block';
 
         try {
-            // Load Chart.js
+            // Improved Chart.js loading with timeout and error handling
             if (!window.Chart) {
+                console.log('Loading Chart.js...');
+                chartEmpty.style.display = 'flex';
+                chartEmpty.textContent = 'Grafiek wordt geladen...';
+                
                 const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.min.js';
+                script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js';
+                script.async = false;
                 document.head.appendChild(script);
                 
-                await new Promise((resolve) => {
-                    script.onload = resolve;
+                // Wait for Chart.js with timeout
+                await new Promise((resolve, reject) => {
+                    script.onload = () => {
+                        console.log('Chart.js loaded successfully');
+                        resolve();
+                    };
+                    script.onerror = () => {
+                        console.error('Failed to load Chart.js');
+                        reject(new Error('Chart.js failed to load'));
+                    };
+                    
+                    // Timeout after 10 seconds
+                    setTimeout(() => {
+                        reject(new Error('Chart.js loading timeout'));
+                    }, 10000);
                 });
+                
+                // Additional check
+                if (!window.Chart) {
+                    throw new Error('Chart.js not available after loading');
+                }
             }
 
+            // Prepare data
             const recentEntries = allJournalEntries.slice(0, 20).reverse(); // Last 20 entries, oldest first
+            const labels = recentEntries.map((entry, index) => {
+                const date = new Date(entry.timestamp);
+                return date.toLocaleDateString('nl-BE', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: recentEntries.length <= 10 ? '2-digit' : undefined,
+                    minute: recentEntries.length <= 10 ? '2-digit' : undefined
+                });
+            });
 
             const ctx = canvas.getContext('2d');
             
-            if (window.progressChart) {
+            // Destroy existing chart
+            if (window.progressChart && typeof window.progressChart.destroy === 'function') {
                 window.progressChart.destroy();
             }
 
+            // Create new chart
             window.progressChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: recentEntries.map((entry, index) => `${index + 1}`),
+                    labels: labels,
                     datasets: [
                         {
                             label: 'Vóór oefening',
@@ -1884,8 +2017,13 @@
                             borderColor: '#ef4444',
                             backgroundColor: 'rgba(239, 68, 68, 0.1)',
                             borderWidth: 3,
-                            pointRadius: 5,
-                            tension: 0.4
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            pointBackgroundColor: '#ef4444',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            tension: 0.4,
+                            fill: false
                         },
                         {
                             label: 'Ná oefening',
@@ -1893,56 +2031,138 @@
                             borderColor: '#10b981',
                             backgroundColor: 'rgba(16, 185, 129, 0.1)',
                             borderWidth: 3,
-                            pointRadius: 5,
-                            tension: 0.4
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
+                            pointBackgroundColor: '#10b981',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 2,
+                            tension: 0.4,
+                            fill: false
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: {
+                        duration: 1000
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: {
+                                    size: 12,
+                                    weight: '600'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#06b6d4',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            padding: 12,
+                            callbacks: {
+                                title: function(context) {
+                                    const index = context[0].dataIndex;
+                                    const entry = recentEntries[index];
+                                    return new Date(entry.timestamp).toLocaleString('nl-BE');
+                                },
+                                afterBody: function(context) {
+                                    const index = context[0].dataIndex;
+                                    const entry = recentEntries[index];
+                                    const improvement = entry.intensiteitVoor - entry.intensiteitNa;
+                                    return [
+                                        `Techniek: ${entry.techniekGebruikt}`,
+                                        `Verbetering: ${improvement > 0 ? '+' : ''}${improvement} punt${Math.abs(improvement) !== 1 ? 'en' : ''}`,
+                                        entry.cpScore ? `CP Score: ${entry.cpScore}s` : '',
+                                        entry.symptomen?.length ? `Symptomen: ${entry.symptomen.length}` : ''
+                                    ].filter(Boolean);
+                                }
+                            }
+                        }
+                    },
                     scales: {
                         y: {
                             min: 0,
                             max: 10,
+                            ticks: {
+                                stepSize: 1,
+                                callback: function(value) {
+                                    return value + '/10';
+                                },
+                                color: '#6b7280',
+                                font: {
+                                    size: 11,
+                                    weight: '500'
+                                }
+                            },
                             title: {
                                 display: true,
-                                text: 'Intensiteit (1-10)'
+                                text: 'Intensiteit Score',
+                                color: '#06b6d4',
+                                font: {
+                                    size: 13,
+                                    weight: '600'
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(6, 182, 212, 0.1)',
+                                drawBorder: false
                             }
                         },
                         x: {
+                            ticks: {
+                                maxRotation: 45,
+                                color: '#6b7280',
+                                font: {
+                                    size: 10,
+                                    weight: '500'
+                                }
+                            },
                             title: {
                                 display: true,
-                                text: 'Sessies (meest recente)'
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'top'
-                        },
-                        tooltip: {
-                            callbacks: {
-                                afterBody: function(context) {
-                                    const index = context[0].dataIndex;
-                                    const entry = recentEntries[index];
-                                    return [
-                                        `Techniek: ${entry.techniekGebruikt}`,
-                                        `Verbetering: ${entry.intensiteitVoor - entry.intensiteitNa} punten`,
-                                        entry.cpScore ? `CP Score: ${entry.cpScore}s` : ''
-                                    ].filter(Boolean);
+                                text: 'Sessies (chronologisch)',
+                                color: '#06b6d4',
+                                font: {
+                                    size: 13,
+                                    weight: '600'
                                 }
+                            },
+                            grid: {
+                                color: 'rgba(6, 182, 212, 0.1)',
+                                drawBorder: false
                             }
                         }
                     }
                 }
             });
 
+            console.log('Progress chart created successfully');
+            chartEmpty.style.display = 'none';
+
         } catch (error) {
             console.error('Chart creation failed:', error);
             canvas.style.display = 'none';
             chartEmpty.style.display = 'flex';
-            chartEmpty.textContent = 'Grafiek kon niet worden geladen';
+            chartEmpty.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="color: var(--danger-color); margin-bottom: 0.5rem;">⚠️ Grafiek kon niet worden geladen</div>
+                    <div style="font-size: 0.9rem; color: var(--text-light);">${error.message}</div>
+                    <button class="btn btn-primary" onclick="createProgressChart()" style="margin-top: 1rem; font-size: 0.8rem; padding: 0.5rem 1rem;">
+                        🔄 Opnieuw proberen
+                    </button>
+                </div>
+            `;
+            
+            // Expose retry function
+            window.createProgressChart = createProgressChart;
         }
     }
 
@@ -2093,6 +2313,7 @@
     });
 
     // Make functions globally available
+    window.updateBreathingPattern = updateBreathingPattern;
     window.startCP = startCP;
     window.stopCP = stopCP;
     window.resetCP = resetCP;

@@ -828,10 +828,159 @@
             <div class="user-info" id="user-info">
                 <div class="spinner"></div>
             </div>
-            <div class="header-title">
-                <h1>Ademruimte</h1>
-                <p>Your safe breathing space</p>
-            </div>
+            <!-- Voeg deze CSS toe in je <style> sectie -->
+<style>
+    /* Logo container styling - voeg dit toe aan je bestaande CSS */
+    .logo-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .logo-svg {
+        height: clamp(80px, 10vw, 100px);
+        width: auto;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+    }
+
+    /* Eventueel aanpassen van bestaande header styling */
+    header {
+        background: linear-gradient(135deg, #06b6d4, #10b981);
+        color: white;
+        padding: 2rem 1rem;
+        text-align: center;
+        position: relative;
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<!-- In je header HTML, vervang de <div class="header-title"> door dit: -->
+<div class="logo-container">
+    <svg viewBox="0 0 320 100" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
+      <defs>
+        <!-- Breathing gradient - matches app colors -->
+        <radialGradient id="breathingCenter" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9">
+            <animate attributeName="stop-opacity" values="0.9;0.4;0.9" dur="4s" repeatCount="indefinite"/>
+          </stop>
+          <stop offset="30%" style="stop-color:#10b981;stop-opacity:0.7">
+            <animate attributeName="stop-opacity" values="0.7;0.3;0.7" dur="4s" repeatCount="indefinite"/>
+          </stop>
+          <stop offset="70%" style="stop-color:#06b6d4;stop-opacity:0.5">
+            <animate attributeName="stop-opacity" values="0.5;0.2;0.5" dur="4s" repeatCount="indefinite"/>
+          </stop>
+          <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0.3">
+            <animate attributeName="stop-opacity" values="0.3;0.1;0.3" dur="4s" repeatCount="indefinite"/>
+          </stop>
+        </radialGradient>
+        
+        <!-- Text gradient -->
+        <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#ffffff"/>
+          <stop offset="50%" style="stop-color:#f0f9ff"/>
+          <stop offset="100%" style="stop-color:#e0f2fe"/>
+        </linearGradient>
+        
+        <!-- Subtle shadow for depth -->
+        <filter id="softGlow">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge> 
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/> 
+          </feMerge>
+        </filter>
+      </defs>
+      
+      <!-- Main breathing circle - represents lungs/breath -->
+      <circle cx="50" cy="50" r="35" fill="url(#breathingCenter)" opacity="0.4">
+        <animate attributeName="r" values="35;42;35" dur="4s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.4;0.7;0.4" dur="4s" repeatCount="indefinite"/>
+      </circle>
+      
+      <!-- Inner breathing ring -->
+      <circle cx="50" cy="50" r="20" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1">
+        <animate attributeName="r" values="20;25;20" dur="4s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-opacity" values="0.6;0.9;0.6" dur="4s" repeatCount="indefinite"/>
+      </circle>
+      
+      <!-- Floating breath particles - slow, calming movement -->
+      <g opacity="0.8">
+        <circle cx="25" cy="25" r="2" fill="#ffffff">
+          <animateTransform attributeName="transform" type="translate" values="0,0; 2,3; 0,0" dur="6s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.8;0.4;0.8" dur="6s" repeatCount="indefinite"/>
+        </circle>
+        
+        <circle cx="75" cy="30" r="1.5" fill="#10b981">
+          <animateTransform attributeName="transform" type="translate" values="0,0; -1,2; 0,0" dur="5s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.7;0.3;0.7" dur="5s" repeatCount="indefinite"/>
+        </circle>
+        
+        <circle cx="30" cy="75" r="1.8" fill="#06b6d4">
+          <animateTransform attributeName="transform" type="translate" values="0,0; 3,-1; 0,0" dur="7s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.6;0.9;0.6" dur="7s" repeatCount="indefinite"/>
+        </circle>
+        
+        <circle cx="70" cy="70" r="2.2" fill="rgba(255,255,255,0.8)">
+          <animateTransform attributeName="transform" type="translate" values="0,0; -2,-2; 0,0" dur="5.5s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.8;0.3;0.8" dur="5.5s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+      
+      <!-- Wave lines representing breath flow -->
+      <g stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none" opacity="0.7">
+        <path d="M 15 45 Q 25 40 35 45 Q 45 50 55 45" stroke-dasharray="2,4">
+          <animate attributeName="opacity" values="0.7;0.3;0.7" dur="3s" repeatCount="indefinite"/>
+          <animateTransform attributeName="transform" type="translate" values="0,0; 5,0; 0,0" dur="3s" repeatCount="indefinite"/>
+        </path>
+        
+        <path d="M 15 55 Q 25 60 35 55 Q 45 50 55 55" stroke-dasharray="3,3">
+          <animate attributeName="opacity" values="0.5;0.8;0.5" dur="3.5s" repeatCount="indefinite"/>
+          <animateTransform attributeName="transform" type="translate" values="0,0; -3,0; 0,0" dur="3.5s" repeatCount="indefinite"/>
+        </path>
+      </g>
+      
+      <!-- Main text -->
+      <text x="110" y="45" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="300" fill="url(#textGrad)" filter="url(#softGlow)">
+        ademruimte
+      </text>
+      
+      <!-- Subtitle -->
+      <text x="110" y="65" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="rgba(255,255,255,0.85)">
+        your safe breathing space
+      </text>
+      
+      <!-- Accent dots with synchronized breathing -->
+      <g opacity="0.6">
+        <circle cx="290" cy="25" r="2.5" fill="rgba(255,255,255,0.9)">
+          <animate attributeName="cy" values="25;22;25" dur="4s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.6;1;0.6" dur="4s" repeatCount="indefinite"/>
+        </circle>
+        
+        <circle cx="300" cy="40" r="2" fill="#10b981">
+          <animate attributeName="cy" values="40;37;40" dur="4s" begin="1s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.7;1;0.7" dur="4s" begin="1s" repeatCount="indefinite"/>
+        </circle>
+        
+        <circle cx="295" cy="60" r="2.2" fill="#06b6d4">
+          <animate attributeName="cy" values="60;57;60" dur="4s" begin="2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.5;0.9;0.5" dur="4s" begin="2s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+      
+      <!-- Subtle pulsing outline -->
+      <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.5">
+        <animate attributeName="r" values="45;48;45" dur="8s" repeatCount="indefinite"/>
+        <animate attributeName="stroke-opacity" values="0.2;0.4;0.2" dur="8s" repeatCount="indefinite"/>
+      </circle>
+  </svg>
+</div>
         </header>
 
         <nav class="nav-tabs">

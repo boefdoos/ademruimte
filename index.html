@@ -3160,7 +3160,26 @@
         if (window.progressChart) window.progressChart.destroy();
         if (window.cpProgressChart) window.cpProgressChart.destroy();
     });
+function updateJournalFilter() {
+    try {
+        const filterSelect = document.getElementById('journal-filter');
+        if (!filterSelect) {
+            console.log('ℹ️ Journal filter element not found');
+            return;
+        }
 
+        // Update the current filter variable
+        currentJournalFilter = filterSelect.value;
+        console.log('📅 Journal filter changed to:', currentJournalFilter);
+        
+        // Re-display entries with new filter
+        displayJournalEntries();
+        
+    } catch (error) {
+        console.error('❌ Error updating journal filter:', error);
+        // Non-critical error, don't show to user
+    }
+}
     // Export all functions that are called from HTML onclick handlers
     window.debugFirebaseData = debugFirebaseData;
     window.fixOldEntries = fixOldEntries;

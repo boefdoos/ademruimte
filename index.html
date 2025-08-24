@@ -1480,8 +1480,8 @@
                     
                     // Smooth scaling animation
                     const inhaleProgress = phaseTime / pattern.inhale;
-                    const scale = 1 + (0.2 * Math.min(inhaleProgress, 1));
-                    circle.style.transform = `scale(${scale})`;
+                    const inhaleScale = 1 + (0.2 * Math.min(inhaleProgress, 1));
+                    circle.style.transform = `scale(${inhaleScale})`;
                     
                     if (phaseTime >= pattern.inhale) {
                         phaseTime = 0;
@@ -1508,8 +1508,8 @@
                     
                     // Smooth scaling animation
                     const exhaleProgress = phaseTime / pattern.exhale;
-                    const scale = 1.2 - (0.4 * Math.min(exhaleProgress, 1));
-                    circle.style.transform = `scale(${scale})`;
+                    const exhaleScale = 1.2 - (0.4 * Math.min(exhaleProgress, 1));
+                    circle.style.transform = `scale(${exhaleScale})`;
                     
                     if (phaseTime >= pattern.exhale) {
                         phaseTime = 0;

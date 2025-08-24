@@ -240,6 +240,12 @@
         box-shadow: 0 6px 20px rgba(6, 182, 212, 0.3);
     }
 
+    .btn-primary.active {
+        background: linear-gradient(135deg, #0891b2, #0e7490);
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        transform: none;
+    }
+
     .btn-success {
         background: var(--success-gradient);
         color: white;
@@ -953,12 +959,20 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="journal-filter">Filter op periode:</label>
+                        <label for="journal-filter">Filter dagboek entries:</label>
                         <select class="form-control" id="journal-filter" onchange="filterJournalEntries()">
                             <option value="all">Alle entries</option>
                             <option value="last30">Laatste 30 dagen</option>
                             <option value="last7">Laatste 7 dagen</option>
                         </select>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">📈 Statistiek periode:</label>
+                        <div class="button-group">
+                            <button class="btn btn-primary" id="chart-30days" onclick="updateChartFilter('30days')">Laatste 30 dagen</button>
+                            <button class="btn btn-primary" id="chart-all" onclick="updateChartFilter('all')">Alle data</button>
+                        </div>
                     </div>
 
                     <div class="chart-container">
@@ -1140,6 +1154,7 @@
     let allJournalEntries = [];
     let allCPMeasurements = [];
     let progressChart = null;
+    let chartFilter = 'all'; // New variable to track chart filter
 
     // Breathing exercise variables
     let breathInterval = null;
@@ -1303,6 +1318,10 @@
         // Load data based on tab
         if (tabName === 'dagboek') {
             createProgressChart();
+            // Set default active state for chart filter
+            setTimeout(() => {
+                document.getElementById('chart-all').classList.add('active');
+            }, 100);
         }
     }
 
@@ -1819,6 +1838,13 @@
             generateInsights();
             createProgressChart();
             
+            // Set default chart filter state
+            if (currentTab === 'dagboek') {
+                setTimeout(() => {
+                    document.getElementById('chart-all').classList.add('active');
+                }, 100);
+            }
+            
         } catch (error) {
             console.error('Load entries failed:', error);
             showUserMessage('❌ Laden van entries mislukt: ' + error.message, 'error');
@@ -2067,33 +2093,56 @@
             progressChart.destroy();
         }
         
-        // Prepare data
-        const chartData = allJournalEntries.slice(0, 20).reverse().map((entry, index) => ({
-            x: index + 1,
+        // Filter data based on current chart filter
+        let filteredEntries = [...allJournalEntries];
+        const now = new Date();
+        
+        if (chartFilter === '30days') {
+            const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            filteredEntries = allJournalEntries.filter(entry => entry.timestamp >= thirtyDaysAgo);
+        }
+        
+        // Sort by timestamp (oldest first for chart)
+        filteredEntries.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        
+        // Take last 50 entries to keep chart readable
+        const chartEntries = filteredEntries.slice(-50);
+        
+        // Prepare data with actual dates
+        const chartData = chartEntries.map((entry) => ({
+            date: entry.timestamp.toLocaleDateString('nl-BE', { 
+                day: '2-digit', 
+                month: '2-digit' 
+            }),
+            fullDate: entry.timestamp.toLocaleDateString('nl-BE'),
             voor: entry.intensiteitVoor,
             na: entry.intensiteitNa,
             verbetering: entry.intensiteitVoor - entry.intensiteitNa,
-            label: entry.techniekGebruikt.substring(0, 10) + '...'
+            technique: entry.techniekGebruikt
         }));
         
         progressChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: chartData.map(d => d.label),
+                labels: chartData.map(d => d.date),
                 datasets: [
                     {
                         label: 'Voor sessie',
                         data: chartData.map(d => d.voor),
                         borderColor: '#ef4444',
                         backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        tension: 0.4
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
                     },
                     {
                         label: 'Na sessie',
                         data: chartData.map(d => d.na),
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        tension: 0.4
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
                     },
                     {
                         label: 'Verbetering',
@@ -2101,23 +2150,55 @@
                         borderColor: '#06b6d4',
                         backgroundColor: 'rgba(6, 182, 212, 0.1)',
                         type: 'bar',
-                        yAxisID: 'y1'
+                        yAxisID: 'y1',
+                        barThickness: 20
                     }
                 ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Jouw Voortgang Over Tijd'
+                        text: chartFilter === '30days' ? 'Voortgang Laatste 30 Dagen' : 'Voortgang Over Tijd',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
                     },
                     legend: {
-                        display: true
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const index = tooltipItems[0].dataIndex;
+                                return chartData[index].fullDate;
+                            },
+                            afterTitle: function(tooltipItems) {
+                                const index = tooltipItems[0].dataIndex;
+                                return `Techniek: ${chartData[index].technique}`;
+                            }
+                        }
                     }
                 },
                 scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Datum'
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 0
+                        }
+                    },
                     y: {
                         beginAtZero: true,
                         max: 10,
@@ -2137,10 +2218,18 @@
                         grid: {
                             drawOnChartArea: false,
                         },
+                        ticks: {
+                            beginAtZero: true
+                        }
                     }
                 }
             }
         });
+        
+        // Update button active states
+        document.getElementById('chart-30days').classList.remove('active');
+        document.getElementById('chart-all').classList.remove('active');
+        document.getElementById(`chart-${chartFilter}`).classList.add('active');
     }
 
     // ============================================
@@ -2162,6 +2251,11 @@
             userStats.lastSessionDate = today;
         }
     }
+
+    window.updateChartFilter = function(filter) {
+        chartFilter = filter;
+        createProgressChart();
+    };
 
     window.updateRangeValue = function(sliderId, valueId) {
         const slider = document.getElementById(sliderId);

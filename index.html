@@ -2301,7 +2301,62 @@
         // Don't throw - this is non-critical
     }
 }
+// ============================================
+    // MISSING FUNCTION: populateJournalFilter
+    // ============================================
+    
+    function populateJournalFilter() {
+        try {
+            const filterSelect = document.getElementById('journal-filter');
+            if (!filterSelect) {
+                console.log('ℹ️ Journal filter element not found');
+                return;
+            }
 
+            // Only add month options if we have entries
+            if (!allJournalEntries || allJournalEntries.length === 0) {
+                console.log('ℹ️ No entries available for filter population');
+                return;
+            }
+
+            // Get existing options to avoid duplicates
+            const existingOptions = Array.from(filterSelect.options).map(opt => opt.value);
+
+            // Extract unique months from entries
+            const monthsSet = new Set();
+            allJournalEntries.forEach(entry => {
+                if (entry.timestamp) {
+                    const date = entry.timestamp instanceof Date ? entry.timestamp : new Date(entry.timestamp);
+                    if (!isNaN(date.getTime())) {  // Valid date check
+                        const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+                        const monthLabel = date.toLocaleDateString('nl-BE', { year: 'numeric', month: 'long' });
+                        monthsSet.add(JSON.stringify({ key: monthKey, label: monthLabel, timestamp: date.getTime() }));
+                    }
+                }
+            });
+
+            // Convert Set back to array and sort by timestamp (newest first)
+            const monthsArray = Array.from(monthsSet)
+                .map(str => JSON.parse(str))
+                .sort((a, b) => b.timestamp - a.timestamp);
+
+            // Add new month options
+            monthsArray.forEach(month => {
+                if (!existingOptions.includes(month.key)) {
+                    const option = document.createElement('option');
+                    option.value = month.key;
+                    option.textContent = month.label;
+                    filterSelect.appendChild(option);
+                }
+            });
+
+            console.log(`✅ Populated journal filter with ${monthsArray.length} month options`);
+
+        } catch (error) {
+            console.error('❌ Error in populateJournalFilter:', error);
+            // Don't throw - this is non-critical
+        }
+    }
     function displayJournalEntries() {
         const container = document.getElementById('journal-entries');
         

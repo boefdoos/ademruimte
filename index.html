@@ -527,31 +527,7 @@
         padding: 0 1rem;
         position: relative;
     }
-    
-/* Knop Filter Styling */
-.btn-filter {
-    padding: 0.5rem 1rem;
-    border: 2px solid #d1d5db;
-    border-radius: 0.5rem;
-    background: white;
-    color: #374151;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-}
 
-.btn-filter:hover {
-    background: #f3f4f6;
-    border-color: var(--primary-color);
-}
-
-.btn-filter.active {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
     /* Chart Filter Button Styling */
     .btn-chart-filter {
         padding: 0.75rem 1.25rem;
@@ -1031,31 +1007,26 @@
                         Track je symptomen en vooruitgang. Vroege interventie en patroonherkenning zijn cruciaal voor herstel.
                     </p>
                     
-<div class="journal-filter-container" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; align-items: center;">
-    <button class="btn btn-primary" onclick="openJournalModal('Handmatige Entry')">
-        ➕ Nieuwe Entry
-    </button>
-    <button class="btn btn-success" onclick="loadJournalEntries()">
-        🔄 Vernieuwen
-    </button>
-    <button class="btn btn-warning" onclick="exportJournal()">
-        📥 Export
-    </button>
-    
-    <!-- NIEUWE KNOP FILTER - GEEN DROPDOWN -->
-    <div style="margin-left: auto; display: flex; align-items: center; gap: 0.5rem;">
-        <label style="font-weight: 600; color: var(--text-dark); white-space: nowrap; margin-right: 0.5rem;">Filter:</label>
-        <button id="filter-recent" class="btn-filter active" onclick="setJournalFilter('recent')">
-            📅 Laatste 10
-        </button>
-        <button id="filter-month" class="btn-filter" onclick="setJournalFilter('month')">
-            🗓️ Deze Maand
-        </button>
-        <button id="filter-all" class="btn-filter" onclick="setJournalFilter('all')">
-            📊 Alle Entries
-        </button>
-    </div>
-</div>
+                    <div class="journal-filter-container" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; align-items: center;">
+                        <button class="btn btn-primary" onclick="openJournalModal('Handmatige Entry')">
+                            ➕ Nieuwe Entry
+                        </button>
+                        <button class="btn btn-success" onclick="loadJournalEntries()">
+                            🔄 Vernieuwen
+                        </button>
+                        <button class="btn btn-warning" onclick="exportJournal()">
+                            📥 Export
+                        </button>
+                        
+                        <div style="margin-left: auto; display: flex; align-items: center; gap: 0.5rem;">
+                            <label style="font-weight: 600; color: var(--text-dark); white-space: nowrap;">Periode:</label>
+                            <select id="journal-filter" class="form-select" onchange="updateJournalFilter()" style="width: auto; min-width: 150px;">
+                                <option value="recent" selected>Laatste 10</option>
+                                <option value="all">Alle entries</option>
+                                <!-- Maandopties worden dynamisch toegevoegd -->
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Insights -->
@@ -3209,30 +3180,6 @@ function updateJournalFilter() {
         // Non-critical error, don't show to user
     }
 }
-    // === JOURNAL FILTER FUNCTIES ===
-function setJournalFilter(filterType) {
-    try {
-        // Update active button
-        document.querySelectorAll('.btn-filter').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        
-        const activeBtn = document.getElementById(`filter-${filterType}`);
-        if (activeBtn) {
-            activeBtn.classList.add('active');
-        }
-        
-        // Update filter
-        currentJournalFilter = filterType;
-        console.log('📅 Filter changed to:', filterType);
-        
-        // Re-display entries
-        displayJournalEntries();
-        
-    } catch (error) {
-        console.error('❌ Filter error:', error);
-    }
-}
     // Export all functions that are called from HTML onclick handlers
     window.debugFirebaseData = debugFirebaseData;
     window.fixOldEntries = fixOldEntries;
@@ -3242,7 +3189,7 @@ function setJournalFilter(filterType) {
     window.signInWithGoogle = signInWithGoogle;
     window.updateBreathingPattern = updateBreathingPattern;
     window.updateChartFilter = updateChartFilter;
-    window.setJournalFilter = setJournalFilter;
+    window.updateJournalFilter = updateJournalFilter;
     window.startCP = startCP;
     window.stopCP = stopCP;
     window.resetCP = resetCP;

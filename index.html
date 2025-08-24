@@ -803,6 +803,14 @@
         </div>
     </div>
 
+    <div id="g_id_onload"
+    data-client_id="744941871331-bdj0it4hic5kghtumutk5i6djctn9rht.apps.googleusercontent.com"
+    data-callback="handleCredentialResponse">
+</div>
+<div class="g_id_signin"
+    data-type="standard">
+</div>
+
     <!-- Authentication Screen -->
     <div id="auth-screen" class="hidden">
         <div class="auth-card">
@@ -1284,7 +1292,7 @@
             </p>
         </div>
     </footer>
-
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script type="module">
     // Firebase configuration (exact same credentials)
     const firebaseConfig = {
@@ -1343,6 +1351,18 @@
     // FIREBASE INITIALIZATION & AUTH
     // ============================================
 
+    function handleCredentialResponse(response) {
+  // Decode the ID token to get the user's information.
+  const idToken = response.credential;
+  const decodedToken = jwt_decode(idToken); // Je hebt een JWT-bibliotheek nodig zoals jwt-decode
+  console.log('Ingelogde gebruiker:', decodedToken);
+  // Nu kun je de gebruikersinformatie gebruiken om de UI aan te passen.
+  // Bijvoorbeeld: verander een "Inloggen"-knop in "Uitloggen".
+  document.getElementById('profile-info').innerHTML = `
+    <h3>Welkom, ${decodedToken.name}</h3>
+    <img src="${decodedToken.picture}" alt="Profielafbeelding">
+  `;
+}
     async function initFirebase() {
         try {
             const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");

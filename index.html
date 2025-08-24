@@ -820,7 +820,7 @@
             </div>
             <div class="header-title">
                 <h1>Ademruimte</h1>
-                <p>Your safe breathing space</p>
+                <p>Evidence-based hulp bij hyperventilatie en maagklachten</p>
             </div>
         </header>
 
@@ -1258,7 +1258,6 @@
             
             userInfo.innerHTML = `
                 <div class="user-avatar">${initials}</div>
-          
                 <button class="logout-btn" onclick="logout()">Uitloggen</button>
             `;
         } else {
@@ -1400,7 +1399,7 @@
     // ============================================
 
     const breathingPatterns = {
-        gentle: { inhale: 3, hold: 3, exhale: 3, cycles: 2, description: "2x zacht ademen, na 2e uitademing 3 sec inhouden" },
+        gentle: { inhale: 5, hold: 0, exhale: 5, pause: 3, cycles: 20, description: "10 sec zacht ademhalen + 3 sec pauze" },
         standard: { inhale: 4, hold: 7, exhale: 8, cycles: 10, description: "4-7-8 standaard patroon" },
         advanced: { inhale: 6, hold: 8, exhale: 10, cycles: 10, description: "6-8-10 gevorderd patroon" }
     };
@@ -1452,25 +1451,11 @@
         let currentPhase = 'inhale';
         let completedCycles = 0;
         let totalCycles = pattern.cycles || 10;
-        let isInFinalPause = false;
         
         breathInterval = setInterval(() => {
             if (!isBreathing) return;
             
             phaseTime++;
-            
-            // Special handling for gentle pattern
-            if (breathingPattern === 'gentle' && completedCycles === 2 && currentPhase === 'finalPause') {
-                circle.textContent = `Houd 3 sec vast (${phaseTime})`;
-                circle.className = "breathing-circle hold";
-                document.getElementById('current-phase').textContent = 'Finale pauze';
-                
-                if (phaseTime >= 3) {
-                    stopBreathing();
-                    return;
-                }
-                return;
-            }
             
             switch(currentPhase) {
                 case 'inhale':
@@ -1516,11 +1501,28 @@
                         completedCycles++;
                         document.getElementById('cycle-count').textContent = completedCycles;
                         
-                        // Special logic for gentle pattern
-                        if (breathingPattern === 'gentle' && completedCycles === 2) {
-                            currentPhase = 'finalPause';
-                            phaseTime = 0;
+                        // Check if we should pause (for gentle pattern) or continue
+                        if (breathingPattern === 'gentle' && pattern.pause > 0) {
+                            currentPhase = 'pause';
                         } else if (completedCycles >= totalCycles) {
+                            stopBreathing();
+                            return;
+                        } else {
+                            currentPhase = 'inhale';
+                        }
+                    }
+                    break;
+                    
+                case 'pause':
+                    circle.textContent = `Pauze (${phaseTime})`;
+                    circle.className = "breathing-circle hold";
+                    document.getElementById('current-phase').textContent = 'Pauze';
+                    circle.style.transform = 'scale(0.9)';
+                    
+                    if (phaseTime >= (pattern.pause || 3)) {
+                        phaseTime = 0;
+                        
+                        if (completedCycles >= totalCycles) {
                             stopBreathing();
                             return;
                         } else {

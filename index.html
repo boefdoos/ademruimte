@@ -1535,6 +1535,84 @@
         updateCPProgress();
     };
 
+    function updateCPProgress() {
+    try {
+        console.log('ℹ️ Updating CP progress display');
+        
+        // Check if we have CP related elements on the page
+        const cpProgressContainer = document.getElementById('cp-progress-container') || 
+                                   document.getElementById('cp-statistics') ||
+                                   document.getElementById('cp-dashboard-card');
+        
+        if (!cpProgressContainer) {
+            console.log('ℹ️ CP progress container not found - skipping update');
+            return;
+        }
+
+        // Get all CP measurements (combine allCPMeasurements and CP scores from journal entries)
+        let allCPData = [];
+        
+        // Add dedicated CP measurements if they exist
+        if (typeof allCPMeasurements !== 'undefined' && allCPMeasurements.length > 0) {
+            allCPData = [...allCPMeasurements];
+        }
+        
+        // Add CP scores from journal entries
+        if (typeof allJournalEntries !== 'undefined' && allJournalEntries.length > 0) {
+            const cpFromEntries = allJournalEntries
+                .filter(entry => entry.cpScore && entry.cpScore > 0)
+                .map(entry => ({
+                    score: entry.cpScore,
+                    timestamp: entry.timestamp,
+                    source: 'journal'
+                }));
+            allCPData = [...allCPData, ...cpFromEntries];
+        }
+
+        // Sort by timestamp (newest first)
+        allCPData.sort((a, b) => {
+            const dateA = new Date(a.timestamp);
+            const dateB = new Date(b.timestamp);
+            return dateB - dateA;
+        });
+
+        // Update CP statistics if elements exist
+        const lastCPElement = document.getElementById('last-cp');
+        const avgCPElement = document.getElementById('avg-cp');
+        const cpTrendElement = document.getElementById('cp-trend');
+
+        if (lastCPElement) {
+            const lastCP = allCPData.length > 0 ? allCPData[0].score : 0;
+            lastCPElement.textContent = lastCP > 0 ? lastCP + 's' : '-';
+        }
+
+        if (avgCPElement && allCPData.length > 0) {
+            const avgCP = Math.round(allCPData.slice(0, 10).reduce((sum, cp) => sum + cp.score, 0) / Math.min(allCPData.length, 10));
+            avgCPElement.textContent = avgCP + 's';
+        }
+
+        if (cpTrendElement && allCPData.length >= 2) {
+            const latest = allCPData[0].score;
+            const previous = allCPData[1].score;
+            const improvement = latest - previous;
+            
+            if (improvement > 0) {
+                cpTrendElement.innerHTML = '<span style="color: #10b981;">📈 +' + improvement + 's</span>';
+            } else if (improvement < 0) {
+                cpTrendElement.innerHTML = '<span style="color: #ef4444;">📉 ' + improvement + 's</span>';
+            } else {
+                cpTrendElement.innerHTML = '<span style="color: #6b7280;">➡️ Stabiel</span>';
+            }
+        }
+
+        console.log(`✅ CP progress updated with ${allCPData.length} measurements`);
+
+    } catch (error) {
+        console.error('❌ Error updating CP progress:', error);
+        // Non-critical error, don't throw
+    }
+}
+
     window.resetCP = function() {
         if (cpInterval) {
             clearInterval(cpInterval);

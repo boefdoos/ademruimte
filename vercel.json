@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/__/auth/:path*",
-      "destination": "https://ademruimte-12c09.firebaseapp.com/__/auth/:path*"
+      "destination": "https://ademruimte-12c09.firebaseapp.com/__/auth/handler"
     }
   ]
 }

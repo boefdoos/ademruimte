@@ -4,42 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#06b6d4">
-    <meta name="description" content="Ademruimte - Evidence-based hulp bij hyperventilatie en maagklachten">
+    <meta name="description" content="Ademruimte - Je persoonlijke ruimte voor ademhalingsoefeningen en hyperventilatie begeleiding">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Ademruimte - Hyperventilatie Helper</title>
+    
+    <!-- Preload kritieke resources -->
+    <link rel="preconnect" href="https://www.gstatic.com">
+    <link rel="preconnect" href="https://unpkg.com">
+    
+    <!-- Chart.js voor statistieken -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 
 <style>
+    /* CSS Custom Properties voor consistentie */
     :root {
-        --primary-color: #06b6d4;
-        --primary-dark: #0891b2;
-        --success-color: #10b981;
-        --danger-color: #ef4444;
-        --warning-color: #f59e0b;
+        --primary-gradient: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #3b82f6 100%);
+        --card-background: rgba(255, 255, 255, 0.95);
         --text-dark: #1f2937;
         --text-light: #6b7280;
-        --bg-card: rgba(255, 255, 255, 0.95);
         --border-radius: 1rem;
-        --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        --transition: all 0.3s ease;
+        --shadow-sm: 0 4px 15px rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.1);
+        --transition-base: all 0.3s ease;
+        --touch-target: 44px;
+        --buteyko-primary: #06b6d4;
+        --buteyko-secondary: #0891b2;
+        --success-gradient: linear-gradient(135deg, #10b981, #059669);
+        --warning-gradient: linear-gradient(135deg, #f59e0b, #d97706);
+        --danger-gradient: linear-gradient(135deg, #ef4444, #dc2626);
+        --primary-color: #06b6d4;
     }
 
+    /* Reset en basis styling */
     * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
     }
 
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background: linear-gradient(135deg, #06b6d4 0%, #10b981 50%, #3b82f6 100%);
-        min-height: 100vh;
-        line-height: 1.6;
+    *:before, *:after {
+        box-sizing: border-box;
     }
 
+    html {
+        border: none;
+        outline: none;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+        background: var(--primary-gradient);
+        min-height: 100vh;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+    }
+
+    .hidden { display: none !important; }
+    
+    /* Container */
     .container {
-        max-width: 1200px;
+        max-width: 800px;
         margin: 0 auto;
         padding: 1rem;
-        min-height: calc(100vh - 120px);
     }
 
     /* Header */
@@ -49,125 +78,149 @@
         padding: 2rem 1rem;
         text-align: center;
         position: relative;
-        box-shadow: var(--shadow);
+        box-shadow: var(--shadow-md);
+        backdrop-filter: blur(10px);
+    }
+
+    .header-title h1 {
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .header-title p {
+        font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+        opacity: 0.9;
+        font-weight: 400;
     }
 
     .user-info {
         position: absolute;
         top: 1rem;
         right: 1rem;
-        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
         background: rgba(255,255,255,0.1);
-        padding: 0.5rem 0.75rem;
-        border-radius: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255,255,255,0.2);
-    }
-
-    header h1 {
-        font-size: clamp(1.5rem, 4vw, 2.5rem);
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-    }
-
-    header p {
-        font-size: clamp(0.9rem, 2vw, 1.1rem);
-        opacity: 0.9;
-    }
-
-    /* Navigation */
-    .nav-tabs {
-        background: var(--bg-card);
-        backdrop-filter: blur(20px);
-        padding: 1rem;
-        display: flex;
-        justify-content: center;
-        gap: 1rem;
-        overflow-x: auto;
-        border-bottom: 2px solid rgba(6, 182, 212, 0.1);
-    }
-
-    .nav-tabs button {
-        background: none;
-        border: 2px solid transparent;
-        padding: 1rem 1.5rem;
-        border-radius: var(--border-radius);
-        cursor: pointer;
         font-size: 0.9rem;
-        font-weight: 600;
-        transition: var(--transition);
-        white-space: nowrap;
-        color: var(--text-light);
         min-height: 44px;
     }
 
-    .nav-tabs button:hover {
-        background: rgba(6, 182, 212, 0.1);
-        color: var(--primary-color);
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+
+    .logout-btn {
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 1rem;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: var(--transition-base);
+    }
+
+    .logout-btn:hover {
+        background: rgba(255,255,255,0.3);
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs {
+        background: rgba(255,255,255,0.1);
+        padding: 1rem;
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .tab-btn {
+        background: rgba(255,255,255,0.1);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 2rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: var(--transition-base);
+        min-height: var(--touch-target);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+        background: rgba(255,255,255,0.2);
         transform: translateY(-1px);
     }
 
-    .nav-tabs button.active {
-        background: var(--primary-color);
-        color: white;
-        border-color: var(--primary-color);
-        box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+    .tab-btn.active {
+        background: rgba(255,255,255,0.3);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.3);
+        font-weight: 600;
     }
 
     /* Cards */
     .card {
-        background: var(--bg-card);
-        backdrop-filter: blur(20px);
+        background: var(--card-background);
         border-radius: var(--border-radius);
         padding: 2rem;
         margin-bottom: 1.5rem;
-        box-shadow: var(--shadow);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        transition: var(--transition);
-    }
-
-    .card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        box-shadow: var(--shadow-md);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
     }
 
     .card h2 {
         color: var(--text-dark);
         margin-bottom: 1rem;
         font-size: 1.5rem;
-        background: linear-gradient(135deg, #06b6d4, #10b981);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
+        font-weight: 600;
     }
 
     .card h3 {
         color: var(--text-dark);
         margin-bottom: 0.75rem;
         font-size: 1.25rem;
+        font-weight: 600;
     }
 
     /* Buttons */
     .btn {
-        padding: 1rem 1.5rem;
+        padding: 0.75rem 1.5rem;
         border: none;
-        border-radius: 0.75rem;
+        border-radius: var(--border-radius);
         cursor: pointer;
-        font-size: 0.95rem;
+        font-size: 1rem;
         font-weight: 600;
-        transition: var(--transition);
-        text-align: center;
-        display: inline-block;
         text-decoration: none;
-        min-height: 44px;
-        box-shadow: var(--shadow);
-        font-family: inherit;
-        touch-action: manipulation;
-    }
-
-    .btn:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: var(--transition-base);
+        min-height: var(--touch-target);
+        position: relative;
+        overflow: hidden;
     }
 
     .btn:disabled {
@@ -177,32 +230,195 @@
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        background: var(--primary-gradient);
         color: white;
+        box-shadow: var(--shadow-sm);
     }
 
-    .btn-cyan {
-        background: var(--primary-color);
-        color: white;
-    }
-
-    .btn-cyan:hover {
-        background: var(--primary-dark);
+    .btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(6, 182, 212, 0.3);
     }
 
     .btn-success {
-        background: var(--success-color);
+        background: var(--success-gradient);
         color: white;
+        box-shadow: var(--shadow-sm);
     }
 
-    .btn-danger {
-        background: var(--danger-color);
-        color: white;
+    .btn-success:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
     }
 
     .btn-warning {
-        background: var(--warning-color);
+        background: var(--warning-gradient);
         color: white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-warning:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-danger {
+        background: var(--danger-gradient);
+        color: white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-danger:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-orange {
+        background: linear-gradient(135deg, #ea580c, #c2410c);
+        color: white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-orange:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(234, 88, 12, 0.3);
+    }
+
+    /* Form Elements */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text-dark);
+        font-weight: 500;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        transition: var(--transition-base);
+        background: white;
+        min-height: var(--touch-target);
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    select.form-control {
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.5rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+    }
+
+    /* Range Slider */
+    .range-container {
+        position: relative;
+        margin: 1rem 0;
+    }
+
+    .range-slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 8px;
+        border-radius: 4px;
+        background: #e5e7eb;
+        outline: none;
+        transition: var(--transition-base);
+    }
+
+    .range-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        cursor: pointer;
+        border: 3px solid white;
+        box-shadow: var(--shadow-sm);
+        transition: var(--transition-base);
+    }
+
+    .range-slider::-webkit-slider-thumb:hover {
+        transform: scale(1.1);
+    }
+
+    .range-slider::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        cursor: pointer;
+        border: 3px solid white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .range-value {
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--primary-color);
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        min-width: 40px;
+        text-align: center;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin: 1.5rem 0;
+    }
+
+    .stat-card {
+        background: rgba(255,255,255,0.5);
+        padding: 1.5rem 1rem;
+        border-radius: var(--border-radius);
+        text-align: center;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.3);
+        transition: var(--transition-base);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-light);
+        font-weight: 500;
     }
 
     /* Tab Content */
@@ -212,589 +428,416 @@
 
     .tab-content.active {
         display: block;
+        animation: fadeIn 0.3s ease-in;
     }
 
-    /* Forms */
-    .form-group {
-        margin-bottom: 1.5rem;
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
-    .form-label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-        color: var(--text-dark);
-    }
-
-    .form-input, .form-select, .form-textarea {
-        width: 100%;
-        padding: 1rem;
-        border: 2px solid #e5e7eb;
-        border-radius: 0.75rem;
-        font-size: 1rem;
-        min-height: 44px;
-        font-family: inherit;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
-        outline: none;
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.1);
-    }
-
-    .form-textarea {
-        resize: vertical;
-        min-height: 100px;
-    }
-
-    /* Range Slider */
-    .range-group {
+    /* Breathing Circle */
+    .breathing-circle {
+        width: 200px;
+        height: 200px;
+        border: 4px solid var(--primary-color);
+        border-radius: 50%;
+        margin: 2rem auto;
         display: flex;
         align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        transition: all 1s ease-in-out;
+        position: relative;
+        background: rgba(6, 182, 212, 0.1);
+    }
+
+    .breathing-circle.inhale {
+        transform: scale(1.2);
+        background: rgba(6, 182, 212, 0.2);
+    }
+
+    .breathing-circle.exhale {
+        transform: scale(0.8);
+        background: rgba(16, 185, 129, 0.2);
+        border-color: #10b981;
+        color: #10b981;
+    }
+
+    .breathing-circle.hold {
+        transform: scale(1.1);
+        background: rgba(245, 158, 11, 0.2);
+        border-color: #f59e0b;
+        color: #f59e0b;
+    }
+
+    /* CP Measurement */
+    .cp-display {
+        font-size: 3rem;
+        font-weight: 700;
+        text-align: center;
+        color: var(--primary-color);
+        margin: 1rem 0;
+        font-family: 'Monaco', 'Menlo', monospace;
+    }
+
+    .cp-controls {
+        display: flex;
+        justify-content: center;
         gap: 1rem;
+        margin: 2rem 0;
+        flex-wrap: wrap;
     }
 
-    .range-input {
-        flex: 1;
-        height: 8px;
-        background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
-        border-radius: 4px;
-        outline: none;
-        -webkit-appearance: none;
+    /* Progress Chart */
+    .chart-container {
+        position: relative;
+        height: 400px;
+        margin: 2rem 0;
+        background: rgba(255,255,255,0.1);
+        border-radius: var(--border-radius);
+        padding: 1rem;
     }
 
-    .range-input::-webkit-slider-thumb {
-        -webkit-appearance: none;
+    /* Messages */
+    .message {
+        padding: 1rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        animation: slideInDown 0.3s ease;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+        max-width: 350px;
+        box-shadow: var(--shadow-md);
+    }
+
+    .message.success {
+        background: rgba(16, 185, 129, 0.9);
+        color: white;
+        border: 1px solid #059669;
+    }
+
+    .message.warning {
+        background: rgba(245, 158, 11, 0.9);
+        color: white;
+        border: 1px solid #d97706;
+    }
+
+    .message.danger, .message.error {
+        background: rgba(239, 68, 68, 0.9);
+        color: white;
+        border: 1px solid #dc2626;
+    }
+
+    .message.info {
+        background: rgba(6, 182, 212, 0.9);
+        color: white;
+        border: 1px solid #0891b2;
+    }
+
+    @keyframes slideInDown {
+        from {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    /* Loading States */
+    .spinner {
         width: 24px;
         height: 24px;
-        background: white;
-        border: 3px solid var(--primary-color);
+        border: 3px solid rgba(255,255,255,0.3);
         border-radius: 50%;
-        cursor: pointer;
-        box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
     }
 
-    .range-value {
-        font-weight: bold;
-        color: var(--primary-color);
-        min-width: 3rem;
-        text-align: center;
+    @keyframes spin {
+        to { transform: rotate(360deg); }
     }
 
-    /* Buteyko Timer */
-    .timer-display {
-        font-size: 4rem;
-        font-weight: bold;
-        text-align: center;
-        color: var(--primary-color);
-        margin: 2rem 0;
-        font-family: 'Courier New', monospace;
-        text-shadow: 0 2px 4px rgba(6, 182, 212, 0.2);
-    }
-
-    .breath-display {
-        font-size: 2rem;
-        font-weight: bold;
-        text-align: center;
-        margin: 2rem 0;
-        padding: 2rem;
-        border-radius: 1.5rem;
-        transition: all 0.3s ease;
-        min-height: 120px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: var(--shadow);
-    }
-
-    .breath-display.rest {
-        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-        color: var(--text-light);
-    }
-
-    .breath-display.inhale {
-        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-        color: #1e40af;
-        transform: scale(1.05);
-    }
-
-    .breath-display.exhale {
-        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-        color: #065f46;
-        transform: scale(0.95);
-    }
-
-    .breath-display.hold {
-        background: linear-gradient(135deg, #fef3c7, #fde68a);
-        color: #92400e;
-        transform: scale(1.02);
-    }
-
-    /* Progress Bar */
-    .progress-bar {
-        width: 100%;
-        height: 12px;
-        background: #e5e7eb;
-        border-radius: 6px;
-        overflow: hidden;
-        margin: 1rem 0;
-        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .progress-fill {
-        height: 100%;
-        background: var(--success-color);
-        border-radius: 6px;
-        transition: width 0.3s ease;
-    }
-
-    /* Stats Grid */
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin: 1.5rem 0;
-    }
-
-    .stat-card {
-        background: rgba(6, 182, 212, 0.1);
-        border: 2px solid rgba(6, 182, 212, 0.2);
-        border-radius: 1rem;
-        padding: 1.5rem;
-        text-align: center;
-        transition: var(--transition);
-        position: relative;
-    }
-
-    .stat-card:hover {
-        border-color: var(--primary-color);
-        background: rgba(6, 182, 212, 0.15);
-        transform: translateY(-2px);
-    }
-
-    #cp-dashboard-card {
-        position: relative;
-        overflow: hidden;
-    }
-
-    #cp-dashboard-card.improving {
-        animation: subtle-pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes subtle-pulse {
-        0%, 100% { 
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
-        }
-        50% { 
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
-        }
-    }
-
-    .stat-number {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: var(--primary-color);
-        line-height: 1;
-        margin-bottom: 0.5rem;
-    }
-
-    .stat-label {
-        font-size: 0.9rem;
-        color: var(--text-light);
-        font-weight: 500;
-    }
-
-    /* Crisis Steps */
-    .crisis-step {
-        background: white;
-        border-left: 4px solid var(--danger-color);
-        border-radius: 0.5rem;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-        box-shadow: var(--shadow);
-    }
-
-    .crisis-step h4 {
-        color: var(--danger-color);
-        margin-bottom: 0.75rem;
-        font-size: 1.1rem;
-    }
-
-    .crisis-step.active {
-        border-left-color: var(--success-color);
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(255, 255, 255, 0.95));
-    }
-
-    .crisis-step.active h4 {
-        color: var(--success-color);
-    }
-
-    /* Alerts */
-    .alert {
-        padding: 1.5rem;
-        border-radius: 1rem;
-        margin-bottom: 1.5rem;
-        border: 2px solid;
-    }
-
-    .alert-info {
-        background: rgba(219, 234, 254, 0.9);
-        border-color: #3b82f6;
-        color: #1e40af;
-    }
-
-    .alert-success {
-        background: rgba(209, 250, 229, 0.9);
-        border-color: var(--success-color);
-        color: #065f46;
-    }
-
-    .alert-warning {
-        background: rgba(254, 243, 199, 0.9);
-        border-color: var(--warning-color);
-        color: #92400e;
-    }
-
-    .alert-danger {
-        background: rgba(254, 226, 226, 0.9);
-        border-color: var(--danger-color);
-        color: #991b1b;
-    }
-
-    /* Login Screen */
-    #login-screen {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        padding: 2rem;
-    }
-
-    .login-card {
-        background: white;
-        border-radius: 1rem;
-        padding: 2rem;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        width: 100%;
-        max-width: 400px;
-    }
-
-    .google-btn {
-        width: 100%;
-        padding: 1rem;
-        border: 2px solid #d1d5db;
-        border-radius: 0.75rem;
-        background: white;
-        color: #374151;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.75rem;
-        font-size: 1rem;
-        font-weight: 600;
-        transition: all 0.3s;
-        min-height: 44px;
-    }
-
-    .google-btn:hover {
-        background: #f9fafb;
-        border-color: #9ca3af;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .divider {
-        text-align: center;
-        margin: 1.5rem 0;
-        position: relative;
-        color: var(--text-light);
-    }
-
-    .divider::before {
-        content: '';
-        position: absolute;
-        top: 50%;
+    /* Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
         left: 0;
-        right: 0;
-        height: 1px;
-        background: #e5e7eb;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        backdrop-filter: blur(4px);
     }
 
-    .divider span {
-        background: white;
-        padding: 0 1rem;
+    .modal-content {
+        background: var(--card-background);
+        margin: 5% auto;
+        padding: 2rem;
+        border-radius: var(--border-radius);
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-md);
         position: relative;
     }
-/* Knop Filter Styling */
-.btn-filter {
-    padding: 0.5rem 1rem;
-    border: 2px solid #d1d5db;
-    border-radius: 0.5rem;
-    background: white;
-    color: #374151;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-}
 
-.btn-filter:hover {
-    background: #f3f4f6;
-    border-color: var(--primary-color);
-}
-
-.btn-filter.active {
-    background: var(--primary-color);
-    color: white;
-    border-color: var(--primary-color);
-}
-    /* Chart Filter Button Styling */
-    .btn-chart-filter {
-        padding: 0.75rem 1.25rem;
-        border: 2px solid #d1d5db;
-        border-radius: 0.75rem;
-        background: white;
-        color: #374151;
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
         cursor: pointer;
-        font-size: 0.9rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        min-height: 44px;
-        white-space: nowrap;
-        font-family: inherit;
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
     }
 
-    .btn-chart-filter:hover {
-        background: #f3f4f6;
-        border-color: var(--primary-color);
-        color: var(--primary-dark);
-        transform: translateY(-1px);
+    .close:hover {
+        color: #000;
     }
 
-    .btn-chart-filter.active {
-        background: var(--primary-color);
-        color: white;
-        border-color: var(--primary-color);
-        font-weight: 700;
-        box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+    /* Button Groups */
+    .button-group {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
     }
 
-    /* Responsive */
+    /* Responsive Design */
     @media (max-width: 768px) {
         .container {
             padding: 0.5rem;
         }
         
-        .logo-animation {
-            width: 2.5rem;
-            height: 2.5rem;
-            margin-right: 0.75rem;
+        .card {
+            padding: 1.5rem;
+            margin-bottom: 1rem;
         }
         
-        .logo-animation::before {
-            font-size: 1.25rem;
+        .user-info {
+            position: static;
+            justify-content: center;
+            margin-bottom: 1rem;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .nav-tabs {
-            padding: 0.5rem;
-            gap: 0.5rem;
-        }
-        
-        .nav-tabs button {
-            padding: 0.75rem 1rem;
-            font-size: 0.8rem;
-        }
-        
-        .timer-display {
-            font-size: 3rem;
-        }
-        
-        .breath-display {
-            font-size: 1.5rem;
-            padding: 1.5rem;
-        }
-        
-        .stats-grid {
-            grid-template-columns: 1fr 1fr;
-        }
-        
-        .stat-number {
-            font-size: 2rem;
-        }
-        
-        .dashboard-cards {
-            grid-template-columns: 1fr;
-        }
-        
-        /* Journal filter mobile styling */
-        .journal-filter-container {
             flex-direction: column;
-            align-items: stretch !important;
-            gap: 0.75rem !important;
+            gap: 0.25rem;
         }
         
-        .journal-filter-container > div {
-            margin-left: 0 !important;
+        .tab-btn {
+            width: 100%;
             justify-content: center;
         }
         
-        .journal-filter-container label {
-            text-align: center;
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .breathing-circle {
+            width: 150px;
+            height: 150px;
+            font-size: 1.25rem;
+        }
+        
+        .cp-display {
+            font-size: 2rem;
+        }
+        
+        .message {
+            position: relative;
+            top: auto;
+            right: auto;
+            max-width: none;
+            margin: 1rem 0;
+        }
+        
+        .modal-content {
+            width: 95%;
+            margin: 10% auto;
+        }
+        
+        .button-group {
+            flex-direction: column;
         }
     }
 
-    /* Hidden utility */
-    .hidden {
-        display: none !important;
+    /* Auth Screen Styles */
+    #auth-screen {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
     }
 
-    /* Loading Spinner */
-    .spinner {
-        display: inline-block;
-        width: 1.2rem;
-        height: 1.2rem;
-        border: 3px solid #f3f4f6;
-        border-top: 3px solid var(--primary-color);
+    .auth-card {
+        background: var(--card-background);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        box-shadow: var(--shadow-md);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+    }
+
+    .auth-card h2 {
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+    }
+
+    .auth-card p {
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+    }
+
+    /* EMDR Styles */
+    .emdr-dot {
+        width: 20px;
+        height: 20px;
+        background: var(--primary-color);
         border-radius: 50%;
-        animation: spin 1s linear infinite;
+        position: absolute;
+        transition: all 0.5s ease-in-out;
+        top: 50%;
+        transform: translateY(-50%);
     }
 
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+    .emdr-container {
+        position: relative;
+        height: 200px;
+        background: rgba(255,255,255,0.1);
+        border-radius: var(--border-radius);
+        margin: 2rem 0;
+        overflow: hidden;
     }
 
-    /* User Message */
-    .user-message {
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 1001;
-        max-width: 90vw;
-        min-width: 300px;
-        padding: 1rem 1.5rem;
-        border-radius: 1rem;
-        font-weight: 500;
-        border: 2px solid;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        backdrop-filter: blur(15px);
-        animation: slideInDown 0.3s ease-out;
+    /* Crisis Help Styles */
+    .crisis-card {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        border: none;
     }
 
-    @keyframes slideInDown {
-        from {
-            opacity: 0;
-            transform: translateX(-50%) translateY(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
+    .crisis-card h3 {
+        color: white;
     }
 
-    /* Symptom Tracker */
-    .symptom-grid {
+    /* Loading Animation */
+    @keyframes pulse {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 1; }
+    }
+
+    .loading-text {
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    /* Status Indicators */
+    .status-connected {
+        background: #10b981 !important;
+        box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+    }
+
+    .status-disconnected {
+        background: #f59e0b !important;
+        box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+    }
+
+    .status-error {
+        background: #ef4444 !important;
+        box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+    }
+
+    /* Symptom Checkboxes */
+    .symptom-checkbox-container {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 0.5rem;
         margin: 1rem 0;
     }
 
-    .symptom-card {
-        background: white;
-        border: 2px solid #e5e7eb;
-        border-radius: 0.75rem;
-        padding: 1rem;
-        transition: var(--transition);
+    .symptom-checkbox-item {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: var(--transition-base);
+        background: rgba(255,255,255,0.5);
     }
 
-    .symptom-card.selected {
-        border-color: var(--primary-color);
-        background: rgba(6, 182, 212, 0.05);
+    .symptom-checkbox-item:hover {
+        background: rgba(6, 182, 212, 0.1);
+    }
+
+    .symptom-checkbox-item.selected {
+        background: rgba(6, 182, 212, 0.2);
+        border: 1px solid var(--primary-color);
     }
 
     .symptom-checkbox {
         margin-right: 0.5rem;
-        transform: scale(1.2);
-    }
-
-    /* Chart Container */
-    .chart-container {
-        background: white;
-        border-radius: 1rem;
-        padding: 1rem;
-        box-shadow: var(--shadow);
-        margin: 1rem 0;
-        min-height: 300px;
-        position: relative;
-    }
-
-    .chart-empty {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 300px;
-        color: var(--text-light);
-        font-size: 1.1rem;
     }
 </style>
 </head>
 
 <body>
-    <div id="login-screen">
-        <div class="login-card">
-            <h2 style="text-align: center; margin-bottom: 1.5rem; color: var(--primary-color);">
-                Welkom bij Ademruimte
-            </h2>
-            
-            <p style="text-align: center; margin-bottom: 2rem; color: var(--text-light);">
-                Evidence-based hulp bij hyperventilatie en maagklachten
-            </p>
-
-            <button id="google-login-btn" class="google-btn">
-                <svg width="18" height="18" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                </svg>
-                <span id="google-btn-text">Doorgaan met Google</span>
-            </button>
-
-            <div class="divider">
-                <span>of</span>
+    <!-- Loading Screen -->
+    <div id="auth-loading" class="hidden">
+        <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; color: white;">
+            <div style="text-align: center;">
+                <div class="spinner" style="margin: 0 auto 1rem;"></div>
+                <p class="loading-text">Ademruimte wordt geladen...</p>
             </div>
+        </div>
+    </div>
 
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="login-email" class="form-label">E-mail:</label>
-                    <input type="email" id="login-email" class="form-input" placeholder="jouw@email.com" required>
-                </div>
-                <div class="form-group">
-                    <label for="login-password" class="form-label">Wachtwoord:</label>
-                    <input type="password" id="login-password" class="form-input" placeholder="Wachtwoord" required>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    Inloggen
+    <!-- Authentication Screen -->
+    <div id="auth-screen" class="hidden">
+        <div class="auth-card">
+            <h2>Welkom bij Ademruimte</h2>
+            <p>Log in om je persoonlijke ademhalingsreis te beginnen</p>
+            
+            <div class="button-group">
+                <button class="btn btn-primary" id="google-login">
+                    <span>🔑 Inloggen met Google</span>
                 </button>
-            </form>
-
-            <p style="text-align: center; color: var(--text-light); margin-top: 1rem; font-size: 0.9rem;">
-                Nog geen account? <button id="show-register" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Registreren</button>
+            </div>
+            
+            <p style="margin-top: 1.5rem; font-size: 0.875rem;">
+                Nieuw hier? 
+                <button id="show-register" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Registreren</button>
             </p>
         </div>
     </div>
 
+    <!-- Main App -->
     <div id="main-app" class="hidden">
         <header>
             <div class="user-info" id="user-info">
                 <div class="spinner"></div>
             </div>
-            <div class="logo-animation"></div>
             <div class="header-title">
                 <h1>Ademruimte</h1>
                 <p>Evidence-based hulp bij hyperventilatie en maagklachten</p>
@@ -809,7 +852,7 @@
         </nav>
 
         <main class="container">
-            <!-- Dashboard -->
+            <!-- Dashboard Tab -->
             <div id="dashboard" class="tab-content active">
                 <div class="card">
                     <h2 id="dashboard-greeting">Welkom bij Ademruimte</h2>
@@ -831,494 +874,283 @@
                             <div class="stat-number" id="avg-improvement">-</div>
                             <div class="stat-label">Gem. verbetering</div>
                         </div>
-                        <div class="stat-card" id="cp-dashboard-card">
+                        <div class="stat-card">
                             <div class="stat-number" id="last-cp">-</div>
-                            <div class="stat-label">Laatste CP (sec)</div>
-                            <div id="cp-trend" style="font-size: 0.8rem; margin-top: 0.5rem; font-weight: 600;">
-                                <!-- CP trend wordt hier getoond -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="alert alert-info">
-                    <strong>🧠 Wetenschappelijke basis:</strong> 
-                    Onderzoek toont dat hyperventilatie en maagklachten via de darm-brein-as en nervus vagus met elkaar verbonden zijn. 
-                    Buteyko ademhaling helpt bij beide problemen door CO2 tolerantie te verbeteren.
-                </div>
-
-                <div id="cp-permissions-notice" class="alert alert-warning" style="display: none;">
-                    <strong>💾 Lokale Opslag:</strong> 
-                    CP metingen worden lokaal opgeslagen. Voor sync tussen apparaten zijn Firebase permissies nodig voor de 'cpMeasurements' collectie.
-                </div>
-
-                <div class="dashboard-cards">
-                    <div class="card dashboard-card">
-                        <div class="card-content">
-                            <h3>💨 Buteyko Training</h3>
-                            <p>Wetenschappelijk bewezen effectief - symptomen kunnen binnen 2 dagen verbeteren</p>
-                            <button class="btn btn-cyan" onclick="showTab('buteyko')">Start Buteyko</button>
-                        </div>
-                    </div>
-                    <div class="card dashboard-card">
-                        <div class="card-content">
-                            <h3>📊 Dagboek & Inzichten</h3>
-                            <p>Track je vooruitgang en ontdek patronen</p>
-                            <button class="btn btn-primary" onclick="showTab('dagboek')">Open Dagboek</button>
-                        </div>
-                    </div>
-                    <div class="card dashboard-card">
-                        <div class="card-content">
-                            <h3>🚨 Crisis Hulp</h3>
-                            <p>Stap-voor-stap begeleiding tijdens acute klachten</p>
-                            <button class="btn btn-danger" onclick="showTab('crisis')">Crisis Protocol</button>
+                            <div class="stat-label">Laatste CP</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="card">
-                    <button class="btn btn-danger" onclick="logout()" style="width: 100%;">
-                        🚪 Uitloggen
-                    </button>
+                    <h3>🎯 Slimme Inzichten</h3>
+                    <div id="insights-content">
+                        <p style="color: var(--text-light);">Start met je eerste oefening om persoonlijke inzichten te ontvangen!</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>💡 Tip van de dag</h3>
+                    <div id="tip-content">
+                        <p>Maagklachten en ademhalingsproblemen zijn vaak verbonden via de nervus vagus - behandel ze samen voor betere resultaten.</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Buteyko -->
+            <!-- Buteyko Tab -->
             <div id="buteyko" class="tab-content">
                 <div class="card">
                     <h2>💨 Buteyko Ademhaling</h2>
-                    <p style="margin-bottom: 1.5rem;">
-                        De Buteyko methode heeft klinisch bewezen effectiviteit. 
-                        <strong>Patiënten rapporteren vaak verbetering binnen 2 dagen</strong> van juiste toepassing.
+                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                        De Buteyko methode helpt je CO2-tolerantie te verbeteren en hyperventilatie te reduceren.
                     </p>
 
-                    <!-- Breathing Pattern Selection -->
-                    <div style="margin-bottom: 2rem;">
-                        <label class="form-label">Ademhalingspatroon:</label>
-                        <select id="breathing-pattern" class="form-select" onchange="updateBreathingPattern()">
-                            <option value="standard">Standaard (4-6-3 sec)</option>
-                            <option value="gentle">Zachte Ademhaling (2x adem + pauze)</option>
-                        </select>
+                    <!-- Control Pause Measurement -->
+                    <div class="card" style="background: rgba(6, 182, 212, 0.1); border: 2px solid rgba(6, 182, 212, 0.2);">
+                        <h3>⏱️ Control Pause (CP) Meting</h3>
+                        <p style="margin-bottom: 1rem;">Meet je CO2-tolerantie. Normale waarden: 20-40 seconden.</p>
                         
-                        <div id="pattern-explanation" style="margin-top: 0.75rem; padding: 1rem; background: rgba(6, 182, 212, 0.1); border-radius: 0.75rem; font-size: 0.9rem; color: var(--text-dark);">
-                            <strong>Standaard patroon:</strong> 4 seconden inademen, 6 seconden uitademen, 3 seconden pauze
-                        </div>
-                    </div>
-
-                    <!-- CP Measurement -->
-                    <div style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(16, 185, 129, 0.1)); 
-                                border: 3px solid var(--primary-color); border-radius: 1.5rem; padding: 2rem; 
-                                text-align: center; margin: 2rem 0;">
-                        <h3>🎯 Controle Pauze (CP) Meting</h3>
-                        <p style="margin: 1rem 0; color: var(--text-light);">
-                            Adem normaal uit en houd je adem tot de <strong>eerste neiging</strong> om te ademen
-                        </p>
+                        <div class="cp-display" id="cp-timer">00</div>
                         
-                        <div class="timer-display" id="cp-timer">00:00</div>
-                        
-                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 1.5rem;">
-                            <button id="cp-start-btn" class="btn btn-cyan" onclick="startCP()">
-                                ⏱️ Start CP Meting
-                            </button>
-                            <button id="cp-stop-btn" class="btn btn-danger" onclick="stopCP()" style="display: none;">
-                                ⏹️ Stop
-                            </button>
-                            <button class="btn btn-warning" onclick="resetCP()">
-                                🔄 Reset
-                            </button>
+                        <div class="cp-controls">
+                            <button class="btn btn-primary" id="start-cp" onclick="startCPMeasurement()">Start CP Meting</button>
+                            <button class="btn btn-danger" id="stop-cp" onclick="stopCPMeasurement()" disabled>Stop</button>
+                            <button class="btn btn-warning" id="reset-cp" onclick="resetCPMeasurement()">Reset</button>
                         </div>
                         
-                        <div id="cp-result" class="alert alert-success" style="display: none; margin-top: 1.5rem;">
-                            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;" id="cp-score">
-                                20 seconden
-                            </div>
-                            <div id="cp-interpretation">
-                                Gemiddelde CO2 tolerantie. Doorgaan met oefenen kan dit verbeteren.
-                            </div>
-                            <div id="cp-progress-indicator" style="margin-top: 1rem; font-size: 0.9rem; color: var(--primary-dark);">
-                                <!-- Progress info wordt hier getoond -->
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- CP Progress Chart -->
-                    <div id="cp-progress-section" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1)); 
-                                border: 2px solid var(--success-color); border-radius: 1.5rem; padding: 2rem; 
-                                text-align: center; margin: 2rem 0; display: none;">
-                        <h3>📈 CP Vooruitgang</h3>
-                        <div class="chart-container" style="background: white; margin-top: 1rem;">
-                            <canvas id="cp-progress-chart" width="400" height="200" style="max-height: 200px;"></canvas>
-                        </div>
-                        <div id="cp-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem; margin-top: 1rem;">
-                            <!-- CP statistieken worden hier getoond -->
+                        <div id="cp-instructions" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
+                            <strong>Instructies:</strong>
+                            <ol style="margin-top: 0.5rem;">
+                                <li>Adem normaal in en uit</li>
+                                <li>Na een normale uitademing, houd je adem in</li>
+                                <li>Klik "Start CP Meting" en stop zodra je de eerste drang voelt om te ademen</li>
+                                <li>Dit is je Control Pause score</li>
+                            </ol>
                         </div>
                     </div>
 
                     <!-- Breathing Exercise -->
-                    <div style="margin: 2rem 0;">
+                    <div class="card">
                         <h3>🫁 Ademhalingsoefening</h3>
-                        <p style="margin-bottom: 1rem; color: var(--text-light);">
-                            Volg het ritme: 4 sec inademen, 6 sec uitademen, 3 sec pauze
-                        </p>
                         
-                        <div class="breath-display rest" id="breath-display">
-                            Klik op start om te beginnen
+                        <div class="form-group">
+                            <label for="breathing-pattern">Selecteer patroon:</label>
+                            <select class="form-control" id="breathing-pattern" onchange="updateBreathingPattern()">
+                                <option value="standard">4-7-8 Standaard</option>
+                                <option value="gentle">3-4-5 Zacht</option>
+                                <option value="advanced">6-8-10 Gevorderd</option>
+                            </select>
                         </div>
-                        
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="breath-progress" style="width: 0%;"></div>
-                        </div>
-                        
-                        <div style="text-align: center; margin: 1.5rem 0;">
-                            <div style="font-size: 1.25rem; color: var(--primary-color); margin-bottom: 1rem; font-weight: 600;" id="breath-counter">
-                                Cyclus: 1/20
-                            </div>
-                            
-                            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                                <button id="breath-btn" class="btn btn-cyan" onclick="toggleBreathing()">
-                                    ▶️ Start Oefening
-                                </button>
-                                <button class="btn btn-warning" onclick="resetBreathing()">
-                                    🔄 Reset
-                                </button>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div id="breath-complete" class="alert alert-success" style="display: none;">
-                        <strong>✅ Buteyko Sessie Voltooid!</strong><br>
-                        Geweldig! Je hebt 20 ademhalingscycli succesvol afgerond.
-                        <div style="margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-                            <button class="btn btn-primary" onclick="openJournalModal('Buteyko Ademhaling - 20 cycli')">
-                                📝 Toevoegen aan Dagboek
-                            </button>
-                            <button class="btn btn-warning" onclick="completeBreathing()">
-                                ⏭️ Voltooien
-                            </button>
+                        <div class="breathing-circle" id="breathing-circle">
+                            Bereid je voor
                         </div>
-                    </div>
-                </div>
 
-                <div class="card">
-                    <h3>📚 Buteyko Principes</h3>
-                    <div class="crisis-step">
-                        <h4>💨 Zachte Ademhaling</h4>
-                        <p>Adem zo zacht mogelijk - stel je voor dat je een veertje voor je neus niet wilt laten bewegen.</p>
-                    </div>
-                    <div class="crisis-step">
-                        <h4>⏬ Langere Uitademing</h4>
-                        <p>De uitademing is langer dan de inademing om CO2 te behouden en het zenuwstelsel te kalmeren.</p>
-                    </div>
-                    <div class="crisis-step">
-                        <h4>⏸️ Comfortabele Pauze</h4>
-                        <p>De adempauze mag nooit geforceerd aanvoelen - stop als het oncomfortabel wordt.</p>
-                    </div>
-                    <div class="crisis-step">
-                        <h4>📊 CP Score Interpretatie</h4>
-                        <p><strong>10-20 sec:</strong> Lage CO2 tolerantie, meer oefening nodig<br>
-                        <strong>20-40 sec:</strong> Gemiddeld, goede basis voor verbetering<br>
-                        <strong>40+ sec:</strong> Goede CO2 tolerantie</p>
+                        <div class="button-group">
+                            <button class="btn btn-primary" id="start-breathing" onclick="startBreathing()">Start Oefening</button>
+                            <button class="btn btn-danger" id="stop-breathing" onclick="stopBreathing()" disabled>Stop</button>
+                        </div>
+
+                        <div id="breathing-info" style="text-align: center; margin-top: 1rem;">
+                            <p><strong>Cyclus:</strong> <span id="cycle-count">0</span> van 10</p>
+                            <p><strong>Fase:</strong> <span id="current-phase">Rust</span></p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Dagboek -->
+            <!-- Dagboek Tab -->
             <div id="dagboek" class="tab-content">
                 <div class="card">
-                    <h2>📊 Dagboek & Vooruitgang</h2>
-                    <p style="margin-bottom: 1.5rem;">
-                        Track je symptomen en vooruitgang. Vroege interventie en patroonherkenning zijn cruciaal voor herstel.
-                    </p>
+                    <h2>📊 Dagboek & Statistieken</h2>
                     
-<div class="journal-filter-container" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; align-items: center;">
-    <button class="btn btn-primary" onclick="openJournalModal('Handmatige Entry')">
-        ➕ Nieuwe Entry
-    </button>
-    <button class="btn btn-success" onclick="loadJournalEntries()">
-        🔄 Vernieuwen
-    </button>
-    <button class="btn btn-warning" onclick="exportJournal()">
-        📥 Export
-    </button>
-    
-    <!-- SIMPELE KNOPPEN ZONDER NIEUWE FUNCTIE -->
-    <div style="margin-left: auto; display: flex; align-items: center; gap: 0.5rem;">
-        <label style="font-weight: 600; color: var(--text-dark); white-space: nowrap; margin-right: 0.5rem;">Filter:</label>
-        <button id="filter-recent" class="btn-filter active" onclick="currentJournalFilter='recent'; displayJournalEntries(); document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active')); this.classList.add('active');">
-            📅 Laatste 10
-        </button>
-        <button id="filter-month" class="btn-filter" onclick="currentJournalFilter='month'; displayJournalEntries(); document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active')); this.classList.add('active');">
-            🗓️ Deze Maand
-        </button>
-        <button id="filter-all" class="btn-filter" onclick="currentJournalFilter='all'; displayJournalEntries(); document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active')); this.classList.add('active');">
-            📊 Alle Entries
-        </button>
-    </div>
-</div>
-                </div>
+                    <div class="button-group" style="margin-bottom: 2rem;">
+                        <button class="btn btn-primary" onclick="openJournalModal()">📝 Nieuwe Entry</button>
+                        <button class="btn btn-success" onclick="exportDagboek()">💾 Exporteer</button>
+                    </div>
 
-                <!-- Insights -->
-                <div class="card" id="insights-card" style="display: none;">
-                    <h3>🧠 Slimme Inzichten</h3>
-                    <div id="insights-content"></div>
-                </div>
+                    <div class="form-group">
+                        <label for="journal-filter">Filter op periode:</label>
+                        <select class="form-control" id="journal-filter" onchange="filterJournalEntries()">
+                            <option value="all">Alle entries</option>
+                            <option value="last30">Laatste 30 dagen</option>
+                            <option value="last7">Laatste 7 dagen</option>
+                        </select>
+                    </div>
 
-                <!-- Progress Chart -->
-                <div class="card">
-                    <h3>📈 Vooruitgang Grafiek</h3>
-                    
-                    <!-- Chart Filter Controls -->
-                    <div class="chart-filters" style="display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; justify-content: center;">
-                        <label style="font-weight: 600; color: var(--text-dark); width: 100%; text-align: center; margin-bottom: 0.75rem;">Periode:</label>
-                        <button id="chart-filter-15" class="btn-chart-filter active" onclick="updateChartFilter('last15')">
-                            Laatste 15
-                        </button>
-                        <button id="chart-filter-30" class="btn-chart-filter" onclick="updateChartFilter('last30')">
-                            30 Dagen
-                        </button>
-                        <button id="chart-filter-all" class="btn-chart-filter" onclick="updateChartFilter('all')">
-                            Sinds Begin
-                        </button>
-                        <div style="margin-left: auto; font-size: 0.9rem; color: var(--text-light);" id="chart-info">
-                            <!-- Chart info wordt hier getoond -->
+                    <div class="chart-container">
+                        <canvas id="progress-chart"></canvas>
+                    </div>
+
+                    <div id="journal-entries">
+                        <div style="text-align: center; color: var(--text-light); margin: 2rem 0;">
+                            <p>Nog geen dagboek entries. Begin met je eerste oefening!</p>
                         </div>
                     </div>
-                    
-                    <div class="chart-container" id="chart-container">
-                        <div class="chart-empty" id="chart-empty">
-                            Nog geen data beschikbaar. Maak enkele dagboekentries om je vooruitgang te zien!
-                        </div>
-                        <canvas id="progress-chart" style="display: none;"></canvas>
-                    </div>
                 </div>
-
-                <!-- Journal Entries -->
-                <div id="journal-entries"></div>
             </div>
 
-            <!-- Crisis Hulp -->
+            <!-- Crisis Help Tab -->
             <div id="crisis" class="tab-content">
-                <div class="card">
-                    <h2>🚨 Crisis Hulp Protocol</h2>
-                    <p style="margin-bottom: 1.5rem;">
-                        Stap-voor-stap begeleiding tijdens acute hyperventilatie. 
-                        <strong>Onderzoek toont dat gestructureerde interventie zeer effectief is.</strong>
-                    </p>
-                    
-                    <div id="crisis-timer" class="timer-display" style="display: none;">05:00</div>
-                    
-                    <div style="text-align: center; margin: 1.5rem 0;">
-                        <button id="crisis-start-btn" class="btn btn-danger" onclick="startCrisis()">
-                            🚨 Start Crisis Protocol
-                        </button>
-                        <button id="crisis-stop-btn" class="btn btn-success" onclick="stopCrisis()" style="display: none;">
-                            ✅ Stop Protocol
-                        </button>
-                    </div>
-                    
-                    <div class="progress-bar" id="crisis-progress-bar" style="display: none;">
-                        <div class="progress-fill" id="crisis-progress" style="width: 0%;"></div>
-                    </div>
-                </div>
+                <div class="card crisis-card">
+                    <h2>🚨 Crisis Hulp</h2>
+                    <p style="margin-bottom: 2rem;">Directe hulp bij acute hyperventilatie of paniekaanvallen.</p>
 
-                <div id="crisis-steps">
-                    <div class="crisis-step" data-step="1">
-                        <h4>1. Erken de Situatie (1 min)</h4>
-                        <p><strong>Zeg tegen jezelf:</strong> "Dit is hyperventilatie, niet gevaarlijk. Het gaat voorbij."</p>
-                        <p>Zoek een rustige plek en ga zitten of liggen.</p>
+                    <div class="button-group">
+                        <button class="btn btn-warning" onclick="startCrisisBreathing()">🫁 Nood Ademhaling</button>
+                        <button class="btn" style="background: rgba(255,255,255,0.2); color: white;" onclick="startEMDR()">👁️ EMDR Oogbewegingen</button>
                     </div>
 
-                    <div class="crisis-step" data-step="2">
-                        <h4>2. Paradoxale Ademhaling (1 min)</h4>
-                        <p>Start met bewust <strong>zeer kleine, korte ademhalingen</strong> door je neus.</p>
-                        <p>Na 3-4 mini-ademhalingen, probeer een iets langere uitademing.</p>
+                    <div id="crisis-breathing" class="hidden" style="margin-top: 2rem;">
+                        <div class="breathing-circle" id="crisis-circle">
+                            Volg de cirkel
+                        </div>
+                        <div style="text-align: center;">
+                            <button class="btn btn-danger" onclick="stopCrisisBreathing()">Stop</button>
+                        </div>
                     </div>
 
-                    <div class="crisis-step" data-step="3">
-                        <h4>3. Purse-Lip Ademhaling (1 min)</h4>
-                        <p>Tuut je lippen alsof je fluit bij het uitademen.</p>
-                        <p>Dit creëert lichte weerstand en stabiliseert CO2-niveaus.</p>
-                    </div>
-
-                    <div class="crisis-step" data-step="4">
-                        <h4>4. 5-4-3-2-1 Grounding (1 min)</h4>
-                        <p>Benoem bewust:</p>
-                        <p><strong>5 dingen die je ZIET - 4 dingen die je VOELT - 3 dingen die je HOORT - 2 dingen die je RUIKT - 1 ding dat je PROEFT</strong></p>
-                    </div>
-
-                    <div class="crisis-step" data-step="5">
-                        <h4>5. Evaluatie & Vervolgstappen (1 min)</h4>
-                        <p>Hoe voel je je nu op een schaal van 1-10?</p>
-                        <p>Als nog steeds >5: herhaal stap 2-4. Als beter: maak een dagboek entry.</p>
-                    </div>
-                </div>
-
-                <div id="crisis-complete" class="alert alert-success" style="display: none;">
-                    <strong>✅ Crisis Protocol Voltooid!</strong><br>
-                    Je hebt alle 5 stappen doorlopen. Hoe voel je je nu?
-                    <div style="margin-top: 1rem;">
-                        <button class="btn btn-primary" onclick="openJournalModal('Crisis Hulp Protocol')">
-                            📝 Toevoegen aan Dagboek
-                        </button>
+                    <div id="emdr-container" class="hidden" style="margin-top: 2rem;">
+                        <div class="emdr-container">
+                            <div class="emdr-dot" id="emdr-dot"></div>
+                        </div>
+                        <div style="text-align: center;">
+                            <button class="btn btn-danger" onclick="stopEMDR()">Stop EMDR</button>
+                        </div>
                     </div>
                 </div>
 
                 <div class="card">
-                    <h3>❄️ Aanvullende Crisis Technieken</h3>
-                    <div class="crisis-step">
-                        <h4>IJswater Techniek</h4>
-                        <p>Breng iets kouds tegen je gezicht (wangen en ogen) om de duikreflex te activeren.</p>
-                    </div>
-                    <div class="crisis-step">
-                        <h4>Herframing</h4>
-                        <p>"Dit is geen echt zuurstoftekort, dit is een sensatie die voorbij zal gaan. Mijn lichaam krijgt genoeg zuurstof."</p>
-                    </div>
+                    <h3>📞 Noodhulp</h3>
+                    <p><strong>Bij acute noodsituaties:</strong></p>
+                    <ul style="margin: 1rem 0;">
+                        <li>🚑 Spoeddiensten: 112</li>
+                        <li>🩺 Huisarts: Contacteer je eigen huisarts</li>
+                        <li>🧠 Zelfmoordlijn: 1813 of 0800 32 123</li>
+                        <li>💬 Tele-onthaal: 106</li>
+                    </ul>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Journal Modal -->
-    <div id="journal-modal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-         background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-        <div style="background: white; border-radius: 1rem; padding: 2rem; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <h3>📝 Dagboek Entry</h3>
-                <button onclick="closeJournalModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
-            </div>
+    <!-- Journal Entry Modal -->
+    <div id="journal-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeJournalModal()">&times;</span>
+            <h2>📝 Nieuwe Dagboek Entry</h2>
             
-            <form id="journal-form">
-                <div class="form-group">
-                    <label class="form-label">Activiteit/Techniek:</label>
-                    <input type="text" id="entry-technique" class="form-input" placeholder="Bijv. Buteyko oefening">
-                </div>
+            <div class="form-group">
+                <label for="entry-technique">Techniek gebruikt:</label>
+                <select class="form-control" id="entry-technique">
+                    <option value="Buteyko Ademhaling">Buteyko Ademhaling</option>
+                    <option value="4-7-8 Ademhaling">4-7-8 Ademhaling</option>
+                    <option value="EMDR">EMDR</option>
+                    <option value="Crisis Ademhaling">Crisis Ademhaling</option>
+                    <option value="Handmatige Entry">Handmatige Entry</option>
+                </select>
+            </div>
 
-                <div class="form-group">
-                    <label class="form-label">Trigger/Situatie:</label>
-                    <input type="text" id="entry-trigger" class="form-input" placeholder="Wat ging eraan vooraf?">
-                </div>
+            <div class="form-group">
+                <label for="entry-trigger">Trigger/Oorzaak:</label>
+                <input type="text" class="form-control" id="entry-trigger" placeholder="Wat triggerde de symptomen?">
+            </div>
 
-                <!-- Symptom Tracker -->
-                <div class="form-group">
-                    <label class="form-label">Symptomen (vink aan wat van toepassing is):</label>
-                    <div class="symptom-grid" id="symptom-tracker">
-                        <label class="symptom-card">
-                            <input type="checkbox" class="symptom-checkbox" data-symptom="luchthonger"> Luchthonger/Dyspnoe
-                        </label>
-                        <label class="symptom-card">
-                            <input type="checkbox" class="symptom-checkbox" data-symptom="maagklachten"> Maagklachten/Reflux
-                        </label>
-                        <label class="symptom-card">
-                            <input type="checkbox" class="symptom-checkbox" data-symptom="angst"> Angst/Onrust
-                        </label>
-                        <label class="symptom-card">
-                            <input type="checkbox" class="symptom-checkbox" data-symptom="duizeligheid"> Duizeligheid
-                        </label>
-                        <label class="symptom-card">
-                            <input type="checkbox" class="symptom-checkbox" data-symptom="hartkloppingen"> Hartkloppingen
-                        </label>
-                        <label class="symptom-card">
-                            <input type="checkbox" class="symptom-checkbox" data-symptom="tintelingen"> Tintelingen
-                        </label>
-                        <label class="symptom-card">
-                            <input type="checkbox" class="symptom-checkbox" data-symptom="gapen"> Gaap-neiging
-                        </label>
-                        <label class="symptom-card">
-                            <input type="checkbox" class="symptom-checkbox" data-symptom="concentratie"> Concentratieproblemen
-                        </label>
+            <div class="form-group">
+                <label for="entry-before">Intensiteit vóór (1-10):</label>
+                <div class="range-container">
+                    <input type="range" class="range-slider" id="entry-before" min="1" max="10" value="5" oninput="updateRangeValue('entry-before', 'before-value')">
+                    <div class="range-value" id="before-value">5</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="entry-after">Intensiteit na (1-10):</label>
+                <div class="range-container">
+                    <input type="range" class="range-slider" id="entry-after" min="1" max="10" value="5" oninput="updateRangeValue('entry-after', 'after-value')">
+                    <div class="range-value" id="after-value">5</div>
+                </div>
+            </div>
+
+            <div class="form-group" id="cp-score-group" style="display: none;">
+                <label for="entry-cp-score">CP Score (seconden):</label>
+                <input type="number" class="form-control" id="entry-cp-score" min="1" max="120">
+            </div>
+
+            <div class="form-group">
+                <label>Symptomen (selecteer van toepassing):</label>
+                <div class="symptom-checkbox-container">
+                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                        <input type="checkbox" class="symptom-checkbox" data-symptom="Kortademigheid">
+                        <label>Kortademigheid</label>
+                    </div>
+                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                        <input type="checkbox" class="symptom-checkbox" data-symptom="Maagpijn">
+                        <label>Maagpijn</label>
+                    </div>
+                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                        <input type="checkbox" class="symptom-checkbox" data-symptom="Hartkloppingen">
+                        <label>Hartkloppingen</label>
+                    </div>
+                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                        <input type="checkbox" class="symptom-checkbox" data-symptom="Duizeligheid">
+                        <label>Duizeligheid</label>
+                    </div>
+                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                        <input type="checkbox" class="symptom-checkbox" data-symptom="Tintelingen">
+                        <label>Tintelingen</label>
+                    </div>
+                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                        <input type="checkbox" class="symptom-checkbox" data-symptom="Angst">
+                        <label>Angst</label>
                     </div>
                 </div>
+            </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="form-group">
-                        <label class="form-label">Intensiteit vóór (1-10):</label>
-                        <div class="range-group">
-                            <input type="range" min="1" max="10" value="5" class="range-input" id="entry-before" 
-                                   oninput="document.getElementById('before-value').textContent = this.value">
-                            <div class="range-value" id="before-value">5</div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Intensiteit ná (1-10):</label>
-                        <div class="range-group">
-                            <input type="range" min="1" max="10" value="5" class="range-input" id="entry-after" 
-                                   oninput="document.getElementById('after-value').textContent = this.value">
-                            <div class="range-value" id="after-value">5</div>
-                        </div>
-                    </div>
-                </div>
+            <div class="form-group">
+                <label for="entry-result">Resultaat:</label>
+                <select class="form-control" id="entry-result">
+                    <option value="">Selecteer resultaat</option>
+                    <option value="Veel beter">Veel beter</option>
+                    <option value="Beter">Beter</option>
+                    <option value="Iets beter">Iets beter</option>
+                    <option value="Geen verandering">Geen verandering</option>
+                    <option value="Slechter">Slechter</option>
+                </select>
+            </div>
 
-                <div class="form-group" id="cp-score-group" style="display: none;">
-                    <label class="form-label">Controle Pauze Score (seconden):</label>
-                    <input type="number" id="entry-cp-score" class="form-input" placeholder="bijv. 25" min="1" max="300">
-                </div>
+            <div class="form-group">
+                <label for="entry-notes">Notities:</label>
+                <textarea class="form-control" id="entry-notes" placeholder="Extra opmerkingen..."></textarea>
+            </div>
 
-                <div class="form-group">
-                    <label class="form-label">Resultaat:</label>
-                    <select id="entry-result" class="form-select">
-                        <option value="">Selecteer resultaat...</option>
-                        <option value="zeer-goed">Zeer goed - volledig opgelost</option>
-                        <option value="goed">Goed - duidelijke verbetering</option>
-                        <option value="matig">Matig - kleine verbetering</option>
-                        <option value="geen-effect">Geen effect</option>
-                        <option value="slechter">Iets slechter</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Notities:</label>
-                    <textarea id="entry-notes" class="form-textarea" placeholder="Wat viel je op? Bijzonderheden?"></textarea>
-                </div>
-
-                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-                    <button type="button" class="btn btn-primary" onclick="saveJournalEntry()" style="flex: 1;">
-                        📁 Opslaan
-                    </button>
-                    <button type="button" class="btn btn-warning" onclick="closeJournalModal()" style="flex: 1;">
-                        Annuleren
-                    </button>
-                </div>
-            </form>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="saveJournalEntry()">💾 Opslaan</button>
+                <button class="btn btn-orange" onclick="closeJournalModal()">Annuleren</button>
+            </div>
         </div>
     </div>
 
-<script type="module">
-    // App State
-    let currentUser = null;
-    let currentTab = 'dashboard';
-    let allJournalEntries = [];
-    let currentChartFilter = 'last15';
-    let currentJournalFilter = 'recent';
-    let allCPMeasurements = [];
-    
-    // Buteyko state
-    let cpInterval = null;
-    let cpStartTime = 0;
-    let cpIsRunning = false;
-    let breathInterval = null;
-    let breathPhase = 'rest';
-    let breathCycle = 1;
-    let breathPhaseTime = 0;
-    let breathingPattern = 'standard';
-    let gentleBreathCount = 0;
-    
-    // Crisis state
-    let crisisInterval = null;
-    let crisisStep = 1;
-    let crisisTimeLeft = 60; // 1 minute per step
-    let crisisActive = false;
-    
-    // Gamification data
-    let userStats = {
-        totalSessions: 0,
-        streakDays: 0,
-        lastSessionDate: null,
-        cpMeasurements: [],
-        achievements: []
-    };
+    <footer style="text-align: center; padding: 2rem 1rem; color: rgba(255,255,255,0.8); font-size: 0.8rem;">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
+            <p style="margin: 0;">📞 In noodgevallen: contacteer altijd je huisarts of spoeddiensten</p>
+            
+            <!-- Firebase Status Indicator -->
+            <div style="display: flex; align-items: center; gap: 0.375rem;">
+                <div id="firebase-status-dot" class="status-disconnected" style="width: 8px; height: 8px; border-radius: 50%; transition: all 0.3s ease; opacity: 0.6;" title="Firebase verbinding status"></div>
+                <span style="font-size: 0.7rem; opacity: 0.7;">Status</span>
+            </div>
+        </div>
+        
+        <!-- Developer Credit -->
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+            <p style="margin: 0; font-size: 0.75rem; opacity: 0.8;">
+                Ontwikkeld door <strong>Thomas Van Troostenberghe</strong>
+            </p>
+        </div>
+    </footer>
 
-    // Firebase config (exact same credentials)
+<script type="module">
+    // Firebase configuration (exact same credentials)
     const firebaseConfig = {
         apiKey: "AIzaSyBwDkmbKOzZAyIZW7-ud4qYr7xHyILCdzI",
         authDomain: "ademruimte.vercel.app", 
@@ -1329,14 +1161,57 @@
         measurementId: "G-SD2ZEYNMNY"
     };
 
-    // Firebase modules
-    let app, auth, db;
+    // Global variables
+    let app, auth, db, currentUser = null;
+    let currentTab = 'dashboard';
+    let allJournalEntries = [];
+    let allCPMeasurements = [];
+    let progressChart = null;
 
-    // Initialize Firebase
+    // Breathing exercise variables
+    let breathInterval = null;
+    let breathPhase = 'rest';
+    let breathCycleCount = 0;
+    let breathingPattern = 'standard';
+    let isBreathing = false;
+
+    // CP measurement variables
+    let cpInterval = null;
+    let cpStartTime = 0;
+    let cpIsRunning = false;
+
+    // Crisis and EMDR variables
+    let crisisInterval = null;
+    let emdrInterval = null;
+    let isEMDRActive = false;
+
+    // User stats
+    let userStats = {
+        totalSessions: 0,
+        streakDays: 0,
+        lastSessionDate: null,
+        cpMeasurements: [],
+        achievements: []
+    };
+
+    // Tips array
+    const tips = [
+        "Maagklachten en ademhalingsproblemen zijn vaak verbonden via de nervus vagus - behandel ze samen voor betere resultaten.",
+        "Bij luchthonger: probeer paradoxale ademhaling - begin met zeer kleine, korte ademhalingen.",
+        "CO2 is niet giftig! Een hoger CO2-niveau in je bloed is juist gezond en kalmerend.",
+        "Buteyko ademhaling helpt je lichaam wennen aan hogere CO2 niveaus.",
+        "Een normale Control Pause is tussen de 20-40 seconden. Begin laag en bouw langzaam op.",
+        "Regelmatige CP metingen helpen je voortgang te volgen en patronen te herkennen."
+    ];
+
+    // ============================================
+    // FIREBASE INITIALIZATION & AUTH
+    // ============================================
+
     async function initFirebase() {
         try {
             const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
-            const { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider, getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            const { getAuth, onAuthStateChanged, signInWithRedirect, GoogleAuthProvider, getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
             const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
 
             app = initializeApp(firebaseConfig);
@@ -1358,112 +1233,75 @@
                 if (user) {
                     currentUser = user;
                     showMainApp();
-                    // Load all data when user logs in
-                    setTimeout(() => {
-                        loadJournalEntries();
-                        updateDashboard();
-                    }, 500);
+                    updateUserInfo();
+                    loadJournalEntries();
+                    updateDashboard();
+                    updateStatusIndicator('connected');
                 } else {
                     currentUser = null;
                     showLoginScreen();
+                    updateStatusIndicator('disconnected');
                 }
-                updateUserInfo();
             });
 
             return true;
         } catch (error) {
             console.error('Firebase initialization failed:', error);
-            showUserMessage('Firebase kon niet worden geladen. Controleer je internetverbinding.', 'danger');
+            updateStatusIndicator('error');
+            showUserMessage('Firebase kon niet worden geladen. Controleer je internetverbinding.', 'error');
             return false;
         }
     }
 
-    // Auth functions
-    window.signInWithGoogle = async function() {
-        try {
-            const { GoogleAuthProvider, signInWithRedirect } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
-            
-            const provider = new GoogleAuthProvider();
-            await signInWithRedirect(auth, provider);
-        } catch (error) {
-            console.error('Google sign-in failed:', error);
-            showUserMessage('Google inloggen mislukt: ' + error.message, 'danger');
-        }
-    };
-
-    async function signInWithEmail(email, password) {
-        try {
-            const { signInWithEmailAndPassword } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
-            await signInWithEmailAndPassword(auth, email, password);
-        } catch (error) {
-            console.error('Email sign-in failed:', error);
-            let message = 'Inloggen mislukt';
-            if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-                message = 'Geen account gevonden met deze gegevens';
-            } else if (error.code === 'auth/wrong-password') {
-                message = 'Verkeerd wachtwoord';
-            }
-            showUserMessage(message, 'danger');
-        }
-    }
-
-    window.logout = async function() {
-        try {
-            const { signOut } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
-            await signOut(auth);
-            showUserMessage('Succesvol uitgelogd!', 'success');
-        } catch (error) {
-            console.error('Logout failed:', error);
-            showUserMessage('Uitloggen mislukt: ' + error.message, 'danger');
-        }
-    };
-
-    // UI functions
-    function showLoginScreen() {
-        document.getElementById('login-screen').classList.remove('hidden');
-        document.getElementById('main-app').classList.add('hidden');
-    }
+    // ============================================
+    // UI STATE MANAGEMENT
+    // ============================================
 
     function showMainApp() {
-        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('auth-screen').classList.add('hidden');
+        document.getElementById('auth-loading').classList.add('hidden');
         document.getElementById('main-app').classList.remove('hidden');
+    }
+
+    function showLoginScreen() {
+        document.getElementById('main-app').classList.add('hidden');
+        document.getElementById('auth-loading').classList.add('hidden');
+        document.getElementById('auth-screen').classList.remove('hidden');
+    }
+
+    function showLoadingScreen() {
+        document.getElementById('main-app').classList.add('hidden');
+        document.getElementById('auth-screen').classList.add('hidden');
+        document.getElementById('auth-loading').classList.remove('hidden');
     }
 
     function updateUserInfo() {
         const userInfo = document.getElementById('user-info');
-        const greeting = document.getElementById('dashboard-greeting');
-        
         if (currentUser) {
-            const displayName = currentUser.displayName || currentUser.email;
-            userInfo.innerHTML = displayName.length > 15 ? displayName.substring(0, 13) + '...' : displayName;
+            const displayName = currentUser.displayName || 'Gebruiker';
+            const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase();
             
-            if (greeting) {
-                const firstName = currentUser.displayName ? currentUser.displayName.split(' ')[0] : 
-                                 currentUser.email.split('@')[0];
-                const hour = new Date().getHours();
-                const timeOfDay = hour < 12 ? 'Goedemorgen' : hour < 18 ? 'Goedemiddag' : 'Goedenavond';
-                greeting.textContent = `${timeOfDay}, ${firstName}!`;
-            }
+            userInfo.innerHTML = `
+                <div class="user-avatar">${initials}</div>
+                <span style="font-weight: 500;">${displayName}</span>
+                <button class="logout-btn" onclick="logout()">Uitloggen</button>
+            `;
         } else {
             userInfo.innerHTML = '<div class="spinner"></div>';
         }
     }
 
-    function showUserMessage(message, type = 'info') {
-        const existing = document.querySelector('.user-message');
-        if (existing) existing.remove();
-        
-        const messageEl = document.createElement('div');
-        messageEl.className = `user-message alert-${type}`;
-        messageEl.textContent = message;
-        document.body.appendChild(messageEl);
-        
-        setTimeout(() => {
-            if (messageEl.parentNode) messageEl.remove();
-        }, 5000);
+    function updateStatusIndicator(status) {
+        const dot = document.getElementById('firebase-status-dot');
+        if (dot) {
+            dot.className = `status-${status}`;
+        }
     }
 
-    // Tab management
+    // ============================================
+    // TAB NAVIGATION
+    // ============================================
+
     function showTab(tabName) {
         // Hide all tabs
         document.querySelectorAll('.tab-content').forEach(tab => {
@@ -1476,547 +1314,328 @@
         });
         
         // Show selected tab
-        const selectedTab = document.getElementById(tabName);
-        const selectedBtn = document.querySelector(`[data-tab="${tabName}"]`);
+        document.getElementById(tabName).classList.add('active');
         
-        if (selectedTab) selectedTab.classList.add('active');
-        if (selectedBtn) selectedBtn.classList.add('active');
+        // Add active to selected button
+        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
         
         currentTab = tabName;
         
-        // Load tab-specific content
+        // Load data based on tab
         if (tabName === 'dagboek') {
-            loadJournalEntries();
-        } else if (tabName === 'dashboard') {
-            updateDashboard();
-        } else if (tabName === 'buteyko') {
-            // Update CP progress when switching to Buteyko tab
-            updateCPProgress();
+            createProgressChart();
         }
     }
 
-    // Buteyko functions
-    window.startCP = function() {
+    // ============================================
+    // AUTHENTICATION
+    // ============================================
+
+    window.loginWithGoogle = async function() {
+        try {
+            const { GoogleAuthProvider, signInWithRedirect } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            const provider = new GoogleAuthProvider();
+            await signInWithRedirect(auth, provider);
+        } catch (error) {
+            console.error('Google login error:', error);
+            showUserMessage('Inloggen mislukt: ' + error.message, 'error');
+        }
+    };
+
+    window.logout = async function() {
+        try {
+            const { signOut } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            await signOut(auth);
+            showUserMessage('Je bent uitgelogd', 'info');
+        } catch (error) {
+            console.error('Logout error:', error);
+            showUserMessage('Uitloggen mislukt', 'error');
+        }
+    };
+
+    // ============================================
+    // BUTEYKO FUNCTIONS
+    // ============================================
+
+    window.startCPMeasurement = function() {
+        if (cpIsRunning) return;
+        
         cpStartTime = Date.now();
         cpIsRunning = true;
         
-        document.getElementById('cp-start-btn').style.display = 'none';
-        document.getElementById('cp-stop-btn').style.display = 'inline-block';
-        document.getElementById('cp-result').style.display = 'none';
+        document.getElementById('start-cp').disabled = true;
+        document.getElementById('stop-cp').disabled = false;
         
         cpInterval = setInterval(() => {
             const elapsed = Math.floor((Date.now() - cpStartTime) / 1000);
-            const minutes = Math.floor(elapsed / 60);
-            const seconds = elapsed % 60;
-            document.getElementById('cp-timer').textContent = 
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }, 100);
+            document.getElementById('cp-timer').textContent = elapsed.toString().padStart(2, '0');
+        }, 1000);
     };
 
-    window.stopCP = async function() {
+    window.stopCPMeasurement = function() {
         if (!cpIsRunning) return;
         
-        const finalTime = Math.floor((Date.now() - cpStartTime) / 1000);
-        cpIsRunning = false;
-        
         clearInterval(cpInterval);
+        const cpScore = Math.floor((Date.now() - cpStartTime) / 1000);
         
-        document.getElementById('cp-start-btn').style.display = 'inline-block';
-        document.getElementById('cp-stop-btn').style.display = 'none';
+        cpIsRunning = false;
+        document.getElementById('start-cp').disabled = false;
+        document.getElementById('stop-cp').disabled = true;
         
-        await displayCPResult(finalTime);
-        
-        // Store CP measurement locally
+        // Save CP measurement
         const cpMeasurement = {
-            score: finalTime,
+            score: cpScore,
             timestamp: new Date(),
             userId: currentUser?.uid,
             userEmail: currentUser?.email
         };
         
-        userStats.cpMeasurements.push(cpMeasurement);
         allCPMeasurements.push(cpMeasurement);
+        userStats.cpMeasurements.push(cpMeasurement);
         
-        // Try to save to Firebase (graceful failure if permissions missing)
+        // Save to Firebase
         if (currentUser) {
-            try {
-                const { addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
-                await addDoc(collection(db, "cpMeasurements"), cpMeasurement);
-                console.log('✅ CP measurement saved to Firebase');
-            } catch (error) {
-                console.warn('⚠️ CP measurement saved locally only:', error.message);
-                
-                if (error.message.includes('permission') || error.message.includes('Permission')) {
-                    // Don't show error message for permissions - just log it
-                    console.info('💡 Firebase permissions needed for CP measurement sync');
-                } else {
-                    showUserMessage('CP score opgeslagen lokaal (sync probleem)', 'warning');
-                }
-            }
+            saveCPMeasurement(cpMeasurement);
         }
         
-        // Set for journal entry
-        window.lastCPScore = finalTime;
-        
-        saveUserStats();
-        updateDashboard(); // This now includes CP trend update
-        updateCPProgress();
+        updateDashboard();
+        showUserMessage(`CP Score: ${cpScore} seconden geregistreerd!`, 'success');
     };
 
-    function updateCPProgress() {
-    try {
-        console.log('ℹ️ Updating CP progress display');
-        
-        // Check if we have CP related elements on the page
-        const cpProgressContainer = document.getElementById('cp-progress-container') || 
-                                   document.getElementById('cp-statistics') ||
-                                   document.getElementById('cp-dashboard-card');
-        
-        if (!cpProgressContainer) {
-            console.log('ℹ️ CP progress container not found - skipping update');
-            return;
-        }
-
-        // Get all CP measurements (combine allCPMeasurements and CP scores from journal entries)
-        let allCPData = [];
-        
-        // Add dedicated CP measurements if they exist
-        if (typeof allCPMeasurements !== 'undefined' && allCPMeasurements.length > 0) {
-            allCPData = [...allCPMeasurements];
-        }
-        
-        // Add CP scores from journal entries
-        if (typeof allJournalEntries !== 'undefined' && allJournalEntries.length > 0) {
-            const cpFromEntries = allJournalEntries
-                .filter(entry => entry.cpScore && entry.cpScore > 0)
-                .map(entry => ({
-                    score: entry.cpScore,
-                    timestamp: entry.timestamp,
-                    source: 'journal'
-                }));
-            allCPData = [...allCPData, ...cpFromEntries];
-        }
-
-        // Sort by timestamp (newest first)
-        allCPData.sort((a, b) => {
-            const dateA = new Date(a.timestamp);
-            const dateB = new Date(b.timestamp);
-            return dateB - dateA;
-        });
-
-        // Update CP statistics if elements exist
-        const lastCPElement = document.getElementById('last-cp');
-        const avgCPElement = document.getElementById('avg-cp');
-        const cpTrendElement = document.getElementById('cp-trend');
-
-        if (lastCPElement) {
-            const lastCP = allCPData.length > 0 ? allCPData[0].score : 0;
-            lastCPElement.textContent = lastCP > 0 ? lastCP + 's' : '-';
-        }
-
-        if (avgCPElement && allCPData.length > 0) {
-            const avgCP = Math.round(allCPData.slice(0, 10).reduce((sum, cp) => sum + cp.score, 0) / Math.min(allCPData.length, 10));
-            avgCPElement.textContent = avgCP + 's';
-        }
-
-        if (cpTrendElement && allCPData.length >= 2) {
-            const latest = allCPData[0].score;
-            const previous = allCPData[1].score;
-            const improvement = latest - previous;
-            
-            if (improvement > 0) {
-                cpTrendElement.innerHTML = '<span style="color: #10b981;">📈 +' + improvement + 's</span>';
-            } else if (improvement < 0) {
-                cpTrendElement.innerHTML = '<span style="color: #ef4444;">📉 ' + improvement + 's</span>';
-            } else {
-                cpTrendElement.innerHTML = '<span style="color: #6b7280;">➡️ Stabiel</span>';
-            }
-        }
-
-        console.log(`✅ CP progress updated with ${allCPData.length} measurements`);
-
-    } catch (error) {
-        console.error('❌ Error updating CP progress:', error);
-        // Non-critical error, don't throw
-    }
-}
-
-    window.resetCP = function() {
-        if (cpInterval) {
-            clearInterval(cpInterval);
-            cpInterval = null;
-        }
-        
+    window.resetCPMeasurement = function() {
+        clearInterval(cpInterval);
         cpIsRunning = false;
-        document.getElementById('cp-timer').textContent = '00:00';
-        document.getElementById('cp-start-btn').style.display = 'inline-block';
-        document.getElementById('cp-stop-btn').style.display = 'none';
-        document.getElementById('cp-result').style.display = 'none';
         
-        window.lastCPScore = null;
+        document.getElementById('cp-timer').textContent = '00';
+        document.getElementById('start-cp').disabled = false;
+        document.getElementById('stop-cp').disabled = true;
     };
 
-    async function displayCPResult(seconds) {
-        const scoreEl = document.getElementById('cp-score');
-        const interpretationEl = document.getElementById('cp-interpretation');
-        const progressIndicator = document.getElementById('cp-progress-indicator');
-        
-        scoreEl.textContent = `${seconds} seconden`;
-        
-        let interpretation;
-        if (seconds < 10) {
-            interpretation = 'Zeer lage CO2 tolerantie. Regelmatige oefening wordt sterk aangeraden.';
-        } else if (seconds < 20) {
-            interpretation = 'Lage CO2 tolerantie. Meer oefening kan dit verbeteren.';
-        } else if (seconds < 40) {
-            interpretation = 'Gemiddelde CO2 tolerantie. Doorgaan met oefenen kan dit verbeteren.';
-        } else if (seconds < 60) {
-            interpretation = 'Goede CO2 tolerantie. Houd dit niveau vast met regelmatige oefening.';
-        } else {
-            interpretation = 'Uitstekende CO2 tolerantie! Dit is een zeer goede score.';
+    async function saveCPMeasurement(measurement) {
+        try {
+            const { addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+            await addDoc(collection(db, "cpMeasurements"), measurement);
+        } catch (error) {
+            console.error('Save CP error:', error);
         }
-        
-        interpretationEl.textContent = interpretation;
-        
-        // Show progress compared to previous measurement
-        const recentCPMeasurements = [...userStats.cpMeasurements, ...allCPMeasurements]
-            .filter(cp => cp.score !== undefined)
-            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        
-        if (recentCPMeasurements.length > 1) {
-            const previousScore = recentCPMeasurements[1].score;
-            const improvement = seconds - previousScore;
-            
-            if (improvement > 0) {
-                progressIndicator.innerHTML = `📈 <strong>Vooruitgang:</strong> +${improvement}s ten opzichte van vorige meting`;
-                progressIndicator.style.color = 'var(--success-color)';
-            } else if (improvement < 0) {
-                progressIndicator.innerHTML = `📉 <strong>Verschil:</strong> ${improvement}s ten opzichte van vorige meting`;
-                progressIndicator.style.color = 'var(--warning-color)';
-            } else {
-                progressIndicator.innerHTML = `➡️ <strong>Stabiel:</strong> Zelfde score als vorige meting`;
-                progressIndicator.style.color = 'var(--text-light)';
-            }
-        } else {
-            progressIndicator.innerHTML = `🎯 <strong>Eerste meting:</strong> Dit vormt je baseline voor toekomstige vergelijking`;
-            progressIndicator.style.color = 'var(--primary-color)';
-        }
-        
-        document.getElementById('cp-result').style.display = 'block';
-        
-        showUserMessage(`CP Meting voltooid: ${seconds} seconden!`, 'success');
     }
 
-    // Breathing exercise
-    function updateBreathingPattern() {
+    // ============================================
+    // BREATHING EXERCISES
+    // ============================================
+
+    const breathingPatterns = {
+        standard: { inhale: 4, hold: 7, exhale: 8 },
+        gentle: { inhale: 3, hold: 4, exhale: 5 },
+        advanced: { inhale: 6, hold: 8, exhale: 10 }
+    };
+
+    window.updateBreathingPattern = function() {
         breathingPattern = document.getElementById('breathing-pattern').value;
-        const explanation = document.getElementById('pattern-explanation');
-        
-        if (breathingPattern === 'gentle') {
-            explanation.innerHTML = '<strong>Zachte Ademhaling:</strong> 2 zeer zachte ademhalingen (elk ~5 sec) gevolgd door een pauze (4 sec)';
-        } else {
-            explanation.innerHTML = '<strong>Standaard patroon:</strong> 4 seconden inademen, 6 seconden uitademen, 3 seconden pauze';
-        }
-        
-        // Reset if currently breathing
-        if (breathInterval) {
-            resetBreathing();
-        }
-    }
+    };
 
-    function toggleBreathing() {
-        if (breathInterval) {
-            stopBreathing();
-        } else {
-            startBreathing();
-        }
-    }
+    window.startBreathing = function() {
+        if (isBreathing) return;
+        
+        isBreathing = true;
+        breathCycleCount = 0;
+        breathPhase = 'prepare';
+        
+        const circle = document.getElementById('breathing-circle');
+        const pattern = breathingPatterns[breathingPattern];
+        
+        document.getElementById('start-breathing').disabled = true;
+        document.getElementById('stop-breathing').disabled = false;
+        
+        // Preparation phase
+        circle.textContent = "Bereid je voor...";
+        circle.className = "breathing-circle";
+        
+        setTimeout(() => {
+            if (!isBreathing) return;
+            startBreathingCycle(pattern);
+        }, 2000);
+    };
 
-    function startBreathing() {
-        breathCycle = 1;
-        gentleBreathCount = 0;
+    function startBreathingCycle(pattern) {
+        if (!isBreathing) return;
         
-        if (breathingPattern === 'gentle') {
-            breathPhase = 'gentle-breath';
-        } else {
-            breathPhase = 'inhale';
-        }
-        
-        breathPhaseTime = 0;
-        
-        document.getElementById('breath-btn').innerHTML = '⏸️ Stop Oefening';
-        document.getElementById('breath-btn').className = 'btn btn-danger';
+        const circle = document.getElementById('breathing-circle');
+        let phaseTime = 0;
+        let currentPhase = 'inhale';
         
         breathInterval = setInterval(() => {
-            if (breathingPattern === 'gentle') {
-                updateGentleBreathCycle();
-            } else {
-                updateStandardBreathCycle();
-            }
-        }, 100);
-    }
-
-    function stopBreathing() {
-        if (breathInterval) {
-            clearInterval(breathInterval);
-            breathInterval = null;
-        }
-        
-        document.getElementById('breath-btn').innerHTML = '▶️ Start Oefening';
-        document.getElementById('breath-btn').className = 'btn btn-cyan';
-        document.getElementById('breath-display').className = 'breath-display rest';
-        document.getElementById('breath-display').textContent = 'Klik op start om te beginnen';
-        document.getElementById('breath-progress').style.width = '0%';
-    }
-
-    function updateStandardBreathCycle() {
-        const inhaleDuration = 4;
-        const exhaleDuration = 6;
-        const holdDuration = 3;
-        
-        breathPhaseTime += 0.1;
-        
-        let progress = 0;
-        const display = document.getElementById('breath-display');
-        
-        if (breathPhase === 'inhale') {
-            progress = (breathPhaseTime / inhaleDuration) * 100;
-            display.className = 'breath-display inhale';
-            display.textContent = '🌬️ Inademen';
-            if (breathPhaseTime >= inhaleDuration) {
-                breathPhase = 'exhale';
-                breathPhaseTime = 0;
-            }
-        } else if (breathPhase === 'exhale') {
-            progress = (breathPhaseTime / exhaleDuration) * 100;
-            display.className = 'breath-display exhale';
-            display.textContent = '💨 Uitademen';
-            if (breathPhaseTime >= exhaleDuration) {
-                breathPhase = 'hold';
-                breathPhaseTime = 0;
-            }
-        } else if (breathPhase === 'hold') {
-            progress = (breathPhaseTime / holdDuration) * 100;
-            display.className = 'breath-display hold';
-            display.textContent = '⏸️ Pauze';
-            if (breathPhaseTime >= holdDuration) {
-                breathPhase = 'inhale';
-                breathPhaseTime = 0;
-                breathCycle++;
-                document.getElementById('breath-counter').textContent = `Cyclus: ${breathCycle}/20`;
-                
-                if (breathCycle > 20) {
-                    stopBreathing();
-                    document.getElementById('breath-complete').style.display = 'block';
-                    userStats.totalSessions++;
-                    updateStreak();
-                    saveUserStats();
-                    updateDashboard();
-                    showUserMessage('Buteyko sessie voltooid! 🎉', 'success');
-                    return;
-                }
-            }
-        }
-        
-        document.getElementById('breath-progress').style.width = Math.min(progress, 100) + '%';
-    }
-
-    function updateGentleBreathCycle() {
-        const breathDuration = 5; // Each gentle breath is ~5 seconds
-        const pauseDuration = 4;  // Pause between cycles
-        
-        breathPhaseTime += 0.1;
-        
-        let progress = 0;
-        const display = document.getElementById('breath-display');
-        
-        if (breathPhase === 'gentle-breath') {
-            progress = (breathPhaseTime / breathDuration) * 100;
-            display.className = 'breath-display inhale';
-            display.textContent = `🌬️ Zachte Ademhaling ${gentleBreathCount + 1}/2`;
+            if (!isBreathing) return;
             
-            if (breathPhaseTime >= breathDuration) {
-                gentleBreathCount++;
-                breathPhaseTime = 0;
-                
-                if (gentleBreathCount >= 2) {
-                    // Move to pause after 2 breaths
-                    breathPhase = 'hold';
-                    gentleBreathCount = 0;
-                } else {
-                    // Continue with next gentle breath
-                    breathPhase = 'gentle-breath';
-                }
-            }
-        } else if (breathPhase === 'hold') {
-            progress = (breathPhaseTime / pauseDuration) * 100;
-            display.className = 'breath-display hold';
-            display.textContent = '⏸️ Pauze';
+            phaseTime++;
             
-            if (breathPhaseTime >= pauseDuration) {
-                breathPhase = 'gentle-breath';
-                breathPhaseTime = 0;
-                breathCycle++;
-                document.getElementById('breath-counter').textContent = `Cyclus: ${breathCycle}/20`;
-                
-                if (breathCycle > 20) {
-                    stopBreathing();
-                    document.getElementById('breath-complete').style.display = 'block';
-                    userStats.totalSessions++;
-                    updateStreak();
-                    saveUserStats();
-                    updateDashboard();
-                    showUserMessage('Zachte Buteyko sessie voltooid! 🎉', 'success');
-                    return;
-                }
+            switch(currentPhase) {
+                case 'inhale':
+                    circle.textContent = `Inademen (${phaseTime})`;
+                    circle.className = "breathing-circle inhale";
+                    document.getElementById('current-phase').textContent = 'Inademen';
+                    
+                    if (phaseTime >= pattern.inhale) {
+                        phaseTime = 0;
+                        currentPhase = 'hold';
+                    }
+                    break;
+                    
+                case 'hold':
+                    circle.textContent = `Vasthouden (${phaseTime})`;
+                    circle.className = "breathing-circle hold";
+                    document.getElementById('current-phase').textContent = 'Vasthouden';
+                    
+                    if (phaseTime >= pattern.hold) {
+                        phaseTime = 0;
+                        currentPhase = 'exhale';
+                    }
+                    break;
+                    
+                case 'exhale':
+                    circle.textContent = `Uitademen (${phaseTime})`;
+                    circle.className = "breathing-circle exhale";
+                    document.getElementById('current-phase').textContent = 'Uitademen';
+                    
+                    if (phaseTime >= pattern.exhale) {
+                        phaseTime = 0;
+                        currentPhase = 'inhale';
+                        breathCycleCount++;
+                        document.getElementById('cycle-count').textContent = breathCycleCount;
+                        
+                        if (breathCycleCount >= 10) {
+                            stopBreathing();
+                            return;
+                        }
+                    }
+                    break;
             }
+        }, 1000);
+    }
+
+    window.stopBreathing = function() {
+        isBreathing = false;
+        clearInterval(breathInterval);
+        
+        const circle = document.getElementById('breathing-circle');
+        circle.textContent = "Goed gedaan!";
+        circle.className = "breathing-circle";
+        
+        document.getElementById('start-breathing').disabled = false;
+        document.getElementById('stop-breathing').disabled = true;
+        document.getElementById('current-phase').textContent = 'Voltooid';
+        
+        // Update stats
+        userStats.totalSessions++;
+        updateStreak();
+        
+        // Auto-open journal modal if session completed
+        if (breathCycleCount >= 10) {
+            setTimeout(() => {
+                openJournalModal('Buteyko Ademhaling');
+            }, 1000);
         }
         
-        document.getElementById('breath-progress').style.width = Math.min(progress, 100) + '%';
-    }
+        updateDashboard();
+    };
 
-    function resetBreathing() {
-        stopBreathing();
-        breathCycle = 1;
-        gentleBreathCount = 0;
-        breathPhase = breathingPattern === 'gentle' ? 'gentle-breath' : 'inhale';
-        document.getElementById('breath-counter').textContent = 'Cyclus: 1/20';
-        document.getElementById('breath-complete').style.display = 'none';
-    }
+    // ============================================
+    // CRISIS HELP FUNCTIONS
+    // ============================================
 
-    function completeBreathing() {
-        document.getElementById('breath-complete').style.display = 'none';
-        resetBreathing();
-    }
-
-    // Chart filter functionality
-    function updateChartFilter(filter) {
-        currentChartFilter = filter;
+    window.startCrisisBreathing = function() {
+        document.getElementById('crisis-breathing').classList.remove('hidden');
+        document.getElementById('emdr-container').classList.add('hidden');
         
-        // Update button states
-        document.querySelectorAll('.btn-chart-filter').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        
-        if (filter === 'last15') {
-            document.getElementById('chart-filter-15').classList.add('active');
-        } else if (filter === 'last30') {
-            document.getElementById('chart-filter-30').classList.add('active');
-        } else if (filter === 'all') {
-            document.getElementById('chart-filter-all').classList.add('active');
-        }
-        
-        // Recreate chart with new filter
-        if (allJournalEntries.length > 0) {
-            createProgressChart();
-        }
-    }
-
-    // Crisis protocol
-    window.startCrisis = function() {
-        crisisActive = true;
-        crisisStep = 1;
-        crisisTimeLeft = 60;
-        
-        document.getElementById('crisis-start-btn').style.display = 'none';
-        document.getElementById('crisis-stop-btn').style.display = 'inline-block';
-        document.getElementById('crisis-timer').style.display = 'block';
-        document.getElementById('crisis-progress-bar').style.display = 'block';
-        
-        updateCrisisStep();
+        const circle = document.getElementById('crisis-circle');
+        let phase = 'inhale';
+        let count = 0;
         
         crisisInterval = setInterval(() => {
-            crisisTimeLeft--;
-            updateCrisisTimer();
+            count++;
             
-            if (crisisTimeLeft <= 0) {
-                if (crisisStep < 5) {
-                    crisisStep++;
-                    crisisTimeLeft = 60;
-                    updateCrisisStep();
-                } else {
-                    stopCrisis();
-                    document.getElementById('crisis-complete').style.display = 'block';
-                    showUserMessage('Crisis protocol voltooid! 💪', 'success');
+            if (phase === 'inhale') {
+                circle.textContent = `Adem langzaam in (${count})`;
+                circle.className = "breathing-circle inhale";
+                
+                if (count >= 4) {
+                    count = 0;
+                    phase = 'exhale';
+                }
+            } else {
+                circle.textContent = `Adem langzaam uit (${count})`;
+                circle.className = "breathing-circle exhale";
+                
+                if (count >= 6) {
+                    count = 0;
+                    phase = 'inhale';
                 }
             }
         }, 1000);
     };
 
-    window.stopCrisis = function() {
-        crisisActive = false;
+    window.stopCrisisBreathing = function() {
+        clearInterval(crisisInterval);
+        document.getElementById('crisis-breathing').classList.add('hidden');
         
-        if (crisisInterval) {
-            clearInterval(crisisInterval);
-            crisisInterval = null;
-        }
-        
-        document.getElementById('crisis-start-btn').style.display = 'inline-block';
-        document.getElementById('crisis-stop-btn').style.display = 'none';
-        document.getElementById('crisis-timer').style.display = 'none';
-        document.getElementById('crisis-progress-bar').style.display = 'none';
-        
-        // Reset all steps
-        document.querySelectorAll('.crisis-step').forEach(step => {
-            step.classList.remove('active');
-        });
-        
-        // Track session
-        userStats.totalSessions++;
-        updateStreak();
-        saveUserStats();
-        updateDashboard();
+        // Auto-open journal modal
+        setTimeout(() => {
+            openJournalModal('Crisis Ademhaling');
+        }, 500);
     };
 
-    function updateCrisisStep() {
-        document.querySelectorAll('.crisis-step').forEach(step => {
-            step.classList.remove('active');
-        });
-        
-        const activeStep = document.querySelector(`.crisis-step[data-step="${crisisStep}"]`);
-        if (activeStep) {
-            activeStep.classList.add('active');
-            activeStep.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-        
-        const progress = ((crisisStep - 1) / 5) * 100 + (crisisStep <= 5 ? ((60 - crisisTimeLeft) / 60) * 20 : 0);
-        document.getElementById('crisis-progress').style.width = progress + '%';
-    }
+    // ============================================
+    // EMDR FUNCTIONS
+    // ============================================
 
-    function updateCrisisTimer() {
-        const minutes = Math.floor(crisisTimeLeft / 60);
-        const seconds = crisisTimeLeft % 60;
-        document.getElementById('crisis-timer').textContent = 
-            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    window.startEMDR = function() {
+        document.getElementById('emdr-container').classList.remove('hidden');
+        document.getElementById('crisis-breathing').classList.add('hidden');
         
-        updateCrisisStep();
-    }
+        isEMDRActive = true;
+        const dot = document.getElementById('emdr-dot');
+        let position = 0;
+        let direction = 1;
+        
+        emdrInterval = setInterval(() => {
+            position += direction * 5;
+            
+            if (position >= 90) {
+                direction = -1;
+            } else if (position <= 0) {
+                direction = 1;
+            }
+            
+            dot.style.left = position + '%';
+        }, 100);
+    };
 
-    // Journal functions
+    window.stopEMDR = function() {
+        isEMDRActive = false;
+        clearInterval(emdrInterval);
+        document.getElementById('emdr-container').classList.add('hidden');
+        
+        // Auto-open journal modal
+        setTimeout(() => {
+            openJournalModal('EMDR');
+        }, 500);
+    };
+
+    // ============================================
+    // JOURNAL FUNCTIONS
+    // ============================================
+
     window.openJournalModal = function(technique = '') {
-        document.getElementById('journal-modal').style.display = 'flex';
+        document.getElementById('journal-modal').style.display = 'block';
         
-        // Pre-fill technique if provided
         if (technique) {
             document.getElementById('entry-technique').value = technique;
             
             // Show CP score field for Buteyko
-            if (technique.includes('Buteyko') && window.lastCPScore) {
+            if (technique === 'Buteyko Ademhaling') {
                 document.getElementById('cp-score-group').style.display = 'block';
-                document.getElementById('entry-cp-score').value = window.lastCPScore;
-            }
-            
-            // Pre-set reasonable values for completed exercises
-            if (technique.includes('Buteyko') || technique.includes('Crisis')) {
-                document.getElementById('entry-before').value = 7;
-                document.getElementById('before-value').textContent = '7';
-                document.getElementById('entry-after').value = 3;
-                document.getElementById('after-value').textContent = '3';
             }
         }
-        
-        // Reset form
-        document.getElementById('entry-result').value = '';
         
         // Focus first input
         setTimeout(() => {
@@ -2028,9 +1647,15 @@
         document.getElementById('journal-modal').style.display = 'none';
         
         // Reset form
-        document.getElementById('journal-form').reset();
+        document.getElementById('entry-technique').selectedIndex = 0;
+        document.getElementById('entry-trigger').value = '';
+        document.getElementById('entry-before').value = '5';
+        document.getElementById('entry-after').value = '5';
         document.getElementById('before-value').textContent = '5';
         document.getElementById('after-value').textContent = '5';
+        document.getElementById('entry-result').selectedIndex = 0;
+        document.getElementById('entry-notes').value = '';
+        document.getElementById('entry-cp-score').value = '';
         document.getElementById('cp-score-group').style.display = 'none';
         
         // Reset symptom checkboxes
@@ -2047,7 +1672,7 @@
                                 .map(cb => cb.dataset.symptom);
             
             const entry = {
-                techniekGebruikt: document.getElementById('entry-technique').value || 'Handmatige Entry',
+                techniekGebruikt: document.getElementById('entry-technique').value,
                 trigger: document.getElementById('entry-trigger').value,
                 symptomen: symptoms,
                 intensiteitVoor: parseInt(document.getElementById('entry-before').value),
@@ -2055,8 +1680,8 @@
                 resultaat: document.getElementById('entry-result').value,
                 notities: document.getElementById('entry-notes').value,
                 timestamp: new Date(),
-                userId: currentUser.uid,
-                userEmail: currentUser.email
+                userId: currentUser?.uid,
+                userEmail: currentUser?.email
             };
 
             // Add CP score if available
@@ -2070,19 +1695,25 @@
                 return;
             }
 
-            // Save to Firestore
-            const { addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
-            await addDoc(collection(db, "dagboekEntries"), entry);
+            // Add to local array
+            allJournalEntries.unshift(entry);
+            
+            // Save to Firebase
+            if (currentUser) {
+                const { addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+                await addDoc(collection(db, "dagboekEntries"), entry);
+            }
             
             closeJournalModal();
-            loadJournalEntries();
+            displayJournalEntries();
             updateDashboard();
+            generateInsights();
             
             showUserMessage('✅ Dagboek entry opgeslagen!', 'success');
             
         } catch (error) {
             console.error('Save error:', error);
-            showUserMessage('❌ Opslaan mislukt: ' + error.message, 'danger');
+            showUserMessage('❌ Opslaan mislukt: ' + error.message, 'error');
         }
     };
 
@@ -2090,13 +1721,9 @@
         if (!currentUser) return;
         
         try {
-            console.log('🔍 Loading journal entries for user:', currentUser.uid);
-            console.log('🔍 User email:', currentUser.email);
-            console.log('🔍 User display name:', currentUser.displayName);
-            
             const { getDocs, collection, query, where, orderBy } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
             
-            // First try: Load journal entries with orderBy
+            // Load journal entries
             try {
                 const journalQuery = query(
                     collection(db, "dagboekEntries"),
@@ -2109,25 +1736,14 @@
                 
                 journalSnapshot.forEach((doc) => {
                     const data = doc.data();
-                    console.log('📝 Found journal entry:', {
-                        id: doc.id,
-                        technique: data.techniekGebruikt,
-                        timestamp: data.timestamp,
-                        userId: data.userId
-                    });
                     allJournalEntries.push({
                         id: doc.id,
                         ...data,
-                        timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
+                        timestamp: data.timestamp?.toDate() || new Date()
                     });
                 });
-
-                console.log(`✅ Loaded ${allJournalEntries.length} journal entries with orderBy`);
-                
-            } catch (orderByError) {
-                console.warn('⚠️ OrderBy failed, trying without orderBy:', orderByError.message);
-                
-                // Fallback: Try without orderBy (in case of index issues)
+            } catch (orderError) {
+                // Fallback without orderBy
                 const simpleQuery = query(
                     collection(db, "dagboekEntries"),
                     where("userId", "==", currentUser.uid)
@@ -2138,83 +1754,18 @@
                 
                 simpleSnapshot.forEach((doc) => {
                     const data = doc.data();
-                    console.log('📝 Found journal entry (simple):', {
-                        id: doc.id,
-                        technique: data.techniekGebruikt,
-                        timestamp: data.timestamp,
-                        userId: data.userId
-                    });
                     allJournalEntries.push({
                         id: doc.id,
                         ...data,
-                        timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
+                        timestamp: data.timestamp?.toDate() || new Date()
                     });
                 });
                 
-                // Sort manually by timestamp
+                // Sort manually
                 allJournalEntries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                
-                console.log(`✅ Loaded ${allJournalEntries.length} journal entries without orderBy`);
             }
 
-            // If still no entries, try alternative user ID strategies
-            if (allJournalEntries.length === 0) {
-                console.log('🔍 No entries found with current userId, trying alternative queries...');
-                
-                // Try with email as userId (in case old entries used email)
-                try {
-                    const emailQuery = query(
-                        collection(db, "dagboekEntries"),
-                        where("userId", "==", currentUser.email)
-                    );
-                    
-                    const emailSnapshot = await getDocs(emailQuery);
-                    emailSnapshot.forEach((doc) => {
-                        const data = doc.data();
-                        console.log('📧 Found entry with email userId:', doc.id);
-                        allJournalEntries.push({
-                            id: doc.id,
-                            ...data,
-                            timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
-                        });
-                    });
-                    
-                    if (allJournalEntries.length > 0) {
-                        console.log(`✅ Found ${allJournalEntries.length} entries using email as userId`);
-                    }
-                } catch (emailError) {
-                    console.log('Email query failed:', emailError.message);
-                }
-                
-                // Try with userEmail field
-                if (allJournalEntries.length === 0) {
-                    try {
-                        const userEmailQuery = query(
-                            collection(db, "dagboekEntries"),
-                            where("userEmail", "==", currentUser.email)
-                        );
-                        
-                        const userEmailSnapshot = await getDocs(userEmailQuery);
-                        userEmailSnapshot.forEach((doc) => {
-                            const data = doc.data();
-                            console.log('📧 Found entry with userEmail field:', doc.id);
-                            allJournalEntries.push({
-                                id: doc.id,
-                                ...data,
-                                timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
-                            });
-                        });
-                        
-                        if (allJournalEntries.length > 0) {
-                            console.log(`✅ Found ${allJournalEntries.length} entries using userEmail field`);
-                        }
-                    } catch (userEmailError) {
-                        console.log('UserEmail query failed:', userEmailError.message);
-                    }
-                }
-            }
-
-            // Load CP measurements (with better error handling for permissions)
+            // Load CP measurements
             try {
                 const cpQuery = query(
                     collection(db, "cpMeasurements"),
@@ -2230,710 +1781,131 @@
                     allCPMeasurements.push({
                         id: doc.id,
                         ...data,
-                        timestamp: data.timestamp ? data.timestamp.toDate() : new Date()
+                        timestamp: data.timestamp?.toDate() || new Date()
                     });
                 });
-
-                console.log(`✅ Loaded ${allCPMeasurements.length} CP measurements from Firebase`);
             } catch (cpError) {
-                console.warn('⚠️ CP measurements not accessible:', cpError.message);
+                console.warn('CP measurements loading failed:', cpError);
                 allCPMeasurements = [];
-                
-                if (cpError.message.includes('permission') || cpError.message.includes('Permission')) {
-                    console.info('💡 CP measurements will be stored locally only until Firebase permissions are configured');
-                    showUserMessage('CP metingen worden lokaal opgeslagen (Firebase configuratie nodig)', 'info');
-                } else {
-                    console.error('Unexpected CP error:', cpError);
-                }
             }
             
-            populateJournalFilter();
             displayJournalEntries();
             generateInsights();
             createProgressChart();
-            updateCPProgress();
             
         } catch (error) {
-            console.error('❌ Load entries failed:', error);
-            showUserMessage('❌ Laden van entries mislukt: ' + error.message, 'danger');
-            
-            // Show debugging info for troubleshooting
-            document.getElementById('journal-entries').innerHTML = `
-                <div class="card">
-                    <h3>🔧 Debugging Informatie</h3>
-                    <p><strong>Error:</strong> ${error.message}</p>
-                    <p><strong>User ID:</strong> ${currentUser?.uid}</p>
-                    <p><strong>Email:</strong> ${currentUser?.email}</p>
-                    
-                    <div style="margin: 1rem 0;">
-                        <button class="btn btn-primary" onclick="loadJournalEntries()">
-                            🔄 Opnieuw proberen
-                        </button>
-                        <button class="btn btn-warning" onclick="debugFirebaseData()">
-                            🔍 Debug Firebase Data
-                        </button>
-                    </div>
-                </div>
-            `;
+            console.error('Load entries failed:', error);
+            showUserMessage('❌ Laden van entries mislukt: ' + error.message, 'error');
         }
     }
-    function populateJournalFilter() {
-    try {
-        const filterSelect = document.getElementById('journal-filter');
-        if (!filterSelect) {
-            console.log('ℹ️ Journal filter element not found');
-            return;
-        }
-
-        // Only add month options if we have entries
-        if (!allJournalEntries || allJournalEntries.length === 0) {
-            console.log('ℹ️ No entries available for filter population');
-            return;
-        }
-
-        // Get existing options to avoid duplicates
-        const existingOptions = Array.from(filterSelect.options).map(opt => opt.value);
-
-        // Extract unique months from entries
-        const monthsSet = new Set();
-        allJournalEntries.forEach(entry => {
-            if (entry.timestamp) {
-                const date = entry.timestamp instanceof Date ? entry.timestamp : new Date(entry.timestamp);
-                if (!isNaN(date.getTime())) {  // Valid date check
-                    const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
-                    const monthLabel = date.toLocaleDateString('nl-BE', { year: 'numeric', month: 'long' });
-                    monthsSet.add(JSON.stringify({ key: monthKey, label: monthLabel, timestamp: date.getTime() }));
-                }
-            }
-        });
-
-        // Convert Set back to array and sort by timestamp (newest first)
-        const monthsArray = Array.from(monthsSet)
-            .map(str => JSON.parse(str))
-            .sort((a, b) => b.timestamp - a.timestamp);
-
-        // Add new month options
-        monthsArray.forEach(month => {
-            if (!existingOptions.includes(month.key)) {
-                const option = document.createElement('option');
-                option.value = month.key;
-                option.textContent = month.label;
-                filterSelect.appendChild(option);
-            }
-        });
-
-        console.log(`✅ Populated journal filter with ${monthsArray.length} month options`);
-
-    } catch (error) {
-        console.error('❌ Error in populateJournalFilter:', error);
-        // Don't throw - this is non-critical
-    }
-}
 
     function displayJournalEntries() {
         const container = document.getElementById('journal-entries');
         
-        console.log(`Displaying entries. Total: ${allJournalEntries.length}, Filter: ${currentJournalFilter}`);
-        
-        if (!allJournalEntries.length) {
+        if (allJournalEntries.length === 0) {
             container.innerHTML = `
-                <div class="card">
-                    <h3>Nog geen entries</h3>
-                    <p>Maak een dagboekentry na het gebruiken van oefeningen om patronen bij te houden.</p>
-                    <button class="btn btn-primary" onclick="openJournalModal('Eerste Entry')">
-                        Maak je eerste entry
-                    </button>
+                <div style="text-align: center; color: var(--text-light); margin: 2rem 0;">
+                    <p>Nog geen dagboek entries. Begin met je eerste oefening!</p>
                 </div>
             `;
             return;
         }
+
+        // Group entries by month for display
+        const entriesByMonth = {};
+        allJournalEntries.forEach(entry => {
+            const monthKey = entry.timestamp.toLocaleDateString('nl-BE', { 
+                year: 'numeric', 
+                month: 'long' 
+            });
+            
+            if (!entriesByMonth[monthKey]) {
+                entriesByMonth[monthKey] = [];
+            }
+            entriesByMonth[monthKey].push(entry);
+        });
+
+        let html = '';
         
-// Apply current filter
-let filteredEntries = [];
-if (currentJournalFilter === 'all') {
-    filteredEntries = allJournalEntries;
-} else if (currentJournalFilter === 'recent') {
-    filteredEntries = allJournalEntries.slice(0, 10);
-} else if (currentJournalFilter === 'month') {
-    // This month only
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-    filteredEntries = allJournalEntries.filter(entry => {
-        const entryDate = new Date(entry.timestamp || entry.clientTimestamp || 0);
-        return entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
-    });
-} else {
-    // Default to recent if unknown filter
-    filteredEntries = allJournalEntries.slice(0, 10);
-}   
-        console.log(`Filtered entries: ${filteredEntries.length}`);
-        
-        if (!filteredEntries.length) {
-            container.innerHTML = `
-                <div class="card">
-                    <h3>Geen entries voor deze periode</h3>
-                    <p>Selecteer een andere periode of maak nieuwe entries.</p>
-                </div>
-            `;
-            return;
-        }
-        
-        let html = `<div class="card"><h3>📝 ${filteredEntries.length} ${filteredEntries.length === 1 ? 'Entry' : 'Entries'}</h3>`;
-        
-        filteredEntries.forEach(entry => {
-            const improvement = entry.intensiteitVoor - entry.intensiteitNa;
-            const improvementClass = improvement > 0 ? 'success' : improvement < 0 ? 'danger' : 'warning';
-            const improvementText = improvement > 0 ? `↗️ +${improvement}` : improvement < 0 ? `↘️ ${improvement}` : '➡️ 0';
+        Object.keys(entriesByMonth).forEach(month => {
+            const entries = entriesByMonth[month];
             
             html += `
-                <div style="background: white; border-left: 4px solid var(--primary-color); 
-                           border-radius: 0.5rem; padding: 1.5rem; margin: 1rem 0; box-shadow: var(--shadow);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                        <strong style="color: var(--primary-color);">${entry.techniekGebruikt}</strong>
-                        <small style="color: var(--text-light);">${entry.timestamp.toLocaleDateString('nl-BE')} ${entry.timestamp.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })}</small>
-                    </div>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 0.75rem; font-size: 0.9rem;">
-                        <div>Vóór: <strong>${entry.intensiteitVoor}/10</strong></div>
-                        <div>Ná: <strong>${entry.intensiteitNa}/10</strong></div>
-                        <div class="alert-${improvementClass}" style="padding: 0.25rem 0.5rem; border-radius: 0.25rem; text-align: center; border: 1px solid;">
-                            ${improvementText}
+                <div class="card">
+                    <h3>📅 ${month}</h3>
+                    <div style="display: grid; gap: 1rem;">
+            `;
+            
+            entries.forEach(entry => {
+                const improvement = entry.intensiteitVoor - entry.intensiteitNa;
+                const improvementColor = improvement > 0 ? '#10b981' : improvement < 0 ? '#ef4444' : '#6b7280';
+                
+                html += `
+                    <div style="background: rgba(255,255,255,0.5); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid ${improvementColor};">
+                        <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 0.5rem;">
+                            <strong>${entry.techniekGebruikt}</strong>
+                            <small style="color: var(--text-light);">${entry.timestamp.toLocaleDateString('nl-BE')}</small>
                         </div>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem; margin: 0.5rem 0;">
+                            <div><small>Voor: ${entry.intensiteitVoor}/10</small></div>
+                            <div><small>Na: ${entry.intensiteitNa}/10</small></div>
+                            <div><small>Verschil: ${improvement > 0 ? '+' : ''}${improvement}</small></div>
+                            ${entry.cpScore ? `<div><small>CP: ${entry.cpScore}s</small></div>` : ''}
+                        </div>
+                        
+                        ${entry.trigger ? `<div style="margin: 0.5rem 0;"><small><strong>Trigger:</strong> ${entry.trigger}</small></div>` : ''}
+                        ${entry.symptomen && entry.symptomen.length ? `<div style="margin: 0.5rem 0;"><small><strong>Symptomen:</strong> ${entry.symptomen.join(', ')}</small></div>` : ''}
+                        
+                        <div style="margin: 0.5rem 0;">
+                            <span style="background: ${improvementColor}; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem;">
+                                ${entry.resultaat}
+                            </span>
+                        </div>
+                        
+                        ${entry.notities ? `<div style="margin-top: 0.5rem; font-style: italic; color: var(--text-light);"><small>${entry.notities}</small></div>` : ''}
                     </div>
-                    
-                    ${entry.symptomen && entry.symptomen.length ? 
-                        `<div style="margin-bottom: 0.75rem;">
-                            <strong>Symptomen:</strong> ${entry.symptomen.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ')}
-                        </div>` : ''
-                    }
-                    
-                    ${entry.cpScore ? 
-                        `<div style="margin-bottom: 0.75rem;">
-                            <strong>CP Score:</strong> ${entry.cpScore} seconden
-                        </div>` : ''
-                    }
-                    
-                    ${entry.trigger ? `<p style="margin-bottom: 0.5rem;"><strong>Trigger:</strong> ${entry.trigger}</p>` : ''}
-                    ${entry.notities ? `<p><strong>Notities:</strong> ${entry.notities}</p>` : ''}
+                `;
+            });
+            
+            html += `
+                    </div>
                 </div>
             `;
         });
         
-        html += '</div>';
         container.innerHTML = html;
     }
 
-    function generateInsights() {
-        const insightsCard = document.getElementById('insights-card');
-        const insightsContent = document.getElementById('insights-content');
+    window.filterJournalEntries = function() {
+        const filter = document.getElementById('journal-filter').value;
+        let filteredEntries = [...allJournalEntries];
         
-        if (allJournalEntries.length < 3) {
-            insightsCard.style.display = 'none';
-            return;
-        }
-        
-        insightsCard.style.display = 'block';
-        
-        // Calculate insights based on research
-        const recentEntries = allJournalEntries.slice(0, 20);
-        const improvements = recentEntries.map(e => e.intensiteitVoor - e.intensiteitNa);
-        const avgImprovement = improvements.reduce((sum, imp) => sum + imp, 0) / improvements.length;
-        const successRate = (improvements.filter(imp => imp > 0).length / improvements.length) * 100;
-        
-        // Most common symptoms
-        const allSymptoms = recentEntries.flatMap(e => e.symptomen || []);
-        const symptomCounts = {};
-        allSymptoms.forEach(symptom => {
-            symptomCounts[symptom] = (symptomCounts[symptom] || 0) + 1;
-        });
-        const topSymptom = Object.keys(symptomCounts).reduce((a, b) => 
-            symptomCounts[a] > symptomCounts[b] ? a : b, Object.keys(symptomCounts)[0]);
-        
-        // Best technique
-        const techniques = {};
-        recentEntries.forEach(entry => {
-            if (!techniques[entry.techniekGebruikt]) {
-                techniques[entry.techniekGebruikt] = [];
-            }
-            techniques[entry.techniekGebruikt].push(entry.intensiteitVoor - entry.intensiteitNa);
-        });
-        
-        const bestTechnique = Object.keys(techniques).reduce((best, technique) => {
-            const avgTechImprovement = techniques[technique].reduce((s, v) => s + v, 0) / techniques[technique].length;
-            const bestAvg = techniques[best] ? techniques[best].reduce((s, v) => s + v, 0) / techniques[best].length : -999;
-            return avgTechImprovement > bestAvg ? technique : best;
-        }, Object.keys(techniques)[0]);
-
-        // TEXT ANALYSIS - New advanced insights
-        const textInsights = analyzeJournalTexts(recentEntries);
-
-        let insights = `
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
-                <div class="stat-card">
-                    <div class="stat-number">${avgImprovement.toFixed(1)}</div>
-                    <div class="stat-label">Gem. Verbetering</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">${Math.round(successRate)}%</div>
-                    <div class="stat-label">Succes Ratio</div>
-                </div>
-            </div>
-        `;
-
-        // Research-based insights
-        if (avgImprovement > 2) {
-            insights += `<div class="alert alert-success">
-                <strong>🌟 Uitstekende vooruitgang!</strong> Je gemiddelde verbetering van ${avgImprovement.toFixed(1)} punten komt overeen met onderzoeksresultaten die tonen dat 70-80% van patiënten significante verbetering behaalt met de juiste technieken.
-            </div>`;
-        }
-
-        if (bestTechnique) {
-            insights += `<div class="alert alert-info">
-                <strong>💡 Persoonlijk inzicht:</strong> ${bestTechnique} werkt het beste voor jou. Onderzoek toont dat gepersonaliseerde behandeling effectiever is.
-            </div>`;
-        }
-
-        if (topSymptom === 'luchthonger' || topSymptom === 'maagklachten') {
-            insights += `<div class="alert alert-info">
-                <strong>🔬 Wetenschappelijk verband:</strong> Je ervaart voornamelijk ${topSymptom}. Onderzoek toont sterke verbanden tussen hyperventilatie en maagklachten via de darm-brein-as en nervus vagus.
-            </div>`;
-        }
-
-        // ADVANCED TEXT ANALYSIS INSIGHTS
-        if (textInsights.commonTriggers.length > 0) {
-            insights += `<div class="alert alert-warning">
-                <strong>⚠️ Terugkerende triggers:</strong> Je triggers tonen een patroon: ${textInsights.commonTriggers.slice(0, 3).join(', ')}. 
-                Herken je deze patronen? Vroege herkenning kan aanvallen voorkomen.
-            </div>`;
-        }
-
-        if (textInsights.stressKeywords.length > 2) {
-            insights += `<div class="alert alert-warning">
-                <strong>🎯 Stresspatroon gedetecteerd:</strong> Woorden zoals "${textInsights.stressKeywords.slice(0, 3).join('", "')}" komen vaak voor. 
-                Overweeg stressreductie technieken naast ademhalingsoefeningen.
-            </div>`;
-        }
-
-        if (textInsights.successPatterns.length > 0) {
-            insights += `<div class="alert alert-success">
-                <strong>✅ Succesfactoren:</strong> Bij je beste resultaten zie je vaak: ${textInsights.successPatterns.join(', ')}. 
-                Probeer deze factoren bewust te herhalen.
-            </div>`;
-        }
-
-        if (textInsights.timePatterns.length > 0) {
-            insights += `<div class="alert alert-info">
-                <strong>🕐 Tijdpatronen:</strong> ${textInsights.timePatterns.join(' ')} 
-                Timing lijkt belangrijk voor jou - overweeg dit bij je dagelijkse routine.
-            </div>`;
-        }
-
-        if (textInsights.improvements.length > 0) {
-            insights += `<div class="alert alert-info" style="border-left-color: #8b5cf6;">
-                <strong>💬 Verbeterpunten op basis van je notities:</strong>
-                <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
-                    ${textInsights.improvements.map(tip => `<li>${tip}</li>`).join('')}
-                </ul>
-            </div>`;
-        }
-
-        // Early intervention message
-        if (allJournalEntries.length <= 10) {
-            insights += `<div class="alert alert-success">
-                <strong>⏰ Vroege interventie:</strong> Je bent op het juiste pad! Onderzoek toont dat vroege interventie dramatisch betere resultaten oplevert dan chronische behandeling.
-            </div>`;
-        }
-
-        insightsContent.innerHTML = insights;
-    }
-
-    // Advanced text analysis function
-    function analyzeJournalTexts(entries) {
-        const triggers = entries.map(e => e.trigger).filter(Boolean).map(t => t.toLowerCase());
-        const notes = entries.map(e => e.notities).filter(Boolean).map(n => n.toLowerCase());
-        const allText = [...triggers, ...notes].join(' ');
-        
-        // Common trigger patterns
-        const commonTriggers = [];
-        const triggerWords = {};
-        triggers.forEach(trigger => {
-            trigger.split(/\s+/).forEach(word => {
-                if (word.length > 3) {
-                    triggerWords[word] = (triggerWords[word] || 0) + 1;
-                }
-            });
-        });
-        
-        Object.entries(triggerWords)
-            .filter(([word, count]) => count >= 2)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 3)
-            .forEach(([word]) => commonTriggers.push(word));
-
-        // Stress-related keywords
-        const stressWords = ['stress', 'druk', 'spanning', 'nerveus', 'onrust', 'angst', 'paniek', 'zorgen', 'werk', 'deadline', 'conflict', 'ruzie'];
-        const stressKeywords = stressWords.filter(word => 
-            allText.includes(word) && (allText.match(new RegExp(word, 'g')) || []).length >= 2
-        );
-
-        // Success patterns (from high-improvement entries)
-        const successfulEntries = entries.filter(e => (e.intensiteitVoor - e.intensiteitNa) >= 3);
-        const successPatterns = [];
-        if (successfulEntries.length > 0) {
-            const successText = successfulEntries.map(e => [e.trigger, e.notities].filter(Boolean).join(' ')).join(' ').toLowerCase();
-            const positiveWords = ['rust', 'ontspanning', 'kalm', 'rustig', 'thuis', 'stil', 'focus', 'concentratie', 'langzaam', 'diep'];
-            positiveWords.forEach(word => {
-                if (successText.includes(word)) {
-                    successPatterns.push(word);
-                }
-            });
-        }
-
-        // Time patterns
-        const timePatterns = [];
-        const morningEntries = entries.filter(e => {
-            const hour = new Date(e.timestamp).getHours();
-            return hour >= 6 && hour < 12;
-        });
-        const eveningEntries = entries.filter(e => {
-            const hour = new Date(e.timestamp).getHours();
-            return hour >= 18 || hour < 6;
-        });
-        
-        if (morningEntries.length > entries.length * 0.6) {
-            timePatterns.push('Je ervaart vaak klachten \'s ochtends.');
-        }
-        if (eveningEntries.length > entries.length * 0.6) {
-            timePatterns.push('\'s Avonds en \'s nachts komen klachten vaker voor.');
-        }
-
-        // Improvement suggestions based on text analysis
-        const improvements = [];
-        
-        if (stressKeywords.length > 2) {
-            improvements.push('Overweeg stressmanagement technieken zoals mindfulness of progressive muscle relaxation.');
-        }
-        
-        if (allText.includes('werk') && allText.includes('stress')) {
-            improvements.push('Werkgerelateerde stress lijkt een trigger - korte ademhalingspauzes tijdens werk kunnen helpen.');
-        }
-        
-        if (allText.includes('avond') || allText.includes('bed')) {
-            improvements.push('Avondklachten: probeer een rustiger bedtime routine met zachte ademhalingsoefeningen.');
-        }
-        
-        if (allText.includes('eten') || allText.includes('maaltijd')) {
-            improvements.push('Eet-gerelateerde triggers: probeer langzamer eten en bewust ademen na maaltijden.');
-        }
-
-        const unsuccessfulEntries = entries.filter(e => (e.intensiteitVoor - e.intensiteitNa) < 1);
-        if (unsuccessfulEntries.length > entries.length * 0.3) {
-            improvements.push('Bij lagere effectiviteit: controleer of je de technieken niet forceert - zachte ademhaling werkt beter.');
-        }
-
-        return {
-            commonTriggers,
-            stressKeywords,
-            successPatterns,
-            timePatterns,
-            improvements
-        };
-    }
-
-    async function createProgressChart() {
-        const chartContainer = document.getElementById('chart-container');
-        const chartEmpty = document.getElementById('chart-empty');
-        const canvas = document.getElementById('progress-chart');
-        const chartInfo = document.getElementById('chart-info');
-
-        // Filter entries based on current filter
-        const chartRelevantEntries = allJournalEntries.filter(entry => 
-            entry.intensiteitVoor !== undefined && entry.intensiteitNa !== undefined && 
-            entry.intensiteitVoor !== null && entry.intensiteitNa !== null
-        );
-
-        if (chartRelevantEntries.length < 2) {
-            canvas.style.display = 'none';
-            chartEmpty.style.display = 'flex';
-            chartEmpty.textContent = 'Nog geen data beschikbaar. Maak enkele dagboekentries om je vooruitgang te zien!';
-            if (chartInfo) chartInfo.textContent = '';
-            return;
-        }
-
-        // Apply period filter
-        let filteredEntries = [];
         const now = new Date();
         
-        if (currentChartFilter === 'last15') {
-            filteredEntries = chartRelevantEntries.slice(0, 15);
-        } else if (currentChartFilter === 'last30') {
-            const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
-            filteredEntries = chartRelevantEntries.filter(entry => {
-                const entryDate = new Date(entry.timestamp);
-                return entryDate >= thirtyDaysAgo;
-            });
-        } else if (currentChartFilter === 'all') {
-            filteredEntries = chartRelevantEntries;
+        switch(filter) {
+            case 'last7':
+                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                filteredEntries = allJournalEntries.filter(entry => entry.timestamp >= weekAgo);
+                break;
+            case 'last30':
+                const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                filteredEntries = allJournalEntries.filter(entry => entry.timestamp >= monthAgo);
+                break;
         }
+        
+        // Update display with filtered entries
+        const originalEntries = allJournalEntries;
+        allJournalEntries = filteredEntries;
+        displayJournalEntries();
+        allJournalEntries = originalEntries;
+    };
 
-        if (filteredEntries.length < 2) {
-            canvas.style.display = 'none';
-            chartEmpty.style.display = 'flex';
-            chartEmpty.textContent = 'Geen data voor deze periode';
-            if (chartInfo) chartInfo.textContent = 'Geen entries';
-            return;
-        }
-
-        chartEmpty.style.display = 'none';
-        canvas.style.display = 'block';
-
-        // Update chart info
-        if (chartInfo) {
-            chartInfo.textContent = `${filteredEntries.length} ${filteredEntries.length === 1 ? 'entry' : 'entries'}`;
-        }
-
-        try {
-            // Improved Chart.js loading with timeout and error handling
-            if (!window.Chart) {
-                console.log('Loading Chart.js...');
-                chartEmpty.style.display = 'flex';
-                chartEmpty.textContent = 'Grafiek wordt geladen...';
-                
-                const script = document.createElement('script');
-                script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js';
-                script.async = false;
-                document.head.appendChild(script);
-                
-                // Wait for Chart.js with timeout
-                await new Promise((resolve, reject) => {
-                    script.onload = () => {
-                        console.log('Chart.js loaded successfully');
-                        resolve();
-                    };
-                    script.onerror = () => {
-                        console.error('Failed to load Chart.js');
-                        reject(new Error('Chart.js failed to load'));
-                    };
-                    
-                    // Timeout after 10 seconds
-                    setTimeout(() => {
-                        reject(new Error('Chart.js loading timeout'));
-                    }, 10000);
-                });
-                
-                // Additional check
-                if (!window.Chart) {
-                    throw new Error('Chart.js not available after loading');
-                }
-            }
-
-            // Prepare data (reverse for chronological order - oldest to newest)
-            const displayEntries = filteredEntries.slice().reverse();
-            const labels = displayEntries.map((entry, index) => {
-                const date = new Date(entry.timestamp);
-                
-                if (currentChartFilter === 'last15' && window.innerWidth <= 768) {
-                    return `${index + 1}`;
-                } else if (currentChartFilter === 'all' && displayEntries.length > 20) {
-                    return date.toLocaleDateString('nl-BE', { 
-                        month: 'short', 
-                        day: 'numeric'
-                    });
-                } else {
-                    return date.toLocaleDateString('nl-BE', { 
-                        month: 'short', 
-                        day: 'numeric',
-                        hour: displayEntries.length <= 10 ? '2-digit' : undefined,
-                        minute: displayEntries.length <= 10 ? '2-digit' : undefined
-                    });
-                }
-            });
-
-            const ctx = canvas.getContext('2d');
-            
-            // Destroy existing chart
-            if (window.progressChart && typeof window.progressChart.destroy === 'function') {
-                window.progressChart.destroy();
-            }
-
-            // Create new chart
-            window.progressChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Vóór oefening',
-                            data: displayEntries.map(entry => entry.intensiteitVoor),
-                            borderColor: '#ef4444',
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            borderWidth: 3,
-                            pointRadius: 6,
-                            pointHoverRadius: 8,
-                            pointBackgroundColor: '#ef4444',
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 2,
-                            tension: 0.4,
-                            fill: false
-                        },
-                        {
-                            label: 'Ná oefening',
-                            data: displayEntries.map(entry => entry.intensiteitNa),
-                            borderColor: '#10b981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            borderWidth: 3,
-                            pointRadius: 6,
-                            pointHoverRadius: 8,
-                            pointBackgroundColor: '#10b981',
-                            pointBorderColor: '#ffffff',
-                            pointBorderWidth: 2,
-                            tension: 0.4,
-                            fill: false
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: {
-                        duration: 1000
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                            labels: {
-                                usePointStyle: true,
-                                padding: 20,
-                                font: {
-                                    size: 12,
-                                    weight: '600'
-                                }
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            titleColor: '#ffffff',
-                            bodyColor: '#ffffff',
-                            borderColor: '#06b6d4',
-                            borderWidth: 1,
-                            cornerRadius: 8,
-                            displayColors: true,
-                            padding: 12,
-                            callbacks: {
-                                title: function(context) {
-                                    const index = context[0].dataIndex;
-                                    const entry = displayEntries[index];
-                                    return new Date(entry.timestamp).toLocaleString('nl-BE');
-                                },
-                                afterBody: function(context) {
-                                    const index = context[0].dataIndex;
-                                    const entry = displayEntries[index];
-                                    const improvement = entry.intensiteitVoor - entry.intensiteitNa;
-                                    return [
-                                        `Techniek: ${entry.techniekGebruikt}`,
-                                        `Verbetering: ${improvement > 0 ? '+' : ''}${improvement} punt${Math.abs(improvement) !== 1 ? 'en' : ''}`,
-                                        entry.cpScore ? `CP Score: ${entry.cpScore}s` : '',
-                                        entry.symptomen?.length ? `Symptomen: ${entry.symptomen.length}` : ''
-                                    ].filter(Boolean);
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            min: 0,
-                            max: 10,
-                            ticks: {
-                                stepSize: 1,
-                                callback: function(value) {
-                                    return value + '/10';
-                                },
-                                color: '#6b7280',
-                                font: {
-                                    size: 11,
-                                    weight: '500'
-                                }
-                            },
-                            title: {
-                                display: true,
-                                text: 'Intensiteit Score',
-                                color: '#06b6d4',
-                                font: {
-                                    size: 13,
-                                    weight: '600'
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(6, 182, 212, 0.1)',
-                                drawBorder: false
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                maxRotation: displayEntries.length > 15 ? 45 : 0,
-                                color: '#6b7280',
-                                font: {
-                                    size: window.innerWidth <= 768 ? 10 : 11,
-                                    weight: '500'
-                                },
-                                autoSkip: true,
-                                maxTicksLimit: window.innerWidth <= 768 ? 6 : 12
-                            },
-                            title: {
-                                display: window.innerWidth > 768,
-                                text: currentChartFilter === 'last15' ? 'Sessies (laatste 15)' : 
-                                      currentChartFilter === 'last30' ? 'Laatste 30 dagen' : 'Alle sessies',
-                                color: '#06b6d4',
-                                font: {
-                                    size: 13,
-                                    weight: '600'
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(6, 182, 212, 0.1)',
-                                drawBorder: false
-                            }
-                        }
-                    }
-                }
-            });
-
-            console.log(`Progress chart created successfully with ${displayEntries.length} data points (filter: ${currentChartFilter})`);
-            chartEmpty.style.display = 'none';
-
-        } catch (error) {
-            console.error('Chart creation failed:', error);
-            canvas.style.display = 'none';
-            chartEmpty.style.display = 'flex';
-            chartEmpty.innerHTML = `
-                <div style="text-align: center;">
-                    <div style="color: var(--danger-color); margin-bottom: 0.5rem;">⚠️ Grafiek kon niet worden geladen</div>
-                    <div style="font-size: 0.9rem; color: var(--text-light);">${error.message}</div>
-                    <button class="btn btn-primary" onclick="createProgressChart()" style="margin-top: 1rem; font-size: 0.8rem; padding: 0.5rem 1rem;">
-                        🔄 Opnieuw proberen
-                    </button>
-                </div>
-            `;
-            
-            // Expose retry function
-            window.createProgressChart = createProgressChart;
-        }
-    }
-
-    window.exportJournal = async function() {
-        if (!allJournalEntries.length) {
-            showUserMessage('Geen entries om te exporteren', 'warning');
-            return;
-        }
-
-        let text = 'ADEMRUIMTE DAGBOEK EXPORT\n';
-        text += '================================\n';
-        text += `Gebruiker: ${currentUser.displayName || currentUser.email}\n`;
-        text += `Export datum: ${new Date().toLocaleString('nl-BE')}\n\n`;
-
-        allJournalEntries.forEach((entry, index) => {
-            text += `ENTRY ${index + 1}\n`;
+    window.exportDagboek = function() {
+        let text = 'Ademruimte Dagboek Export\n';
+        text += '==========================\n\n';
+        
+        allJournalEntries.forEach(entry => {
             text += `Datum: ${entry.timestamp.toLocaleString('nl-BE')}\n`;
             text += `Techniek: ${entry.techniekGebruikt}\n`;
             text += `Trigger: ${entry.trigger || 'Geen'}\n`;
@@ -2959,7 +1931,196 @@ if (currentJournalFilter === 'all') {
         showUserMessage('📁 Dagboek geëxporteerd!', 'success');
     };
 
-    // Gamification functions
+    // ============================================
+    // DASHBOARD & STATISTICS
+    // ============================================
+
+    function updateDashboard() {
+        if (!currentUser) return;
+        
+        // Update greeting
+        const greeting = document.getElementById('dashboard-greeting');
+        const hour = new Date().getHours();
+        let timeGreeting = 'Goedemorgen';
+        if (hour >= 12) timeGreeting = 'Goedemiddag';
+        if (hour >= 18) timeGreeting = 'Goedenavond';
+        
+        const name = currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'daar';
+        greeting.textContent = `${timeGreeting}, ${name}!`;
+        
+        // Calculate stats
+        const allCPData = [...userStats.cpMeasurements, ...allCPMeasurements]
+            .filter(cp => cp.score !== undefined)
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        const avgImprovement = allJournalEntries.length > 0 ? 
+            allJournalEntries.reduce((sum, e) => sum + (e.intensiteitVoor - e.intensiteitNa), 0) / allJournalEntries.length : 0;
+        
+        const lastCP = allCPData.length > 0 ? allCPData[0].score : null;
+        
+        // Update stats display
+        document.getElementById('total-sessions').textContent = userStats.totalSessions + allJournalEntries.length;
+        document.getElementById('streak-days').textContent = userStats.streakDays;
+        document.getElementById('avg-improvement').textContent = avgImprovement > 0 ? 
+            `+${avgImprovement.toFixed(1)}` : avgImprovement.toFixed(1);
+        document.getElementById('last-cp').textContent = lastCP ? `${lastCP}s` : '-';
+        
+        // Update tip of the day
+        const tipIndex = new Date().getDate() % tips.length;
+        document.getElementById('tip-content').innerHTML = `<p>${tips[tipIndex]}</p>`;
+    }
+
+    function generateInsights() {
+        const insightsContainer = document.getElementById('insights-content');
+        
+        if (allJournalEntries.length === 0) {
+            insightsContainer.innerHTML = '<p style="color: var(--text-light);">Start met je eerste oefening om persoonlijke inzichten te ontvangen!</p>';
+            return;
+        }
+        
+        let insights = [];
+        
+        // Technique effectiveness
+        const techniqueStats = {};
+        allJournalEntries.forEach(entry => {
+            const technique = entry.techniekGebruikt;
+            if (!techniqueStats[technique]) {
+                techniqueStats[technique] = { total: 0, improvement: 0 };
+            }
+            techniqueStats[technique].total++;
+            techniqueStats[technique].improvement += (entry.intensiteitVoor - entry.intensiteitNa);
+        });
+        
+        const bestTechnique = Object.keys(techniqueStats).reduce((best, technique) => {
+            const avgImprovement = techniqueStats[technique].improvement / techniqueStats[technique].total;
+            const bestAvg = techniqueStats[best] ? techniqueStats[best].improvement / techniqueStats[best].total : -999;
+            return avgImprovement > bestAvg ? technique : best;
+        });
+        
+        if (bestTechnique) {
+            insights.push(`🏆 <strong>${bestTechnique}</strong> werkt het beste voor jou met gemiddeld ${(techniqueStats[bestTechnique].improvement / techniqueStats[bestTechnique].total).toFixed(1)} punten verbetering.`);
+        }
+        
+        // Time pattern analysis
+        const recentEntries = allJournalEntries.slice(0, 10);
+        const avgRecent = recentEntries.reduce((sum, e) => sum + (e.intensiteitVoor - e.intensiteitNa), 0) / recentEntries.length;
+        
+        if (avgRecent > 2) {
+            insights.push(`📈 Je laatste sessies tonen gemiddeld ${avgRecent.toFixed(1)} punten verbetering - je maakt goede vooruitgang!`);
+        } else if (avgRecent < 1) {
+            insights.push(`💡 Je laatste sessies tonen minder verbetering. Probeer een andere techniek of spreek met een professional.`);
+        }
+        
+        // CP progression
+        const cpData = allCPMeasurements.slice(0, 5);
+        if (cpData.length >= 2) {
+            const recent = cpData[0].score;
+            const older = cpData[cpData.length - 1].score;
+            const cpImprovement = recent - older;
+            
+            if (cpImprovement > 0) {
+                insights.push(`💨 Je Control Pause is verbeterd met ${cpImprovement} seconden in je laatste metingen!`);
+            }
+        }
+        
+        if (insights.length === 0) {
+            insights.push('📊 Blijf regelmatig oefenen om meer persoonlijke inzichten te ontdekken.');
+        }
+        
+        insightsContainer.innerHTML = insights.map(insight => `<p>${insight}</p>`).join('');
+    }
+
+    function createProgressChart() {
+        if (!currentUser || allJournalEntries.length === 0) return;
+        
+        const ctx = document.getElementById('progress-chart');
+        if (!ctx) return;
+        
+        // Destroy existing chart
+        if (progressChart) {
+            progressChart.destroy();
+        }
+        
+        // Prepare data
+        const chartData = allJournalEntries.slice(0, 20).reverse().map((entry, index) => ({
+            x: index + 1,
+            voor: entry.intensiteitVoor,
+            na: entry.intensiteitNa,
+            verbetering: entry.intensiteitVoor - entry.intensiteitNa,
+            label: entry.techniekGebruikt.substring(0, 10) + '...'
+        }));
+        
+        progressChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.map(d => d.label),
+                datasets: [
+                    {
+                        label: 'Voor sessie',
+                        data: chartData.map(d => d.voor),
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Na sessie',
+                        data: chartData.map(d => d.na),
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Verbetering',
+                        data: chartData.map(d => d.verbetering),
+                        borderColor: '#06b6d4',
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        type: 'bar',
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Jouw Voortgang Over Tijd'
+                    },
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10,
+                        title: {
+                            display: true,
+                            text: 'Intensiteit (1-10)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Verbetering'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                }
+            }
+        });
+    }
+
+    // ============================================
+    // UTILITY FUNCTIONS
+    // ============================================
+
     function updateStreak() {
         const today = new Date().toDateString();
         
@@ -2976,266 +2137,107 @@ if (currentJournalFilter === 'all') {
         }
     }
 
-    function updateDashboard() {
-        if (!currentUser) return;
+    window.updateRangeValue = function(sliderId, valueId) {
+        const slider = document.getElementById(sliderId);
+        const valueElement = document.getElementById(valueId);
+        valueElement.textContent = slider.value;
         
-        // Combine all data sources for comprehensive statistics
-        const allCPData = [...userStats.cpMeasurements, ...allCPMeasurements]
-            .filter(cp => cp.score !== undefined)
-            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        
-        // Calculate comprehensive stats from ALL entries (not just recent)
-        const avgImprovement = allJournalEntries.length > 0 ? 
-            allJournalEntries.reduce((sum, e) => sum + (e.intensiteitVoor - e.intensiteitNa), 0) / allJournalEntries.length : 0;
-        
-        const lastCP = allCPData.length > 0 ? allCPData[0].score : '-';
+        // Update position of value indicator
+        const percent = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+        valueElement.style.left = percent + '%';
+    };
 
-        // Update total sessions to include all journal entries + saved sessions
-        const totalJournalSessions = allJournalEntries.length;
-        const comprehensiveTotalSessions = userStats.totalSessions + totalJournalSessions;
+    window.toggleSymptom = function(element) {
+        const checkbox = element.querySelector('.symptom-checkbox');
+        checkbox.checked = !checkbox.checked;
+        element.classList.toggle('selected', checkbox.checked);
+    };
+
+    function showUserMessage(message, type = 'info') {
+        // Remove existing messages
+        document.querySelectorAll('.message').forEach(msg => msg.remove());
         
-        // Update streak calculation based on actual journal entries
-        updateStreakFromJournalEntries();
-
-        // Update dashboard stats
-        document.getElementById('total-sessions').textContent = Math.max(comprehensiveTotalSessions, totalJournalSessions);
-        document.getElementById('streak-days').textContent = userStats.streakDays;
-        document.getElementById('avg-improvement').textContent = avgImprovement > 0 ? '+' + avgImprovement.toFixed(1) : avgImprovement.toFixed(1);
-        document.getElementById('last-cp').textContent = lastCP === '-' ? '-' : lastCP + 's';
-
-        // Update CP trend information
-        updateCPTrendDisplay(allCPData);
+        const messageEl = document.createElement('div');
+        messageEl.className = `message ${type}`;
+        messageEl.textContent = message;
+        
+        document.body.appendChild(messageEl);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            messageEl.remove();
+        }, 5000);
     }
 
-    function updateCPTrendDisplay(allCPData) {
-        const cpTrendEl = document.getElementById('cp-trend');
-        const cpCard = document.getElementById('cp-dashboard-card');
+    // ============================================
+    // EVENT LISTENERS & INITIALIZATION
+    // ============================================
+
+    document.addEventListener('DOMContentLoaded', async function() {
+        console.log('🚀 Initializing Ademruimte app...');
         
-        if (!cpTrendEl || allCPData.length === 0) {
-            if (cpTrendEl) cpTrendEl.innerHTML = '<span style="color: var(--text-light);">Geen CP metingen</span>';
-            return;
-        }
-
-        if (allCPData.length === 1) {
-            cpTrendEl.innerHTML = '<span style="color: var(--primary-color);">🎯 Eerste meting</span>';
-            return;
-        }
-
-        // Calculate trend
-        const latest = allCPData[0].score;
-        const previous = allCPData[1].score;
-        const improvement = latest - previous;
+        showLoadingScreen();
         
-        // Calculate overall trend (last 5 measurements)
-        const recentMeasurements = allCPData.slice(0, Math.min(5, allCPData.length));
-        const trendData = recentMeasurements.map(cp => cp.score);
-        const overallTrend = recentMeasurements.length > 2 ? 
-            (trendData[0] - trendData[trendData.length - 1]) / (trendData.length - 1) : 0;
-
-        let trendHTML = '';
-        let cardStyle = '';
-        
-        if (improvement > 5) {
-            trendHTML = `<span style="color: var(--success-color);">📈 Sterke verbetering (+${improvement}s)</span>`;
-            cardStyle = 'border: 2px solid var(--success-color); background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), white);';
-        } else if (improvement > 0) {
-            trendHTML = `<span style="color: var(--success-color);">📈 Vooruitgang (+${improvement}s)</span>`;
-            cardStyle = 'border: 2px solid var(--success-color); background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), white);';
-        } else if (improvement < -5) {
-            trendHTML = `<span style="color: var(--warning-color);">📉 Terugval (${improvement}s)</span>`;
-            cardStyle = 'border: 2px solid var(--warning-color);';
-        } else if (improvement < 0) {
-            trendHTML = `<span style="color: var(--warning-color);">📉 Daling (${improvement}s)</span>`;
-        } else {
-            trendHTML = `<span style="color: var(--text-light);">➡️ Stabiel (${improvement}s)</span>`;
-        }
-
-        // Add overall trend context
-        if (Math.abs(overallTrend) > 1) {
-            const trendDirection = overallTrend > 0 ? 'stijgende' : 'dalende';
-            trendHTML += `<br><small style="opacity: 0.8;">Algemene trend: ${trendDirection}</small>`;
-        }
-
-        // Add measurement count
-        trendHTML += `<br><small style="opacity: 0.7;">${allCPData.length} metingen totaal</small>`;
-
-        cpTrendEl.innerHTML = trendHTML;
-        
-        // Apply visual styling to the card based on trend
-        cpCard.className = 'stat-card'; // Reset classes
-        if (cardStyle) {
-            cpCard.style.cssText += cardStyle;
-        }
-        
-        // Add special animation for strong improvements
-        if (improvement > 5) {
-            cpCard.classList.add('improving');
-        }
-    }
-
-    function updateStreakFromJournalEntries() {
-        if (allJournalEntries.length === 0) {
-            userStats.streakDays = 0;
-            return;
-        }
-
-        // Sort entries by date (most recent first)
-        const sortedEntries = allJournalEntries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        
-        // Get unique dates from journal entries
-        const uniqueDates = [...new Set(sortedEntries.map(entry => {
-            return new Date(entry.timestamp).toDateString();
-        }))].sort((a, b) => new Date(b) - new Date(a));
-
-        let streak = 0;
-        const today = new Date().toDateString();
-        
-        // Check if there's activity today or yesterday
-        const todayIndex = uniqueDates.indexOf(today);
-        const yesterdayIndex = uniqueDates.indexOf(new Date(Date.now() - 86400000).toDateString());
-        
-        if (todayIndex === -1 && yesterdayIndex === -1) {
-            // No recent activity
-            userStats.streakDays = 0;
-            return;
-        }
-        
-        // Start counting from most recent activity date
-        const startIndex = todayIndex !== -1 ? todayIndex : yesterdayIndex;
-        
-        for (let i = startIndex; i < uniqueDates.length; i++) {
-            const currentDate = new Date(uniqueDates[i]);
-            const expectedDate = new Date(Date.now() - (i - startIndex) * 86400000);
-            
-            // Allow for same day
-            if (currentDate.toDateString() === expectedDate.toDateString()) {
-                streak++;
-            } else {
-                break;
-            }
-        }
-        
-        userStats.streakDays = streak;
-    }
-
-    function saveUserStats() {
-        try {
-            localStorage.setItem('ademruimte-stats', JSON.stringify(userStats));
-        } catch (error) {
-            console.log('Could not save stats to localStorage:', error);
-        }
-    }
-
-    function loadUserStats() {
-        try {
-            const saved = localStorage.getItem('ademruimte-stats');
-            if (saved) {
-                userStats = { ...userStats, ...JSON.parse(saved) };
-            }
-        } catch (error) {
-            console.log('Could not load stats from localStorage:', error);
-        }
-    }
-
-    // Event listeners
-    document.addEventListener('DOMContentLoaded', () => {
-        loadUserStats();
-        initFirebase();
-
-        // Google login
-        document.getElementById('google-login-btn').addEventListener('click', signInWithGoogle);
-
-        // Email login
-        document.getElementById('login-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            signInWithEmail(email, password);
-        });
-
-        // Register toggle
-        document.getElementById('show-register').addEventListener('click', () => {
-            showUserMessage('Registratie via Google inloggen of contact opnemen.', 'info');
-        });
-
-        // Tab navigation
+        // Setup tab navigation
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                showTab(btn.dataset.tab);
+                const tab = btn.getAttribute('data-tab');
+                showTab(tab);
             });
         });
-
-        // Symptom tracking
-        document.querySelectorAll('.symptom-checkbox').forEach(cb => {
-            cb.addEventListener('change', function() {
-                if (this.checked) {
-                    this.parentElement.classList.add('selected');
-                } else {
-                    this.parentElement.classList.remove('selected');
-                }
-            });
+        
+        // Setup Google login
+        document.getElementById('google-login').addEventListener('click', loginWithGoogle);
+        
+        // Setup range sliders
+        document.getElementById('entry-before').addEventListener('input', (e) => {
+            updateRangeValue('entry-before', 'before-value');
         });
-
-        // Modal close on outside click
-        document.getElementById('journal-modal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('journal-modal')) {
+        
+        document.getElementById('entry-after').addEventListener('input', (e) => {
+            updateRangeValue('entry-after', 'after-value');
+        });
+        
+        // Setup technique selector for CP score field
+        document.getElementById('entry-technique').addEventListener('change', (e) => {
+            const cpGroup = document.getElementById('cp-score-group');
+            if (e.target.value === 'Buteyko Ademhaling') {
+                cpGroup.style.display = 'block';
+            } else {
+                cpGroup.style.display = 'none';
+            }
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('journal-modal');
+            if (e.target === modal) {
                 closeJournalModal();
             }
         });
+        
+        // Initialize Firebase
+        try {
+            await initFirebase();
+            console.log('✅ Ademruimte app initialization completed successfully');
+        } catch (error) {
+            console.error('❌ App initialization failed:', error);
+            updateStatusIndicator('error');
+            showUserMessage('App initialisatie mislukt. Herlaad de pagina.', 'error');
+            showLoginScreen();
+        }
     });
 
     // Cleanup on page unload
     window.addEventListener('beforeunload', () => {
-        if (cpInterval) clearInterval(cpInterval);
         if (breathInterval) clearInterval(breathInterval);
+        if (cpInterval) clearInterval(cpInterval);
         if (crisisInterval) clearInterval(crisisInterval);
-        if (window.progressChart) window.progressChart.destroy();
-        if (window.cpProgressChart) window.cpProgressChart.destroy();
+        if (emdrInterval) clearInterval(emdrInterval);
+        if (progressChart) progressChart.destroy();
     });
-function updateJournalFilter() {
-    try {
-        const filterSelect = document.getElementById('journal-filter');
-        if (!filterSelect) {
-            console.log('ℹ️ Journal filter element not found');
-            return;
-        }
 
-        // Update the current filter variable
-        currentJournalFilter = filterSelect.value;
-        console.log('📅 Journal filter changed to:', currentJournalFilter);
-        
-        // Re-display entries with new filter
-        displayJournalEntries();
-        
-    } catch (error) {
-        console.error('❌ Error updating journal filter:', error);
-        // Non-critical error, don't show to user
-    }
-}
-    // Export all functions that are called from HTML onclick handlers
-    window.debugFirebaseData = debugFirebaseData;
-    window.fixOldEntries = fixOldEntries;
-    window.loadJournalEntries = loadJournalEntries;
-
-    // Make functions globally available
-    window.signInWithGoogle = signInWithGoogle;
-    window.updateBreathingPattern = updateBreathingPattern;
-    window.updateChartFilter = updateChartFilter;
-    window.startCP = startCP;
-    window.stopCP = stopCP;
-    window.resetCP = resetCP;
-    window.toggleBreathing = toggleBreathing;
-    window.resetBreathing = resetBreathing;
-    window.completeBreathing = completeBreathing;
-    window.startCrisis = startCrisis;
-    window.stopCrisis = stopCrisis;
-    window.openJournalModal = openJournalModal;
-    window.closeJournalModal = closeJournalModal;
-    window.saveJournalEntry = saveJournalEntry;
-    window.exportJournal = exportJournal;
-    window.showTab = showTab;
-    window.logout = logout;
+    console.log('📱 Ademruimte app loaded successfully');
 </script>
-
 </body>
 </html>

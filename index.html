@@ -915,7 +915,7 @@
                         <div class="form-group">
                             <label for="breathing-pattern">Selecteer patroon:</label>
                             <select class="form-control" id="breathing-pattern" onchange="updateBreathingPattern()">
-                                <option value="gentle" selected>Zachte oefening (2x zacht ademen + 3sec pause)</option>
+                                <option value="gentle" selected>Zachte oefening (10 sec vrij ademhalen + 3 sec vasthouden)</option>
                                 <option value="standard">4-7-8 Standaard</option>
                                 <option value="advanced">6-8-10 Gevorderd</option>
                             </select>
@@ -931,7 +931,7 @@
                         </div>
 
                         <div id="breathing-info" style="text-align: center; margin-top: 1rem;">
-                            <p><strong>Cyclus:</strong> <span id="cycle-count">0</span> <span id="cycle-target">van 2 (zachte oefening)</span></p>
+                            <p><strong>Cyclus:</strong> <span id="cycle-count">0</span> <span id="cycle-target">van 20 (zachte oefening)</span></p>
                             <p><strong>Fase:</strong> <span id="current-phase">Rust</span></p>
                         </div>
                     </div>
@@ -1258,6 +1258,7 @@
             
             userInfo.innerHTML = `
                 <div class="user-avatar">${initials}</div>
+                <span style="font-weight: 500;">${initials}</span>
                 <button class="logout-btn" onclick="logout()">Uitloggen</button>
             `;
         } else {
@@ -1399,7 +1400,7 @@
     // ============================================
 
     const breathingPatterns = {
-        gentle: { inhale: 5, hold: 0, exhale: 5, pause: 3, cycles: 20, description: "10 sec zacht ademhalen + 3 sec pauze" },
+        gentle: { freeBreathing: 10, hold: 3, cycles: 20, description: "10 sec vrij ademhalen (2x in/uit) + 3 sec vasthouden" },
         standard: { inhale: 4, hold: 7, exhale: 8, cycles: 10, description: "4-7-8 standaard patroon" },
         advanced: { inhale: 6, hold: 8, exhale: 10, cycles: 10, description: "6-8-10 gevorderd patroon" }
     };
@@ -1411,7 +1412,7 @@
         
         if (targetElement) {
             if (breathingPattern === 'gentle') {
-                targetElement.textContent = 'van 2 (zachte oefening)';
+                targetElement.textContent = 'van 20 (zachte oefening)';
             } else {
                 targetElement.textContent = `van ${pattern.cycles || 10}`;
             }
@@ -1448,7 +1449,7 @@
         
         const circle = document.getElementById('breathing-circle');
         let phaseTime = 0;
-        let currentPhase = 'inhale';
+        let currentPhase = breathingPattern === 'gentle' ? 'freeBreathing' : 'inhale';
         let completedCycles = 0;
         let totalCycles = pattern.cycles || 10;
         
@@ -1458,6 +1459,22 @@
             phaseTime++;
             
             switch(currentPhase) {
+                case 'freeBreathing':
+                    circle.textContent = `Adem vrij (2x in/uit) - ${phaseTime}s`;
+                    circle.className = "breathing-circle";
+                    document.getElementById('current-phase').textContent = 'Vrij ademhalen';
+                    
+                    // Subtle breathing animation - gentle pulsing
+                    const breathingPhase = Math.sin((phaseTime * Math.PI * 4) / 10); // 4 breaths in 10 seconds
+                    const gentleScale = 1 + (0.1 * breathingPhase);
+                    circle.style.transform = `scale(${gentleScale})`;
+                    
+                    if (phaseTime >= (pattern.freeBreathing || 10)) {
+                        phaseTime = 0;
+                        currentPhase = 'hold';
+                    }
+                    break;
+                    
                 case 'inhale':
                     circle.textContent = `Inademen (${phaseTime})`;
                     circle.className = "breathing-circle inhale";
@@ -1475,14 +1492,36 @@
                     break;
                     
                 case 'hold':
-                    circle.textContent = `Vasthouden (${phaseTime})`;
-                    circle.className = "breathing-circle hold";
-                    document.getElementById('current-phase').textContent = 'Vasthouden';
-                    circle.style.transform = 'scale(1.2)';
+                    if (breathingPattern === 'gentle') {
+                        circle.textContent = `Vasthouden (${phaseTime})`;
+                        circle.className = "breathing-circle hold";
+                        document.getElementById('current-phase').textContent = 'Vasthouden';
+                        circle.style.transform = 'scale(1.1)';
+                    } else {
+                        circle.textContent = `Vasthouden (${phaseTime})`;
+                        circle.className = "breathing-circle hold";
+                        document.getElementById('current-phase').textContent = 'Vasthouden';
+                        circle.style.transform = 'scale(1.2)';
+                    }
                     
-                    if (phaseTime >= pattern.hold) {
+                    const holdDuration = breathingPattern === 'gentle' ? pattern.hold : pattern.hold;
+                    if (phaseTime >= holdDuration) {
                         phaseTime = 0;
-                        currentPhase = 'exhale';
+                        
+                        if (breathingPattern === 'gentle') {
+                            // For gentle pattern, complete the cycle after hold
+                            completedCycles++;
+                            document.getElementById('cycle-count').textContent = completedCycles;
+                            
+                            if (completedCycles >= totalCycles) {
+                                stopBreathing();
+                                return;
+                            } else {
+                                currentPhase = 'freeBreathing';
+                            }
+                        } else {
+                            currentPhase = 'exhale';
+                        }
                     }
                     break;
                     
@@ -1500,27 +1539,6 @@
                         phaseTime = 0;
                         completedCycles++;
                         document.getElementById('cycle-count').textContent = completedCycles;
-                        
-                        // Check if we should pause (for gentle pattern) or continue
-                        if (breathingPattern === 'gentle' && pattern.pause > 0) {
-                            currentPhase = 'pause';
-                        } else if (completedCycles >= totalCycles) {
-                            stopBreathing();
-                            return;
-                        } else {
-                            currentPhase = 'inhale';
-                        }
-                    }
-                    break;
-                    
-                case 'pause':
-                    circle.textContent = `Pauze (${phaseTime})`;
-                    circle.className = "breathing-circle hold";
-                    document.getElementById('current-phase').textContent = 'Pauze';
-                    circle.style.transform = 'scale(0.9)';
-                    
-                    if (phaseTime >= (pattern.pause || 3)) {
-                        phaseTime = 0;
                         
                         if (completedCycles >= totalCycles) {
                             stopBreathing();
@@ -1584,6 +1602,11 @@
                 circle.textContent = `Adem langzaam in (${count})`;
                 circle.className = "breathing-circle inhale";
                 
+                // Smooth inhale animation
+                const inhaleProgress = count / 4;
+                const inhaleScale = 1 + (0.2 * Math.min(inhaleProgress, 1));
+                circle.style.transform = `scale(${inhaleScale})`;
+                
                 if (count >= 4) {
                     count = 0;
                     phase = 'exhale';
@@ -1591,6 +1614,11 @@
             } else {
                 circle.textContent = `Adem langzaam uit (${count})`;
                 circle.className = "breathing-circle exhale";
+                
+                // Smooth exhale animation
+                const exhaleProgress = count / 6;
+                const exhaleScale = 1.2 - (0.4 * Math.min(exhaleProgress, 1));
+                circle.style.transform = `scale(${exhaleScale})`;
                 
                 if (count >= 6) {
                     count = 0;
@@ -1603,6 +1631,11 @@
     window.stopCrisisBreathing = function() {
         clearInterval(crisisInterval);
         document.getElementById('crisis-breathing').classList.add('hidden');
+        
+        // Reset circle
+        const circle = document.getElementById('crisis-circle');
+        circle.style.transform = 'scale(1)';
+        circle.className = "breathing-circle";
         
         // Auto-open journal modal
         setTimeout(() => {

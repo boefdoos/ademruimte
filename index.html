@@ -8,8 +8,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Ademruimte - Hyperventilatie Helper</title>
-
-    <script src="https://unpkg.com/jwt-decode/build/jwt-decode.js"></script>
     
     <!-- Preload kritieke resources -->
     <link rel="preconnect" href="https://www.gstatic.com">
@@ -710,7 +708,7 @@
         backdrop-filter: blur(10px);
         border: 1px solid rgba(255,255,255,0.2);
         width: 100%;
-        max-width: 400px;
+        max-width: 450px;
         text-align: center;
     }
 
@@ -726,7 +724,7 @@
 
     /* Crisis Help Styles */
     .crisis-card {
-        background: linear-gradient(135deg, #D23030, #D23030);
+        background: linear-gradient(135deg, #ef4444, #dc2626);
         color: white;
         border: none;
     }
@@ -791,6 +789,14 @@
     .symptom-checkbox {
         margin-right: 0.5rem;
     }
+
+    /* Checkbox Styling */
+    input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary-color);
+        cursor: pointer;
+    }
 </style>
 </head>
 
@@ -805,30 +811,75 @@
         </div>
     </div>
 
-    <div id="g_id_onload"
-    data-client_id="744941871331-bdj0it4hic5kghtumutk5i6djctn9rht.apps.googleusercontent.com"
-    data-callback="handleCredentialResponse">
-</div>
-<div class="g_id_signin"
-    data-type="standard">
-</div>
-
     <!-- Authentication Screen -->
     <div id="auth-screen" class="hidden">
         <div class="auth-card">
-            <h2>Welkom bij Ademruimte</h2>
-            <p>Log in om je persoonlijke ademhalingsreis te beginnen</p>
-            
-            <div class="button-group">
-                <button class="btn btn-primary" id="google-login">
-                    <span>🔑 Inloggen met Google</span>
-                </button>
+            <div id="login-form">
+                <h2>Inloggen bij Ademruimte</h2>
+                <p>Vul je gegevens in om door te gaan</p>
+                
+                <div class="form-group">
+                    <label for="login-email">E-mailadres:</label>
+                    <input type="email" class="form-control" id="login-email" placeholder="je@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="login-password">Wachtwoord:</label>
+                    <input type="password" class="form-control" id="login-password" placeholder="Wachtwoord" required>
+                </div>
+                
+                <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+                    <input type="checkbox" id="remember-me" style="margin: 0; flex-shrink: 0;">
+                    <label for="remember-me" style="margin: 0; font-size: 0.9rem; cursor: pointer;">Onthoud mij</label>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" id="login-btn" onclick="loginUser()">
+                        <span>🔑 Inloggen</span>
+                    </button>
+                </div>
+                
+                <p style="margin-top: 1.5rem; font-size: 0.875rem;">
+                    Nog geen account? 
+                    <button id="show-register" onclick="showRegisterForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Registreren</button>
+                </p>
             </div>
             
-            <p style="margin-top: 1.5rem; font-size: 0.875rem;">
-                Nieuw hier? 
-                <button id="show-register" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Registreren</button>
-            </p>
+            <div id="register-form" class="hidden">
+                <h2>Account Aanmaken</h2>
+                <p>Maak een nieuw account aan voor Ademruimte</p>
+                
+                <div class="form-group">
+                    <label for="register-name">Volledige naam:</label>
+                    <input type="text" class="form-control" id="register-name" placeholder="Je naam" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-email">E-mailadres:</label>
+                    <input type="email" class="form-control" id="register-email" placeholder="je@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-password">Wachtwoord:</label>
+                    <input type="password" class="form-control" id="register-password" placeholder="Minimaal 6 karakters" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-password-confirm">Bevestig wachtwoord:</label>
+                    <input type="password" class="form-control" id="register-password-confirm" placeholder="Herhaal wachtwoord" required>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-success" id="register-btn" onclick="registerUser()">
+                        <span>✅ Account Aanmaken</span>
+                    </button>
+                </div>
+                
+                <p style="margin-top: 1.5rem; font-size: 0.875rem;">
+                    Al een account? 
+                    <button onclick="showLoginForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Inloggen</button>
+                </p>
+            </div>
         </div>
     </div>
 
@@ -838,159 +889,10 @@
             <div class="user-info" id="user-info">
                 <div class="spinner"></div>
             </div>
-            <!-- Voeg deze CSS toe in je <style> sectie -->
-<style>
-    /* Logo container styling - voeg dit toe aan je bestaande CSS */
-    .logo-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 0.5rem;
-        position: relative;
-        z-index: 1;
-    }
-
-    .logo-svg {
-        height: clamp(80px, 10vw, 100px);
-        width: auto;
-        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
-    }
-
-    /* Eventueel aanpassen van bestaande header styling */
-    header {
-        background: linear-gradient(135deg, #06b6d4, #10b981);
-        color: white;
-        padding: 2rem 1rem;
-        text-align: center;
-        position: relative;
-        min-height: 120px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    }
-</style>
-
-<!-- In je header HTML, vervang de <div class="header-title"> door dit: -->
-<div class="logo-container">
-    <svg viewBox="0 0 320 100" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
-      <defs>
-        <!-- Breathing gradient - matches app colors -->
-        <radialGradient id="breathingCenter" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9">
-            <animate attributeName="stop-opacity" values="0.9;0.4;0.9" dur="4s" repeatCount="indefinite"/>
-          </stop>
-          <stop offset="30%" style="stop-color:#10b981;stop-opacity:0.7">
-            <animate attributeName="stop-opacity" values="0.7;0.3;0.7" dur="4s" repeatCount="indefinite"/>
-          </stop>
-          <stop offset="70%" style="stop-color:#06b6d4;stop-opacity:0.5">
-            <animate attributeName="stop-opacity" values="0.5;0.2;0.5" dur="4s" repeatCount="indefinite"/>
-          </stop>
-          <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0.3">
-            <animate attributeName="stop-opacity" values="0.3;0.1;0.3" dur="4s" repeatCount="indefinite"/>
-          </stop>
-        </radialGradient>
-        
-        <!-- Text gradient -->
-        <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" style="stop-color:#ffffff"/>
-          <stop offset="50%" style="stop-color:#f0f9ff"/>
-          <stop offset="100%" style="stop-color:#e0f2fe"/>
-        </linearGradient>
-        
-        <!-- Subtle shadow for depth -->
-        <filter id="softGlow">
-          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-          <feMerge> 
-            <feMergeNode in="coloredBlur"/>
-            <feMergeNode in="SourceGraphic"/> 
-          </feMerge>
-        </filter>
-      </defs>
-      
-      <!-- Main breathing circle - represents lungs/breath -->
-      <circle cx="50" cy="50" r="35" fill="url(#breathingCenter)" opacity="0.4">
-        <animate attributeName="r" values="35;42;35" dur="4s" repeatCount="indefinite"/>
-        <animate attributeName="opacity" values="0.4;0.7;0.4" dur="4s" repeatCount="indefinite"/>
-      </circle>
-      
-      <!-- Inner breathing ring -->
-      <circle cx="50" cy="50" r="20" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1">
-        <animate attributeName="r" values="20;25;20" dur="4s" repeatCount="indefinite"/>
-        <animate attributeName="stroke-opacity" values="0.6;0.9;0.6" dur="4s" repeatCount="indefinite"/>
-      </circle>
-      
-      <!-- Floating breath particles - slow, calming movement -->
-      <g opacity="0.8">
-        <circle cx="25" cy="25" r="2" fill="#ffffff">
-          <animateTransform attributeName="transform" type="translate" values="0,0; 2,3; 0,0" dur="6s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" values="0.8;0.4;0.8" dur="6s" repeatCount="indefinite"/>
-        </circle>
-        
-        <circle cx="75" cy="30" r="1.5" fill="#10b981">
-          <animateTransform attributeName="transform" type="translate" values="0,0; -1,2; 0,0" dur="5s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" values="0.7;0.3;0.7" dur="5s" repeatCount="indefinite"/>
-        </circle>
-        
-        <circle cx="30" cy="75" r="1.8" fill="#06b6d4">
-          <animateTransform attributeName="transform" type="translate" values="0,0; 3,-1; 0,0" dur="7s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" values="0.6;0.9;0.6" dur="7s" repeatCount="indefinite"/>
-        </circle>
-        
-        <circle cx="70" cy="70" r="2.2" fill="rgba(255,255,255,0.8)">
-          <animateTransform attributeName="transform" type="translate" values="0,0; -2,-2; 0,0" dur="5.5s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" values="0.8;0.3;0.8" dur="5.5s" repeatCount="indefinite"/>
-        </circle>
-      </g>
-      
-      <!-- Wave lines representing breath flow -->
-      <g stroke="rgba(255,255,255,0.5)" stroke-width="1.5" fill="none" opacity="0.7">
-        <path d="M 15 45 Q 25 40 35 45 Q 45 50 55 45" stroke-dasharray="2,4">
-          <animate attributeName="opacity" values="0.7;0.3;0.7" dur="3s" repeatCount="indefinite"/>
-          <animateTransform attributeName="transform" type="translate" values="0,0; 5,0; 0,0" dur="3s" repeatCount="indefinite"/>
-        </path>
-        
-        <path d="M 15 55 Q 25 60 35 55 Q 45 50 55 55" stroke-dasharray="3,3">
-          <animate attributeName="opacity" values="0.5;0.8;0.5" dur="3.5s" repeatCount="indefinite"/>
-          <animateTransform attributeName="transform" type="translate" values="0,0; -3,0; 0,0" dur="3.5s" repeatCount="indefinite"/>
-        </path>
-      </g>
-      
-      <!-- Main text -->
-      <text x="110" y="45" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="300" fill="url(#textGrad)" filter="url(#softGlow)">
-        ademruimte
-      </text>
-      
-      <!-- Subtitle -->
-      <text x="110" y="65" font-family="system-ui, -apple-system, sans-serif" font-size="11" fill="rgba(255,255,255,0.85)">
-        your safe breathing space
-      </text>
-      
-      <!-- Accent dots with synchronized breathing -->
-      <g opacity="0.6">
-        <circle cx="290" cy="25" r="2.5" fill="rgba(255,255,255,0.9)">
-          <animate attributeName="cy" values="25;22;25" dur="4s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" values="0.6;1;0.6" dur="4s" repeatCount="indefinite"/>
-        </circle>
-        
-        <circle cx="300" cy="40" r="2" fill="#10b981">
-          <animate attributeName="cy" values="40;37;40" dur="4s" begin="1s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" values="0.7;1;0.7" dur="4s" begin="1s" repeatCount="indefinite"/>
-        </circle>
-        
-        <circle cx="295" cy="60" r="2.2" fill="#06b6d4">
-          <animate attributeName="cy" values="60;57;60" dur="4s" begin="2s" repeatCount="indefinite"/>
-          <animate attributeName="opacity" values="0.5;0.9;0.5" dur="4s" begin="2s" repeatCount="indefinite"/>
-        </circle>
-      </g>
-      
-      <!-- Subtle pulsing outline -->
-      <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.5">
-        <animate attributeName="r" values="45;48;45" dur="8s" repeatCount="indefinite"/>
-        <animate attributeName="stroke-opacity" values="0.2;0.4;0.2" dur="8s" repeatCount="indefinite"/>
-      </circle>
-  </svg>
-</div>
+            <div class="header-title">
+                <h1>Ademruimte</h1>
+                <p>Evidence-based hulp bij hyperventilatie en maagklachten</p>
+            </div>
         </header>
 
         <nav class="nav-tabs">
@@ -1084,7 +986,7 @@
                         <div class="form-group">
                             <label for="breathing-pattern">Selecteer patroon:</label>
                             <select class="form-control" id="breathing-pattern" onchange="updateBreathingPattern()">
-                                <option value="gentle" selected>Mini breath holds</option>
+                                <option value="gentle" selected>Zachte oefening (10 sec vrij ademhalen + 3 sec vasthouden)</option>
                                 <option value="standard">4-7-8 Standaard</option>
                                 <option value="advanced">6-8-10 Gevorderd</option>
                             </select>
@@ -1294,7 +1196,7 @@
             </p>
         </div>
     </footer>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+
 <script type="module">
     // Firebase configuration (exact same credentials)
     const firebaseConfig = {
@@ -1356,22 +1258,15 @@
     async function initFirebase() {
         try {
             const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
-            const { getAuth, onAuthStateChanged, signInWithRedirect, GoogleAuthProvider, getRedirectResult } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, browserSessionPersistence } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
             const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
 
             app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
 
-            // Check for redirect result
-            try {
-                const result = await getRedirectResult(auth);
-                if (result) {
-                    console.log('Google sign-in successful:', result.user.email);
-                }
-            } catch (error) {
-                console.log('Redirect result error:', error);
-            }
+            // Set persistence based on remember me (default to session)
+            await setPersistence(auth, browserSessionPersistence);
 
             // Auth state observer
             onAuthStateChanged(auth, async (user) => {
@@ -1431,11 +1326,14 @@
     function updateUserInfo() {
         const userInfo = document.getElementById('user-info');
         if (currentUser) {
-            const displayName = currentUser.displayName || currentUser.email || 'Gebruiker';
-            const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            const displayName = currentUser.displayName || currentUser.email?.split('@')[0] || 'Gebruiker';
+            const initials = displayName.includes('@') ? 
+                displayName.split('@')[0].substring(0, 2).toUpperCase() :
+                displayName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
             
             userInfo.innerHTML = `
                 <div class="user-avatar">${initials}</div>
+                <span style="font-weight: 500;">${initials}</span>
                 <button class="logout-btn" onclick="logout()">Uitloggen</button>
             `;
         } else {
@@ -1484,18 +1382,146 @@
     }
 
     // ============================================
-    // AUTHENTICATION
+    // AUTHENTICATION FUNCTIONS
     // ============================================
 
-    window.loginWithGoogle = async function() {
-        try {
-            const { GoogleAuthProvider, signInWithRedirect } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
-            const provider = new GoogleAuthProvider();
-            await signInWithRedirect(auth, provider);
-        } catch (error) {
-            console.error('Google login error:', error);
-            showUserMessage('Inloggen mislukt: ' + error.message, 'error');
+    window.showLoginForm = function() {
+        document.getElementById('login-form').classList.remove('hidden');
+        document.getElementById('register-form').classList.add('hidden');
+        
+        // Reset register form
+        document.getElementById('register-name').value = '';
+        document.getElementById('register-email').value = '';
+        document.getElementById('register-password').value = '';
+        document.getElementById('register-password-confirm').value = '';
+    };
+
+    window.showRegisterForm = function() {
+        document.getElementById('login-form').classList.add('hidden');
+        document.getElementById('register-form').classList.remove('hidden');
+        
+        // Reset login form
+        document.getElementById('login-email').value = '';
+        document.getElementById('login-password').value = '';
+        document.getElementById('remember-me').checked = false;
+    };
+
+    window.loginUser = async function() {
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        const rememberMe = document.getElementById('remember-me').checked;
+
+        if (!email || !password) {
+            showUserMessage('Vul alle velden in', 'warning');
+            return;
         }
+
+        const loginBtn = document.getElementById('login-btn');
+        const originalText = loginBtn.innerHTML;
+        loginBtn.innerHTML = '<div class="spinner" style="width: 16px; height: 16px;"></div> Inloggen...';
+        loginBtn.disabled = true;
+
+        try {
+            const { signInWithEmailAndPassword, setPersistence, browserLocalPersistence, browserSessionPersistence } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            
+            // Set persistence based on remember me checkbox
+            const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence;
+            await setPersistence(auth, persistence);
+            
+            await signInWithEmailAndPassword(auth, email, password);
+            showUserMessage('✅ Succesvol ingelogd!', 'success');
+            
+        } catch (error) {
+            console.error('Login error:', error);
+            let errorMessage = 'Inloggen mislukt. Controleer je gegevens.';
+            
+            switch (error.code) {
+                case 'auth/invalid-email':
+                    errorMessage = 'Ongeldig e-mailadres.';
+                    break;
+                case 'auth/user-disabled':
+                    errorMessage = 'Dit account is uitgeschakeld.';
+                    break;
+                case 'auth/user-not-found':
+                    errorMessage = 'Geen account gevonden met dit e-mailadres.';
+                    break;
+                case 'auth/wrong-password':
+                    errorMessage = 'Onjuist wachtwoord.';
+                    break;
+                case 'auth/invalid-credential':
+                    errorMessage = 'Ongeldige inloggegevens.';
+                    break;
+            }
+            
+            showUserMessage(errorMessage, 'error');
+        }
+
+        loginBtn.innerHTML = originalText;
+        loginBtn.disabled = false;
+    };
+
+    window.registerUser = async function() {
+        const name = document.getElementById('register-name').value.trim();
+        const email = document.getElementById('register-email').value.trim();
+        const password = document.getElementById('register-password').value;
+        const passwordConfirm = document.getElementById('register-password-confirm').value;
+
+        if (!name || !email || !password || !passwordConfirm) {
+            showUserMessage('Vul alle velden in', 'warning');
+            return;
+        }
+
+        if (password !== passwordConfirm) {
+            showUserMessage('Wachtwoorden komen niet overeen', 'warning');
+            return;
+        }
+
+        if (password.length < 6) {
+            showUserMessage('Wachtwoord moet minimaal 6 karakters bevatten', 'warning');
+            return;
+        }
+
+        const registerBtn = document.getElementById('register-btn');
+        const originalText = registerBtn.innerHTML;
+        registerBtn.innerHTML = '<div class="spinner" style="width: 16px; height: 16px;"></div> Account aanmaken...';
+        registerBtn.disabled = true;
+
+        try {
+            const { createUserWithEmailAndPassword, updateProfile } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            
+            // Update user profile with display name
+            await updateProfile(userCredential.user, {
+                displayName: name
+            });
+
+            showUserMessage('✅ Account succesvol aangemaakt!', 'success');
+            
+        } catch (error) {
+            console.error('Registration error:', error);
+            let errorMessage = 'Registratie mislukt. Probeer het opnieuw.';
+            
+            switch (error.code) {
+                case 'auth/email-already-in-use':
+                    errorMessage = 'Dit e-mailadres is al in gebruik.';
+                    break;
+                case 'auth/invalid-email':
+                    errorMessage = 'Ongeldig e-mailadres.';
+                    break;
+                case 'auth/operation-not-allowed':
+                    errorMessage = 'E-mail/wachtwoord accounts zijn uitgeschakeld.';
+                    break;
+                case 'auth/weak-password':
+                    errorMessage = 'Wachtwoord is te zwak.';
+                    break;
+            }
+            
+            showUserMessage(errorMessage, 'error');
+        }
+
+        registerBtn.innerHTML = originalText;
+        registerBtn.disabled = false;
     };
 
     window.logout = async function() {
@@ -2187,8 +2213,10 @@
         if (hour >= 12) timeGreeting = 'Goedemiddag';
         if (hour >= 18) timeGreeting = 'Goedenavond';
         
-        const name = currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'daar';
-        greeting.textContent = `${timeGreeting}, ${name}!`;
+        const displayName = currentUser.displayName || currentUser.email?.split('@')[0] || 'daar';
+        const firstName = displayName.includes(' ') ? displayName.split(' ')[0] : displayName;
+        
+        greeting.textContent = `${timeGreeting}, ${firstName}!`;
         
         // Calculate stats
         const allCPData = [...userStats.cpMeasurements, ...allCPMeasurements]
@@ -2496,8 +2524,18 @@
             });
         });
         
-        // Setup Google login
-        document.getElementById('google-login').addEventListener('click', loginWithGoogle);
+        // Setup login form handlers
+        document.getElementById('login-email').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') loginUser();
+        });
+        
+        document.getElementById('login-password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') loginUser();
+        });
+        
+        document.getElementById('register-password-confirm').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') registerUser();
+        });
         
         // Setup range sliders
         document.getElementById('entry-before').addEventListener('input', (e) => {
@@ -2530,6 +2568,10 @@
         try {
             await initFirebase();
             console.log('✅ Ademruimte app initialization completed successfully');
+            
+            // Ensure login form is shown by default
+            showLoginForm();
+            
         } catch (error) {
             console.error('❌ App initialization failed:', error);
             updateStatusIndicator('error');
@@ -2547,19 +2589,6 @@
     });
 
     console.log('📱 Ademruimte app loaded successfully');
-        function handleCredentialResponse(response) {
-  // Decode the ID token to get the user's information.
-  const idToken = response.credential;
-  const decodedToken = jwt_decode(idToken); // Je hebt een JWT-bibliotheek nodig zoals jwt-decode
-  console.log('Ingelogde gebruiker:', decodedToken);
-  // Nu kun je de gebruikersinformatie gebruiken om de UI aan te passen.
-  // Bijvoorbeeld: verander een "Inloggen"-knop in "Uitloggen".
-  document.getElementById('profile-info').innerHTML = `
-    <h3>Welkom, ${decodedToken.name}</h3>
-    <img src="${decodedToken.picture}" alt="Profielafbeelding">
-  `;
-}
 </script>
-    
 </body>
 </html>

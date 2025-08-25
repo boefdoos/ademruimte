@@ -452,7 +452,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        font-size: 1.2rem;
         font-weight: 600;
         color: var(--primary-color);
         transition: all 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
@@ -460,9 +460,12 @@
         background: rgba(6, 182, 212, 0.1);
         transform: scale(1);
         text-align: center;
-        line-height: 1.2;
-        padding: 1rem;
+        line-height: 1.3;
+        padding: 2rem;
         box-sizing: border-box;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
     }
 
     .breathing-circle.inhale {
@@ -680,7 +683,8 @@
         .breathing-circle {
             width: 150px;
             height: 150px;
-            font-size: 1.25rem;
+            font-size: 1rem;
+            padding: 1.5rem;
         }
         
         .cp-display {
@@ -758,6 +762,13 @@
     #crisis-protocol .card {
         animation: slideInUp 0.4s ease-out;
         border: 2px solid var(--primary-color);
+    }
+
+    #crisis-protocol .breathing-circle {
+        width: 150px;
+        height: 150px;
+        font-size: 1.1rem;
+        padding: 1.5rem;
     }
 
     @keyframes slideInUp {
@@ -964,7 +975,7 @@
             </div>
             <div class="header-title">
                 <h1>Ademruimte</h1>
-                <p>Evidence-based hulp bij hyperventilatie en maagklachten</p>
+                <p>Your safe breathing space</p>
             </div>
         </header>
 
@@ -1404,7 +1415,7 @@
             duration: 30,
             title: "🛑 STOP - Je bent veilig",
             instructions: "Dit is hyperventilatie en het gaat voorbij. Leg je hand op je buik en voel je ademhaling.",
-            breathingText: "Voel je ademhaling...",
+            breathingText: "Voel je buik...",
             encouragement: "Je bent veilig. Dit gevoel is tijdelijk."
         },
         {
@@ -1412,7 +1423,7 @@
             duration: 90,
             title: "🫁 Minder Ademhalen",
             instructions: "NIET diep ademen! Neem kleine, ondiepe ademhalingen. Houd je adem 2-3 seconden vast tussen elke ademhaling.",
-            breathingText: "Kleine ademhaling... vasthouden... uit...",
+            breathingText: "Klein inademen...",
             encouragement: "Perfect! Minder ademen helpt je CO2 te herstellen."
         },
         {
@@ -1420,7 +1431,7 @@
             duration: 60, 
             title: "👁️ Focus naar Buiten",
             instructions: "Kijk om je heen en benoem: 5 dingen die je ZIET, 4 dingen die je VOELT, 3 dingen die je HOORT.",
-            breathingText: "Zoek 5 dingen die je ziet...",
+            breathingText: "Kijk om je heen...",
             encouragement: "Je hersenen komen terug in balans. Goed bezig!"
         },
         {
@@ -1428,7 +1439,7 @@
             duration: 60,
             title: "🌊 Natuurlijke Ademhaling", 
             instructions: "Laat je ademhaling nu natuurlijk worden. Adem rustig in door je neus, langzaam uit door je mond.",
-            breathingText: "Natuurlijk ademhalen...",
+            breathingText: "Natuurlijk...",
             encouragement: "Je lichaam herstelt zich. De paniek neemt af."
         },
         {
@@ -1436,7 +1447,7 @@
             duration: 30,
             title: "✅ Je hebt het Overwonnen",
             instructions: "Het ergste is voorbij. Je hebt controle teruggekregen. Je bent sterker dan je angst.",
-            breathingText: "Je bent rustig en veilig",
+            breathingText: "Je bent sterk! 💪",
             encouragement: "🎉 Geweldig gedaan! Je hebt de crisis doorstaan."
         }
     ];
@@ -1543,7 +1554,6 @@
             
             userInfo.innerHTML = `
                 <div class="user-avatar">${initials}</div>
-                <span style="font-weight: 500;">${initials}</span>
                 <button class="logout-btn" onclick="logout()">Uitloggen</button>
             `;
         } else {
@@ -1930,7 +1940,7 @@
         document.getElementById('cycle-count').textContent = '0';
         
         // Preparation phase
-        circle.textContent = "Bereid je voor...";
+        circle.textContent = "Bereid je voor... 🧘";
         circle.className = "breathing-circle";
         circle.style.transform = 'scale(1)';
         
@@ -1956,13 +1966,13 @@
             
             switch(currentPhase) {
                 case 'freeBreathing':
-                    circle.textContent = `Adem vrij (2x in/uit) - ${phaseTime}s`;
+                    circle.textContent = `Vrij ademen - ${phaseTime}s`;
                     circle.className = "breathing-circle";
                     document.getElementById('current-phase').textContent = 'Vrij ademhalen';
                     
                     // Subtle breathing animation - gentle pulsing
                     const breathingPhase = Math.sin((phaseTime * Math.PI * 4) / 10); // 4 breaths in 10 seconds
-                    const gentleScale = 1 + (0.1 * breathingPhase);
+                    const gentleScale = 1 + (0.08 * breathingPhase);
                     circle.style.transform = `scale(${gentleScale})`;
                     
                     if (phaseTime >= (pattern.freeBreathing || 10)) {
@@ -1972,13 +1982,13 @@
                     break;
                     
                 case 'inhale':
-                    circle.textContent = `Inademen (${phaseTime})`;
+                    circle.textContent = `Inademen (${phaseTime}s)`;
                     circle.className = "breathing-circle inhale";
                     document.getElementById('current-phase').textContent = 'Inademen';
                     
                     // Smooth scaling animation
                     const inhaleProgress = phaseTime / pattern.inhale;
-                    const inhaleScale = 1 + (0.2 * Math.min(inhaleProgress, 1));
+                    const inhaleScale = 1 + (0.15 * Math.min(inhaleProgress, 1));
                     circle.style.transform = `scale(${inhaleScale})`;
                     
                     if (phaseTime >= pattern.inhale) {
@@ -1989,15 +1999,15 @@
                     
                 case 'hold':
                     if (breathingPattern === 'gentle') {
-                        circle.textContent = `Vasthouden (${phaseTime})`;
+                        circle.textContent = `Vasthouden (${phaseTime}s)`;
                         circle.className = "breathing-circle hold";
                         document.getElementById('current-phase').textContent = 'Vasthouden';
                         circle.style.transform = 'scale(1.1)';
                     } else {
-                        circle.textContent = `Vasthouden (${phaseTime})`;
+                        circle.textContent = `Vasthouden (${phaseTime}s)`;
                         circle.className = "breathing-circle hold";
                         document.getElementById('current-phase').textContent = 'Vasthouden';
-                        circle.style.transform = 'scale(1.2)';
+                        circle.style.transform = 'scale(1.15)';
                     }
                     
                     const holdDuration = breathingPattern === 'gentle' ? pattern.hold : pattern.hold;
@@ -2022,13 +2032,13 @@
                     break;
                     
                 case 'exhale':
-                    circle.textContent = `Uitademen (${phaseTime})`;
+                    circle.textContent = `Uitademen (${phaseTime}s)`;
                     circle.className = "breathing-circle exhale";
                     document.getElementById('current-phase').textContent = 'Uitademen';
                     
                     // Smooth scaling animation
                     const exhaleProgress = phaseTime / pattern.exhale;
-                    const exhaleScale = 1.2 - (0.4 * Math.min(exhaleProgress, 1));
+                    const exhaleScale = 1.15 - (0.3 * Math.min(exhaleProgress, 1));
                     circle.style.transform = `scale(${exhaleScale})`;
                     
                     if (phaseTime >= pattern.exhale) {
@@ -2053,7 +2063,7 @@
         clearInterval(breathInterval);
         
         const circle = document.getElementById('breathing-circle');
-        circle.textContent = "Goed gedaan!";
+        circle.textContent = "Goed gedaan! 🎉";
         circle.className = "breathing-circle";
         circle.style.transform = 'scale(1)';
         
@@ -2188,6 +2198,8 @@
             
             switch(phase) {
                 case 'small-inhale':
+                    circle.textContent = "Klein inademen...";
+                    circle.className = "breathing-circle inhale";
                     circle.style.transform = 'scale(1.05)';
                     if (phaseTimer >= 2) {
                         phase = 'hold';
@@ -2195,6 +2207,8 @@
                     }
                     break;
                 case 'hold':
+                    circle.textContent = "Vasthouden...";
+                    circle.className = "breathing-circle hold";
                     circle.style.transform = 'scale(1.05)';
                     if (phaseTimer >= 3) {
                         phase = 'small-exhale';
@@ -2202,6 +2216,8 @@
                     }
                     break;
                 case 'small-exhale':
+                    circle.textContent = "Klein uitademen...";
+                    circle.className = "breathing-circle exhale";
                     circle.style.transform = 'scale(0.95)';
                     if (phaseTimer >= 2) {
                         phase = 'small-inhale';
@@ -2215,6 +2231,14 @@
     function startGroundingAnimation(circle) {
         let colorIndex = 0;
         const colors = ['#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+        const texts = [
+            "Zoek 5 dingen die je ziet...",
+            "Voel 4 verschillende texturen...", 
+            "Luister naar 3 geluiden...",
+            "Focus op je omgeving...",
+            "Je bent hier en nu..."
+        ];
+        let textIndex = 0;
         
         const groundingInterval = setInterval(() => {
             if (!crisisProtocolActive || crisisStep !== 2) {
@@ -2223,8 +2247,10 @@
             }
             
             circle.style.borderColor = colors[colorIndex];
+            circle.textContent = texts[textIndex];
             colorIndex = (colorIndex + 1) % colors.length;
-        }, 2000);
+            textIndex = (textIndex + 1) % texts.length;
+        }, 3000);
     }
 
     function startGentleBreathing(circle) {
@@ -2240,8 +2266,10 @@
             phaseTimer++;
             
             if (phase === 'inhale') {
+                circle.textContent = "Rustig inademen...";
+                circle.className = "breathing-circle inhale";
                 const progress = phaseTimer / 4;
-                const scale = 1 + (0.1 * Math.min(progress, 1));
+                const scale = 1 + (0.08 * Math.min(progress, 1));
                 circle.style.transform = `scale(${scale})`;
                 
                 if (phaseTimer >= 4) {
@@ -2249,8 +2277,10 @@
                     phaseTimer = 0;
                 }
             } else {
+                circle.textContent = "Langzaam uitademen...";
+                circle.className = "breathing-circle exhale";
                 const progress = phaseTimer / 6;
-                const scale = 1.1 - (0.1 * Math.min(progress, 1));
+                const scale = 1.08 - (0.08 * Math.min(progress, 1));
                 circle.style.transform = `scale(${scale})`;
                 
                 if (phaseTimer >= 6) {
@@ -2298,35 +2328,39 @@
         
         const circle = document.getElementById('crisis-circle');
         let phase = 'inhale';
-        let count = 0;
+        let phaseCount = 0;
+        
+        // Reset circle to initial state
+        circle.style.transform = 'scale(1)';
+        circle.className = "breathing-circle";
         
         crisisInterval = setInterval(() => {
-            count++;
+            phaseCount++;
             
             if (phase === 'inhale') {
-                circle.textContent = `Adem langzaam in (${count})`;
+                circle.textContent = `Adem in (${phaseCount})`;
                 circle.className = "breathing-circle inhale";
                 
                 // Smooth inhale animation
-                const inhaleProgress = count / 4;
-                const inhaleScale = 1 + (0.2 * Math.min(inhaleProgress, 1));
+                const inhaleProgress = phaseCount / 4;
+                const inhaleScale = 1 + (0.15 * Math.min(inhaleProgress, 1));
                 circle.style.transform = `scale(${inhaleScale})`;
                 
-                if (count >= 4) {
-                    count = 0;
+                if (phaseCount >= 4) {
+                    phaseCount = 0;
                     phase = 'exhale';
                 }
             } else {
-                circle.textContent = `Adem langzaam uit (${count})`;
+                circle.textContent = `Adem uit (${phaseCount})`;
                 circle.className = "breathing-circle exhale";
                 
                 // Smooth exhale animation
-                const exhaleProgress = count / 6;
-                const exhaleScale = 1.2 - (0.4 * Math.min(exhaleProgress, 1));
+                const exhaleProgress = phaseCount / 6;
+                const exhaleScale = 1.15 - (0.25 * Math.min(exhaleProgress, 1));
                 circle.style.transform = `scale(${exhaleScale})`;
                 
-                if (count >= 6) {
-                    count = 0;
+                if (phaseCount >= 6) {
+                    phaseCount = 0;
                     phase = 'inhale';
                 }
             }
@@ -2337,10 +2371,11 @@
         clearInterval(crisisInterval);
         document.getElementById('crisis-breathing').classList.add('hidden');
         
-        // Reset circle
+        // Reset circle to original state
         const circle = document.getElementById('crisis-circle');
         circle.style.transform = 'scale(1)';
         circle.className = "breathing-circle";
+        circle.textContent = "Volg de cirkel";
         
         // Auto-open journal modal
         setTimeout(() => {

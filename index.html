@@ -704,6 +704,11 @@
         
         .button-group {
             flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .button-group .btn {
+            width: 100%;
         }
     }
 
@@ -775,7 +780,7 @@
         box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
     }
 
-    /* Symptom Checkboxes */
+    /* Sensatie Checkboxes */
     .symptom-checkbox-container {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -1072,6 +1077,7 @@
                     <div style="margin-bottom: 1rem;">
                         <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">📈 Statistiek periode:</label>
                         <div class="button-group">
+                            <button class="btn btn-primary" id="chart-10days" onclick="updateChartFilter('10days')">Laatste 10 dagen</button>
                             <button class="btn btn-primary" id="chart-30days" onclick="updateChartFilter('30days')">Laatste 30 dagen</button>
                             <button class="btn btn-primary" id="chart-all" onclick="updateChartFilter('all')">Alle data</button>
                         </div>
@@ -1166,11 +1172,15 @@
             </div>
 
             <div class="form-group">
-                <label>Symptomen (selecteer van toepassing):</label>
+                <label>Sensaties (selecteer van toepassing):</label>
                 <div class="symptom-checkbox-container">
                     <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
                         <input type="checkbox" class="symptom-checkbox" data-symptom="Kortademigheid">
                         <label>Kortademigheid</label>
+                    </div>
+                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                        <input type="checkbox" class="symptom-checkbox" data-symptom="Luchthonger">
+                        <label>Luchthonger</label>
                     </div>
                     <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
                         <input type="checkbox" class="symptom-checkbox" data-symptom="Maagpijn">
@@ -1187,6 +1197,34 @@
                     <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
                         <input type="checkbox" class="symptom-checkbox" data-symptom="Tintelingen">
                         <label>Tintelingen</label>
+                    </div>
+                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                        <input type="checkbox" class="symptom-checkbox" data-symptom="Geforceerd gapen">
+                        <label>Geforceerd gapen</label>
+                    </div>
+                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                        <input type="checkbox" class="symptom-checkbox" data-symptom="Neus optrekken">
+                        <label>Neus optrekken</label>
+                    </div>
+                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                        <input type="checkbox" class="symptom-checkbox" data-symptom="Piekergedachten">
+                        <label>Piekergedachten</label>
+                    </div>
+                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                        <input type="checkbox" class="symptom-checkbox" data-symptom="Frustratie">
+                        <label>Frustratie</label>
+                    </div>
+                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                        <input type="checkbox" class="symptom-checkbox" data-symptom="Onwerkelijke gevoelens">
+                        <label>Onwerkelijke gevoelens</label>
+                    </div>
+                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                        <input type="checkbox" class="symptom-checkbox" data-symptom="Vermoeidheid">
+                        <label>Vermoeidheid</label>
+                    </div>
+                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                        <input type="checkbox" class="symptom-checkbox" data-symptom="Paniek">
+                        <label>Paniek</label>
                     </div>
                     <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
                         <input type="checkbox" class="symptom-checkbox" data-symptom="Angst">
@@ -1256,7 +1294,7 @@
     let allJournalEntries = [];
     let allCPMeasurements = [];
     let progressChart = null;
-    let chartFilter = 'all'; // New variable to track chart filter
+    let chartFilter = '10days'; // New default: last 10 days
 
     // Breathing exercise variables
     let breathInterval = null;
@@ -1415,9 +1453,9 @@
         // Load data based on tab
         if (tabName === 'dagboek') {
             createProgressChart();
-            // Set default active state for chart filter
+            // Set default active state for chart filter (10 days)
             setTimeout(() => {
-                document.getElementById('chart-all').classList.add('active');
+                document.getElementById('chart-10days').classList.add('active');
             }, 100);
         }
     }
@@ -2017,13 +2055,13 @@
     window.saveJournalEntry = async function() {
         try {
             // Collect form data
-            const symptoms = Array.from(document.querySelectorAll('.symptom-checkbox:checked'))
+            const sensations = Array.from(document.querySelectorAll('.symptom-checkbox:checked'))
                                 .map(cb => cb.dataset.symptom);
             
             const entry = {
                 techniekGebruikt: document.getElementById('entry-technique').value,
                 trigger: document.getElementById('entry-trigger').value,
-                symptomen: symptoms,
+                sensaties: sensations,
                 intensiteitVoor: parseInt(document.getElementById('entry-before').value),
                 intensiteitNa: parseInt(document.getElementById('entry-after').value),
                 resultaat: document.getElementById('entry-result').value,
@@ -2040,7 +2078,7 @@
             }
 
             if (!entry.resultaat) {
-                showUserMessage('Selecteer een resultaat voor de dagboek entry.', 'warning');
+                showUserMessage('⚠️ Selecteer een resultaat voor de dagboek entry.', 'warning');
                 return;
             }
 
@@ -2142,10 +2180,10 @@
             generateInsights();
             createProgressChart();
             
-            // Set default chart filter state
+            // Set default chart filter state (10 days)
             if (currentTab === 'dagboek') {
                 setTimeout(() => {
-                    document.getElementById('chart-all').classList.add('active');
+                    document.getElementById('chart-10days').classList.add('active');
                 }, 100);
             }
             
@@ -2243,7 +2281,8 @@
                         </div>
                         
                         ${entry.trigger ? `<div style="margin: 0.5rem 0;"><small><strong>Trigger:</strong> ${entry.trigger}</small></div>` : ''}
-                        ${entry.symptomen && entry.symptomen.length ? `<div style="margin: 0.5rem 0;"><small><strong>Symptomen:</strong> ${entry.symptomen.join(', ')}</small></div>` : ''}
+                        ${entry.sensaties && entry.sensaties.length ? `<div style="margin: 0.5rem 0;"><small><strong>Sensaties:</strong> ${entry.sensaties.join(', ')}</small></div>` : ''}
+                        ${entry.symptomen && entry.symptomen.length ? `<div style="margin: 0.5rem 0;"><small><strong>Sensaties:</strong> ${entry.symptomen.join(', ')}</small></div>` : ''}
                         
                         <div style="margin: 0.5rem 0;">
                             <span style="background: ${improvementColor}; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem;">
@@ -2300,7 +2339,9 @@
             text += `Intensiteit vóór: ${entry.intensiteitVoor}/10\n`;
             text += `Intensiteit ná: ${entry.intensiteitNa}/10\n`;
             if (entry.cpScore) text += `CP Score: ${entry.cpScore} seconden\n`;
-            if (entry.symptomen?.length) text += `Symptomen: ${entry.symptomen.join(', ')}\n`;
+            // Support both old (symptomen) and new (sensaties) entries
+            const sensations = entry.sensaties || entry.symptomen;
+            if (sensations?.length) text += `Sensaties: ${sensations.join(', ')}\n`;
             text += `Resultaat: ${entry.resultaat}\n`;
             text += `Notities: ${entry.notities || 'Geen'}\n`;
             text += '\n---\n\n';
@@ -2435,7 +2476,10 @@
         let filteredEntries = [...allJournalEntries];
         const now = new Date();
         
-        if (chartFilter === '30days') {
+        if (chartFilter === '10days') {
+            const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
+            filteredEntries = allJournalEntries.filter(entry => entry.timestamp >= tenDaysAgo);
+        } else if (chartFilter === '30days') {
             const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
             filteredEntries = allJournalEntries.filter(entry => entry.timestamp >= thirtyDaysAgo);
         }
@@ -2443,8 +2487,8 @@
         // Sort by timestamp (oldest first for chart)
         filteredEntries.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
         
-        // Take last 50 entries to keep chart readable
-        const chartEntries = filteredEntries.slice(-50);
+        // Take last 50 entries to keep chart readable (for 'all' filter)
+        const chartEntries = chartFilter === 'all' ? filteredEntries.slice(-50) : filteredEntries;
         
         // Prepare data with actual dates
         const chartData = chartEntries.map((entry) => ({
@@ -2458,6 +2502,14 @@
             verbetering: entry.intensiteitVoor - entry.intensiteitNa,
             technique: entry.techniekGebruikt
         }));
+        
+        // Determine chart title based on filter
+        let chartTitle = 'Voortgang Over Tijd';
+        if (chartFilter === '10days') {
+            chartTitle = 'Voortgang Laatste 10 Dagen';
+        } else if (chartFilter === '30days') {
+            chartTitle = 'Voortgang Laatste 30 Dagen';
+        }
         
         progressChart = new Chart(ctx, {
             type: 'line',
@@ -2503,7 +2555,7 @@
                 plugins: {
                     title: {
                         display: true,
-                        text: chartFilter === '30days' ? 'Voortgang Laatste 30 Dagen' : 'Voortgang Over Tijd',
+                        text: chartTitle,
                         font: {
                             size: 16,
                             weight: 'bold'
@@ -2565,6 +2617,7 @@
         });
         
         // Update button active states
+        document.getElementById('chart-10days').classList.remove('active');
         document.getElementById('chart-30days').classList.remove('active');
         document.getElementById('chart-all').classList.remove('active');
         document.getElementById(`chart-${chartFilter}`).classList.add('active');

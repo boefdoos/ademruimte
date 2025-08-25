@@ -514,7 +514,7 @@
 
     /* Messages */
     .message {
-        padding: 1rem;
+        padding: 1rem 1.5rem;
         border-radius: var(--border-radius);
         margin-bottom: 1rem;
         display: flex;
@@ -528,30 +528,44 @@
         z-index: 1000;
         max-width: 350px;
         box-shadow: var(--shadow-md);
+        border: 2px solid transparent;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        word-wrap: break-word;
     }
 
     .message.success {
-        background: rgba(16, 185, 129, 0.9);
+        background: rgba(16, 185, 129, 0.95);
         color: white;
-        border: 1px solid #059669;
+        border-color: #059669;
+        backdrop-filter: blur(10px);
     }
 
     .message.warning {
-        background: rgba(245, 158, 11, 0.9);
+        background: rgba(245, 158, 11, 0.95);
         color: white;
-        border: 1px solid #d97706;
+        border-color: #d97706;
+        backdrop-filter: blur(10px);
     }
 
     .message.danger, .message.error {
-        background: rgba(239, 68, 68, 0.9);
+        background: rgba(239, 68, 68, 0.95);
         color: white;
-        border: 1px solid #dc2626;
+        border-color: #dc2626;
+        backdrop-filter: blur(10px);
+        font-weight: 600;
     }
 
     .message.info {
-        background: rgba(6, 182, 212, 0.9);
+        background: rgba(6, 182, 212, 0.95);
         color: white;
-        border: 1px solid #0891b2;
+        border-color: #0891b2;
+        backdrop-filter: blur(10px);
+    }
+
+    .message:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md), 0 4px 20px rgba(0,0,0,0.1);
     }
 
     @keyframes slideInDown {
@@ -679,6 +693,8 @@
             right: auto;
             max-width: none;
             margin: 1rem 0;
+            left: 50%;
+            transform: translateX(-50%);
         }
         
         .modal-content {
@@ -839,6 +855,10 @@
                     </button>
                 </div>
                 
+                <p style="margin-top: 1rem; font-size: 0.875rem;">
+                    <button onclick="showPasswordResetForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">Wachtwoord vergeten?</button>
+                </p>
+                
                 <p style="margin-top: 1.5rem; font-size: 0.875rem;">
                     Nog geen account? 
                     <button id="show-register" onclick="showRegisterForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Registreren</button>
@@ -877,6 +897,27 @@
                 
                 <p style="margin-top: 1.5rem; font-size: 0.875rem;">
                     Al een account? 
+                    <button onclick="showLoginForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Inloggen</button>
+                </p>
+            </div>
+            
+            <div id="password-reset-form" class="hidden">
+                <h2>Wachtwoord Resetten</h2>
+                <p>Vul je e-mailadres in om een reset link te ontvangen</p>
+                
+                <div class="form-group">
+                    <label for="reset-email">E-mailadres:</label>
+                    <input type="email" class="form-control" id="reset-email" placeholder="je@email.com" required>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-warning" id="reset-btn" onclick="resetPassword()">
+                        <span>📧 Reset Link Versturen</span>
+                    </button>
+                </div>
+                
+                <p style="margin-top: 1.5rem; font-size: 0.875rem;">
+                    Weet je je wachtwoord weer? 
                     <button onclick="showLoginForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Inloggen</button>
                 </p>
             </div>
@@ -1388,22 +1429,41 @@
     window.showLoginForm = function() {
         document.getElementById('login-form').classList.remove('hidden');
         document.getElementById('register-form').classList.add('hidden');
+        document.getElementById('password-reset-form').classList.add('hidden');
         
-        // Reset register form
+        // Reset other forms
         document.getElementById('register-name').value = '';
         document.getElementById('register-email').value = '';
         document.getElementById('register-password').value = '';
         document.getElementById('register-password-confirm').value = '';
+        document.getElementById('reset-email').value = '';
     };
 
     window.showRegisterForm = function() {
         document.getElementById('login-form').classList.add('hidden');
         document.getElementById('register-form').classList.remove('hidden');
+        document.getElementById('password-reset-form').classList.add('hidden');
         
-        // Reset login form
+        // Reset other forms
         document.getElementById('login-email').value = '';
         document.getElementById('login-password').value = '';
         document.getElementById('remember-me').checked = false;
+        document.getElementById('reset-email').value = '';
+    };
+
+    window.showPasswordResetForm = function() {
+        document.getElementById('login-form').classList.add('hidden');
+        document.getElementById('register-form').classList.add('hidden');
+        document.getElementById('password-reset-form').classList.remove('hidden');
+        
+        // Reset other forms
+        document.getElementById('login-email').value = '';
+        document.getElementById('login-password').value = '';
+        document.getElementById('remember-me').checked = false;
+        document.getElementById('register-name').value = '';
+        document.getElementById('register-email').value = '';
+        document.getElementById('register-password').value = '';
+        document.getElementById('register-password-confirm').value = '';
     };
 
     window.loginUser = async function() {
@@ -1412,7 +1472,7 @@
         const rememberMe = document.getElementById('remember-me').checked;
 
         if (!email || !password) {
-            showUserMessage('Vul alle velden in', 'warning');
+            showUserMessage('⚠️ Vul alle velden in', 'warning');
             return;
         }
 
@@ -1433,23 +1493,29 @@
             
         } catch (error) {
             console.error('Login error:', error);
-            let errorMessage = 'Inloggen mislukt. Controleer je gegevens.';
+            let errorMessage = '❌ Inloggen mislukt. Controleer je gegevens.';
             
             switch (error.code) {
                 case 'auth/invalid-email':
-                    errorMessage = 'Ongeldig e-mailadres.';
+                    errorMessage = '⚠️ Ongeldig e-mailadres.';
                     break;
                 case 'auth/user-disabled':
-                    errorMessage = 'Dit account is uitgeschakeld.';
+                    errorMessage = '🚫 Dit account is uitgeschakeld.';
                     break;
                 case 'auth/user-not-found':
-                    errorMessage = 'Geen account gevonden met dit e-mailadres.';
+                    errorMessage = '❓ Geen account gevonden met dit e-mailadres.';
                     break;
                 case 'auth/wrong-password':
-                    errorMessage = 'Onjuist wachtwoord.';
+                    errorMessage = '🔐 Onjuist wachtwoord. Probeer opnieuw.';
                     break;
                 case 'auth/invalid-credential':
-                    errorMessage = 'Ongeldige inloggegevens.';
+                    errorMessage = '❌ Ongeldige inloggegevens. Controleer email en wachtwoord.';
+                    break;
+                case 'auth/too-many-requests':
+                    errorMessage = '⏱️ Te veel pogingen. Probeer het later opnieuw.';
+                    break;
+                case 'auth/network-request-failed':
+                    errorMessage = '📡 Netwerkfout. Controleer je internetverbinding.';
                     break;
             }
             
@@ -1467,17 +1533,17 @@
         const passwordConfirm = document.getElementById('register-password-confirm').value;
 
         if (!name || !email || !password || !passwordConfirm) {
-            showUserMessage('Vul alle velden in', 'warning');
+            showUserMessage('⚠️ Vul alle velden in', 'warning');
             return;
         }
 
         if (password !== passwordConfirm) {
-            showUserMessage('Wachtwoorden komen niet overeen', 'warning');
+            showUserMessage('🔐 Wachtwoorden komen niet overeen', 'warning');
             return;
         }
 
         if (password.length < 6) {
-            showUserMessage('Wachtwoord moet minimaal 6 karakters bevatten', 'warning');
+            showUserMessage('🔒 Wachtwoord moet minimaal 6 karakters bevatten', 'warning');
             return;
         }
 
@@ -1500,20 +1566,23 @@
             
         } catch (error) {
             console.error('Registration error:', error);
-            let errorMessage = 'Registratie mislukt. Probeer het opnieuw.';
+            let errorMessage = '❌ Registratie mislukt. Probeer het opnieuw.';
             
             switch (error.code) {
                 case 'auth/email-already-in-use':
-                    errorMessage = 'Dit e-mailadres is al in gebruik.';
+                    errorMessage = '📧 Dit e-mailadres is al in gebruik.';
                     break;
                 case 'auth/invalid-email':
-                    errorMessage = 'Ongeldig e-mailadres.';
+                    errorMessage = '⚠️ Ongeldig e-mailadres.';
                     break;
                 case 'auth/operation-not-allowed':
-                    errorMessage = 'E-mail/wachtwoord accounts zijn uitgeschakeld.';
+                    errorMessage = '🚫 E-mail/wachtwoord accounts zijn uitgeschakeld.';
                     break;
                 case 'auth/weak-password':
-                    errorMessage = 'Wachtwoord is te zwak.';
+                    errorMessage = '🔒 Wachtwoord is te zwak. Kies een sterker wachtwoord.';
+                    break;
+                case 'auth/network-request-failed':
+                    errorMessage = '📡 Netwerkfout. Controleer je internetverbinding.';
                     break;
             }
             
@@ -1524,14 +1593,65 @@
         registerBtn.disabled = false;
     };
 
+    window.resetPassword = async function() {
+        const email = document.getElementById('reset-email').value.trim();
+
+        if (!email) {
+            showUserMessage('⚠️ Vul je e-mailadres in', 'warning');
+            return;
+        }
+
+        const resetBtn = document.getElementById('reset-btn');
+        const originalText = resetBtn.innerHTML;
+        resetBtn.innerHTML = '<div class="spinner" style="width: 16px; height: 16px;"></div> Versturen...';
+        resetBtn.disabled = true;
+
+        try {
+            const { sendPasswordResetEmail } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            
+            await sendPasswordResetEmail(auth, email);
+            
+            showUserMessage('📧 Wachtwoord reset link verstuurd! Controleer je e-mail.', 'success');
+            
+            // Auto-switch back to login form after successful reset
+            setTimeout(() => {
+                showLoginForm();
+            }, 3000);
+            
+        } catch (error) {
+            console.error('Password reset error:', error);
+            let errorMessage = '❌ Reset mislukt. Probeer het opnieuw.';
+            
+            switch (error.code) {
+                case 'auth/invalid-email':
+                    errorMessage = '⚠️ Ongeldig e-mailadres.';
+                    break;
+                case 'auth/user-not-found':
+                    errorMessage = '❓ Geen account gevonden met dit e-mailadres.';
+                    break;
+                case 'auth/network-request-failed':
+                    errorMessage = '📡 Netwerkfout. Controleer je internetverbinding.';
+                    break;
+                case 'auth/too-many-requests':
+                    errorMessage = '⏱️ Te veel pogingen. Probeer het later opnieuw.';
+                    break;
+            }
+            
+            showUserMessage(errorMessage, 'error');
+        }
+
+        resetBtn.innerHTML = originalText;
+        resetBtn.disabled = false;
+    };
+
     window.logout = async function() {
         try {
             const { signOut } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
             await signOut(auth);
-            showUserMessage('Je bent uitgelogd', 'info');
+            showUserMessage('👋 Je bent uitgelogd', 'info');
         } catch (error) {
             console.error('Logout error:', error);
-            showUserMessage('Uitloggen mislukt', 'error');
+            showUserMessage('❌ Uitloggen mislukt', 'error');
         }
     };
 
@@ -2499,12 +2619,24 @@
         messageEl.className = `message ${type}`;
         messageEl.textContent = message;
         
+        // Add click to dismiss
+        messageEl.style.cursor = 'pointer';
+        messageEl.addEventListener('click', () => {
+            messageEl.remove();
+        });
+        
         document.body.appendChild(messageEl);
         
-        // Auto remove after 5 seconds
+        // Auto remove after different durations based on type
+        const duration = type === 'error' ? 8000 : type === 'warning' ? 6000 : 5000;
         setTimeout(() => {
-            messageEl.remove();
-        }, 5000);
+            if (messageEl.parentNode) {
+                messageEl.remove();
+            }
+        }, duration);
+        
+        // Log to console for debugging
+        console.log(`[${type.toUpperCase()}] ${message}`);
     }
 
     // ============================================
@@ -2533,8 +2665,14 @@
             if (e.key === 'Enter') loginUser();
         });
         
+        // Setup register form handlers
         document.getElementById('register-password-confirm').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') registerUser();
+        });
+        
+        // Setup password reset form handler
+        document.getElementById('reset-email').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') resetPassword();
         });
         
         // Setup range sliders

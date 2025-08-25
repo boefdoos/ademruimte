@@ -754,6 +754,33 @@
         color: white;
     }
 
+    /* Crisis Protocol Specific Styles */
+    #crisis-protocol .card {
+        animation: slideInUp 0.4s ease-out;
+        border: 2px solid var(--primary-color);
+    }
+
+    @keyframes slideInUp {
+        from {
+            transform: translateY(30px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    #protocol-timer {
+        font-family: 'Monaco', 'Menlo', monospace;
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+    }
+
+    #protocol-progress {
+        box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
+    }
+
     /* Loading Animation */
     @keyframes pulse {
         0%, 100% { opacity: 0.4; }
@@ -937,7 +964,7 @@
             </div>
             <div class="header-title">
                 <h1>Ademruimte</h1>
-                <p>Your safe breathing space</p>
+                <p>Evidence-based hulp bij hyperventilatie en maagklachten</p>
             </div>
         </header>
 
@@ -1032,7 +1059,7 @@
                         <div class="form-group">
                             <label for="breathing-pattern">Selecteer patroon:</label>
                             <select class="form-control" id="breathing-pattern" onchange="updateBreathingPattern()">
-                                <option value="gentle" selected>Kleine breath-holds</option>
+                                <option value="gentle" selected>Zachte oefening (10 sec vrij ademhalen + 3 sec vasthouden)</option>
                                 <option value="standard">4-7-8 Standaard</option>
                                 <option value="advanced">6-8-10 Gevorderd</option>
                             </select>
@@ -1102,9 +1129,54 @@
                     <p style="margin-bottom: 2rem;">Directe hulp bij acute hyperventilatie of paniekaanvallen.</p>
 
                     <div class="button-group">
-                        <button class="btn btn-warning" onclick="startCrisisBreathing()">🫁 Nood Ademhaling</button>
+                        <button class="btn btn-warning" onclick="startCrisisProtocol()">🆘 Start Noodprotocol</button>
+                        <button class="btn btn-primary" onclick="startCrisisBreathing()">🫁 Simpele Nood Ademhaling</button>
                     </div>
 
+                    <!-- Crisis Protocol Interface -->
+                    <div id="crisis-protocol" class="hidden" style="margin-top: 2rem; text-align: center;">
+                        <div class="card" style="background: rgba(255,255,255,0.95); color: var(--text-dark); margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                <h3 id="protocol-step-title">🛑 STOP - Je bent veilig</h3>
+                                <div style="background: var(--primary-color); color: white; padding: 0.5rem 1rem; border-radius: 2rem; font-weight: bold; min-width: 80px;">
+                                    <span id="protocol-timer">00:30</span>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 1.5rem;">
+                                <div style="background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid var(--primary-color);">
+                                    <p id="protocol-instructions" style="font-size: 1.1rem; font-weight: 500; margin: 0;">
+                                        Dit is hyperventilatie en het gaat voorbij. Leg je hand op je buik en voel je ademhaling.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="breathing-circle" id="protocol-circle" style="width: 150px; height: 150px; margin: 1rem auto;">
+                                Voel je ademhaling...
+                            </div>
+
+                            <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #10b981; margin-bottom: 1rem;">
+                                <p id="protocol-encouragement" style="margin: 0; font-weight: 500; color: #059669;">
+                                    Je bent veilig. Dit gevoel is tijdelijk.
+                                </p>
+                            </div>
+
+                            <div style="margin-bottom: 1rem;">
+                                <div style="background: rgba(0,0,0,0.1); height: 8px; border-radius: 4px; overflow: hidden;">
+                                    <div id="protocol-progress" style="background: var(--primary-color); height: 100%; width: 0%; transition: width 1s linear;"></div>
+                                </div>
+                                <small style="color: var(--text-light); margin-top: 0.5rem; display: block;">
+                                    Stap <span id="protocol-current-step">1</span> van <span id="protocol-total-steps">5</span>
+                                </small>
+                            </div>
+
+                            <button class="btn btn-danger" onclick="stopCrisisProtocol()" style="margin-top: 1rem;">
+                                Stoppen
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Simple Crisis Breathing -->
                     <div id="crisis-breathing" class="hidden" style="margin-top: 2rem;">
                         <div class="breathing-circle" id="crisis-circle">
                             Volg de cirkel
@@ -1141,6 +1213,7 @@
                     <option value="Buteyko Ademhaling">Buteyko Ademhaling</option>
                     <option value="4-7-8 Ademhaling">4-7-8 Ademhaling</option>
                     <option value="Crisis Ademhaling">Crisis Ademhaling</option>
+                    <option value="Noodprotocol">Noodprotocol</option>
                     <option value="Handmatige Entry">Handmatige Entry</option>
                 </select>
             </div>
@@ -1310,6 +1383,10 @@
 
     // Crisis variables
     let crisisInterval = null;
+    let crisisProtocolActive = false;
+    let crisisStep = 0;
+    let crisisTimer = 0;
+    let crisisStepDuration = 0;
 
     // User stats
     let userStats = {
@@ -1320,7 +1397,61 @@
         achievements: []
     };
 
-    // Tips array
+    // Crisis protocol steps
+    const crisisProtocolSteps = [
+        {
+            name: "Stop & Erken",
+            duration: 30,
+            title: "🛑 STOP - Je bent veilig",
+            instructions: "Dit is hyperventilatie en het gaat voorbij. Leg je hand op je buik en voel je ademhaling.",
+            breathingText: "Voel je ademhaling...",
+            encouragement: "Je bent veilig. Dit gevoel is tijdelijk."
+        },
+        {
+            name: "Paradoxale Ademhaling", 
+            duration: 90,
+            title: "🫁 Minder Ademhalen",
+            instructions: "NIET diep ademen! Neem kleine, ondiepe ademhalingen. Houd je adem 2-3 seconden vast tussen elke ademhaling.",
+            breathingText: "Kleine ademhaling... vasthouden... uit...",
+            encouragement: "Perfect! Minder ademen helpt je CO2 te herstellen."
+        },
+        {
+            name: "Grounding 5-4-3-2-1",
+            duration: 60, 
+            title: "👁️ Focus naar Buiten",
+            instructions: "Kijk om je heen en benoem: 5 dingen die je ZIET, 4 dingen die je VOELT, 3 dingen die je HOORT.",
+            breathingText: "Zoek 5 dingen die je ziet...",
+            encouragement: "Je hersenen komen terug in balans. Goed bezig!"
+        },
+        {
+            name: "Rustgevende Ademhaling",
+            duration: 60,
+            title: "🌊 Natuurlijke Ademhaling", 
+            instructions: "Laat je ademhaling nu natuurlijk worden. Adem rustig in door je neus, langzaam uit door je mond.",
+            breathingText: "Natuurlijk ademhalen...",
+            encouragement: "Je lichaam herstelt zich. De paniek neemt af."
+        },
+        {
+            name: "Bevestiging",
+            duration: 30,
+            title: "✅ Je hebt het Overwonnen",
+            instructions: "Het ergste is voorbij. Je hebt controle teruggekregen. Je bent sterker dan je angst.",
+            breathingText: "Je bent rustig en veilig",
+            encouragement: "🎉 Geweldig gedaan! Je hebt de crisis doorstaan."
+        }
+    ];
+
+    // All tips array
+    const appTips = [
+        "Maagklachten en ademhalingsproblemen zijn vaak verbonden via de nervus vagus - behandel ze samen voor betere resultaten.",
+        "Bij luchthonger: probeer paradoxale ademhaling - begin met zeer kleine, korte ademhalingen.",
+        "CO2 is niet giftig! Een hoger CO2-niveau in je bloed is juist gezond en kalmerend.",
+        "Buteyko ademhaling helpt je lichaam wennen aan hogere CO2 niveaus.",
+        "Een normale Control Pause is tussen de 20-40 seconden. Begin laag en bouw langzaam op.",
+        "Regelmatige CP metingen helpen je voortgang te volgen en patronen te herkennen.",
+        "Het noodprotocol doorbreekt de vicieuze cirkel van hyperventilatie → paniek → meer hyperventilatie.",
+        "Paradoxale ademhaling: MINDER ademen bij hyperventilatie, niet meer!"
+    ];
     const tips = [
         "Maagklachten en ademhalingsproblemen zijn vaak verbonden via de nervus vagus - behandel ze samen voor betere resultaten.",
         "Bij luchthonger: probeer paradoxale ademhaling - begin met zeer kleine, korte ademhalingen.",
@@ -1412,6 +1543,7 @@
             
             userInfo.innerHTML = `
                 <div class="user-avatar">${initials}</div>
+                <span style="font-weight: 500;">${initials}</span>
                 <button class="logout-btn" onclick="logout()">Uitloggen</button>
             `;
         } else {
@@ -1952,8 +2084,217 @@
     // CRISIS HELP FUNCTIONS
     // ============================================
 
+    window.startCrisisProtocol = function() {
+        document.getElementById('crisis-protocol').classList.remove('hidden');
+        document.getElementById('crisis-breathing').classList.add('hidden');
+        
+        crisisProtocolActive = true;
+        crisisStep = 0;
+        crisisTimer = 0;
+        
+        // Update total steps display
+        document.getElementById('protocol-total-steps').textContent = crisisProtocolSteps.length;
+        
+        runCrisisProtocolStep();
+    };
+
+    function runCrisisProtocolStep() {
+        if (!crisisProtocolActive || crisisStep >= crisisProtocolSteps.length) return;
+        
+        const step = crisisProtocolSteps[crisisStep];
+        crisisStepDuration = step.duration;
+        crisisTimer = crisisStepDuration;
+        
+        // Update UI for current step
+        document.getElementById('protocol-step-title').textContent = step.title;
+        document.getElementById('protocol-instructions').textContent = step.instructions;
+        document.getElementById('protocol-encouragement').textContent = step.encouragement;
+        document.getElementById('protocol-current-step').textContent = crisisStep + 1;
+        
+        // Update circle
+        const circle = document.getElementById('protocol-circle');
+        circle.textContent = step.breathingText;
+        
+        // Set circle style based on step
+        switch(crisisStep) {
+            case 0: // Stop & Erken
+                circle.className = "breathing-circle";
+                circle.style.transform = 'scale(1)';
+                break;
+            case 1: // Paradoxale Ademhaling
+                circle.className = "breathing-circle hold";
+                startParadoxicalBreathing(circle);
+                break;
+            case 2: // Grounding
+                circle.className = "breathing-circle";
+                circle.style.transform = 'scale(1.05)';
+                startGroundingAnimation(circle);
+                break;
+            case 3: // Rustgevende Ademhaling
+                circle.className = "breathing-circle inhale";
+                startGentleBreathing(circle);
+                break;
+            case 4: // Bevestiging
+                circle.className = "breathing-circle";
+                circle.style.transform = 'scale(1)';
+                break;
+        }
+        
+        // Start timer for this step
+        crisisInterval = setInterval(updateCrisisTimer, 1000);
+    }
+
+    function updateCrisisTimer() {
+        if (!crisisProtocolActive) return;
+        
+        crisisTimer--;
+        
+        // Update timer display
+        const minutes = Math.floor(crisisTimer / 60);
+        const seconds = crisisTimer % 60;
+        document.getElementById('protocol-timer').textContent = 
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Update progress bar
+        const progress = ((crisisStepDuration - crisisTimer) / crisisStepDuration) * 100;
+        document.getElementById('protocol-progress').style.width = progress + '%';
+        
+        // Move to next step when timer reaches 0
+        if (crisisTimer <= 0) {
+            clearInterval(crisisInterval);
+            crisisStep++;
+            
+            if (crisisStep < crisisProtocolSteps.length) {
+                // Small pause between steps
+                setTimeout(runCrisisProtocolStep, 1000);
+            } else {
+                // Protocol completed
+                completeCrisisProtocol();
+            }
+        }
+    }
+
+    function startParadoxicalBreathing(circle) {
+        let phase = 'small-inhale';
+        let phaseTimer = 0;
+        
+        const breathingInterval = setInterval(() => {
+            if (!crisisProtocolActive || crisisStep !== 1) {
+                clearInterval(breathingInterval);
+                return;
+            }
+            
+            phaseTimer++;
+            
+            switch(phase) {
+                case 'small-inhale':
+                    circle.style.transform = 'scale(1.05)';
+                    if (phaseTimer >= 2) {
+                        phase = 'hold';
+                        phaseTimer = 0;
+                    }
+                    break;
+                case 'hold':
+                    circle.style.transform = 'scale(1.05)';
+                    if (phaseTimer >= 3) {
+                        phase = 'small-exhale';
+                        phaseTimer = 0;
+                    }
+                    break;
+                case 'small-exhale':
+                    circle.style.transform = 'scale(0.95)';
+                    if (phaseTimer >= 2) {
+                        phase = 'small-inhale';
+                        phaseTimer = 0;
+                    }
+                    break;
+            }
+        }, 1000);
+    }
+
+    function startGroundingAnimation(circle) {
+        let colorIndex = 0;
+        const colors = ['#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+        
+        const groundingInterval = setInterval(() => {
+            if (!crisisProtocolActive || crisisStep !== 2) {
+                clearInterval(groundingInterval);
+                return;
+            }
+            
+            circle.style.borderColor = colors[colorIndex];
+            colorIndex = (colorIndex + 1) % colors.length;
+        }, 2000);
+    }
+
+    function startGentleBreathing(circle) {
+        let phase = 'inhale';
+        let phaseTimer = 0;
+        
+        const gentleInterval = setInterval(() => {
+            if (!crisisProtocolActive || crisisStep !== 3) {
+                clearInterval(gentleInterval);
+                return;
+            }
+            
+            phaseTimer++;
+            
+            if (phase === 'inhale') {
+                const progress = phaseTimer / 4;
+                const scale = 1 + (0.1 * Math.min(progress, 1));
+                circle.style.transform = `scale(${scale})`;
+                
+                if (phaseTimer >= 4) {
+                    phase = 'exhale';
+                    phaseTimer = 0;
+                }
+            } else {
+                const progress = phaseTimer / 6;
+                const scale = 1.1 - (0.1 * Math.min(progress, 1));
+                circle.style.transform = `scale(${scale})`;
+                
+                if (phaseTimer >= 6) {
+                    phase = 'inhale';
+                    phaseTimer = 0;
+                }
+            }
+        }, 1000);
+    }
+
+    function completeCrisisProtocol() {
+        // Update UI to show completion
+        document.getElementById('protocol-step-title').textContent = "🎉 Protocol Voltooid";
+        document.getElementById('protocol-instructions').textContent = "Je hebt het noodprotocol succesvol doorlopen. Je bent weer in controle.";
+        document.getElementById('protocol-encouragement').textContent = "Je bent sterk! Overweeg om deze ervaring in je dagboek te noteren.";
+        
+        const circle = document.getElementById('protocol-circle');
+        circle.textContent = "Voltooid! 🎉";
+        circle.className = "breathing-circle";
+        circle.style.transform = 'scale(1)';
+        
+        // Auto-close after 5 seconds and offer journal entry
+        setTimeout(() => {
+            stopCrisisProtocol();
+            setTimeout(() => {
+                openJournalModal('Noodprotocol');
+            }, 1000);
+        }, 5000);
+    }
+
+    window.stopCrisisProtocol = function() {
+        crisisProtocolActive = false;
+        clearInterval(crisisInterval);
+        document.getElementById('crisis-protocol').classList.add('hidden');
+        
+        // Reset variables
+        crisisStep = 0;
+        crisisTimer = 0;
+        crisisStepDuration = 0;
+    };
+
     window.startCrisisBreathing = function() {
         document.getElementById('crisis-breathing').classList.remove('hidden');
+        document.getElementById('crisis-protocol').classList.add('hidden');
         
         const circle = document.getElementById('crisis-circle');
         let phase = 'inhale';
@@ -2396,8 +2737,8 @@
         document.getElementById('last-cp').textContent = lastCP ? `${lastCP}s` : '-';
         
         // Update tip of the day
-        const tipIndex = new Date().getDate() % tips.length;
-        document.getElementById('tip-content').innerHTML = `<p>${tips[tipIndex]}</p>`;
+        const tipIndex = new Date().getDate() % appTips.length;
+        document.getElementById('tip-content').innerHTML = `<p>${appTips[tipIndex]}</p>`;
     }
 
     function generateInsights() {
@@ -2775,6 +3116,7 @@
         if (breathInterval) clearInterval(breathInterval);
         if (cpInterval) clearInterval(cpInterval);
         if (crisisInterval) clearInterval(crisisInterval);
+        if (crisisProtocolActive) stopCrisisProtocol();
         if (progressChart) progressChart.destroy();
     });
 

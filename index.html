@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
@@ -8,13 +9,15 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Ademruimte - Hyperventilatie Helper</title>
-    
-    <!-- Preload kritieke resources -->
-    <link rel="preconnect" href="https://www.gstatic.com">
-    <link rel="preconnect" href="https://unpkg.com">
-    
-    <!-- Chart.js voor statistieken -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+```
+<!-- Preload kritieke resources -->
+<link rel="preconnect" href="https://www.gstatic.com">
+<link rel="preconnect" href="https://unpkg.com">
+
+<!-- Chart.js voor statistieken -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+```
 
 <style>
     /* CSS Custom Properties voor consistentie */
@@ -857,6 +860,7 @@
         cursor: pointer;
     }
 </style>
+
 </head>
 
 <body>
@@ -870,495 +874,497 @@
         </div>
     </div>
 
-    <!-- Authentication Screen -->
-    <div id="auth-screen" class="hidden">
-        <div class="auth-card">
-            <div id="login-form">
-                <h2>Inloggen bij Ademruimte</h2>
-                <p>Vul je gegevens in om door te gaan</p>
-                
-                <div class="form-group">
-                    <label for="login-email">E-mailadres:</label>
-                    <input type="email" class="form-control" id="login-email" placeholder="je@email.com" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="login-password">Wachtwoord:</label>
-                    <input type="password" class="form-control" id="login-password" placeholder="Wachtwoord" required>
-                </div>
-                
-                <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
-                    <input type="checkbox" id="remember-me" style="margin: 0; flex-shrink: 0;">
-                    <label for="remember-me" style="margin: 0; font-size: 0.9rem; cursor: pointer;">Onthoud mij</label>
-                </div>
-                
-                <div class="button-group">
-                    <button class="btn btn-primary" id="login-btn" onclick="loginUser()">
-                        <span>🔑 Inloggen</span>
-                    </button>
-                </div>
-                
-                <p style="margin-top: 1rem; font-size: 0.875rem;">
-                    <button onclick="showPasswordResetForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">Wachtwoord vergeten?</button>
-                </p>
-                
-                <p style="margin-top: 1.5rem; font-size: 0.875rem;">
-                    Nog geen account? 
-                    <button id="show-register" onclick="showRegisterForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Registreren</button>
-                </p>
+```
+<!-- Authentication Screen -->
+<div id="auth-screen" class="hidden">
+    <div class="auth-card">
+        <div id="login-form">
+            <h2>Inloggen bij Ademruimte</h2>
+            <p>Vul je gegevens in om door te gaan</p>
+            
+            <div class="form-group">
+                <label for="login-email">E-mailadres:</label>
+                <input type="email" class="form-control" id="login-email" placeholder="je@email.com" required>
             </div>
             
-            <div id="register-form" class="hidden">
-                <h2>Account Aanmaken</h2>
-                <p>Maak een nieuw account aan voor Ademruimte</p>
-                
-                <div class="form-group">
-                    <label for="register-name">Volledige naam:</label>
-                    <input type="text" class="form-control" id="register-name" placeholder="Je naam" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="register-email">E-mailadres:</label>
-                    <input type="email" class="form-control" id="register-email" placeholder="je@email.com" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="register-password">Wachtwoord:</label>
-                    <input type="password" class="form-control" id="register-password" placeholder="Minimaal 6 karakters" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="register-password-confirm">Bevestig wachtwoord:</label>
-                    <input type="password" class="form-control" id="register-password-confirm" placeholder="Herhaal wachtwoord" required>
-                </div>
-                
-                <div class="button-group">
-                    <button class="btn btn-success" id="register-btn" onclick="registerUser()">
-                        <span>✅ Account Aanmaken</span>
-                    </button>
-                </div>
-                
-                <p style="margin-top: 1.5rem; font-size: 0.875rem;">
-                    Al een account? 
-                    <button onclick="showLoginForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Inloggen</button>
-                </p>
+            <div class="form-group">
+                <label for="login-password">Wachtwoord:</label>
+                <input type="password" class="form-control" id="login-password" placeholder="Wachtwoord" required>
             </div>
             
-            <div id="password-reset-form" class="hidden">
-                <h2>Wachtwoord Resetten</h2>
-                <p>Vul je e-mailadres in om een reset link te ontvangen</p>
-                
-                <div class="form-group">
-                    <label for="reset-email">E-mailadres:</label>
-                    <input type="email" class="form-control" id="reset-email" placeholder="je@email.com" required>
-                </div>
-                
-                <div class="button-group">
-                    <button class="btn btn-warning" id="reset-btn" onclick="resetPassword()">
-                        <span>📧 Reset Link Versturen</span>
-                    </button>
-                </div>
-                
-                <p style="margin-top: 1.5rem; font-size: 0.875rem;">
-                    Weet je je wachtwoord weer? 
-                    <button onclick="showLoginForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Inloggen</button>
-                </p>
+            <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+                <input type="checkbox" id="remember-me" style="margin: 0; flex-shrink: 0;">
+                <label for="remember-me" style="margin: 0; font-size: 0.9rem; cursor: pointer;">Onthoud mij</label>
             </div>
+            
+            <div class="button-group">
+                <button class="btn btn-primary" id="login-btn" onclick="loginUser()">
+                    <span>🔑 Inloggen</span>
+                </button>
+            </div>
+            
+            <p style="margin-top: 1rem; font-size: 0.875rem;">
+                <button onclick="showPasswordResetForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">Wachtwoord vergeten?</button>
+            </p>
+            
+            <p style="margin-top: 1.5rem; font-size: 0.875rem;">
+                Nog geen account? 
+                <button id="show-register" onclick="showRegisterForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Registreren</button>
+            </p>
+        </div>
+        
+        <div id="register-form" class="hidden">
+            <h2>Account Aanmaken</h2>
+            <p>Maak een nieuw account aan voor Ademruimte</p>
+            
+            <div class="form-group">
+                <label for="register-name">Volledige naam:</label>
+                <input type="text" class="form-control" id="register-name" placeholder="Je naam" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="register-email">E-mailadres:</label>
+                <input type="email" class="form-control" id="register-email" placeholder="je@email.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="register-password">Wachtwoord:</label>
+                <input type="password" class="form-control" id="register-password" placeholder="Minimaal 6 karakters" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="register-password-confirm">Bevestig wachtwoord:</label>
+                <input type="password" class="form-control" id="register-password-confirm" placeholder="Herhaal wachtwoord" required>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn btn-success" id="register-btn" onclick="registerUser()">
+                    <span>✅ Account Aanmaken</span>
+                </button>
+            </div>
+            
+            <p style="margin-top: 1.5rem; font-size: 0.875rem;">
+                Al een account? 
+                <button onclick="showLoginForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Inloggen</button>
+            </p>
+        </div>
+        
+        <div id="password-reset-form" class="hidden">
+            <h2>Wachtwoord Resetten</h2>
+            <p>Vul je e-mailadres in om een reset link te ontvangen</p>
+            
+            <div class="form-group">
+                <label for="reset-email">E-mailadres:</label>
+                <input type="email" class="form-control" id="reset-email" placeholder="je@email.com" required>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn btn-warning" id="reset-btn" onclick="resetPassword()">
+                    <span>📧 Reset Link Versturen</span>
+                </button>
+            </div>
+            
+            <p style="margin-top: 1.5rem; font-size: 0.875rem;">
+                Weet je je wachtwoord weer? 
+                <button onclick="showLoginForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Inloggen</button>
+            </p>
         </div>
     </div>
+</div>
 
-    <!-- Main App -->
-    <div id="main-app" class="hidden">
-        <header>
-            <div class="user-info" id="user-info">
-                <div class="spinner"></div>
+<!-- Main App -->
+<div id="main-app" class="hidden">
+    <header>
+        <div class="user-info" id="user-info">
+            <div class="spinner"></div>
+        </div>
+        <div class="header-title">
+            <h1>Ademruimte</h1>
+            <p>Evidence-based hulp bij hyperventilatie en maagklachten</p>
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="tab-btn active" data-tab="dashboard">🏠 Dashboard</button>
+        <button class="tab-btn" data-tab="buteyko">💨 Buteyko</button>
+        <button class="tab-btn" data-tab="dagboek">📊 Dagboek</button>
+        <button class="tab-btn" data-tab="crisis">🚨 Crisis Hulp</button>
+    </nav>
+
+    <main class="container">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="card">
+                <h2 id="dashboard-greeting">Welkom bij Ademruimte</h2>
+                <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                    Op basis van wetenschappelijk onderzoek biedt Ademruimte effectieve hulp bij hyperventilatie en gerelateerde maagklachten. 
+                    <strong>70-80% van de patiënten</strong> behaalt significante verbetering met de juiste technieken.
+                </p>
+                
+                <div class="stats-grid" id="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-sessions">0</div>
+                        <div class="stat-label">Totaal sessies</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="streak-days">0</div>
+                        <div class="stat-label">Dagen streak</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="avg-improvement">-</div>
+                        <div class="stat-label">Gem. verbetering</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="last-cp">-</div>
+                        <div class="stat-label">Laatste CP</div>
+                    </div>
+                </div>
             </div>
-            <div class="header-title">
-                <h1>Ademruimte</h1>
-                <p>Your safe breathing space</p>
+
+            <div class="card">
+                <h3>🎯 Slimme Inzichten</h3>
+                <div id="insights-content">
+                    <p style="color: var(--text-light);">Start met je eerste oefening om persoonlijke inzichten te ontvangen!</p>
+                </div>
             </div>
-        </header>
 
-        <nav class="nav-tabs">
-            <button class="tab-btn active" data-tab="dashboard">🏠 Dashboard</button>
-            <button class="tab-btn" data-tab="buteyko">💨 Buteyko</button>
-            <button class="tab-btn" data-tab="dagboek">📊 Dagboek</button>
-            <button class="tab-btn" data-tab="crisis">🚨 Crisis Hulp</button>
-        </nav>
+            <div class="card">
+                <h3>💡 Tip van de dag</h3>
+                <div id="tip-content">
+                    <p>Maagklachten en ademhalingsproblemen zijn vaak verbonden via de nervus vagus - behandel ze samen voor betere resultaten.</p>
+                </div>
+            </div>
+        </div>
 
-        <main class="container">
-            <!-- Dashboard Tab -->
-            <div id="dashboard" class="tab-content active">
-                <div class="card">
-                    <h2 id="dashboard-greeting">Welkom bij Ademruimte</h2>
-                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
-                        Op basis van wetenschappelijk onderzoek biedt Ademruimte effectieve hulp bij hyperventilatie en gerelateerde maagklachten. 
-                        <strong>70-80% van de patiënten</strong> behaalt significante verbetering met de juiste technieken.
-                    </p>
+        <!-- Buteyko Tab -->
+        <div id="buteyko" class="tab-content">
+            <div class="card">
+                <h2>💨 Buteyko Ademhaling</h2>
+                <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                    De Buteyko methode helpt je CO2-tolerantie te verbeteren en hyperventilatie te reduceren.
+                </p>
+
+                <!-- Control Pause Measurement -->
+                <div class="card" style="background: rgba(6, 182, 212, 0.1); border: 2px solid rgba(6, 182, 212, 0.2);">
+                    <h3>⏱️ Control Pause (CP) Meting</h3>
+                    <p style="margin-bottom: 1rem;">Meet je CO2-tolerantie. Normale waarden: 20-40 seconden.</p>
                     
-                    <div class="stats-grid" id="dashboard-stats">
-                        <div class="stat-card">
-                            <div class="stat-number" id="total-sessions">0</div>
-                            <div class="stat-label">Totaal sessies</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="streak-days">0</div>
-                            <div class="stat-label">Dagen streak</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="avg-improvement">-</div>
-                            <div class="stat-label">Gem. verbetering</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="last-cp">-</div>
-                            <div class="stat-label">Laatste CP</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3>🎯 Slimme Inzichten</h3>
-                    <div id="insights-content">
-                        <p style="color: var(--text-light);">Start met je eerste oefening om persoonlijke inzichten te ontvangen!</p>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3>💡 Tip van de dag</h3>
-                    <div id="tip-content">
-                        <p>Maagklachten en ademhalingsproblemen zijn vaak verbonden via de nervus vagus - behandel ze samen voor betere resultaten.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Buteyko Tab -->
-            <div id="buteyko" class="tab-content">
-                <div class="card">
-                    <h2>💨 Buteyko Ademhaling</h2>
-                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
-                        De Buteyko methode helpt je CO2-tolerantie te verbeteren en hyperventilatie te reduceren.
-                    </p>
-
-                    <!-- Control Pause Measurement -->
-                    <div class="card" style="background: rgba(6, 182, 212, 0.1); border: 2px solid rgba(6, 182, 212, 0.2);">
-                        <h3>⏱️ Control Pause (CP) Meting</h3>
-                        <p style="margin-bottom: 1rem;">Meet je CO2-tolerantie. Normale waarden: 20-40 seconden.</p>
-                        
-                        <div class="cp-display" id="cp-timer">00</div>
-                        
-                        <div class="cp-controls">
-                            <button class="btn btn-primary" id="start-cp" onclick="startCPMeasurement()">Start CP Meting</button>
-                            <button class="btn btn-danger" id="stop-cp" onclick="stopCPMeasurement()" disabled>Stop</button>
-                            <button class="btn btn-warning" id="reset-cp" onclick="resetCPMeasurement()">Reset</button>
-                        </div>
-                        
-                        <div id="cp-instructions" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
-                            <strong>Instructies:</strong>
-                            <ol style="margin-top: 0.5rem;">
-                                <li>Adem normaal in en uit</li>
-                                <li>Na een normale uitademing, houd je adem in</li>
-                                <li>Klik "Start CP Meting" en stop zodra je de eerste drang voelt om te ademen</li>
-                                <li>Dit is je Control Pause score</li>
-                            </ol>
-                        </div>
-                    </div>
-
-                    <!-- Breathing Exercise -->
-                    <div class="card">
-                        <h3>🫁 Ademhalingsoefening</h3>
-                        
-                        <div class="form-group">
-                            <label for="breathing-pattern">Selecteer patroon:</label>
-                            <select class="form-control" id="breathing-pattern" onchange="updateBreathingPattern()">
-                                <option value="gentle" selected>Zachte oefening (10 sec vrij ademhalen + 3 sec vasthouden)</option>
-                                <option value="standard">4-7-8 Standaard</option>
-                                <option value="advanced">6-8-10 Gevorderd</option>
-                            </select>
-                        </div>
-
-                        <div class="breathing-circle" id="breathing-circle">
-                            Bereid je voor
-                        </div>
-
-                        <div class="button-group">
-                            <button class="btn btn-primary" id="start-breathing" onclick="startBreathing()">Start Oefening</button>
-                            <button class="btn btn-danger" id="stop-breathing" onclick="stopBreathing()" disabled>Stop</button>
-                        </div>
-
-                        <div id="breathing-info" style="text-align: center; margin-top: 1rem;">
-                            <p><strong>Cyclus:</strong> <span id="cycle-count">0</span> <span id="cycle-target">van 20 (zachte oefening)</span></p>
-                            <p><strong>Fase:</strong> <span id="current-phase">Rust</span></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dagboek Tab -->
-            <div id="dagboek" class="tab-content">
-                <div class="card">
-                    <h2>📊 Dagboek & Statistieken</h2>
+                    <div class="cp-display" id="cp-timer">00</div>
                     
-                    <div class="button-group" style="margin-bottom: 2rem;">
-                        <button class="btn btn-primary" onclick="openJournalModal()">📝 Nieuwe Entry</button>
-                        <button class="btn btn-success" onclick="exportDagboek()">💾 Exporteer</button>
+                    <div class="cp-controls">
+                        <button class="btn btn-primary" id="start-cp" onclick="startCPMeasurement()">Start CP Meting</button>
+                        <button class="btn btn-danger" id="stop-cp" onclick="stopCPMeasurement()" disabled>Stop</button>
+                        <button class="btn btn-warning" id="reset-cp" onclick="resetCPMeasurement()">Reset</button>
                     </div>
+                    
+                    <div id="cp-instructions" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
+                        <strong>Instructies:</strong>
+                        <ol style="margin-top: 0.5rem;">
+                            <li>Adem normaal in en uit</li>
+                            <li>Na een normale uitademing, houd je adem in</li>
+                            <li>Klik "Start CP Meting" en stop zodra je de eerste drang voelt om te ademen</li>
+                            <li>Dit is je Control Pause score</li>
+                        </ol>
+                    </div>
+                </div>
 
+                <!-- Breathing Exercise -->
+                <div class="card">
+                    <h3>🫁 Ademhalingsoefening</h3>
+                    
                     <div class="form-group">
-                        <label for="journal-filter">Filter dagboek entries:</label>
-                        <select class="form-control" id="journal-filter" onchange="filterJournalEntries()">
-                            <option value="last7" selected>Laatste 7 dagen</option>
-                            <option value="last30">Laatste 30 dagen</option>
-                            <option value="all">Alle entries</option>
+                        <label for="breathing-pattern">Selecteer patroon:</label>
+                        <select class="form-control" id="breathing-pattern" onchange="updateBreathingPattern()">
+                            <option value="gentle" selected>Zachte oefening (10 sec vrij ademhalen + 3 sec vasthouden)</option>
+                            <option value="standard">4-7-8 Standaard</option>
+                            <option value="advanced">6-8-10 Gevorderd</option>
                         </select>
                     </div>
 
-                    <div style="margin-bottom: 1rem;">
-                        <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">📈 Statistiek periode:</label>
-                        <div class="button-group">
-                            <button class="btn btn-primary" id="chart-10days" onclick="updateChartFilter('10days')">Laatste 10 dagen</button>
-                            <button class="btn btn-primary" id="chart-30days" onclick="updateChartFilter('30days')">Laatste 30 dagen</button>
-                            <button class="btn btn-primary" id="chart-all" onclick="updateChartFilter('all')">Alle data</button>
-                        </div>
+                    <div class="breathing-circle" id="breathing-circle">
+                        Bereid je voor
                     </div>
-
-                    <div class="chart-container">
-                        <canvas id="progress-chart"></canvas>
-                    </div>
-
-                    <div id="journal-entries">
-                        <div style="text-align: center; color: var(--text-light); margin: 2rem 0;">
-                            <p>Nog geen dagboek entries. Begin met je eerste oefening!</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Crisis Help Tab -->
-            <div id="crisis" class="tab-content">
-                <div class="card crisis-card">
-                    <h2>🚨 Crisis Hulp</h2>
-                    <p style="margin-bottom: 2rem;">Directe hulp bij acute hyperventilatie of paniekaanvallen.</p>
 
                     <div class="button-group">
-                        <button class="btn btn-warning" onclick="startCrisisProtocol()">🆘 Start Noodprotocol</button>
-                        <button class="btn btn-primary" onclick="startCrisisBreathing()">🫁 Simpele Nood Ademhaling</button>
+                        <button class="btn btn-primary" id="start-breathing" onclick="startBreathing()">Start Oefening</button>
+                        <button class="btn btn-danger" id="stop-breathing" onclick="stopBreathing()" disabled>Stop</button>
                     </div>
 
-                    <!-- Crisis Protocol Interface -->
-                    <div id="crisis-protocol" class="hidden" style="margin-top: 2rem; text-align: center;">
-                        <div class="card" style="background: rgba(255,255,255,0.95); color: var(--text-dark); margin-bottom: 1rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                                <h3 id="protocol-step-title">'t Is ok - je bent veilig</h3>
-                                <div style="background: var(--primary-color); color: white; padding: 0.5rem 1rem; border-radius: 2rem; font-weight: bold; min-width: 80px;">
-                                    <span id="protocol-timer">00:30</span>
-                                </div>
-                            </div>
-                            
-                            <div style="margin-bottom: 1.5rem;">
-                                <div style="background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid var(--primary-color);">
-                                    <p id="protocol-instructions" style="font-size: 1.1rem; font-weight: 500; margin: 0;">
-                                        Dit is hyperventilatie en het gaat voorbij. Leg je hand op je buik en voel je ademhaling.
-                                    </p>
-                                </div>
-                            </div>
+                    <div id="breathing-info" style="text-align: center; margin-top: 1rem;">
+                        <p><strong>Cyclus:</strong> <span id="cycle-count">0</span> <span id="cycle-target">van 20 (zachte oefening)</span></p>
+                        <p><strong>Fase:</strong> <span id="current-phase">Rust</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                            <div class="breathing-circle" id="protocol-circle" style="width: 150px; height: 150px; margin: 1rem auto;">
-                                Voel je ademhaling...
-                            </div>
+        <!-- Dagboek Tab -->
+        <div id="dagboek" class="tab-content">
+            <div class="card">
+                <h2>📊 Dagboek & Statistieken</h2>
+                
+                <div class="button-group" style="margin-bottom: 2rem;">
+                    <button class="btn btn-primary" onclick="openJournalModal()">📝 Nieuwe Entry</button>
+                    <button class="btn btn-success" onclick="exportDagboek()">💾 Exporteer</button>
+                </div>
 
-                            <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #10b981; margin-bottom: 1rem;">
-                                <p id="protocol-encouragement" style="margin: 0; font-weight: 500; color: #059669;">
-                                    Je bent veilig. Dit gevoel is tijdelijk.
+                <div class="form-group">
+                    <label for="journal-filter">Filter dagboek entries:</label>
+                    <select class="form-control" id="journal-filter" onchange="filterJournalEntries()">
+                        <option value="last7" selected>Laatste 7 dagen</option>
+                        <option value="last30">Laatste 30 dagen</option>
+                        <option value="all">Alle entries</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">📈 Statistiek periode:</label>
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="chart-10days" onclick="updateChartFilter('10days')">Laatste 10 dagen</button>
+                        <button class="btn btn-primary" id="chart-30days" onclick="updateChartFilter('30days')">Laatste 30 dagen</button>
+                        <button class="btn btn-primary" id="chart-all" onclick="updateChartFilter('all')">Alle data</button>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="progress-chart"></canvas>
+                </div>
+
+                <div id="journal-entries">
+                    <div style="text-align: center; color: var(--text-light); margin: 2rem 0;">
+                        <p>Nog geen dagboek entries. Begin met je eerste oefening!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crisis Help Tab -->
+        <div id="crisis" class="tab-content">
+            <div class="card crisis-card">
+                <h2>🚨 Crisis Hulp</h2>
+                <p style="margin-bottom: 2rem;">Directe hulp bij acute hyperventilatie of paniekaanvallen.</p>
+
+                <div class="button-group">
+                    <button class="btn btn-warning" onclick="startCrisisProtocol()">🆘 Start Noodprotocol</button>
+                    <button class="btn btn-primary" onclick="startCrisisBreathing()">🫁 Simpele Nood Ademhaling</button>
+                </div>
+
+                <!-- Crisis Protocol Interface -->
+                <div id="crisis-protocol" class="hidden" style="margin-top: 2rem; text-align: center;">
+                    <div class="card" style="background: rgba(255,255,255,0.95); color: var(--text-dark); margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 id="protocol-step-title">🛑 STOP - Je bent veilig</h3>
+                            <div style="background: var(--primary-color); color: white; padding: 0.5rem 1rem; border-radius: 2rem; font-weight: bold; min-width: 80px;">
+                                <span id="protocol-timer">00:30</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <div style="background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid var(--primary-color);">
+                                <p id="protocol-instructions" style="font-size: 1.1rem; font-weight: 500; margin: 0;">
+                                    Dit is hyperventilatie en het gaat voorbij. Leg je hand op je buik en voel je ademhaling.
                                 </p>
                             </div>
+                        </div>
 
-                            <div style="margin-bottom: 1rem;">
-                                <div style="background: rgba(0,0,0,0.1); height: 8px; border-radius: 4px; overflow: hidden;">
-                                    <div id="protocol-progress" style="background: var(--primary-color); height: 100%; width: 0%; transition: width 1s linear;"></div>
-                                </div>
-                                <small style="color: var(--text-light); margin-top: 0.5rem; display: block;">
-                                    Stap <span id="protocol-current-step">1</span> van <span id="protocol-total-steps">5</span>
-                                </small>
+                        <div class="breathing-circle" id="protocol-circle" style="width: 150px; height: 150px; margin: 1rem auto;">
+                            Voel je ademhaling...
+                        </div>
+
+                        <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #10b981; margin-bottom: 1rem;">
+                            <p id="protocol-encouragement" style="margin: 0; font-weight: 500; color: #059669;">
+                                Je bent veilig. Dit gevoel is tijdelijk.
+                            </p>
+                        </div>
+
+                        <div style="margin-bottom: 1rem;">
+                            <div style="background: rgba(0,0,0,0.1); height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div id="protocol-progress" style="background: var(--primary-color); height: 100%; width: 0%; transition: width 1s linear;"></div>
                             </div>
-
-                            <button class="btn btn-danger" onclick="stopCrisisProtocol()" style="margin-top: 1rem;">
-                                Stoppen
-                            </button>
+                            <small style="color: var(--text-light); margin-top: 0.5rem; display: block;">
+                                Stap <span id="protocol-current-step">1</span> van <span id="protocol-total-steps">5</span>
+                            </small>
                         </div>
-                    </div>
 
-                    <!-- Simple Crisis Breathing -->
-                    <div id="crisis-breathing" class="hidden" style="margin-top: 2rem;">
-                        <div class="breathing-circle" id="crisis-circle">
-                            Volg de cirkel
-                        </div>
-                        <div style="text-align: center;">
-                            <button class="btn btn-danger" onclick="stopCrisisBreathing()">Stop</button>
-                        </div>
+                        <button class="btn btn-danger" onclick="stopCrisisProtocol()" style="margin-top: 1rem;">
+                            Stoppen
+                        </button>
                     </div>
                 </div>
 
-                <div class="card">
-                    <h3>📞 Noodhulp</h3>
-                    <p><strong>Bij acute noodsituaties:</strong></p>
-                    <ul style="margin: 1rem 0;">
-                        <li>🚑 Spoeddiensten: 112</li>
-                        <li>🩺 Huisarts: Contacteer je eigen huisarts</li>
-                        <li>🧠 Zelfmoordlijn: 1813 of 0800 32 123</li>
-                        <li>💬 Tele-onthaal: 106</li>
-                    </ul>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Journal Entry Modal -->
-    <div id="journal-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeJournalModal()">&times;</span>
-            <h2>📝 Nieuwe Dagboek Entry</h2>
-            
-            <div class="form-group">
-                <label for="entry-technique">Techniek gebruikt:</label>
-                <select class="form-control" id="entry-technique">
-                    <option value="Buteyko Ademhaling">Buteyko Ademhaling</option>
-                    <option value="4-7-8 Ademhaling">4-7-8 Ademhaling</option>
-                    <option value="Crisis Ademhaling">Crisis Ademhaling</option>
-                    <option value="Noodprotocol">Noodprotocol</option>
-                    <option value="Handmatige Entry">Handmatige Entry</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="entry-trigger">Trigger/Oorzaak:</label>
-                <input type="text" class="form-control" id="entry-trigger" placeholder="Wat triggerde de symptomen?">
-            </div>
-
-            <div class="form-group">
-                <label for="entry-before">Intensiteit vóór (1-10):</label>
-                <div class="range-container">
-                    <input type="range" class="range-slider" id="entry-before" min="1" max="10" value="5" oninput="updateRangeValue('entry-before', 'before-value')">
-                    <div class="range-value" id="before-value">5</div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="entry-after">Intensiteit na (1-10):</label>
-                <div class="range-container">
-                    <input type="range" class="range-slider" id="entry-after" min="1" max="10" value="5" oninput="updateRangeValue('entry-after', 'after-value')">
-                    <div class="range-value" id="after-value">5</div>
-                </div>
-            </div>
-
-            <div class="form-group" id="cp-score-group" style="display: none;">
-                <label for="entry-cp-score">CP Score (seconden):</label>
-                <input type="number" class="form-control" id="entry-cp-score" min="1" max="120">
-            </div>
-
-            <div class="form-group">
-                <label>Sensaties (selecteer van toepassing):</label>
-                <div class="symptom-checkbox-container">
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Kortademigheid">
-                        <label>Kortademigheid</label>
+                <!-- Simple Crisis Breathing -->
+                <div id="crisis-breathing" class="hidden" style="margin-top: 2rem;">
+                    <div class="breathing-circle" id="crisis-circle">
+                        Volg de cirkel
                     </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Luchthonger">
-                        <label>Luchthonger</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Maagpijn">
-                        <label>Maagpijn</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Hartkloppingen">
-                        <label>Hartkloppingen</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Duizeligheid">
-                        <label>Duizeligheid</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Tintelingen">
-                        <label>Tintelingen</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Geforceerd gapen">
-                        <label>Geforceerd gapen</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Neus optrekken">
-                        <label>Neus optrekken</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Piekergedachten">
-                        <label>Piekergedachten</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Frustratie">
-                        <label>Frustratie</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Onwerkelijke gevoelens">
-                        <label>Onwerkelijke gevoelens</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Vermoeidheid">
-                        <label>Vermoeidheid</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Paniek">
-                        <label>Paniek</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Angst">
-                        <label>Angst</label>
+                    <div style="text-align: center;">
+                        <button class="btn btn-danger" onclick="stopCrisisBreathing()">Stop</button>
                     </div>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="entry-result">Resultaat:</label>
-                <select class="form-control" id="entry-result">
-                    <option value="">Selecteer resultaat</option>
-                    <option value="Veel beter">Veel beter</option>
-                    <option value="Beter">Beter</option>
-                    <option value="Iets beter">Iets beter</option>
-                    <option value="Geen verandering">Geen verandering</option>
-                    <option value="Slechter">Slechter</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="entry-notes">Notities:</label>
-                <textarea class="form-control" id="entry-notes" placeholder="Extra opmerkingen..."></textarea>
-            </div>
-
-            <div class="button-group">
-                <button class="btn btn-primary" onclick="saveJournalEntry()">💾 Opslaan</button>
-                <button class="btn btn-orange" onclick="closeJournalModal()">Annuleren</button>
+            <div class="card">
+                <h3>📞 Noodhulp</h3>
+                <p><strong>Bij acute noodsituaties:</strong></p>
+                <ul style="margin: 1rem 0;">
+                    <li>🚑 Spoeddiensten: 112</li>
+                    <li>🩺 Huisarts: Contacteer je eigen huisarts</li>
+                    <li>🧠 Zelfmoordlijn: 1813 of 0800 32 123</li>
+                    <li>💬 Tele-onthaal: 106</li>
+                </ul>
             </div>
         </div>
-    </div>
+    </main>
+</div>
 
-    <footer style="text-align: center; padding: 2rem 1rem; color: rgba(255,255,255,0.8); font-size: 0.8rem;">
-        <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
-            <p style="margin: 0;">📞 In noodgevallen: contacteer altijd je huisarts of spoeddiensten</p>
-            
-            <!-- Firebase Status Indicator -->
-            <div style="display: flex; align-items: center; gap: 0.375rem;">
-                <div id="firebase-status-dot" class="status-disconnected" style="width: 8px; height: 8px; border-radius: 50%; transition: all 0.3s ease; opacity: 0.6;" title="Firebase verbinding status"></div>
-                <span style="font-size: 0.7rem; opacity: 0.7;">Status</span>
-            </div>
-        </div>
+<!-- Journal Entry Modal -->
+<div id="journal-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeJournalModal()">&times;</span>
+        <h2>📝 Nieuwe Dagboek Entry</h2>
         
-        <!-- Developer Credit -->
-        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
-            <p style="margin: 0; font-size: 0.75rem; opacity: 0.8;">
-                Ontwikkeld door <strong>Thomas Van Troostenberghe</strong>
-            </p>
+        <div class="form-group">
+            <label for="entry-technique">Techniek gebruikt:</label>
+            <select class="form-control" id="entry-technique">
+                <option value="Buteyko Ademhaling">Buteyko Ademhaling</option>
+                <option value="4-7-8 Ademhaling">4-7-8 Ademhaling</option>
+                <option value="Crisis Ademhaling">Crisis Ademhaling</option>
+                <option value="Noodprotocol">Noodprotocol</option>
+                <option value="Handmatige Entry">Handmatige Entry</option>
+            </select>
         </div>
-    </footer>
+
+        <div class="form-group">
+            <label for="entry-trigger">Trigger/Oorzaak:</label>
+            <input type="text" class="form-control" id="entry-trigger" placeholder="Wat triggerde de symptomen?">
+        </div>
+
+        <div class="form-group">
+            <label for="entry-before">Intensiteit vóór (1-10):</label>
+            <div class="range-container">
+                <input type="range" class="range-slider" id="entry-before" min="1" max="10" value="5" oninput="updateRangeValue('entry-before', 'before-value')">
+                <div class="range-value" id="before-value">5</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="entry-after">Intensiteit na (1-10):</label>
+            <div class="range-container">
+                <input type="range" class="range-slider" id="entry-after" min="1" max="10" value="5" oninput="updateRangeValue('entry-after', 'after-value')">
+                <div class="range-value" id="after-value">5</div>
+            </div>
+        </div>
+
+        <div class="form-group" id="cp-score-group" style="display: none;">
+            <label for="entry-cp-score">CP Score (seconden):</label>
+            <input type="number" class="form-control" id="entry-cp-score" min="1" max="120">
+        </div>
+
+        <div class="form-group">
+            <label>Sensaties (selecteer van toepassing):</label>
+            <div class="symptom-checkbox-container">
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Kortademigheid">
+                    <label>Kortademigheid</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Luchthonger">
+                    <label>Luchthonger</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Maagpijn">
+                    <label>Maagpijn</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Hartkloppingen">
+                    <label>Hartkloppingen</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Duizeligheid">
+                    <label>Duizeligheid</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Tintelingen">
+                    <label>Tintelingen</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Geforceerd gapen">
+                    <label>Geforceerd gapen</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Neus optrekken">
+                    <label>Neus optrekken</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Piekergedachten">
+                    <label>Piekergedachten</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Frustratie">
+                    <label>Frustratie</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Onwerkelijke gevoelens">
+                    <label>Onwerkelijke gevoelens</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Vermoeidheid">
+                    <label>Vermoeidheid</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Paniek">
+                    <label>Paniek</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Angst">
+                    <label>Angst</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="entry-result">Resultaat:</label>
+            <select class="form-control" id="entry-result">
+                <option value="">Selecteer resultaat</option>
+                <option value="Veel beter">Veel beter</option>
+                <option value="Beter">Beter</option>
+                <option value="Iets beter">Iets beter</option>
+                <option value="Geen verandering">Geen verandering</option>
+                <option value="Slechter">Slechter</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="entry-notes">Notities:</label>
+            <textarea class="form-control" id="entry-notes" placeholder="Extra opmerkingen..."></textarea>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="saveJournalEntry()">💾 Opslaan</button>
+            <button class="btn btn-orange" onclick="closeJournalModal()">Annuleren</button>
+        </div>
+    </div>
+</div>
+
+<footer style="text-align: center; padding: 2rem 1rem; color: rgba(255,255,255,0.8); font-size: 0.8rem;">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
+        <p style="margin: 0;">📞 In noodgevallen: contacteer altijd je huisarts of spoeddiensten</p>
+        
+        <!-- Firebase Status Indicator -->
+        <div style="display: flex; align-items: center; gap: 0.375rem;">
+            <div id="firebase-status-dot" class="status-disconnected" style="width: 8px; height: 8px; border-radius: 50%; transition: all 0.3s ease; opacity: 0.6;" title="Firebase verbinding status"></div>
+            <span style="font-size: 0.7rem; opacity: 0.7;">Status</span>
+        </div>
+    </div>
+    
+    <!-- Developer Credit -->
+    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+        <p style="margin: 0; font-size: 0.75rem; opacity: 0.8;">
+            Ontwikkeld door <strong>Thomas Van Troostenberghe</strong>
+        </p>
+    </div>
+</footer>
+```
 
 <script type="module">
     // Firebase configuration (exact same credentials)
@@ -1399,6 +1405,9 @@
     let crisisTimer = 0;
     let crisisStepDuration = 0;
 
+    // Wake lock variables
+    let wakeLock = null;
+
     // User stats
     let userStats = {
         totalSessions: 0,
@@ -1413,7 +1422,7 @@
         {
             name: "Stop & Erken",
             duration: 30,
-            title: "",
+            title: "🛑 STOP - Je bent veilig",
             instructions: "Dit is hyperventilatie en het gaat voorbij. Leg je hand op je buik en voel je ademhaling.",
             breathingText: "Voel je buik...",
             encouragement: "Je bent veilig. Dit gevoel is tijdelijk."
@@ -1471,6 +1480,60 @@
         "Een normale Control Pause is tussen de 20-40 seconden. Begin laag en bouw langzaam op.",
         "Regelmatige CP metingen helpen je voortgang te volgen en patronen te herkennen."
     ];
+
+    // ============================================
+    // WAKE LOCK FUNCTIONS
+    // ============================================
+
+    async function requestWakeLock() {
+        try {
+            if ('wakeLock' in navigator) {
+                wakeLock = await navigator.wakeLock.request('screen');
+                console.log('📱 Wake lock activated - scherm blijft aan');
+                
+                // Show visual indicator
+                showUserMessage('📱 Scherm blijft aan tijdens oefening', 'info');
+                
+                wakeLock.addEventListener('release', () => {
+                    console.log('📱 Wake lock released - scherm mag uitgaan');
+                });
+                
+                return true;
+            } else {
+                console.warn('⚠️ Wake Lock API not supported');
+                showUserMessage('⚠️ Scherm wake lock niet ondersteund door deze browser', 'warning');
+                return false;
+            }
+        } catch (error) {
+            console.error('❌ Wake lock request failed:', error);
+            return false;
+        }
+    }
+
+    async function releaseWakeLock() {
+        try {
+            if (wakeLock !== null) {
+                await wakeLock.release();
+                wakeLock = null;
+                console.log('📱 Wake lock manually released');
+                
+                // Show visual confirmation (optional, can be subtle)
+                // showUserMessage('📱 Scherm kan nu uitgaan', 'info');
+            }
+        } catch (error) {
+            console.error('❌ Wake lock release failed:', error);
+        }
+    }
+
+    // Handle page visibility changes (when user switches tabs/apps)
+    document.addEventListener('visibilitychange', async () => {
+        if (wakeLock !== null && document.visibilityState === 'visible') {
+            // Reacquire wake lock when returning to the page during active exercises
+            if (isBreathing || crisisProtocolActive || cpIsRunning || crisisInterval) {
+                await requestWakeLock();
+            }
+        }
+    });
 
     // ============================================
     // FIREBASE INITIALIZATION & AUTH
@@ -1554,6 +1617,7 @@
             
             userInfo.innerHTML = `
                 <div class="user-avatar">${initials}</div>
+                <span style="font-weight: 500;">${initials}</span>
                 <button class="logout-btn" onclick="logout()">Uitloggen</button>
             `;
         } else {
@@ -1844,6 +1908,9 @@
         cpStartTime = Date.now();
         cpIsRunning = true;
         
+        // Request wake lock to keep screen on
+        requestWakeLock();
+        
         document.getElementById('start-cp').disabled = true;
         document.getElementById('stop-cp').disabled = false;
         
@@ -1860,6 +1927,10 @@
         const cpScore = Math.floor((Date.now() - cpStartTime) / 1000);
         
         cpIsRunning = false;
+        
+        // Release wake lock
+        releaseWakeLock();
+        
         document.getElementById('start-cp').disabled = false;
         document.getElementById('stop-cp').disabled = true;
         
@@ -1885,6 +1956,12 @@
 
     window.resetCPMeasurement = function() {
         clearInterval(cpInterval);
+        
+        // Release wake lock if CP was running
+        if (cpIsRunning) {
+            releaseWakeLock();
+        }
+        
         cpIsRunning = false;
         
         document.getElementById('cp-timer').textContent = '00';
@@ -1938,6 +2015,9 @@
         document.getElementById('start-breathing').disabled = true;
         document.getElementById('stop-breathing').disabled = false;
         document.getElementById('cycle-count').textContent = '0';
+        
+        // Request wake lock to keep screen on
+        requestWakeLock();
         
         // Preparation phase
         circle.textContent = "Bereid je voor... 🧘";
@@ -2062,6 +2142,9 @@
         isBreathing = false;
         clearInterval(breathInterval);
         
+        // Release wake lock
+        releaseWakeLock();
+        
         const circle = document.getElementById('breathing-circle');
         circle.textContent = "Goed gedaan! 🎉";
         circle.className = "breathing-circle";
@@ -2101,6 +2184,9 @@
         crisisProtocolActive = true;
         crisisStep = 0;
         crisisTimer = 0;
+        
+        // Request wake lock to keep screen on
+        requestWakeLock();
         
         // Update total steps display
         document.getElementById('protocol-total-steps').textContent = crisisProtocolSteps.length;
@@ -2302,6 +2388,9 @@
         circle.className = "breathing-circle";
         circle.style.transform = 'scale(1)';
         
+        // Release wake lock
+        releaseWakeLock();
+        
         // Auto-close after 5 seconds and offer journal entry
         setTimeout(() => {
             stopCrisisProtocol();
@@ -2314,6 +2403,10 @@
     window.stopCrisisProtocol = function() {
         crisisProtocolActive = false;
         clearInterval(crisisInterval);
+        
+        // Release wake lock
+        releaseWakeLock();
+        
         document.getElementById('crisis-protocol').classList.add('hidden');
         
         // Reset variables
@@ -2325,6 +2418,9 @@
     window.startCrisisBreathing = function() {
         document.getElementById('crisis-breathing').classList.remove('hidden');
         document.getElementById('crisis-protocol').classList.add('hidden');
+        
+        // Request wake lock to keep screen on
+        requestWakeLock();
         
         const circle = document.getElementById('crisis-circle');
         let phase = 'inhale';
@@ -2369,6 +2465,10 @@
 
     window.stopCrisisBreathing = function() {
         clearInterval(crisisInterval);
+        
+        // Release wake lock
+        releaseWakeLock();
+        
         document.getElementById('crisis-breathing').classList.add('hidden');
         
         // Reset circle to original state
@@ -3153,9 +3253,13 @@
         if (crisisInterval) clearInterval(crisisInterval);
         if (crisisProtocolActive) stopCrisisProtocol();
         if (progressChart) progressChart.destroy();
+        
+        // Release wake lock
+        releaseWakeLock();
     });
 
     console.log('📱 Ademruimte app loaded successfully');
 </script>
+
 </body>
 </html>

@@ -2884,237 +2884,29 @@
     }
 
     function generatePersonalizedTip() {
-        const recentEntries = allJournalEntries.slice(0, 10); // Last 10 entries
+        const recentEntries = allJournalEntries.slice(0, 10);
         const allTimeEntries = allJournalEntries;
         
-        // Analyze technique effectiveness
-        const techniqueStats = {};
-        allTimeEntries.forEach(entry => {
-            const technique = entry.techniekGebruikt;
-            const improvement = entry.intensiteitVoor - entry.intensiteitNa;
-            
-            if (!techniqueStats[technique]) {
-                techniqueStats[technique] = { 
-                    total: 0, 
-                    totalImprovement: 0, 
-                    successes: 0,
-                    recent: 0
-                };
-            }
-            
-            techniqueStats[technique].total++;
-            techniqueStats[technique].totalImprovement += improvement;
-            if (improvement > 0) techniqueStats[technique].successes++;
-            
-            // Check if this entry is recent (last 10)
-            if (recentEntries.includes(entry)) {
-                techniqueStats[technique].recent++;
-            }
-        });
+        // Focus on meaningful notes analysis
+        const meaningfulNotes = allTimeEntries.filter(e => e.notities && e.notities.trim().length > 10);
         
-        // Find most effective technique
-        let bestTechnique = null;
-        let bestEffectiveness = -999;
-        
-        Object.keys(techniqueStats).forEach(technique => {
-            const stats = techniqueStats[technique];
-            if (stats.total >= 2) { // Only consider techniques used at least twice
-                const avgImprovement = stats.totalImprovement / stats.total;
-                const successRate = stats.successes / stats.total;
-                const effectiveness = avgImprovement * 0.7 + successRate * 0.3; // Weighted score
-                
-                if (effectiveness > bestEffectiveness) {
-                    bestEffectiveness = effectiveness;
-                    bestTechnique = technique;
-                }
-            }
-        });
-        
-        // Analyze triggers
-        const triggerFrequency = {};
-        allTimeEntries.forEach(entry => {
-            if (entry.trigger && entry.trigger.trim()) {
-                const trigger = entry.trigger.toLowerCase().trim();
-                triggerFrequency[trigger] = (triggerFrequency[trigger] || 0) + 1;
-            }
-        });
-        
-        const mostCommonTrigger = Object.keys(triggerFrequency).reduce((a, b) => 
-            triggerFrequency[a] > triggerFrequency[b] ? a : b, null);
-        
-        // Analyze recent patterns
-        const recentAvgBefore = recentEntries.reduce((sum, e) => sum + e.intensiteitVoor, 0) / recentEntries.length;
-        const recentAvgAfter = recentEntries.reduce((sum, e) => sum + e.intensiteitNa, 0) / recentEntries.length;
-        const recentImprovement = recentAvgBefore - recentAvgAfter;
-        
-        // Analyze sensations
-        const sensationFrequency = {};
-        allTimeEntries.forEach(entry => {
-            const sensations = entry.sensaties || entry.symptomen || [];
-            sensations.forEach(sensation => {
-                sensationFrequency[sensation] = (sensationFrequency[sensation] || 0) + 1;
-            });
-        });
-        
-        const topSensations = Object.keys(sensationFrequency)
-            .sort((a, b) => sensationFrequency[b] - sensationFrequency[a])
-            .slice(0, 3);
-        
-        // Analyze time patterns
-        const timePatterns = {
-            morning: 0, // 6-12
-            afternoon: 0, // 12-18  
-            evening: 0, // 18-22
-            night: 0 // 22-6
-        };
-        
-        allTimeEntries.forEach(entry => {
-            const hour = entry.timestamp.getHours();
-            if (hour >= 6 && hour < 12) timePatterns.morning++;
-            else if (hour >= 12 && hour < 18) timePatterns.afternoon++;
-            else if (hour >= 18 && hour < 22) timePatterns.evening++;
-            else timePatterns.night++;
-        });
-        
-        const peakTime = Object.keys(timePatterns).reduce((a, b) => 
-            timePatterns[a] > timePatterns[b] ? a : b);
-        
-        // Generate personalized insights
-        let insights = [];
-        
-        // Progress insight
-        if (recentImprovement > 2) {
-            insights.push({
-                type: 'success',
-                icon: '📈',
-                text: `Je maakt geweldige vooruitgang! Je laatste sessies tonen gemiddeld ${recentImprovement.toFixed(1)} punten verbetering.`
-            });
-        } else if (recentImprovement < 0.5) {
-            insights.push({
-                type: 'suggestion', 
-                icon: '💡',
-                text: `Je laatste resultaten zijn wisselend. Probeer te focussen op één techniek en gebruik deze consistent.`
-            });
+        if (meaningfulNotes.length === 0) {
+            // Fallback to general tips when no meaningful notes
+            const tipIndex = new Date().getDate() % appTips.length;
+            return `<p>${appTips[tipIndex]}</p>`;
         }
         
-        // Technique insight
-        if (bestTechnique) {
-            const stats = techniqueStats[bestTechnique];
-            const avgImprovement = stats.totalImprovement / stats.total;
-            insights.push({
-                type: 'technique',
-                icon: '🏆',
-                text: `<strong>${bestTechnique}</strong> werkt het beste voor jou met gemiddeld ${avgImprovement.toFixed(1)} punten verbetering. Gebruik deze vaker!`
-            });
-        }
+        const personalInsights = analyzeUserNotes(meaningfulNotes, allTimeEntries);
         
-        // Trigger insight
-        if (mostCommonTrigger && triggerFrequency[mostCommonTrigger] >= 3) {
-            insights.push({
-                type: 'pattern',
-                icon: '🎯',
-                text: `Je meest voorkomende trigger is "${mostCommonTrigger}". Overweeg preventieve ademhalingsoefeningen wanneer je deze situatie verwacht.`
-            });
-        }
-        
-        // Sensation insight
-        if (topSensations.length > 0) {
-            insights.push({
-                type: 'sensations',
-                icon: '🔍',
-                text: `Jouw meest voorkomende sensaties zijn: ${topSensations.join(', ')}. Focus op technieken die specifiek helpen bij deze signalen.`
-            });
-        }
-        
-        // Time pattern insight
-        if (timePatterns[peakTime] > allTimeEntries.length * 0.4) {
-            const timeTranslation = {
-                morning: 'ochtend (6-12u)',
-                afternoon: 'middag (12-18u)', 
-                evening: 'avond (18-22u)',
-                night: 'nacht (22-6u)'
-            };
-            
-            insights.push({
-                type: 'timing',
-                icon: '⏰',
-                text: `Je ervaart het meest symptomen in de ${timeTranslation[peakTime]}. Plan preventieve oefeningen in rond deze tijd.`
-            });
-        }
-        
-        // CP progress insight
-        if (allCPMeasurements.length >= 3) {
-            const recentCP = allCPMeasurements.slice(0, 3);
-            const olderCP = allCPMeasurements.slice(3, 6);
-            
-            if (olderCP.length > 0) {
-                const recentAvg = recentCP.reduce((sum, cp) => sum + cp.score, 0) / recentCP.length;
-                const olderAvg = olderCP.reduce((sum, cp) => sum + cp.score, 0) / olderCP.length;
-                const cpProgress = recentAvg - olderAvg;
-                
-                if (cpProgress > 2) {
-                    insights.push({
-                        type: 'cp',
-                        icon: '💨',
-                        text: `Je Control Pause is verbeterd met ${cpProgress.toFixed(1)} seconden! Je CO2-tolerantie wordt steeds beter.`
-                    });
-                }
-            }
-        }
-        
-        // Consistency insight
-        const daysWithEntries = new Set(allTimeEntries.map(e => e.timestamp.toDateString())).size;
-        const totalDaysSinceFirst = allTimeEntries.length > 0 ? 
-            Math.ceil((new Date() - new Date(allTimeEntries[allTimeEntries.length - 1].timestamp)) / (1000 * 60 * 60 * 24)) : 0;
-        
-        if (totalDaysSinceFirst > 7) {
-            const consistency = daysWithEntries / totalDaysSinceFirst;
-            if (consistency > 0.7) {
-                insights.push({
-                    type: 'consistency',
-                    icon: '⭐',
-                    text: `Je bent heel consistent! Je hebt ${daysWithEntries} van de laatste ${totalDaysSinceFirst} dagen geoefend.`
-                });
-            } else if (consistency < 0.3) {
-                insights.push({
-                    type: 'motivation',
-                    icon: '🌟',
-                    text: `Probeer dagelijks te oefenen, ook al is het maar 5 minuten. Consistentie is belangrijker dan intensiteit.`
-                });
-            }
-        }
-        
-        // Notes analysis
-        const notesWithContent = allTimeEntries.filter(e => e.notities && e.notities.trim().length > 10);
-        if (notesWithContent.length > 0) {
-            // Look for common keywords in notes
-            const allNotes = notesWithContent.map(e => e.notities.toLowerCase()).join(' ');
-            const positiveWords = ['goed', 'beter', 'rustig', 'ontspannen', 'prettig', 'fijn', 'effectief'];
-            const challengeWords = ['moeilijk', 'lastig', 'zwaar', 'vermoeiend', 'stress', 'druk'];
-            
-            const positiveCount = positiveWords.reduce((count, word) => 
-                count + (allNotes.split(word).length - 1), 0);
-            const challengeCount = challengeWords.reduce((count, word) => 
-                count + (allNotes.split(word).length - 1), 0);
-            
-            if (positiveCount > challengeCount) {
-                insights.push({
-                    type: 'notes',
-                    icon: '✨',
-                    text: `Je notities tonen veel positieve ervaringen. Je bent op de goede weg!`
-                });
-            }
-        }
-        
-        // Select best insight or fallback
-        if (insights.length === 0) {
+        if (personalInsights.length === 0) {
+            // Fallback if no insights found
             const tipIndex = new Date().getDate() % appTips.length;
             return `<p>${appTips[tipIndex]}</p>`;
         }
         
         // Rotate through insights based on day
-        const insightIndex = new Date().getDate() % insights.length;
-        const selectedInsight = insights[insightIndex];
+        const insightIndex = new Date().getDate() % personalInsights.length;
+        const selectedInsight = personalInsights[insightIndex];
         
         return `
             <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1rem;">
@@ -3122,11 +2914,202 @@
                 <div>
                     <p style="margin: 0; font-weight: 500;">${selectedInsight.text}</p>
                     <small style="color: var(--text-light); font-size: 0.8rem; margin-top: 0.5rem; display: block;">
-                        Gebaseerd op je laatste ${allTimeEntries.length} sessies
+                        Gebaseerd op jouw notities van ${meaningfulNotes.length} sessies
                     </small>
                 </div>
             </div>
         `;
+    }
+
+    function analyzeUserNotes(meaningfulNotes, allEntries) {
+        const insights = [];
+        const allNotesText = meaningfulNotes.map(e => e.notities.toLowerCase()).join(' ');
+        const noteWords = allNotesText.split(/\s+/).filter(word => word.length > 2);
+        
+        // Word frequency analysis (excluding common words)
+        const commonWords = ['het', 'een', 'de', 'van', 'en', 'in', 'op', 'is', 'was', 'met', 'voor', 'had', 'dat', 'maar', 'als', 'ook', 'aan', 'bij', 'nog', 'naar', 'kan', 'wel', 'niet', 'te', 'om', 'zo', 'dit', 'hij', 'zij', 'mij', 'me', 'ik', 'je', 'er', 'nu', 'dan', 'heel', 'veel', 'weer', 'ging', 'heb', 'hebben', 'zijn', 'werd', 'komt'];
+        const meaningfulWords = noteWords.filter(word => !commonWords.includes(word) && word.length > 3);
+        
+        const wordFreq = {};
+        meaningfulWords.forEach(word => {
+            wordFreq[word] = (wordFreq[word] || 0) + 1;
+        });
+        
+        // Get most frequent meaningful words
+        const frequentWords = Object.keys(wordFreq)
+            .filter(word => wordFreq[word] >= 2)
+            .sort((a, b) => wordFreq[b] - wordFreq[a])
+            .slice(0, 5);
+        
+        // Emotional pattern analysis
+        const emotionalPatterns = {
+            positive: {
+                words: ['goed', 'beter', 'fijn', 'prettig', 'rustig', 'ontspannen', 'kalm', 'tevreden', 'gelukkig', 'opgelucht', 'succesvol', 'effectief', 'helpt', 'werkt', 'gemakkelijk', 'natuurlijk'],
+                count: 0,
+                entries: []
+            },
+            struggle: {
+                words: ['moeilijk', 'zwaar', 'lastig', 'vermoeiend', 'uitputtend', 'frustrerend', 'lukt', 'concentreren', 'focus', 'afleiden', 'onrustig', 'gespannen'],
+                count: 0,
+                entries: []
+            },
+            physical: {
+                words: ['pijn', 'benauwd', 'druk', 'spanning', 'strak', 'verkrampt', 'trillen', 'duizelig', 'misselijk', 'hoofdpijn', 'hartkloppingen'],
+                count: 0,
+                entries: []
+            },
+            context: {
+                words: ['werk', 'thuis', 'bed', 'kantoor', 'auto', 'trein', 'familie', 'collega', 'partner', 'kind', 'kinderen', 'school'],
+                count: 0,
+                entries: []
+            },
+            timing: {
+                words: ['ochtend', 'morgen', 'middag', 'avond', 'nacht', 'slapen', 'opstaan', 'pauze', 'lunch', 'weekend', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag'],
+                count: 0,
+                entries: []
+            }
+        };
+        
+        // Analyze each note for emotional patterns
+        meaningfulNotes.forEach(entry => {
+            const noteText = entry.notities.toLowerCase();
+            
+            Object.keys(emotionalPatterns).forEach(pattern => {
+                emotionalPatterns[pattern].words.forEach(word => {
+                    if (noteText.includes(word)) {
+                        emotionalPatterns[pattern].count++;
+                        if (!emotionalPatterns[pattern].entries.includes(entry)) {
+                            emotionalPatterns[pattern].entries.push(entry);
+                        }
+                    }
+                });
+            });
+        });
+        
+        // Generate insights based on patterns
+        
+        // Positive experience insight
+        if (emotionalPatterns.positive.count >= 3) {
+            const positiveWords = emotionalPatterns.positive.words.filter(word => allNotesText.includes(word));
+            insights.push({
+                icon: '✨',
+                text: `Je notities tonen veel positieve ervaringen. Woorden als "${positiveWords.slice(0, 3).join('", "')}" komen regelmatig voor. Dit toont dat je goed bezig bent met je ademhalingspraktijk.`
+            });
+        }
+        
+        // Struggle pattern insight
+        if (emotionalPatterns.struggle.count >= 2) {
+            const struggleWords = emotionalPatterns.struggle.words.filter(word => allNotesText.includes(word));
+            const avgImprovementInStruggleSessions = emotionalPatterns.struggle.entries.reduce((sum, e) => 
+                sum + (e.intensiteitVoor - e.intensiteitNa), 0) / emotionalPatterns.struggle.entries.length;
+            
+            if (avgImprovementInStruggleSessions > 1) {
+                insights.push({
+                    icon: '💪',
+                    text: `Ook als je schrijft over "${struggleWords[0]}" of vergelijkbare uitdagingen, bereik je nog steeds verbetering. Je doorzettingsvermogen werkt!`
+                });
+            } else {
+                insights.push({
+                    icon: '🌱',
+                    text: `Je notities tonen soms uitdagingen met "${struggleWords[0]}" en vergelijkbare ervaringen. Onthoud dat oefening tijd nodig heeft - iedere sessie telt.`
+                });
+            }
+        }
+        
+        // Context pattern insight
+        if (emotionalPatterns.context.count >= 3) {
+            const contextWords = emotionalPatterns.context.words.filter(word => allNotesText.includes(word));
+            const mostMentionedContext = contextWords.reduce((a, b) => 
+                (allNotesText.split(a).length - 1) > (allNotesText.split(b).length - 1) ? a : b);
+            
+            insights.push({
+                icon: '🏠',
+                text: `Je notities vermelden vaak "${mostMentionedContext}" - dit lijkt een belangrijke context voor jouw oefeningen. Let op hoe verschillende omgevingen je ervaringen beïnvloeden.`
+            });
+        }
+        
+        // Physical sensation insight
+        if (emotionalPatterns.physical.count >= 2) {
+            const physicalWords = emotionalPatterns.physical.words.filter(word => allNotesText.includes(word));
+            insights.push({
+                icon: '🎯',
+                text: `Je beschrijft vaak fysieke sensaties zoals "${physicalWords[0]}". Het lijkt erop dat je goed in contact bent met je lichamelijke signalen - dit is waardevol voor je praktijk.`
+            });
+        }
+        
+        // Timing pattern insight
+        if (emotionalPatterns.timing.count >= 2) {
+            const timingWords = emotionalPatterns.timing.words.filter(word => allNotesText.includes(word));
+            insights.push({
+                icon: '⏰',
+                text: `Je notities bevatten vaak tijdsaanduidingen zoals "${timingWords[0]}". Het lijkt erop dat timing belangrijk is in jouw ervaring van symptomen.`
+            });
+        }
+        
+        // Frequent word insight
+        if (frequentWords.length > 0) {
+            const topWord = frequentWords[0];
+            const wordCount = wordFreq[topWord];
+            
+            if (wordCount >= 3) {
+                insights.push({
+                    icon: '🔍',
+                    text: `Het woord "${topWord}" komt ${wordCount} keer voor in je notities. Dit lijkt een belangrijk thema in jouw ademhalingservaring te zijn.`
+                });
+            }
+        }
+        
+        // Progress narrative insight
+        const progressWords = ['vooruitgang', 'beter', 'verbeterd', 'verbetering', 'gegroeid', 'geleerd', 'ontwikkeld'];
+        const progressMentions = progressWords.reduce((count, word) => 
+            count + (allNotesText.split(word).length - 1), 0);
+        
+        if (progressMentions >= 2) {
+            insights.push({
+                icon: '📈',
+                text: `Je schrijft regelmatig over je vooruitgang en ontwikkeling. Het is mooi om te zien hoe bewust je bent van je groei in de ademhalingspraktijk.`
+            });
+        }
+        
+        // Technique preference based on notes
+        const techniqueNotes = {};
+        meaningfulNotes.forEach(entry => {
+            const technique = entry.techniekGebruikt;
+            if (!techniqueNotes[technique]) {
+                techniqueNotes[technique] = [];
+            }
+            techniqueNotes[technique].push(entry.notities.toLowerCase());
+        });
+        
+        Object.keys(techniqueNotes).forEach(technique => {
+            const notes = techniqueNotes[technique].join(' ');
+            const positiveCount = emotionalPatterns.positive.words.reduce((count, word) => 
+                count + (notes.split(word).length - 1), 0);
+            
+            if (positiveCount >= 2 && techniqueNotes[technique].length >= 3) {
+                insights.push({
+                    icon: '🎯',
+                    text: `Je notities over ${technique} zijn vaak positief. Je lijkt deze techniek niet alleen effectief te vinden, maar ook prettig om te doen.`
+                });
+            }
+        });
+        
+        // Personal language patterns
+        const personalPronouns = ['ik', 'mij', 'me', 'mijn'];
+        const personalReflections = meaningfulNotes.filter(entry => {
+            const noteText = entry.notities.toLowerCase();
+            return personalPronouns.some(pronoun => noteText.includes(pronoun + ' voel')) ||
+                   noteText.includes('voor mij') || noteText.includes('ik merk');
+        });
+        
+        if (personalReflections.length >= 3) {
+            insights.push({
+                icon: '🪞',
+                text: `Je notities tonen veel zelfrefectie en bewustwording. Deze introspectieve houding is heel waardevol voor je groei in ademhalingswerk.`
+            });
+        }
+        
+        return insights;
     }
 
     function generateInsights() {

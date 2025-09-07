@@ -1391,6 +1391,7 @@
     let cpInterval = null;
     let cpStartTime = 0;
     let cpIsRunning = false;
+    let latestCPScore = null; // NEW: Track latest CP score
 
     // Crisis variables
     let crisisInterval = null;
@@ -1402,13 +1403,14 @@
     // Wake lock variables
     let wakeLock = null;
 
-    // User stats
+    // User stats - IMPROVED: Better streak tracking
     let userStats = {
         totalSessions: 0,
         streakDays: 0,
         lastSessionDate: null,
         cpMeasurements: [],
-        achievements: []
+        achievements: [],
+        sessionDates: new Set() // Track unique session dates
     };
 
     // Crisis protocol steps
@@ -1455,24 +1457,20 @@
         }
     ];
 
-    // All tips array
+    // IMPROVED: Evidence-based tips focusing on process, not immediate results
     const appTips = [
-        "Maagklachten en ademhalingsproblemen zijn vaak verbonden via de nervus vagus - behandel ze samen voor betere resultaten.",
-        "Bij luchthonger: probeer paradoxale ademhaling - begin met zeer kleine, korte ademhalingen.",
-        "CO2 is niet giftig! Een hoger CO2-niveau in je bloed is juist gezond en kalmerend.",
-        "Buteyko ademhaling helpt je lichaam wennen aan hogere CO2 niveaus.",
-        "Een normale Control Pause is tussen de 20-40 seconden. Begin laag en bouw langzaam op.",
-        "Regelmatige CP metingen helpen je voortgang te volgen en patronen te herkennen.",
-        "Het noodprotocol doorbreekt de vicieuze cirkel van hyperventilatie → paniek → meer hyperventilatie.",
-        "Paradoxale ademhaling: MINDER ademen bij hyperventilatie, niet meer!"
-    ];
-    const tips = [
-        "Maagklachten en ademhalingsproblemen zijn vaak verbonden via de nervus vagus - behandel ze samen voor betere resultaten.",
-        "Bij luchthonger: probeer paradoxale ademhaling - begin met zeer kleine, korte ademhalingen.",
-        "CO2 is niet giftig! Een hoger CO2-niveau in je bloed is juist gezond en kalmerend.",
-        "Buteyko ademhaling helpt je lichaam wennen aan hogere CO2 niveaus.",
-        "Een normale Control Pause is tussen de 20-40 seconden. Begin laag en bouw langzaam op.",
-        "Regelmatige CP metingen helpen je voortgang te volgen en patronen te herkennen."
+        "Chronische hyperventilatie vraagt geduld: de meeste patiënten zien betekenisvolle verbetering na 2-8 weken consistent oefenen.",
+        "Focus op het proces, niet op perfecte resultaten. Elke oefening bouwt nieuwe neurale pathways op, ook als je geen direct verschil voelt.",
+        "Maagklachten en ademhalingsproblemen zijn vaak verbonden via de nervus vagus. Behandel ze samen voor de beste resultaten.",
+        "Bij luchthonger: probeer paradoxale ademhaling - MINDER ademen, niet meer. Dit voelt contra-intuïtief maar herstelt je CO2 balans.",
+        "CO2 is niet giftig! Een hoger CO2-niveau in je bloed is juist gezond en kalmerend voor je zenuwstelsel.",
+        "Buteyko ademhaling traint je lichaam om te wennen aan gezondere CO2 niveaus. Dit is een leerproces dat tijd nodig heeft.",
+        "Een normale Control Pause is tussen de 20-40 seconden. Begin laag en bouw GELEIDELIJK op. Forceren kan averechts werken.",
+        "Regelmatige CP metingen helpen patronen te herkennen, maar variatie is normaal. Let meer op trends dan dagelijkse schommelingen.",
+        "Interoceptieve bewustwording: leer je lichamelijke sensaties te observeren zonder onmiddellijk in paniek te raken of ze te interpreteren als gevaar.",
+        "Het noodprotocol doorbreekt de vicieuze cirkel van hyperventilatie → paniek → meer hyperventilatie door herkenning en gecontroleerde blootstelling.",
+        "Graded exposure: begin met kleine ongemakken en bouw langzaam tolerantie op. Dit is hoe je brein leert dat sensaties niet gevaarlijk zijn.",
+        "Consistentie is belangrijker dan perfectie. 5 minuten dagelijks oefenen werkt beter dan 1 uur per week."
     ];
 
     // ============================================
@@ -1510,9 +1508,6 @@
                 await wakeLock.release();
                 wakeLock = null;
                 console.log('📱 Wake lock manually released');
-                
-                // Show visual confirmation (optional, can be subtle)
-                // showUserMessage('📱 Scherm kan nu uitgaan', 'info');
             }
         } catch (error) {
             console.error('❌ Wake lock release failed:', error);
@@ -1556,6 +1551,7 @@
                     
                     // Load data immediately when user logs in
                     try {
+                        await loadUserStats(); // NEW: Load user stats first
                         await loadJournalEntries();
                         updateDashboard();
                         generateInsights();
@@ -1576,6 +1572,46 @@
             updateStatusIndicator('error');
             showUserMessage('Firebase kon niet worden geladen. Controleer je internetverbinding.', 'error');
             return false;
+        }
+    }
+
+    // NEW: Load and save user stats to Firebase
+    async function loadUserStats() {
+        if (!currentUser) return;
+        
+        try {
+            const { getDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+            const userStatsDoc = await getDoc(doc(db, "userStats", currentUser.uid));
+            
+            if (userStatsDoc.exists()) {
+                const data = userStatsDoc.data();
+                userStats = {
+                    ...userStats,
+                    ...data,
+                    sessionDates: new Set(data.sessionDates || []),
+                    lastSessionDate: data.lastSessionDate?.toDate?.() || data.lastSessionDate
+                };
+            }
+        } catch (error) {
+            console.error('Error loading user stats:', error);
+        }
+    }
+
+    async function saveUserStats() {
+        if (!currentUser) return;
+        
+        try {
+            const { setDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+            
+            const statsToSave = {
+                ...userStats,
+                sessionDates: Array.from(userStats.sessionDates),
+                lastSessionDate: userStats.lastSessionDate
+            };
+            
+            await setDoc(doc(db, "userStats", currentUser.uid), statsToSave, { merge: true });
+        } catch (error) {
+            console.error('Error saving user stats:', error);
         }
     }
 
@@ -1921,6 +1957,7 @@
         const cpScore = Math.floor((Date.now() - cpStartTime) / 1000);
         
         cpIsRunning = false;
+        latestCPScore = cpScore; // NEW: Store latest CP score
         
         // Release wake lock
         releaseWakeLock();
@@ -2148,9 +2185,10 @@
         document.getElementById('stop-breathing').disabled = true;
         document.getElementById('current-phase').textContent = 'Voltooid';
         
-        // Update stats
+        // IMPROVED: Update stats with better streak tracking
         userStats.totalSessions++;
         updateStreak();
+        saveUserStats(); // Save updated stats
         
         // Get completed cycles from the display
         const completedCycles = parseInt(document.getElementById('cycle-count').textContent);
@@ -2487,9 +2525,13 @@
         if (technique) {
             document.getElementById('entry-technique').value = technique;
             
-            // Show CP score field for Buteyko
+            // IMPROVED: Auto-populate CP score for Buteyko and show field
             if (technique === 'Buteyko Ademhaling') {
                 document.getElementById('cp-score-group').style.display = 'block';
+                // Auto-populate latest CP score if available
+                if (latestCPScore !== null) {
+                    document.getElementById('entry-cp-score').value = latestCPScore;
+                }
             }
         }
         
@@ -2519,6 +2561,9 @@
             cb.checked = false;
             cb.parentElement.classList.remove('selected');
         });
+        
+        // Clear latest CP score after use
+        latestCPScore = null;
     };
 
     window.saveJournalEntry = async function() {
@@ -2553,6 +2598,10 @@
 
             // Add to local array
             allJournalEntries.unshift(entry);
+            
+            // IMPROVED: Update streak tracking
+            updateStreak();
+            saveUserStats();
             
             // Save to Firebase
             if (currentUser) {
@@ -2644,6 +2693,13 @@
                 console.warn('CP measurements loading failed:', cpError);
                 allCPMeasurements = [];
             }
+            
+            // IMPROVED: Build session dates set for streak calculation
+            userStats.sessionDates = new Set();
+            allJournalEntries.forEach(entry => {
+                const dateString = entry.timestamp.toDateString();
+                userStats.sessionDates.add(dateString);
+            });
             
             displayJournalEntries();
             generateInsights();
@@ -2858,9 +2914,12 @@
         
         const lastCP = allCPData.length > 0 ? allCPData[0].score : null;
         
+        // IMPROVED: Calculate streak properly
+        const currentStreak = calculateCurrentStreak();
+        
         // Update stats display
         document.getElementById('total-sessions').textContent = userStats.totalSessions + allJournalEntries.length;
-        document.getElementById('streak-days').textContent = userStats.streakDays;
+        document.getElementById('streak-days').textContent = currentStreak;
         document.getElementById('avg-improvement').textContent = avgImprovement > 0 ? 
             `+${avgImprovement.toFixed(1)}` : avgImprovement.toFixed(1);
         document.getElementById('last-cp').textContent = lastCP ? `${lastCP}s` : '-';
@@ -2869,11 +2928,58 @@
         updatePersonalizedTip();
     }
 
+    // IMPROVED: Proper streak calculation
+    function calculateCurrentStreak() {
+        if (userStats.sessionDates.size === 0) return 0;
+        
+        const dates = Array.from(userStats.sessionDates)
+            .map(dateStr => new Date(dateStr))
+            .sort((a, b) => b - a); // Sort descending (newest first)
+        
+        const today = new Date();
+        const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+        
+        // Normalize dates to compare just day/month/year
+        const normalizeDate = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        const todayNorm = normalizeDate(today);
+        const yesterdayNorm = normalizeDate(yesterday);
+        
+        let streak = 0;
+        let currentDate = todayNorm;
+        
+        // Check if there's a session today or yesterday to start the streak
+        const latestSessionNorm = normalizeDate(dates[0]);
+        if (latestSessionNorm.getTime() === todayNorm.getTime() || 
+            latestSessionNorm.getTime() === yesterdayNorm.getTime()) {
+            
+            // Count consecutive days working backwards
+            for (const sessionDate of dates) {
+                const sessionNorm = normalizeDate(sessionDate);
+                if (sessionNorm.getTime() === currentDate.getTime()) {
+                    streak++;
+                    currentDate = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
+                } else if (sessionNorm.getTime() < currentDate.getTime()) {
+                    // Gap found, stop counting
+                    break;
+                }
+            }
+        }
+        
+        return streak;
+    }
+
+    // IMPROVED: Better streak update logic
+    function updateStreak() {
+        const today = new Date().toDateString();
+        userStats.sessionDates.add(today);
+        userStats.lastSessionDate = new Date();
+    }
+
     function updatePersonalizedTip() {
         const tipContainer = document.getElementById('tip-content');
         
         if (allJournalEntries.length === 0) {
-            // Fallback to general tips when no data
+            // Fallback to evidence-based tips when no data
             const tipIndex = new Date().getDate() % appTips.length;
             tipContainer.innerHTML = `<p>${appTips[tipIndex]}</p>`;
             return;
@@ -2891,12 +2997,12 @@
         const meaningfulNotes = allTimeEntries.filter(e => e.notities && e.notities.trim().length > 10);
         
         if (meaningfulNotes.length === 0) {
-            // Fallback to general tips when no meaningful notes
+            // Fallback to evidence-based tips when no meaningful notes
             const tipIndex = new Date().getDate() % appTips.length;
             return `<p>${appTips[tipIndex]}</p>`;
         }
         
-        const personalInsights = analyzeUserNotes(meaningfulNotes, allTimeEntries);
+        const personalInsights = analyzeUserNotesEvidence(meaningfulNotes, allTimeEntries);
         
         if (personalInsights.length === 0) {
             // Fallback if no insights found
@@ -2914,198 +3020,143 @@
                 <div>
                     <p style="margin: 0; font-weight: 500;">${selectedInsight.text}</p>
                     <small style="color: var(--text-light); font-size: 0.8rem; margin-top: 0.5rem; display: block;">
-                        Gebaseerd op jouw notities van ${meaningfulNotes.length} sessies
+                        ${selectedInsight.evidenceBase}
                     </small>
                 </div>
             </div>
         `;
     }
 
-    function analyzeUserNotes(meaningfulNotes, allEntries) {
+    // IMPROVED: Evidence-based analysis following CBT principles
+    function analyzeUserNotesEvidence(meaningfulNotes, allEntries) {
         const insights = [];
         const allNotesText = meaningfulNotes.map(e => e.notities.toLowerCase()).join(' ');
-        const noteWords = allNotesText.split(/\s+/).filter(word => word.length > 2);
         
-        // Word frequency analysis (excluding common words)
-        const commonWords = ['het', 'een', 'de', 'van', 'en', 'in', 'op', 'is', 'was', 'met', 'voor', 'had', 'dat', 'maar', 'als', 'ook', 'aan', 'bij', 'nog', 'naar', 'kan', 'wel', 'niet', 'te', 'om', 'zo', 'dit', 'hij', 'zij', 'mij', 'me', 'ik', 'je', 'er', 'nu', 'dan', 'heel', 'veel', 'weer', 'ging', 'heb', 'hebben', 'zijn', 'werd', 'komt'];
-        const meaningfulWords = noteWords.filter(word => !commonWords.includes(word) && word.length > 3);
-        
-        const wordFreq = {};
-        meaningfulWords.forEach(word => {
-            wordFreq[word] = (wordFreq[word] || 0) + 1;
-        });
-        
-        // Get most frequent meaningful words
-        const frequentWords = Object.keys(wordFreq)
-            .filter(word => wordFreq[word] >= 2)
-            .sort((a, b) => wordFreq[b] - wordFreq[a])
-            .slice(0, 5);
-        
-        // Emotional pattern analysis
-        const emotionalPatterns = {
-            positive: {
-                words: ['goed', 'beter', 'fijn', 'prettig', 'rustig', 'ontspannen', 'kalm', 'tevreden', 'gelukkig', 'opgelucht', 'succesvol', 'effectief', 'helpt', 'werkt', 'gemakkelijk', 'natuurlijk'],
-                count: 0,
-                entries: []
-            },
-            struggle: {
-                words: ['moeilijk', 'zwaar', 'lastig', 'vermoeiend', 'uitputtend', 'frustrerend', 'lukt', 'concentreren', 'focus', 'afleiden', 'onrustig', 'gespannen'],
-                count: 0,
-                entries: []
-            },
-            physical: {
-                words: ['pijn', 'benauwd', 'druk', 'spanning', 'strak', 'verkrampt', 'trillen', 'duizelig', 'misselijk', 'hoofdpijn', 'hartkloppingen'],
-                count: 0,
-                entries: []
-            },
-            context: {
-                words: ['werk', 'thuis', 'bed', 'kantoor', 'auto', 'trein', 'familie', 'collega', 'partner', 'kind', 'kinderen', 'school'],
-                count: 0,
-                entries: []
-            },
-            timing: {
-                words: ['ochtend', 'morgen', 'middag', 'avond', 'nacht', 'slapen', 'opstaan', 'pauze', 'lunch', 'weekend', 'maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag'],
-                count: 0,
-                entries: []
-            }
-        };
-        
-        // Analyze each note for emotional patterns
-        meaningfulNotes.forEach(entry => {
-            const noteText = entry.notities.toLowerCase();
-            
-            Object.keys(emotionalPatterns).forEach(pattern => {
-                emotionalPatterns[pattern].words.forEach(word => {
-                    if (noteText.includes(word)) {
-                        emotionalPatterns[pattern].count++;
-                        if (!emotionalPatterns[pattern].entries.includes(entry)) {
-                            emotionalPatterns[pattern].entries.push(entry);
-                        }
-                    }
-                });
-            });
-        });
-        
-        // Generate insights based on patterns
-        
-        // Positive experience insight
-        if (emotionalPatterns.positive.count >= 3) {
-            const positiveWords = emotionalPatterns.positive.words.filter(word => allNotesText.includes(word));
-            insights.push({
-                icon: '✨',
-                text: `Je notities tonen veel positieve ervaringen. Woorden als "${positiveWords.slice(0, 3).join('", "')}" komen regelmatig voor. Dit toont dat je goed bezig bent met je ademhalingspraktijk.`
-            });
-        }
-        
-        // Struggle pattern insight
-        if (emotionalPatterns.struggle.count >= 2) {
-            const struggleWords = emotionalPatterns.struggle.words.filter(word => allNotesText.includes(word));
-            const avgImprovementInStruggleSessions = emotionalPatterns.struggle.entries.reduce((sum, e) => 
-                sum + (e.intensiteitVoor - e.intensiteitNa), 0) / emotionalPatterns.struggle.entries.length;
-            
-            if (avgImprovementInStruggleSessions > 1) {
-                insights.push({
-                    icon: '💪',
-                    text: `Ook als je schrijft over "${struggleWords[0]}" of vergelijkbare uitdagingen, bereik je nog steeds verbetering. Je doorzettingsvermogen werkt!`
-                });
-            } else {
-                insights.push({
-                    icon: '🌱',
-                    text: `Je notities tonen soms uitdagingen met "${struggleWords[0]}" en vergelijkbare ervaringen. Onthoud dat oefening tijd nodig heeft - iedere sessie telt.`
-                });
-            }
-        }
-        
-        // Context pattern insight
-        if (emotionalPatterns.context.count >= 3) {
-            const contextWords = emotionalPatterns.context.words.filter(word => allNotesText.includes(word));
-            const mostMentionedContext = contextWords.reduce((a, b) => 
-                (allNotesText.split(a).length - 1) > (allNotesText.split(b).length - 1) ? a : b);
-            
-            insights.push({
-                icon: '🏠',
-                text: `Je notities vermelden vaak "${mostMentionedContext}" - dit lijkt een belangrijke context voor jouw oefeningen. Let op hoe verschillende omgevingen je ervaringen beïnvloeden.`
-            });
-        }
-        
-        // Physical sensation insight
-        if (emotionalPatterns.physical.count >= 2) {
-            const physicalWords = emotionalPatterns.physical.words.filter(word => allNotesText.includes(word));
-            insights.push({
-                icon: '🎯',
-                text: `Je beschrijft vaak fysieke sensaties zoals "${physicalWords[0]}". Het lijkt erop dat je goed in contact bent met je lichamelijke signalen - dit is waardevol voor je praktijk.`
-            });
-        }
-        
-        // Timing pattern insight
-        if (emotionalPatterns.timing.count >= 2) {
-            const timingWords = emotionalPatterns.timing.words.filter(word => allNotesText.includes(word));
-            insights.push({
-                icon: '⏰',
-                text: `Je notities bevatten vaak tijdsaanduidingen zoals "${timingWords[0]}". Het lijkt erop dat timing belangrijk is in jouw ervaring van symptomen.`
-            });
-        }
-        
-        // Frequent word insight
-        if (frequentWords.length > 0) {
-            const topWord = frequentWords[0];
-            const wordCount = wordFreq[topWord];
-            
-            if (wordCount >= 3) {
-                insights.push({
-                    icon: '🔍',
-                    text: `Het woord "${topWord}" komt ${wordCount} keer voor in je notities. Dit lijkt een belangrijk thema in jouw ademhalingservaring te zijn.`
-                });
-            }
-        }
-        
-        // Progress narrative insight
-        const progressWords = ['vooruitgang', 'beter', 'verbeterd', 'verbetering', 'gegroeid', 'geleerd', 'ontwikkeld'];
-        const progressMentions = progressWords.reduce((count, word) => 
+        // PRINCIPLE 1: Behavioral activation and engagement patterns
+        const engagementWords = ['vol', 'voltooid', 'afgemaakt', 'gedaan', 'klaar', 'bezig', 'oefening', 'sessie'];
+        const engagementCount = engagementWords.reduce((count, word) => 
             count + (allNotesText.split(word).length - 1), 0);
         
-        if (progressMentions >= 2) {
+        if (engagementCount >= 3) {
             insights.push({
-                icon: '📈',
-                text: `Je schrijft regelmatig over je vooruitgang en ontwikkeling. Het is mooi om te zien hoe bewust je bent van je groei in de ademhalingspraktijk.`
+                icon: '🎯',
+                text: 'Je toont goede therapietrouw en betrokkenheid bij je oefeningen. Deze consistentie is cruciaal voor het opbouwen van nieuwe ademhalingspatronen.',
+                evidenceBase: 'Gebaseerd op gedragsactivatie principes uit CBT'
             });
         }
         
-        // Technique preference based on notes
-        const techniqueNotes = {};
-        meaningfulNotes.forEach(entry => {
-            const technique = entry.techniekGebruikt;
-            if (!techniqueNotes[technique]) {
-                techniqueNotes[technique] = [];
-            }
-            techniqueNotes[technique].push(entry.notities.toLowerCase());
-        });
+        // PRINCIPLE 2: Interoceptive awareness development
+        const awarenessWords = ['voel', 'merk', 'besef', 'bewust', 'aandacht', 'focus', 'concentreer', 'observeer'];
+        const awarenessCount = awarenessWords.reduce((count, word) => 
+            count + (allNotesText.split(word).length - 1), 0);
         
-        Object.keys(techniqueNotes).forEach(technique => {
-            const notes = techniqueNotes[technique].join(' ');
-            const positiveCount = emotionalPatterns.positive.words.reduce((count, word) => 
-                count + (notes.split(word).length - 1), 0);
-            
-            if (positiveCount >= 2 && techniqueNotes[technique].length >= 3) {
-                insights.push({
-                    icon: '🎯',
-                    text: `Je notities over ${technique} zijn vaak positief. Je lijkt deze techniek niet alleen effectief te vinden, maar ook prettig om te doen.`
-                });
-            }
-        });
-        
-        // Personal language patterns
-        const personalPronouns = ['ik', 'mij', 'me', 'mijn'];
-        const personalReflections = meaningfulNotes.filter(entry => {
-            const noteText = entry.notities.toLowerCase();
-            return personalPronouns.some(pronoun => noteText.includes(pronoun + ' voel')) ||
-                   noteText.includes('voor mij') || noteText.includes('ik merk');
-        });
-        
-        if (personalReflections.length >= 3) {
+        if (awarenessCount >= 4) {
             insights.push({
-                icon: '🪞',
-                text: `Je notities tonen veel zelfrefectie en bewustwording. Deze introspectieve houding is heel waardevol voor je groei in ademhalingswerk.`
+                icon: '👁️',
+                text: 'Je ontwikkelt interoceptieve bewustwording - het vermogen om je lichamelijke sensaties waar te nemen zonder direct te oordelen. Dit is een kernvaardigheid bij hyperventilatie.',
+                evidenceBase: 'Interoceptieve exposure therapie voor paniekaandoeningen'
+            });
+        }
+        
+        // PRINCIPLE 3: Catastrophic misinterpretation patterns
+        const catastrophicWords = ['eng', 'gevaarlijk', 'verkeerd', 'fout', 'bang', 'paniek', 'bezorgd', 'angstig'];
+        const balancedWords = ['normaal', 'gewoon', 'oké', 'logisch', 'begrijpelijk', 'tijdelijk'];
+        
+        const catastrophicCount = catastrophicWords.reduce((count, word) => 
+            count + (allNotesText.split(word).length - 1), 0);
+        const balancedCount = balancedWords.reduce((count, word) => 
+            count + (allNotesText.split(word).length - 1), 0);
+        
+        if (balancedCount > catastrophicCount && balancedCount >= 2) {
+            insights.push({
+                icon: '🧠',
+                text: 'Je toont cognitieve herstructurering - je interpreteert lichamelijke sensaties steeds meer als normale fenomenen in plaats van bedreigingen.',
+                evidenceBase: 'Cognitieve herstructurering volgens Beck\'s CBT model'
+            });
+        } else if (catastrophicCount >= 3) {
+            insights.push({
+                icon: '💭',
+                text: 'Je notities bevatten woorden die duiden op catastrofale interpretaties. Probeer je lichaamssensaties te observeren als informatief, niet als gevaarlijk.',
+                evidenceBase: 'Behandeling van catastrofale misinterpretaties (Clark, 1986)'
+            });
+        }
+        
+        // PRINCIPLE 4: Graded exposure and tolerance building
+        const toleranceWords = ['doorstaan', 'volhouden', 'blijven', 'accepteren', 'toelaten', 'laten'];
+        const avoidanceWords = ['stoppen', 'vluchten', 'vermijden', 'niet', 'geen'];
+        
+        const toleranceCount = toleranceWords.reduce((count, word) => 
+            count + (allNotesText.split(word).length - 1), 0);
+        const avoidanceCount = avoidanceWords.reduce((count, word) => 
+            count + (allNotesText.split(word).length - 1), 0);
+        
+        if (toleranceCount >= 2) {
+            insights.push({
+                icon: '💪',
+                text: 'Je toont distress tolerantie - de vaardigheid om ongemak te doorstaan zonder te vluchten. Dit bouwt vertrouwen op dat sensaties voorbijgaan.',
+                evidenceBase: 'Distress tolerantie uit Dialectische Gedragstherapie'
+            });
+        }
+        
+        // PRINCIPLE 5: Process vs outcome focus
+        const processWords = ['proces', 'leren', 'oefenen', 'ontwikkelen', 'groeien', 'bouwen', 'stap'];
+        const outcomeWords = ['resultaat', 'beter', 'genezen', 'weg', 'klaar', 'af'];
+        
+        const processCount = processWords.reduce((count, word) => 
+            count + (allNotesText.split(word).length - 1), 0);
+        
+        if (processCount >= 3) {
+            insights.push({
+                icon: '🌱',
+                text: 'Je focust op het leerproces - dit is essentieel bij chronische hyperventilatie. Verandering gebeurt geleidelijk door consistent oefenen.',
+                evidenceBase: 'Procesfocus verhoogt therapiesucces bij ademhalingsstoornissen'
+            });
+        }
+        
+        // PRINCIPLE 6: Self-efficacy and mastery experiences
+        const masteryWords = ['lukt', 'kan', 'succesvol', 'goed', 'beter', 'verbeterd', 'gelukt', 'controle'];
+        const helplessnessWords = ['lukt niet', 'kan niet', 'hopeloos', 'nutteloos', 'geen zin'];
+        
+        const masteryCount = masteryWords.reduce((count, word) => 
+            count + (allNotesText.split(word).length - 1), 0);
+        
+        if (masteryCount >= 4) {
+            insights.push({
+                icon: '🎖️',
+                text: 'Je bouwt self-efficacy op - het vertrouwen dat je je ademhaling kunt beïnvloeden. Deze mastery experiences versterken je herstel.',
+                evidenceBase: 'Self-efficacy theorie van Bandura toegepast op ademhalingsstoornissen'
+            });
+        }
+        
+        // PRINCIPLE 7: Emotional regulation patterns
+        const emotionWords = ['rustig', 'kalm', 'ontspannen', 'gefrustreerd', 'boos', 'verdrietig', 'blij'];
+        const regulationWords = ['adem', 'rustig', 'kalm', 'ontspan', 'focus'];
+        
+        const emotionCount = emotionWords.reduce((count, word) => 
+            count + (allNotesText.split(word).length - 1), 0);
+        const regulationCount = regulationWords.reduce((count, word) => 
+            count + (allNotesText.split(word).length - 1), 0);
+        
+        if (emotionCount >= 3 && regulationCount >= 2) {
+            insights.push({
+                icon: '🌊',
+                text: 'Je gebruikt ademhaling als emotieregulatietechniek. Dit helpt je autonome zenuwstelsel te kalmeren en stressresponsen te moduleren.',
+                evidenceBase: 'Ademhaling als emotieregulatie strategie in moderne psychotherapie'
+            });
+        }
+        
+        // PRINCIPLE 8: Mindfulness and present-moment awareness
+        const mindfulnessWords = ['nu', 'moment', 'aanwezig', 'hier', 'focus', 'aandacht', 'bewust'];
+        const ruminationWords = ['altijd', 'nooit', 'steeds', 'constant', 'waarom', 'als'];
+        
+        const mindfulnessCount = mindfulnessWords.reduce((count, word) => 
+            count + (allNotesText.split(word).length - 1), 0);
+        
+        if (mindfulnessCount >= 4) {
+            insights.push({
+                icon: '🧘',
+                text: 'Je toont mindful awareness - aandacht voor het huidige moment. Dit doorbreekt ruminatieve denkpatronen die hyperventilatie kunnen triggeren.',
+                evidenceBase: 'Mindfulness-based interventies voor ademhalingsstoornissen'
             });
         }
         
@@ -3124,12 +3175,40 @@
         insightsContainer.innerHTML = insights;
     }
 
+    // IMPROVED: Evidence-based insights focusing on therapeutic progress
     function generateDetailedInsights() {
         const recentEntries = allJournalEntries.slice(0, 20);
         const allTimeEntries = allJournalEntries;
         let insights = [];
         
-        // Technique effectiveness analysis
+        // INSIGHT 1: Long-term progress patterns (not immediate results)
+        if (allTimeEntries.length >= 10) {
+            const earlyEntries = allTimeEntries.slice(-10); // First 10 entries
+            const laterEntries = allTimeEntries.slice(0, 10); // Last 10 entries
+            
+            const earlyAvg = earlyEntries.reduce((sum, e) => sum + (e.intensiteitVoor - e.intensiteitNa), 0) / earlyEntries.length;
+            const laterAvg = laterEntries.reduce((sum, e) => sum + (e.intensiteitVoor - e.intensiteitNa), 0) / laterEntries.length;
+            
+            if (laterAvg > earlyAvg + 0.5) {
+                insights.push(`🌱 <strong>Langetermijn verbetering</strong>: Je gemiddelde verbetering per sessie is toegenomen van ${earlyAvg.toFixed(1)} naar ${laterAvg.toFixed(1)} punten. Dit toont dat je ademhalingsvaardigheden zich geleidelijk ontwikkelen.`);
+            }
+        }
+        
+        // INSIGHT 2: Consistency and therapeutic engagement
+        const uniqueDays = new Set(allTimeEntries.map(e => e.timestamp.toDateString())).size;
+        const daysSinceFirst = allTimeEntries.length > 0 ? 
+            Math.ceil((new Date() - allTimeEntries[allTimeEntries.length - 1].timestamp) / (1000 * 60 * 60 * 24)) : 0;
+        
+        if (daysSinceFirst > 7) {
+            const consistencyRate = uniqueDays / daysSinceFirst;
+            if (consistencyRate > 0.4) {
+                insights.push(`⭐ <strong>Uitstekende therapietrouw</strong>: Je hebt ${uniqueDays} van de laatste ${daysSinceFirst} dagen geoefend (${(consistencyRate * 100).toFixed(0)}%). Deze consistentie is cruciaal voor neuroplasticiteit en het hertrainen van ademhalingspatronen.`);
+            } else if (consistencyRate < 0.2) {
+                insights.push(`📅 <strong>Regelmat verbetert effectiviteit</strong>: Dagelijkse korte oefeningen (5-10 min) zijn effectiever dan sporadische lange sessies voor het hertrainen van automatische ademhalingspatronen.`);
+            }
+        }
+        
+        // INSIGHT 3: Technique mastery and learning progression
         const techniqueStats = {};
         allTimeEntries.forEach(entry => {
             const technique = entry.techniekGebruikt;
@@ -3139,65 +3218,41 @@
                 techniqueStats[technique] = { 
                     total: 0, 
                     totalImprovement: 0, 
-                    successes: 0,
-                    avgBefore: 0,
-                    avgAfter: 0
+                    recent: [], 
+                    early: []
                 };
             }
             
             techniqueStats[technique].total++;
             techniqueStats[technique].totalImprovement += improvement;
-            techniqueStats[technique].avgBefore += entry.intensiteitVoor;
-            techniqueStats[technique].avgAfter += entry.intensiteitNa;
-            if (improvement > 0) techniqueStats[technique].successes++;
+            
+            // Track recent vs early performance
+            if (techniqueStats[technique].total <= 5) {
+                techniqueStats[technique].early.push(improvement);
+            }
+            if (allTimeEntries.indexOf(entry) < 10) {
+                techniqueStats[technique].recent.push(improvement);
+            }
         });
         
-        // Calculate averages
-        Object.keys(techniqueStats).forEach(technique => {
-            const stats = techniqueStats[technique];
-            stats.avgImprovement = stats.totalImprovement / stats.total;
-            stats.successRate = stats.successes / stats.total;
-            stats.avgBefore = stats.avgBefore / stats.total;
-            stats.avgAfter = stats.avgAfter / stats.total;
-        });
-        
-        // Find best and worst performing techniques
-        const techniques = Object.keys(techniqueStats).filter(t => techniqueStats[t].total >= 2);
+        const techniques = Object.keys(techniqueStats).filter(t => techniqueStats[t].total >= 5);
         if (techniques.length > 0) {
-            const bestTechnique = techniques.reduce((a, b) => 
-                techniqueStats[a].avgImprovement > techniqueStats[b].avgImprovement ? a : b);
-            
-            insights.push(`🏆 <strong>${bestTechnique}</strong> is jouw meest effectieve techniek met gemiddeld <strong>${techniqueStats[bestTechnique].avgImprovement.toFixed(1)} punten verbetering</strong> per sessie.`);
-            
-            if (techniques.length > 1) {
-                const leastEffective = techniques.reduce((a, b) => 
-                    techniqueStats[a].avgImprovement < techniqueStats[b].avgImprovement ? a : b);
-                
-                if (bestTechnique !== leastEffective && techniqueStats[leastEffective].avgImprovement < 1) {
-                    insights.push(`💡 <strong>${leastEffective}</strong> toont minder verbetering (${techniqueStats[leastEffective].avgImprovement.toFixed(1)} punten). Probeer deze techniek te verfijnen of focus meer op ${bestTechnique}.`);
+            techniques.forEach(technique => {
+                const stats = techniqueStats[technique];
+                if (stats.recent.length >= 3 && stats.early.length >= 3) {
+                    const recentAvg = stats.recent.reduce((sum, val) => sum + val, 0) / stats.recent.length;
+                    const earlyAvg = stats.early.reduce((sum, val) => sum + val, 0) / stats.early.length;
+                    
+                    if (recentAvg > earlyAvg + 0.5) {
+                        insights.push(`📚 <strong>Techniek verbetering</strong>: Je ${technique} vaardigheid is toegenomen. Dit toont motorisch leren - je zenuwstelsel past zich aan de nieuwe ademhalingspatronen aan.`);
+                    }
                 }
-            }
+            });
         }
         
-        // Recent performance trends
-        const last10 = recentEntries.slice(0, 10);
-        const previous10 = recentEntries.slice(10, 20);
-        
-        if (last10.length >= 5 && previous10.length >= 5) {
-            const recentAvgImprovement = last10.reduce((sum, e) => sum + (e.intensiteitVoor - e.intensiteitNa), 0) / last10.length;
-            const previousAvgImprovement = previous10.reduce((sum, e) => sum + (e.intensiteitVoor - e.intensiteitNa), 0) / previous10.length;
-            const trend = recentAvgImprovement - previousAvgImprovement;
-            
-            if (trend > 0.5) {
-                insights.push(`📈 Je bent de laatste tijd aan het verbeteren! Je recente sessies tonen ${Math.abs(trend).toFixed(1)} punten meer verbetering dan daarvoor.`);
-            } else if (trend < -0.5) {
-                insights.push(`📊 Je resultaten zijn wat afgenomen de laatste tijd. Probeer terug te gaan naar technieken die eerder goed werkten voor je.`);
-            }
-        }
-        
-        // Trigger pattern analysis
+        // INSIGHT 4: Trigger pattern recognition and self-awareness
         const triggerAnalysis = {};
-        allTimeEntries.filter(e => e.trigger && e.trigger.trim()).forEach(entry => {
+        allTimeEntries.filter(e => e.trigger && e.trigger.trim().length > 2).forEach(entry => {
             const trigger = entry.trigger.toLowerCase().trim();
             if (!triggerAnalysis[trigger]) {
                 triggerAnalysis[trigger] = {
@@ -3216,121 +3271,71 @@
             const mostFrequentTrigger = significantTriggers.reduce((a, b) => 
                 triggerAnalysis[a].count > triggerAnalysis[b].count ? a : b);
             
-            const avgBeforeForTrigger = triggerAnalysis[mostFrequentTrigger].avgBefore / triggerAnalysis[mostFrequentTrigger].count;
-            const avgImprovementForTrigger = triggerAnalysis[mostFrequentTrigger].totalImprovement / triggerAnalysis[mostFrequentTrigger].count;
-            
-            insights.push(`🎯 Je meest voorkomende trigger is "<strong>${mostFrequentTrigger}</strong>" (${triggerAnalysis[mostFrequentTrigger].count}x). Bij deze trigger start je gemiddeld op ${avgBeforeForTrigger.toFixed(1)}/10 en verbeter je met ${avgImprovementForTrigger.toFixed(1)} punten.`);
+            insights.push(`🎯 <strong>Zelfkennis ontwikkeling</strong>: Je hebt "${mostFrequentTrigger}" ${triggerAnalysis[mostFrequentTrigger].count} keer geïdentificeerd als trigger. Deze bewustwording helpt bij het ontwikkelen van preventieve strategieën.`);
         }
         
-        // Time pattern analysis
-        const hourlyPattern = {};
-        allTimeEntries.forEach(entry => {
-            const hour = entry.timestamp.getHours();
-            const timeSlot = hour < 6 ? 'nacht' : 
-                           hour < 12 ? 'ochtend' : 
-                           hour < 18 ? 'middag' : 
-                           hour < 22 ? 'avond' : 'nacht';
-            
-            if (!hourlyPattern[timeSlot]) {
-                hourlyPattern[timeSlot] = {
-                    count: 0,
-                    totalBefore: 0
-                };
-            }
-            hourlyPattern[timeSlot].count++;
-            hourlyPattern[timeSlot].totalBefore += entry.intensiteitVoor;
-        });
-        
-        const significantTimes = Object.keys(hourlyPattern).filter(t => hourlyPattern[t].count >= 3);
-        if (significantTimes.length > 0) {
-            const peakTime = significantTimes.reduce((a, b) => 
-                hourlyPattern[a].count > hourlyPattern[b].count ? a : b);
-            
-            const avgIntensityAtPeak = hourlyPattern[peakTime].totalBefore / hourlyPattern[peakTime].count;
-            
-            if (hourlyPattern[peakTime].count > allTimeEntries.length * 0.3) {
-                insights.push(`⏰ Je ervaart het vaakst symptomen in de <strong>${peakTime}</strong> (${hourlyPattern[peakTime].count}x) met gemiddeld ${avgIntensityAtPeak.toFixed(1)}/10 intensiteit. Overweeg preventieve oefeningen rond deze tijd.`);
-            }
-        }
-        
-        // Sensation insights  
-        const sensationAnalysis = {};
+        // INSIGHT 5: Sensory awareness and interoceptive accuracy
+        const sensationTracking = {};
         allTimeEntries.forEach(entry => {
             const sensations = entry.sensaties || entry.symptomen || [];
             sensations.forEach(sensation => {
-                if (!sensationAnalysis[sensation]) {
-                    sensationAnalysis[sensation] = {
+                if (!sensationTracking[sensation]) {
+                    sensationTracking[sensation] = {
                         count: 0,
-                        totalBefore: 0,
-                        totalImprovement: 0
+                        improvements: []
                     };
                 }
-                sensationAnalysis[sensation].count++;
-                sensationAnalysis[sensation].totalBefore += entry.intensiteitVoor;
-                sensationAnalysis[sensation].totalImprovement += (entry.intensiteitVoor - entry.intensiteitNa);
+                sensationTracking[sensation].count++;
+                sensationTracking[sensation].improvements.push(entry.intensiteitVoor - entry.intensiteitNa);
             });
         });
         
-        const frequentSensations = Object.keys(sensationAnalysis).filter(s => sensationAnalysis[s].count >= 3);
+        const frequentSensations = Object.keys(sensationTracking).filter(s => sensationTracking[s].count >= 5);
         if (frequentSensations.length > 0) {
             const topSensation = frequentSensations.reduce((a, b) => 
-                sensationAnalysis[a].count > sensationAnalysis[b].count ? a : b);
+                sensationTracking[a].count > sensationTracking[b].count ? a : b);
             
-            const avgImprovementForSensation = sensationAnalysis[topSensation].totalImprovement / sensationAnalysis[topSensation].count;
-            
-            insights.push(`🔍 "<strong>${topSensation}</strong>" is jouw meest voorkomende sensatie (${sensationAnalysis[topSensation].count}x). Bij deze sensatie verbeter je gemiddeld met ${avgImprovementForSensation.toFixed(1)} punten.`);
+            insights.push(`🔍 <strong>Interoceptieve training</strong>: Je monitort "${topSensation}" consequent (${sensationTracking[topSensation].count}x). Het bijhouden van lichamelijke sensaties verbetert je interoceptieve accuraatheid.`);
         }
         
-        // CP progression insight
+        // INSIGHT 6: CP progression and physiological adaptation
         if (allCPMeasurements.length >= 5) {
             const sortedCP = [...allCPMeasurements].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-            const firstCP = sortedCP[0].score;
-            const lastCP = sortedCP[sortedCP.length - 1].score;
-            const cpProgress = lastCP - firstCP;
+            const firstThree = sortedCP.slice(0, 3);
+            const lastThree = sortedCP.slice(-3);
             
-            if (Math.abs(cpProgress) >= 3) {
-                const trend = cpProgress > 0 ? 'verbeterd' : 'afgenomen';
-                insights.push(`💨 Je Control Pause is ${trend} met ${Math.abs(cpProgress)} seconden sinds je eerste meting (van ${firstCP}s naar ${lastCP}s).`);
+            const firstAvg = firstThree.reduce((sum, cp) => sum + cp.score, 0) / firstThree.length;
+            const lastAvg = lastThree.reduce((sum, cp) => sum + cp.score, 0) / lastThree.length;
+            
+            if (lastAvg > firstAvg + 2) {
+                insights.push(`💨 <strong>CO2 tolerantie verbetering</strong>: Je gemiddelde CP is gestegen van ${firstAvg.toFixed(1)}s naar ${lastAvg.toFixed(1)}s. Dit toont fysiologische aanpassing aan gezondere CO2 niveaus.`);
             }
         }
         
-        // Notes-based insights
-        const meaningfulNotes = allTimeEntries.filter(e => e.notities && e.notities.trim().length > 15);
-        if (meaningfulNotes.length >= 3) {
+        // INSIGHT 7: Emotional regulation development
+        const emotionalWords = {
+            calm: ['rustig', 'kalm', 'ontspannen', 'vredig'],
+            anxious: ['angstig', 'onrustig', 'gespannen', 'zenuwachtig'],
+            frustrated: ['gefrustreerd', 'boos', 'geïrriteerd'],
+            confident: ['zelfverzekerd', 'controle', 'vertrouwen']
+        };
+        
+        const meaningfulNotes = allTimeEntries.filter(e => e.notities && e.notities.trim().length > 10);
+        if (meaningfulNotes.length >= 5) {
             const allNotes = meaningfulNotes.map(e => e.notities.toLowerCase()).join(' ');
             
-            // Look for common themes in notes
-            const stressWords = ['stress', 'werk', 'druk', 'spanning', 'bezorgd', 'onrust'];
-            const physicalWords = ['moe', 'vermoeid', 'pijn', 'zwaar', 'benauwd'];
-            const positiveWords = ['beter', 'goed', 'rustig', 'ontspannen', 'fijn', 'gelukt'];
+            const calmCount = emotionalWords.calm.reduce((count, word) => 
+                count + (allNotes.split(word).length - 1), 0);
+            const anxiousCount = emotionalWords.anxious.reduce((count, word) => 
+                count + (allNotes.split(word).length - 1), 0);
             
-            const stressCount = stressWords.reduce((count, word) => count + (allNotes.split(word).length - 1), 0);
-            const physicalCount = physicalWords.reduce((count, word) => count + (allNotes.split(word).length - 1), 0);
-            const positiveCount = positiveWords.reduce((count, word) => count + (allNotes.split(word).length - 1), 0);
-            
-            if (stressCount > physicalCount && stressCount > positiveCount) {
-                insights.push(`📝 Je notities tonen vaak stress-gerelateerde triggers. Focus op stressmanagement technieken naast ademhalingsoefeningen.`);
-            } else if (positiveCount > stressCount && positiveCount > physicalCount) {
-                insights.push(`✨ Je notities zijn overwegend positief - je bent duidelijk op de goede weg met je ademhalingspraktijk!`);
-            }
-        }
-        
-        // Consistency insight
-        const uniqueDays = new Set(allTimeEntries.map(e => e.timestamp.toDateString())).size;
-        const daysSinceFirst = allTimeEntries.length > 0 ? 
-            Math.ceil((new Date() - allTimeEntries[allTimeEntries.length - 1].timestamp) / (1000 * 60 * 60 * 24)) : 0;
-        
-        if (daysSinceFirst > 14) {
-            const consistencyRate = uniqueDays / daysSinceFirst;
-            if (consistencyRate > 0.5) {
-                insights.push(`⭐ Geweldige consistentie! Je hebt ${uniqueDays} van de laatste ${daysSinceFirst} dagen geoefend (${(consistencyRate * 100).toFixed(0)}%).`);
-            } else if (consistencyRate < 0.2) {
-                insights.push(`🌟 Meer regelmatige oefening kan je resultaten verbeteren. Probeer dagelijks 5 minuten te reserveren voor ademhaling.`);
+            if (calmCount > anxiousCount && calmCount >= 3) {
+                insights.push(`🌊 <strong>Emotieregulatie verbetering</strong>: Je notities bevatten meer woorden gerelateerd aan kalmte dan angst. Dit suggereert verbeterde emotionele zelfregulatie.`);
             }
         }
         
         if (insights.length === 0) {
-            insights.push('📊 Blijf regelmatig je ervaringen bijhouden om meer persoonlijke inzichten te ontdekken.');
+            insights.push('📊 Blijf regelmatig oefenen en je ervaringen bijhouden. Betekenisvolle patronen worden zichtbaar na 2-4 weken consistent gebruik.');
         }
         
         // Limit to 4 most relevant insights
@@ -3504,22 +3509,6 @@
     // ============================================
     // UTILITY FUNCTIONS
     // ============================================
-
-    function updateStreak() {
-        const today = new Date().toDateString();
-        
-        if (userStats.lastSessionDate !== today) {
-            const yesterday = new Date(Date.now() - 86400000).toDateString();
-            
-            if (userStats.lastSessionDate === yesterday || !userStats.lastSessionDate) {
-                userStats.streakDays = (userStats.streakDays || 0) + 1;
-            } else {
-                userStats.streakDays = 1;
-            }
-            
-            userStats.lastSessionDate = today;
-        }
-    }
 
     window.updateChartFilter = function(filter) {
         chartFilter = filter;

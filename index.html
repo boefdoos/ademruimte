@@ -1611,7 +1611,8 @@
             
             await setDoc(doc(db, "userStats", currentUser.uid), statsToSave, { merge: true });
         } catch (error) {
-            console.error('Error saving user stats:', error);
+            console.warn('UserStats save failed - check Firebase rules:', error);
+            // App continues to work with local stats only
         }
     }
 
@@ -2195,11 +2196,16 @@
         const pattern = breathingPatterns[breathingPattern];
         const targetCycles = pattern.cycles || 10;
         
+        console.log(`Breathing session completed: ${completedCycles}/${targetCycles} cycles`);
+        
         // Auto-open journal modal if session completed
         if (completedCycles >= targetCycles) {
+            console.log('Opening journal modal for completed breathing session');
             setTimeout(() => {
                 openJournalModal('Buteyko Ademhaling');
-            }, 1000);
+            }, 1500); // Slightly longer delay to ensure UI is ready
+        } else {
+            console.log('Session not fully completed, no modal opening');
         }
         
         updateDashboard();

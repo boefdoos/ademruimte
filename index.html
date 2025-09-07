@@ -1391,7 +1391,11 @@
     let cpInterval = null;
     let cpStartTime = 0;
     let cpIsRunning = false;
-    let latestCPScore = null; // NEW: Track latest CP score
+    let latestCPScore = null; // Track latest CP score
+    
+    // IMPROVED: Better CP score management
+    let recentCPScores = []; // Store multiple recent scores
+    let lastCPTimestamp = null;
 
     // Crisis variables
     let crisisInterval = null;
@@ -1958,7 +1962,25 @@
         const cpScore = Math.floor((Date.now() - cpStartTime) / 1000);
         
         cpIsRunning = false;
-        latestCPScore = cpScore; // NEW: Store latest CP score
+        
+        // IMPROVED: Store CP score with timestamp
+        const cpData = {
+            score: cpScore,
+            timestamp: new Date(),
+            used: false // Track if this score has been used in journal
+        };
+        
+        // Keep recent scores (last 5 measurements, max 24 hours old)
+        recentCPScores.unshift(cpData);
+        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        recentCPScores = recentCPScores
+            .filter(cp => cp.timestamp > oneDayAgo)
+            .slice(0, 5);
+        
+        lastCPTimestamp = new Date();
+        latestCPScore = cpScore; // Keep for immediate use
+        
+        console.log('🔵 CP Score saved:', cpScore, 'Recent scores:', recentCPScores.length);
         
         // Release wake lock
         releaseWakeLock();
@@ -1983,7 +2005,7 @@
         }
         
         updateDashboard();
-        showUserMessage(`CP Score: ${cpScore} seconden geregistreerd!`, 'success');
+        showUserMessage(`CP Score: ${cpScore} seconden geregistreerd! Deze wordt automatisch ingevuld bij je volgende Buteyko oefening.`, 'success');
     };
 
     window.resetCPMeasurement = function() {
@@ -2191,21 +2213,46 @@
         updateStreak();
         saveUserStats(); // Save updated stats
         
-        // Get completed cycles from the display
-        const completedCycles = parseInt(document.getElementById('cycle-count').textContent);
+        // FIXED: More robust cycle counting and debugging
+        let completedCycles = 0;
+        const cycleCountElement = document.getElementById('cycle-count');
+        
+        if (cycleCountElement && cycleCountElement.textContent) {
+            completedCycles = parseInt(cycleCountElement.textContent) || 0;
+        }
+        
         const pattern = breathingPatterns[breathingPattern];
-        const targetCycles = pattern.cycles || 10;
+        const targetCycles = pattern ? (pattern.cycles || 10) : 10;
         
-        console.log(`Breathing session completed: ${completedCycles}/${targetCycles} cycles`);
+        // Enhanced debugging
+        console.log('=== BREATHING SESSION DEBUG ===');
+        console.log('Completed cycles:', completedCycles);
+        console.log('Target cycles:', targetCycles);
+        console.log('Pattern:', breathingPattern);
+        console.log('Pattern object:', pattern);
+        console.log('Should open modal:', completedCycles >= targetCycles);
+        console.log('Latest CP Score available:', latestCPScore);
         
-        // Auto-open journal modal if session completed
-        if (completedCycles >= targetCycles) {
-            console.log('Opening journal modal for completed breathing session');
+        // FIXED: Always try to open modal if reasonable completion
+        if (completedCycles > 0 && completedCycles >= Math.floor(targetCycles * 0.8)) {
+            console.log('✅ Opening journal modal for breathing session (80% completion threshold met)');
+            
+            // Ensure modal opens even if there are timing issues
             setTimeout(() => {
-                openJournalModal('Buteyko Ademhaling');
-            }, 1500); // Slightly longer delay to ensure UI is ready
+                try {
+                    openJournalModal('Buteyko Ademhaling');
+                    showUserMessage('🎉 Oefening voltooid! Vul je ervaring in.', 'success');
+                } catch (error) {
+                    console.error('Error opening journal modal:', error);
+                    // Fallback: show message to manually open journal
+                    showUserMessage('Oefening voltooid! Klik op "Nieuwe Entry" om je ervaring bij te houden.', 'info');
+                }
+            }, 1000);
+        } else if (completedCycles > 0) {
+            console.log('⚠️ Session partially completed but below threshold');
+            showUserMessage(`Oefening gestopt na ${completedCycles}/${targetCycles} cycli. Probeer de volgende keer de volledige oefening te voltooien.`, 'warning');
         } else {
-            console.log('Session not fully completed, no modal opening');
+            console.log('❌ No meaningful session to record');
         }
         
         updateDashboard();
@@ -2526,17 +2573,63 @@
     // ============================================
 
     window.openJournalModal = function(technique = '') {
+        console.log('📝 Opening journal modal for technique:', technique);
+        
         document.getElementById('journal-modal').style.display = 'block';
         
         if (technique) {
             document.getElementById('entry-technique').value = technique;
             
-            // IMPROVED: Auto-populate CP score for Buteyko and show field
+            // IMPROVED: Smart CP score handling for Buteyko
             if (technique === 'Buteyko Ademhaling') {
                 document.getElementById('cp-score-group').style.display = 'block';
-                // Auto-populate latest CP score if available
-                if (latestCPScore !== null) {
-                    document.getElementById('entry-cp-score').value = latestCPScore;
+                
+                // Try to find the best CP score to use
+                let scoreToUse = null;
+                let scoreSource = '';
+                
+                // 1. Check for very recent CP score (within last hour)
+                if (latestCPScore !== null && lastCPTimestamp) {
+                    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+                    if (lastCPTimestamp > oneHourAgo) {
+                        scoreToUse = latestCPScore;
+                        scoreSource = 'laatste meting (binnen het uur)';
+                    }
+                }
+                
+                // 2. Check recent unused CP scores
+                if (!scoreToUse && recentCPScores.length > 0) {
+                    const unusedScore = recentCPScores.find(cp => !cp.used);
+                    if (unusedScore) {
+                        scoreToUse = unusedScore.score;
+                        scoreSource = 'recente meting';
+                        // Mark as used
+                        unusedScore.used = true;
+                    }
+                }
+                
+                // 3. Use most recent score as fallback
+                if (!scoreToUse && recentCPScores.length > 0) {
+                    scoreToUse = recentCPScores[0].score;
+                    scoreSource = 'laatste beschikbare meting';
+                }
+                
+                // Auto-populate if score found
+                if (scoreToUse !== null) {
+                    document.getElementById('entry-cp-score').value = scoreToUse;
+                    console.log(`✅ CP score ${scoreToUse} ingevuld (bron: ${scoreSource})`);
+                    
+                    // Show helpful message
+                    const cpField = document.getElementById('entry-cp-score');
+                    if (cpField) {
+                        cpField.style.backgroundColor = '#e0f7fa';
+                        cpField.title = `Automatisch ingevuld van ${scoreSource}`;
+                        setTimeout(() => {
+                            cpField.style.backgroundColor = '';
+                        }, 3000);
+                    }
+                } else {
+                    console.log('⚠️ Geen recente CP score beschikbaar voor automatische invulling');
                 }
             }
         }
@@ -2568,8 +2661,14 @@
             cb.parentElement.classList.remove('selected');
         });
         
-        // Clear latest CP score after use
-        latestCPScore = null;
+        // IMPROVED: Only clear latestCPScore if it's older than 2 hours
+        if (lastCPTimestamp) {
+            const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+            if (lastCPTimestamp < twoHoursAgo) {
+                latestCPScore = null;
+                console.log('🧹 Cleared old CP score (>2 hours)');
+            }
+        }
     };
 
     window.saveJournalEntry = async function() {
@@ -3656,6 +3755,42 @@
         releaseWakeLock();
     });
 
+    // ============================================
+    // DEBUG FUNCTIONS
+    // ============================================
+
+    // Enhanced debugging function
+    function debugBreathingSession() {
+        console.log('=== BREATHING SESSION STATE ===');
+        console.log('isBreathing:', isBreathing);
+        console.log('breathingPattern:', breathingPattern);
+        console.log('breathCycleCount:', breathCycleCount);
+        
+        const cycleElement = document.getElementById('cycle-count');
+        console.log('Cycle count element:', cycleElement);
+        console.log('Cycle count text:', cycleElement ? cycleElement.textContent : 'NOT FOUND');
+        
+        const pattern = breathingPatterns[breathingPattern];
+        console.log('Current pattern:', pattern);
+        console.log('Target cycles:', pattern ? pattern.cycles : 'UNDEFINED');
+        
+        console.log('Recent CP scores:', recentCPScores);
+        console.log('Latest CP score:', latestCPScore);
+        console.log('Last CP timestamp:', lastCPTimestamp);
+    }
+
+    // Add debug button for localhost/development
+    if (window.location.hostname === 'localhost' || window.location.hostname.includes('127.0.0.1') || window.location.hostname.includes('192.168')) {
+        document.addEventListener('DOMContentLoaded', () => {
+            const debugBtn = document.createElement('button');
+            debugBtn.textContent = '🐛 Debug';
+            debugBtn.style.cssText = 'position:fixed;top:10px;left:10px;z-index:9999;background:red;color:white;border:none;padding:5px;border-radius:3px;font-size:12px;';
+            debugBtn.onclick = debugBreathingSession;
+            document.body.appendChild(debugBtn);
+        });
+    }
+
+    console.log('🔧 Ademruimte bug fixes loaded successfully');
     console.log('📱 Ademruimte app loaded successfully');
 </script>
 </body>

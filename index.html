@@ -856,7 +856,40 @@
         accent-color: var(--primary-color);
         cursor: pointer;
     }
-</style>
+
+    /* DEV_MODE indicator styles */
+    .dev-mode-indicator {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background: linear-gradient(135deg, #ff0000, #cc0000);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        z-index: 10000;
+        box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+        display: none;
+        cursor: pointer;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .dev-mode-indicator.active {
+        display: block;
+        animation: pulse-dev 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse-dev {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.8; transform: scale(1.05); }
+    }
+    
+    .dev-mode-indicator:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5);
+    }
+</style>
 </head>
 
 <body>
@@ -1074,6 +1107,14 @@
                                 <option value="standard">4-7-8 Standaard</option>
                                 <option value="advanced">6-8-10 Gevorderd</option>
                             </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="margin-bottom: 0.5rem; display: block;">🔊 Auditieve begeleiding:</label>
+                            <button class="btn btn-primary" id="audio-toggle" onclick="toggleAudioCues()" style="width: 100%; position: relative;">
+                                <span id="audio-status">Uitgeschakeld</span>
+                                <small style="display: block; font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.9;">Voor tijdens wandelen/fietsen • Alleen zachte oefening</small>
+                            </button>
                         </div>
 
                         <div class="breathing-circle" id="breathing-circle">
@@ -1372,7 +1413,72 @@
         measurementId: "G-SD2ZEYNMNY"
     };
 
-    // Global variables
+
+    // ===========================================
+    // DEV_MODE CONFIGURATION
+    // ===========================================
+    const DEV_MODE = localStorage.getItem('ADEMRUIMTE_DEV_MODE') === 'true';
+    
+    // Toggle DEV_MODE with keyboard shortcut (Ctrl+Shift+D)
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+            const newMode = !DEV_MODE;
+            localStorage.setItem('ADEMRUIMTE_DEV_MODE', newMode.toString());
+            location.reload();
+        }
+    });
+    
+    // DEV_MODE: Create mock user to bypass authentication
+    if (DEV_MODE) {
+        // Create a mock current user for development
+        currentUser = {
+            uid: 'dev-user-123',
+            email: 'dev@ademruimte.local',
+            displayName: 'DEV User',
+            emailVerified: true
+        };
+        
+        console.log('%c🔧 DEV_MODE ENABLED - Authentication bypassed', 'background: #ff0000; color: white; font-size: 16px; padding: 4px 8px; border-radius: 4px;');
+        console.log('Press Ctrl+Shift+D to toggle DEV_MODE');
+        console.log('Mock user:', currentUser);
+    }
+    
+    // Show DEV_MODE indicator
+    if (DEV_MODE) {
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', addDevIndicator);
+        } else {
+            addDevIndicator();
+        }
+    }
+    
+    function addDevIndicator() {
+        const devIndicator = document.createElement('div');
+        devIndicator.className = 'dev-mode-indicator active';
+        devIndicator.innerHTML = '🔧 DEV MODE (No Auth)';
+        devIndicator.title = 'Druk Ctrl+Shift+D om uit te schakelen';
+        devIndicator.onclick = () => {
+            localStorage.setItem('ADEMRUIMTE_DEV_MODE', 'false');
+            location.reload();
+        };
+        document.body.appendChild(devIndicator);
+    }
+    
+    // Enhanced logging function for dev mode
+    function devLog(message, data = null) {
+        if (DEV_MODE) {
+            console.log('%c[DEV]', 'color: #ff0000; font-weight: bold;', message, data || '');
+        }
+    }
+    
+    // Enhanced error logging for dev mode
+    function devError(message, error = null) {
+        if (DEV_MODE) {
+            console.error('%c[DEV ERROR]', 'color: #ff0000; font-weight: bold;', message, error || '');
+        }
+    }
+    // Global variables
     let app, auth, db, currentUser = null;
     let currentTab = 'dashboard';
     let allJournalEntries = [];
@@ -1406,6 +1512,11 @@
 
     // Wake lock variables
     let wakeLock = null;
+
+    // Audio cues variables
+    let speechSynthesis = null;
+    let audioEnabled = false;
+    let speechVoice = null;
 
     // User stats - IMPROVED: Better streak tracking
     let userStats = {
@@ -1478,6 +1589,165 @@
     ];
 
     // ============================================
+    // AUDIO CUES FUNCTIONS
+    // ============================================
+
+    function initSpeechSynthesis() {
+        if ('speechSynthesis' in window) {
+            speechSynthesis = window.speechSynthesis;
+            
+            // Wait for voices to load
+            setTimeout(() => {
+                const voices = speechSynthesis.getVoices();
+                
+                // Enhanced voice selection for more realistic voices
+                speechVoice = 
+                    // First priority: High-quality Dutch voices
+                    voices.find(voice => voice.name.includes('Ellen') && voice.lang.includes('nl')) ||
+                    voices.find(voice => voice.name.includes('Xander') && voice.lang.includes('nl')) ||
+                    voices.find(voice => voice.name.includes('Amelie') && voice.lang.includes('nl')) ||
+                    // Second priority: Any Dutch voice
+                    voices.find(voice => voice.lang.startsWith('nl-')) ||
+                    voices.find(voice => voice.lang.startsWith('nl')) ||
+                    // Third priority: High-quality English voices
+                    voices.find(voice => voice.name.includes('Samantha') && voice.lang.includes('en')) ||
+                    voices.find(voice => voice.name.includes('Alex') && voice.lang.includes('en')) ||
+                    voices.find(voice => voice.name.includes('Karen') && voice.lang.includes('en')) ||
+                    voices.find(voice => voice.name.includes('Daniel') && voice.lang.includes('en')) ||
+                    // Fourth priority: Any English voice
+                    voices.find(voice => voice.lang.startsWith('en-')) ||
+                    // Fallback: First available voice
+                    voices[0];
+                
+                console.log('🔊 Speech synthesis initialized:', speechVoice ? speechVoice.name : 'No voice available');
+                console.log('📝 Available voices:', voices.map(v => `${v.name} (${v.lang})`).slice(0, 5));
+            }, 500);
+            
+            return true;
+        } else {
+            console.warn('⚠️ Speech Synthesis API not supported');
+            return false;
+        }
+    }
+
+    // Toggle audio cues function
+    window.toggleAudioCues = function() {
+        audioEnabled = !audioEnabled;
+        
+        const button = document.getElementById('audio-toggle');
+        const status = document.getElementById('audio-status');
+        
+        if (audioEnabled) {
+            button.classList.remove('btn-primary');
+            button.classList.add('btn-success');
+            status.textContent = 'Ingeschakeld ✓';
+            
+            // Initialize speech if not already done
+            if (!speechSynthesis) {
+                initSpeechSynthesis();
+            }
+            
+            // Test audio with improved voice
+            setTimeout(() => {
+                speak("Auditieve begeleiding is nu ingeschakeld.", { 
+                    volume: 0.7, 
+                    rate: 0.85, 
+                    pitch: 1.0 
+                });
+            }, 200);
+            
+            showUserMessage('🔊 Audio begeleiding ingeschakeld voor zachte oefeningen', 'success');
+        } else {
+            button.classList.remove('btn-success');
+            button.classList.add('btn-primary');
+            status.textContent = 'Uitgeschakeld';
+            
+            // Cancel any ongoing speech
+            if (speechSynthesis) {
+                speechSynthesis.cancel();
+            }
+            
+            showUserMessage('🔇 Audio begeleiding uitgeschakeld', 'info');
+        }
+    };
+
+    function speak(text, options = {}) {
+        if (!speechSynthesis || !audioEnabled) return Promise.resolve();
+        
+        try {
+            // Cancel any ongoing speech
+            speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            if (speechVoice) {
+                utterance.voice = speechVoice;
+            }
+            
+            utterance.rate = options.rate || 0.9;
+            utterance.pitch = options.pitch || 1;
+            utterance.volume = options.volume || 0.8;
+            
+            speechSynthesis.speak(utterance);
+            
+            return new Promise((resolve) => {
+                utterance.onend = resolve;
+                utterance.onerror = resolve;
+                // Timeout fallback
+                setTimeout(resolve, 5000);
+            });
+        } catch (error) {
+            console.warn('Speech synthesis error:', error);
+            return Promise.resolve();
+        }
+    }
+
+    async function speakWithTiming(text, seconds) {
+        if (!audioEnabled) return;
+        
+        try {
+            // First speak the instruction
+            await speak(text);
+            
+            // Then count down the seconds with gentle tones
+            for (let i = 1; i <= seconds; i++) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Every 2 seconds, give a gentle tone cue
+                if (i % 2 === 0 && i < seconds) {
+                    playTone(220, 0.1); // Gentle A note
+                }
+            }
+        } catch (error) {
+            console.warn('Audio timing error:', error);
+        }
+    }
+
+    function playTone(frequency, duration) {
+        if (!audioEnabled) return;
+        
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration);
+        } catch (error) {
+            console.warn('Audio context not available:', error);
+        }
+    }
+
+    // ============================================
     // WAKE LOCK FUNCTIONS
     // ============================================
 
@@ -1534,6 +1804,35 @@
 
     async function initFirebase() {
         try {
+            // DEV_MODE: Skip Firebase and use mock user
+            if (DEV_MODE) {
+                devLog('🔧 DEV_MODE: Bypassing Firebase authentication');
+                
+                // Create mock user
+                currentUser = {
+                    uid: 'dev-user-' + Date.now(),
+                    email: 'dev@ademruimte.local',
+                    displayName: 'Dev User',
+                    emailVerified: true
+                };
+                
+                // Show main app immediately
+                showMainApp();
+                updateUserInfo();
+                updateStatusIndicator('connected');
+                
+                // Initialize with empty data
+                allJournalEntries = [];
+                allCPMeasurements = [];
+                updateDashboard();
+                generateInsights();
+                
+                showUserMessage('🔧 DEV_MODE: Ingelogd als test gebruiker (geen Firebase)', 'info');
+                
+                return true;
+            }
+            
+            // Normal Firebase initialization
             const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js");
             const { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, browserSessionPersistence } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
             const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
@@ -1570,6 +1869,9 @@
                 }
             });
 
+            // Show login form after Firebase initialization (only if not in DEV_MODE)
+            showLoginForm();
+
             return true;
         } catch (error) {
             console.error('Firebase initialization failed:', error);
@@ -1604,6 +1906,12 @@
     async function saveUserStats() {
         if (!currentUser) return;
         
+        // Skip Firebase in DEV_MODE
+        if (DEV_MODE) {
+            devLog('🔧 DEV_MODE: UserStats saved locally only', userStats);
+            return;
+        }
+        
         try {
             const { setDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
             
@@ -1628,6 +1936,37 @@
         document.getElementById('auth-screen').classList.add('hidden');
         document.getElementById('auth-loading').classList.add('hidden');
         document.getElementById('main-app').classList.remove('hidden');
+        
+        // Setup audio cues checkbox now that the main app is visible
+        setupAudioEventListeners();
+    }
+    
+    function setupAudioEventListeners() {
+        const audioCuesCheckbox = document.getElementById('audio-cues');
+        if (audioCuesCheckbox && !audioCuesCheckbox.hasAttribute('data-listener-added')) {
+            audioCuesCheckbox.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    try {
+                        // Test audio when enabled
+                        if (!speechSynthesis) {
+                            initSpeechSynthesis();
+                        }
+                        setTimeout(() => {
+                            speak("Auditieve begeleiding ingeschakeld. Dit werkt alleen bij de zachte oefening.", { volume: 0.6 }).catch(err => {
+                                console.warn('Audio test failed:', err);
+                            });
+                        }, 200);
+                    } catch (error) {
+                        console.warn('Audio cues setup error:', error);
+                        showUserMessage('⚠️ Audio niet beschikbaar op dit apparaat', 'warning');
+                        e.target.checked = false; // Uncheck if audio fails
+                    }
+                }
+            });
+            // Mark as having listener to avoid duplicates
+            audioCuesCheckbox.setAttribute('data-listener-added', 'true');
+            console.log('🔊 Audio cues event listener added');
+        }
     }
 
     function showLoginScreen() {
@@ -1767,7 +2106,7 @@
             await setPersistence(auth, persistence);
             
             await signInWithEmailAndPassword(auth, email, password);
-            showUserMessage('✅ Succesvol ingelogd!', 'success');
+            showUserMessage('✅ Succesvol ingelogd!', 'success');            devLog('User logged in successfully', { email: currentUser.email, uid: currentUser.uid });
             
         } catch (error) {
             console.error('Login error:', error);
@@ -2024,6 +2363,12 @@
     };
 
     async function saveCPMeasurement(measurement) {
+        // Skip Firebase in DEV_MODE
+        if (DEV_MODE) {
+            devLog('🔧 DEV_MODE: CP measurement saved locally only', measurement);
+            return;
+        }
+        
         try {
             const { addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
             await addDoc(collection(db, "cpMeasurements"), measurement);
@@ -2066,6 +2411,19 @@
         const circle = document.getElementById('breathing-circle');
         const pattern = breathingPatterns[breathingPattern];
         
+        // Check if audio cues are enabled (now using button state)
+        // Audio only works with gentle pattern
+        const audioEnabledForThisSession = audioEnabled && breathingPattern === 'gentle';
+        
+        if (audioEnabledForThisSession && !speechSynthesis) {
+            initSpeechSynthesis();
+        }
+        
+        // Warn user if audio is enabled but not gentle pattern
+        if (audioEnabled && breathingPattern !== 'gentle') {
+            showUserMessage('⚠️ Audio begeleiding werkt alleen bij de zachte oefening', 'warning');
+        }
+        
         document.getElementById('start-breathing').disabled = true;
         document.getElementById('stop-breathing').disabled = false;
         document.getElementById('cycle-count').textContent = '0';
@@ -2078,10 +2436,15 @@
         circle.className = "breathing-circle";
         circle.style.transform = 'scale(1)';
         
+        // Audio introduction if enabled
+        if (audioEnabledForThisSession) {
+            speak("Bereid je voor op de zachte ademhalingsoefening. We beginnen zo.");
+        }
+        
         setTimeout(() => {
             if (!isBreathing) return;
-            startBreathingCycle(pattern);
-        }, 2000);
+            startBreathingCycleWithAudio(pattern, audioEnabledForThisSession);
+        }, audioEnabledForThisSession ? 3000 : 2000); // Longer delay if audio is enabled
     };
 
     function startBreathingCycle(pattern) {
@@ -2103,6 +2466,11 @@
                     circle.textContent = `Vrij ademen - ${phaseTime}s`;
                     circle.className = "breathing-circle";
                     document.getElementById('current-phase').textContent = 'Vrij ademhalen';
+                    
+                    // Audio cues for free breathing phase
+                    if (audioEnabled && phaseTime === 1) {
+                        speakWithTiming("Vrij ademen", pattern.freeBreathing || 10);
+                    }
                     
                     // Subtle breathing animation - gentle pulsing
                     const breathingPhase = Math.sin((phaseTime * Math.PI * 4) / 10); // 4 breaths in 10 seconds
@@ -2137,6 +2505,11 @@
                         circle.className = "breathing-circle hold";
                         document.getElementById('current-phase').textContent = 'Vasthouden';
                         circle.style.transform = 'scale(1.1)';
+                        
+                        // Audio cues for hold phase
+                        if (audioEnabled && phaseTime === 1) {
+                            speakWithTiming("Hou vast", pattern.hold || 3);
+                        }
                     } else {
                         circle.textContent = `Vasthouden (${phaseTime}s)`;
                         circle.className = "breathing-circle hold";
@@ -2192,6 +2565,181 @@
         }, 1000);
     }
 
+    // Audio-enhanced version of the breathing cycle function
+    function startBreathingCycleWithAudio(pattern, audioEnabledForSession) {
+        if (!isBreathing) return;
+        
+        const circle = document.getElementById('breathing-circle');
+        let phaseTime = 0;
+        let currentPhase = breathingPattern === 'gentle' ? 'freeBreathing' : 'inhale';
+        let completedCycles = 0;
+        let totalCycles = pattern.cycles || 10;
+        
+        // Audio intro for the session
+        if (audioEnabledForSession) {
+            speak(`We beginnen met ${totalCycles} cycli van de zachte ademhalingsoefening.`);
+        }
+        
+        breathInterval = setInterval(() => {
+            if (!isBreathing) return;
+            
+            phaseTime++;
+            
+            switch(currentPhase) {
+                case 'freeBreathing':
+                    circle.textContent = `Vrij ademen - ${phaseTime}s`;
+                    circle.className = "breathing-circle";
+                    document.getElementById('current-phase').textContent = 'Vrij ademhalen';
+                    
+                    // Enhanced audio cues for free breathing phase
+                    if (audioEnabledForSession && phaseTime === 1) {
+                        if (completedCycles === 0) {
+                            speak("Begin met vrij en natuurlijk ademen.");
+                        } else if (completedCycles % 5 === 0) {
+                            speak(`Cyclus ${completedCycles + 1}. Blijf vrij ademen.`);
+                        }
+                    }
+                    
+                    // Zachte tick elke seconde tijdens vrij ademen
+                    if (audioEnabledForSession) {
+                        playTone(200, 0.05); // Zeer zachte, lage toon voor vrij ademen
+                    }
+                    
+                    // Subtle breathing animation - gentle pulsing
+                    const breathingPhase = Math.sin((phaseTime * Math.PI * 4) / 10); // 4 breaths in 10 seconds
+                    const gentleScale = 1 + (0.08 * breathingPhase);
+                    circle.style.transform = `scale(${gentleScale})`;
+                    
+                    if (phaseTime >= (pattern.freeBreathing || 10)) {
+                        phaseTime = 0;
+                        currentPhase = 'hold';
+                    }
+                    break;
+                    
+                case 'inhale':
+                    circle.textContent = `Inademen (${phaseTime}s)`;
+                    circle.className = "breathing-circle inhale";
+                    document.getElementById('current-phase').textContent = 'Inademen';
+                    
+                    // Audio cue for inhale
+                    if (audioEnabledForSession && phaseTime === 1) {
+                        speak("Adem in.");
+                    }
+                    
+                    // Zachte tick elke seconde tijdens inademen - oplopende toon
+                    if (audioEnabledForSession) {
+                        const frequency = 250 + (phaseTime * 20); // Langzaam oplopende toon
+                        playTone(frequency, 0.08);
+                    }
+                    
+                    // Smooth scaling animation
+                    const inhaleProgress = phaseTime / pattern.inhale;
+                    const inhaleScale = 1 + (0.15 * Math.min(inhaleProgress, 1));
+                    circle.style.transform = `scale(${inhaleScale})`;
+                    
+                    if (phaseTime >= pattern.inhale) {
+                        phaseTime = 0;
+                        currentPhase = pattern.hold > 0 ? 'hold' : 'exhale';
+                    }
+                    break;
+                    
+                case 'hold':
+                    if (breathingPattern === 'gentle') {
+                        circle.textContent = `Vasthouden (${phaseTime}s)`;
+                        circle.className = "breathing-circle hold";
+                        document.getElementById('current-phase').textContent = 'Vasthouden';
+                        circle.style.transform = 'scale(1.1)';
+                        
+                        // Enhanced audio cues for hold phase
+                        if (audioEnabledForSession && phaseTime === 1) {
+                            speak("Hou je adem even vast.");
+                        }
+                        
+                        // Zachte tick elke seconde tijdens vasthouden - stabiele toon
+                        if (audioEnabledForSession) {
+                            playTone(300, 0.06); // Stabiele, duidelijke toon voor vasthouden
+                        }
+                    } else {
+                        circle.textContent = `Vasthouden (${phaseTime}s)`;
+                        circle.className = "breathing-circle hold";
+                        document.getElementById('current-phase').textContent = 'Vasthouden';
+                        circle.style.transform = 'scale(1.15)';
+                        
+                        if (audioEnabledForSession && phaseTime === 1) {
+                            speak("Hou vast.");
+                        }
+                        
+                        // Zachte tick elke seconde tijdens vasthouden
+                        if (audioEnabledForSession) {
+                            playTone(300, 0.06);
+                        }
+                    }
+                    
+                    const holdDuration = breathingPattern === 'gentle' ? pattern.hold : pattern.hold;
+                    if (phaseTime >= holdDuration) {
+                        phaseTime = 0;
+                        
+                        if (breathingPattern === 'gentle') {
+                            // For gentle pattern, complete the cycle after hold
+                            completedCycles++;
+                            document.getElementById('cycle-count').textContent = completedCycles;
+                            
+                            if (completedCycles >= totalCycles) {
+                                if (audioEnabledForSession) {
+                                    speak("Uitstekend! Je hebt alle cycli voltooid.");
+                                }
+                                stopBreathing();
+                                return;
+                            } else {
+                                currentPhase = 'freeBreathing';
+                            }
+                        } else {
+                            currentPhase = 'exhale';
+                        }
+                    }
+                    break;
+                    
+                case 'exhale':
+                    circle.textContent = `Uitademen (${phaseTime}s)`;
+                    circle.className = "breathing-circle exhale";
+                    document.getElementById('current-phase').textContent = 'Uitademen';
+                    
+                    // Audio cue for exhale
+                    if (audioEnabledForSession && phaseTime === 1) {
+                        speak("Adem langzaam uit.");
+                    }
+                    
+                    // Zachte tick elke seconde tijdens uitademen - dalende toon
+                    if (audioEnabledForSession) {
+                        const frequency = 320 - (phaseTime * 15); // Langzaam dalende toon
+                        playTone(frequency, 0.08);
+                    }
+                    
+                    // Smooth scaling animation
+                    const exhaleProgress = phaseTime / pattern.exhale;
+                    const exhaleScale = 1.15 - (0.3 * Math.min(exhaleProgress, 1));
+                    circle.style.transform = `scale(${exhaleScale})`;
+                    
+                    if (phaseTime >= pattern.exhale) {
+                        phaseTime = 0;
+                        completedCycles++;
+                        document.getElementById('cycle-count').textContent = completedCycles;
+                        
+                        if (completedCycles >= totalCycles) {
+                            if (audioEnabledForSession) {
+                                speak("Perfect! Oefening voltooid.");
+                            }
+                            stopBreathing();
+                            return;
+                        } else {
+                            currentPhase = 'inhale';
+                        }
+                    }
+                    break;
+            }
+        }, 1000);
+    }
+
     window.stopBreathing = function() {
         isBreathing = false;
         clearInterval(breathInterval);
@@ -2225,7 +2773,7 @@
         const targetCycles = pattern ? (pattern.cycles || 10) : 10;
         
         // Enhanced debugging
-        console.log('=== BREATHING SESSION DEBUG ===');
+        console.log('=== BREATHING SESSION DEBUG ===');        devLog('Breathing session completed', { cycles: completedCycles, target: targetCycles, pattern: breathingPattern });
         console.log('Completed cycles:', completedCycles);
         console.log('Target cycles:', targetCycles);
         console.log('Pattern:', breathingPattern);
@@ -2704,14 +3252,20 @@
             // Add to local array
             allJournalEntries.unshift(entry);
             
-            // IMPROVED: Update streak tracking
+            // IMPROVED: Update streak tracking - add today's date to session dates
+            const today = new Date().toDateString();
+            userStats.sessionDates.add(today);
+            userStats.lastSessionDate = new Date();
             updateStreak();
             saveUserStats();
             
-            // Save to Firebase
-            if (currentUser) {
+            // Save to Firebase (skip in DEV_MODE)
+            if (currentUser && !DEV_MODE) {
                 const { addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
                 await addDoc(collection(db, "dagboekEntries"), entry);
+                devLog('Entry saved to Firebase');
+            } else if (DEV_MODE) {
+                devLog('🔧 DEV_MODE: Entry saved locally only (not to Firebase)', entry);
             }
             
             closeJournalModal();
@@ -2729,6 +3283,17 @@
 
     async function loadJournalEntries() {
         if (!currentUser) return;
+        
+        // DEV_MODE: Skip Firebase loading, use local data only
+        if (DEV_MODE) {
+            devLog('🔧 DEV_MODE: Skipping Firebase, using local storage only');
+            allJournalEntries = [];
+            allCPMeasurements = [];
+            displayJournalEntries();
+            generateInsights();
+            createProgressChart();
+            return;
+        }
         
         try {
             const { getDocs, collection, query, where, orderBy } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
@@ -3019,8 +3584,22 @@
         
         const lastCP = allCPData.length > 0 ? allCPData[0].score : null;
         
-        // IMPROVED: Calculate streak properly
+        // IMPROVED: Calculate streak properly - ensure sessionDates is updated
+        // Rebuild sessionDates from journal entries if needed
+        if (userStats.sessionDates.size === 0 && allJournalEntries.length > 0) {
+            allJournalEntries.forEach(entry => {
+                const dateString = entry.timestamp.toDateString();
+                userStats.sessionDates.add(dateString);
+            });
+        }
+        
         const currentStreak = calculateCurrentStreak();
+        console.log('📅 Current streak calculation:', {
+            sessionDatesCount: userStats.sessionDates.size,
+            journalEntriesCount: allJournalEntries.length,
+            calculatedStreak: currentStreak,
+            sessionDates: Array.from(userStats.sessionDates).slice(-5) // Last 5 dates for debugging
+        });
         
         // Update stats display
         document.getElementById('total-sessions').textContent = userStats.totalSessions + allJournalEntries.length;
@@ -3732,14 +4311,21 @@
             await initFirebase();
             console.log('✅ Ademruimte app initialization completed successfully');
             
-            // Ensure login form is shown by default
-            showLoginForm();
+            // Initialize Speech Synthesis after Firebase is loaded
+            try {
+                initSpeechSynthesis();
+            } catch (speechError) {
+                console.warn('Speech synthesis initialization failed:', speechError);
+            }
             
         } catch (error) {
             console.error('❌ App initialization failed:', error);
             updateStatusIndicator('error');
             showUserMessage('App initialisatie mislukt. Herlaad de pagina.', 'error');
-            showLoginScreen();
+            // Only show login screen if not in DEV_MODE
+            if (!DEV_MODE) {
+                showLoginScreen();
+            }
         }
     });
 

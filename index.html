@@ -904,6 +904,128 @@
         transform: scale(1.1);
         box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5);
     }
+    
+    /* ============================================
+       COOKIE CONSENT BANNER & FOOTER
+       ============================================ */
+    
+    .cookie-banner {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        border-top: 3px solid var(--primary-color);
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+        z-index: 10000;
+        padding: 1.5rem;
+        animation: slideUp 0.3s ease-out;
+    }
+    
+    @keyframes slideUp {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+    }
+    
+    .cookie-content {
+        max-width: 1000px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .cookie-content h3 {
+        margin: 0;
+        color: var(--text-dark);
+        font-size: 1.25rem;
+    }
+    
+    .cookie-text {
+        flex: 1;
+        min-width: 300px;
+    }
+    
+    .cookie-text p {
+        margin: 0.5rem 0 0 0;
+        color: var(--text-light);
+        line-height: 1.6;
+    }
+    
+    .cookie-text a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+    }
+    
+    .cookie-text a:hover {
+        text-decoration: underline;
+    }
+    
+    .cookie-buttons {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .footer {
+        background: var(--card-bg);
+        border-top: 1px solid #e5e7eb;
+        padding: 2rem 1rem;
+        margin-top: 4rem;
+        text-align: center;
+    }
+    
+    .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .footer-links {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .footer-links a {
+        color: var(--text-light);
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+    
+    .footer-links a:hover {
+        color: var(--primary-color);
+    }
+    
+    .footer-info {
+        color: var(--text-light);
+        font-size: 0.85rem;
+    }
+    
+    @media (max-width: 768px) {
+        .cookie-content {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .cookie-buttons {
+            width: 100%;
+        }
+        
+        .cookie-buttons button {
+            flex: 1;
+        }
+        
+        .footer-links {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
 </style>
 </head>
 
@@ -980,6 +1102,14 @@
                     <input type="password" class="form-control" id="register-password-confirm" placeholder="Herhaal wachtwoord" required>
                 </div>
                 
+                <div style="background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.85rem;">
+                    <p style="margin: 0; color: var(--text-dark);">
+                        <i class="fas fa-shield-alt"></i> Door een account aan te maken, ga je akkoord met ons 
+                        <a href="privacy-policy.html" target="_blank" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">privacybeleid</a> 
+                        en het gebruik van cookies voor app functionaliteit.
+                    </p>
+                </div>
+                
                 <div class="button-group">
                     <button class="btn btn-success" id="register-btn" onclick="registerUser()">
                         <span>✅ Account Aanmaken</span>
@@ -1032,6 +1162,7 @@
             <button class="tab-btn" data-tab="buteyko"><i class="fas fa-lungs"></i> Buteyko</button>
             <button class="tab-btn" data-tab="dagboek"><i class="fas fa-chart-bar"></i> Dagboek</button>
             <button class="tab-btn" data-tab="crisis"><i class="fas fa-exclamation-triangle"></i> Crisis Hulp</button>
+            <button class="tab-btn" data-tab="settings"><i class="fas fa-cog"></i> Instellingen</button>
         </nav>
 
         <main class="container">
@@ -1287,6 +1418,89 @@
                         <li>🧠 Zelfmoordlijn: 1813 of 0800 32 123</li>
                         <li>💬 Tele-onthaal: 106</li>
                     </ul>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings" class="tab-content">
+                <div class="card">
+                    <h2><i class="fas fa-cog"></i> Instellingen</h2>
+                    
+                    <!-- Account Info -->
+                    <div class="card" style="background: rgba(6, 182, 212, 0.1); border: 2px solid rgba(6, 182, 212, 0.2);">
+                        <h3><i class="fas fa-user"></i> Account</h3>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                                <span style="color: var(--text-light);">Email:</span>
+                                <span id="settings-email" style="font-weight: 600;">-</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                                <span style="color: var(--text-light);">Account aangemaakt:</span>
+                                <span id="settings-created" style="font-weight: 600;">-</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                                <span style="color: var(--text-light);">Totaal sessies:</span>
+                                <span id="settings-sessions" style="font-weight: 600;">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Privacy & Data -->
+                    <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 2px solid rgba(16, 185, 129, 0.2);">
+                        <h3><i class="fas fa-shield-alt"></i> Privacy & Gegevens</h3>
+                        <p style="color: var(--text-light); margin-bottom: 1rem;">
+                            Je hebt volledige controle over je gegevens volgens de AVG/GDPR.
+                        </p>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <button class="btn btn-primary" onclick="window.open('privacy-policy.html', '_blank')" style="width: 100%;">
+                                <i class="fas fa-file-contract"></i> Privacybeleid
+                            </button>
+                            
+                            <button class="btn btn-success" onclick="exportUserData()" style="width: 100%;">
+                                <i class="fas fa-download"></i> Exporteer Mijn Gegevens
+                                <small style="display: block; font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.9;">
+                                    Download al je data in JSON formaat
+                                </small>
+                            </button>
+                            
+                            <button class="btn btn-secondary" onclick="manageCookieConsent()" style="width: 100%;">
+                                <i class="fas fa-cookie-bite"></i> Cookie Voorkeuren
+                                <small style="display: block; font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.9;">
+                                    Beheer je toestemming
+                                </small>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Danger Zone -->
+                    <div class="card" style="background: rgba(239, 68, 68, 0.1); border: 2px solid rgba(239, 68, 68, 0.2);">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+                        <p style="color: var(--text-light); margin-bottom: 1rem;">
+                            <strong>Waarschuwing:</strong> Deze actie kan niet ongedaan worden gemaakt.
+                        </p>
+                        
+                        <button class="btn btn-danger" onclick="deleteUserAccount()" style="width: 100%;">
+                            <i class="fas fa-trash-alt"></i> Account Permanent Verwijderen
+                            <small style="display: block; font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.9;">
+                                Verwijdert al je gegevens permanent
+                            </small>
+                        </button>
+                    </div>
+
+                    <!-- App Info -->
+                    <div class="card">
+                        <h3><i class="fas fa-info-circle"></i> Over Ademruimte</h3>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; color: var(--text-light);">
+                            <p><strong>Versie:</strong> 1.0.0</p>
+                            <p><strong>Laatst bijgewerkt:</strong> 12 januari 2026</p>
+                            <p><strong>Contact:</strong> thomas.oostberg@gmail.com</p>
+                            <p style="margin-top: 1rem;">
+                                Ademruimte helpt bij het bijhouden en verbeteren van chronische hyperventilatie 
+                                door middel van de wetenschappelijk onderbouwde Buteyko methode.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -1570,6 +1784,213 @@
             console.error('%c[DEV ERROR]', 'color: #ff0000; font-weight: bold;', message, error || '');
         }
     }
+
+    // ============================================
+    // GDPR COMPLIANCE FUNCTIONS
+    // ============================================
+    
+    // Cookie consent management
+    function checkCookieConsent() {
+        const consent = localStorage.getItem('cookieConsent');
+        if (!consent) {
+            // Show banner after short delay
+            setTimeout(() => {
+                document.getElementById('cookie-banner').style.display = 'block';
+            }, 1000);
+        }
+        return consent;
+    }
+    
+    function acceptCookies() {
+        localStorage.setItem('cookieConsent', JSON.stringify({
+            essential: true,
+            functional: true,
+            acceptedAt: new Date().toISOString(),
+            version: '1.0'
+        }));
+        document.getElementById('cookie-banner').style.display = 'none';
+        console.log('✅ Cookie consent gegeven');
+    }
+    
+    function acceptEssentialOnly() {
+        localStorage.setItem('cookieConsent', JSON.stringify({
+            essential: true,
+            functional: false,
+            acceptedAt: new Date().toISOString(),
+            version: '1.0'
+        }));
+        document.getElementById('cookie-banner').style.display = 'none';
+        console.log('✅ Alleen essentiële cookies geaccepteerd');
+    }
+    
+    function manageCookieConsent() {
+        const consent = JSON.parse(localStorage.getItem('cookieConsent') || '{}');
+        const message = `Huidige cookie voorkeuren:
+        
+Essentiële cookies: ✅ Altijd aan (vereist voor login)
+Functionele cookies: ${consent.functional ? '✅ Aan' : '❌ Uit'}
+Geaccepteerd op: ${consent.acceptedAt ? new Date(consent.acceptedAt).toLocaleString('nl-NL') : 'Nog niet geaccepteerd'}
+
+Wil je je voorkeuren wijzigen?`;
+        
+        if (confirm(message)) {
+            // Reset consent and show banner again
+            localStorage.removeItem('cookieConsent');
+            document.getElementById('cookie-banner').style.display = 'block';
+        }
+    }
+    
+    // Export user data (GDPR Art. 20)
+    async function exportUserData() {
+        if (!currentUser) {
+            alert('Je moet ingelogd zijn om data te exporteren.');
+            return;
+        }
+        
+        try {
+            const exportData = {
+                exportDate: new Date().toISOString(),
+                exportVersion: '1.0',
+                account: {
+                    email: currentUser.email,
+                    uid: currentUser.uid,
+                    createdAt: currentUser.metadata.creationTime,
+                    lastSignIn: currentUser.metadata.lastSignInTime
+                },
+                userStats: {
+                    ...userStats,
+                    sessionDates: Array.from(userStats.sessionDates || [])
+                },
+                journalEntries: allJournalEntries.map(entry => ({
+                    ...entry,
+                    timestamp: entry.timestamp.toISOString()
+                })),
+                cpMeasurements: allCPMeasurements.map(cp => ({
+                    ...cp,
+                    timestamp: cp.timestamp ? new Date(cp.timestamp).toISOString() : null
+                }))
+            };
+            
+            // Download as JSON
+            const blob = new Blob([JSON.stringify(exportData, null, 2)], 
+                { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ademruimte-data-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showUserMessage('✅ Data succesvol geëxporteerd!', 'success');
+        } catch (error) {
+            console.error('Export error:', error);
+            showUserMessage('❌ Fout bij exporteren: ' + error.message, 'error');
+        }
+    }
+    
+    // Delete user account (GDPR Art. 17)
+    async function deleteUserAccount() {
+        if (!currentUser) {
+            alert('Je moet ingelogd zijn.');
+            return;
+        }
+        
+        // Triple confirmation for safety
+        const confirm1 = confirm(
+            '⚠️ WAARSCHUWING: Weet je ZEKER dat je je account wilt verwijderen?\n\n' +
+            'Dit verwijdert:\n' +
+            '• Al je dagboek entries\n' +
+            '• Al je CP metingen\n' +
+            '• Al je statistieken\n' +
+            '• Je account\n\n' +
+            'Deze actie kan NIET ongedaan worden gemaakt!'
+        );
+        
+        if (!confirm1) return;
+        
+        const confirm2 = prompt(
+            'Type "VERWIJDER" (hoofdletters) om te bevestigen dat je je account permanent wilt verwijderen:'
+        );
+        
+        if (confirm2 !== 'VERWIJDER') {
+            alert('Verwijdering geannuleerd. Je account is veilig.');
+            return;
+        }
+        
+        try {
+            showUserMessage('🗑️ Account wordt verwijderd...', 'warning');
+            
+            // Import required Firebase functions
+            const { deleteDoc, doc, getDocs, collection, query, where } = 
+                await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+            const { deleteUser } = 
+                await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
+            
+            // Delete user stats
+            try {
+                await deleteDoc(doc(db, "userStats", currentUser.uid));
+                console.log('✅ User stats deleted');
+            } catch (error) {
+                console.warn('User stats deletion failed:', error);
+            }
+            
+            // Delete all journal entries
+            try {
+                const entriesSnap = await getDocs(
+                    query(collection(db, "dagboekEntries"), 
+                    where("userId", "==", currentUser.uid))
+                );
+                
+                let deletedCount = 0;
+                for (const entryDoc of entriesSnap.docs) {
+                    await deleteDoc(entryDoc.ref);
+                    deletedCount++;
+                }
+                console.log(`✅ ${deletedCount} journal entries deleted`);
+            } catch (error) {
+                console.warn('Journal entries deletion failed:', error);
+            }
+            
+            // Delete Firebase Auth account
+            await deleteUser(currentUser);
+            
+            // Clear local storage
+            localStorage.clear();
+            
+            alert('✅ Je account is succesvol verwijderd. Je wordt nu uitgelogd.');
+            window.location.reload();
+            
+        } catch (error) {
+            console.error('Delete account error:', error);
+            
+            if (error.code === 'auth/requires-recent-login') {
+                alert(
+                    '⚠️ Voor je veiligheid moet je opnieuw inloggen om je account te verwijderen.\n\n' +
+                    'Log uit, log opnieuw in, en probeer het dan nog een keer.'
+                );
+            } else {
+                alert('❌ Fout bij verwijderen: ' + error.message + '\n\nProbeer opnieuw in te loggen en het nog een keer te proberen.');
+            }
+        }
+    }
+    
+    // Update settings UI when tab is opened
+    function updateSettingsUI() {
+        if (currentUser) {
+            document.getElementById('settings-email').textContent = currentUser.email;
+            document.getElementById('settings-created').textContent = 
+                new Date(currentUser.metadata.creationTime).toLocaleDateString('nl-NL');
+            document.getElementById('settings-sessions').textContent = 
+                userStats.totalSessions || 0;
+        }
+    }
+    
+    // Check cookie consent on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        checkCookieConsent();
+    });
 
     // Breathing exercise variables
     let breathInterval = null;
@@ -2009,6 +2430,11 @@
             setTimeout(() => {
                 document.getElementById('chart-10days').classList.add('active');
             }, 100);
+        }
+        
+        // Update settings UI when settings tab is opened
+        if (tabName === 'settings') {
+            updateSettingsUI();
         }
     }
 
@@ -4636,5 +5062,54 @@
     console.log('🔧 Ademruimte bug fixes loaded successfully');
     console.log('📱 Ademruimte app loaded successfully');
 </script>
+
+<!-- Cookie Consent Banner -->
+<div id="cookie-banner" class="cookie-banner" style="display: none;">
+    <div class="cookie-content">
+        <div class="cookie-text">
+            <h3>🍪 Cookies & Privacy</h3>
+            <p>
+                We gebruiken essentiële cookies voor login en app functionaliteit. 
+                Door verder te gaan stem je in met ons gebruik van cookies. 
+                Lees ons <a href="privacy-policy.html" target="_blank">privacybeleid</a> voor meer informatie.
+            </p>
+        </div>
+        <div class="cookie-buttons">
+            <button onclick="acceptCookies()" class="btn btn-primary">
+                Accepteren
+            </button>
+            <button onclick="acceptEssentialOnly()" class="btn btn-secondary">
+                Alleen essentiële
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-links">
+            <a href="privacy-policy.html" target="_blank">
+                <i class="fas fa-shield-alt"></i> Privacybeleid
+            </a>
+            <span style="color: #d1d5db;">|</span>
+            <a href="mailto:thomas.oostberg@gmail.com">
+                <i class="fas fa-envelope"></i> Contact
+            </a>
+            <span style="color: #d1d5db;">|</span>
+            <a href="#" onclick="event.preventDefault(); manageCookieConsent();">
+                <i class="fas fa-cookie-bite"></i> Cookies
+            </a>
+        </div>
+        <div class="footer-info">
+            <p>© 2026 Ademruimte | Evidence-based hulp bij chronische hyperventilatie</p>
+            <p style="margin-top: 0.5rem; font-size: 0.8rem;">
+                Deze app is geen vervanging voor professionele medische zorg. 
+                Raadpleeg altijd je arts bij gezondheidsklachten.
+            </p>
+        </div>
+    </div>
+</footer>
+
 </body>
 </html>

@@ -15,6 +15,9 @@
     
     <!-- Chart.js voor statistieken -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
     /* CSS Custom Properties voor consistentie */
@@ -257,6 +260,17 @@
         box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
     }
 
+    .btn-secondary {
+        background: linear-gradient(135deg, #6b7280, #4b5563);
+        color: white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(107, 114, 128, 0.3);
+    }
+
     .btn-warning {
         background: var(--warning-gradient);
         color: white;
@@ -453,8 +467,8 @@
         align-items: center;
         justify-content: center;
         font-size: 1.2rem;
-        font-weight: 600;
-        color: var(--primary-color);
+        font-weight: 700;
+        color: #0891b2;
         transition: all 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
         position: relative;
         background: rgba(6, 182, 212, 0.1);
@@ -470,20 +484,21 @@
 
     .breathing-circle.inhale {
         background: rgba(6, 182, 212, 0.2);
+        color: #0891b2;
         box-shadow: 0 0 20px rgba(6, 182, 212, 0.3);
     }
 
     .breathing-circle.exhale {
         background: rgba(16, 185, 129, 0.2);
         border-color: #10b981;
-        color: #10b981;
+        color: #047857;
         box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
     }
 
     .breathing-circle.hold {
         background: rgba(245, 158, 11, 0.2);
         border-color: #f59e0b;
-        color: #f59e0b;
+        color: #d97706;
         box-shadow: 0 0 25px rgba(245, 158, 11, 0.4);
     }
 
@@ -889,7 +904,7 @@
         transform: scale(1.1);
         box-shadow: 0 6px 20px rgba(255, 0, 0, 0.5);
     }
-</style>
+</style>
 </head>
 
 <body>
@@ -1013,10 +1028,10 @@
         </header>
 
         <nav class="nav-tabs">
-            <button class="tab-btn active" data-tab="dashboard">🏠 Dashboard</button>
-            <button class="tab-btn" data-tab="buteyko">💨 Buteyko</button>
-            <button class="tab-btn" data-tab="dagboek">📊 Dagboek</button>
-            <button class="tab-btn" data-tab="crisis">🚨 Crisis Hulp</button>
+            <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-home"></i> Dashboard</button>
+            <button class="tab-btn" data-tab="buteyko"><i class="fas fa-lungs"></i> Buteyko</button>
+            <button class="tab-btn" data-tab="dagboek"><i class="fas fa-chart-bar"></i> Dagboek</button>
+            <button class="tab-btn" data-tab="crisis"><i class="fas fa-exclamation-triangle"></i> Crisis Hulp</button>
         </nav>
 
         <main class="container">
@@ -1050,14 +1065,24 @@
                 </div>
 
                 <div class="card">
-                    <h3>🎯 Jouw Persoonlijke Inzichten</h3>
+                    <h3><i class="fas fa-bullseye"></i> Jouw Persoonlijke Inzichten</h3>
                     <div id="insights-content">
                         <p style="color: var(--text-light);">Start met je eerste oefening om persoonlijke inzichten te ontvangen!</p>
                     </div>
                 </div>
 
+                <div class="card" id="active-medications-card" style="display: none;">
+                    <h3><i class="fas fa-pills"></i> Actieve Medicaties</h3>
+                    <div id="active-medications-content">
+                        <p style="color: var(--text-light);">Geen actieve medicaties geregistreerd.</p>
+                    </div>
+                    <small style="color: var(--text-light); display: block; margin-top: 1rem;">
+                        💡 Track je medicatie via dagboek entries om langetermijn patronen te analyseren
+                    </small>
+                </div>
+
                 <div class="card">
-                    <h3>💡 Jouw Persoonlijke Tip</h3>
+                    <h3><i class="fas fa-lightbulb"></i> Jouw Persoonlijke Tip</h3>
                     <div id="tip-content">
                         <p>Start met je eerste oefening om persoonlijke tips te ontvangen!</p>
                     </div>
@@ -1067,10 +1092,13 @@
             <!-- Buteyko Tab -->
             <div id="buteyko" class="tab-content">
                 <div class="card">
-                    <h2>💨 Buteyko Ademhaling</h2>
-                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                    <h2><i class="fas fa-wind"></i> Buteyko Ademhaling</h2>
+                    <p style="color: var(--text-light); margin-bottom: 0.5rem;">
                         De Buteyko methode helpt je CO2-tolerantie te verbeteren en hyperventilatie te reduceren.
                     </p>
+                    <div id="haptic-indicator" style="display: none; background: rgba(16, 185, 129, 0.1); padding: 0.5rem 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem;">
+                        <i class="fas fa-mobile-alt" style="color: #10b981;"></i> <span style="color: #047857;">Haptische feedback actief</span>
+                    </div>
 
                     <!-- Control Pause Measurement -->
                     <div class="card" style="background: rgba(6, 182, 212, 0.1); border: 2px solid rgba(6, 182, 212, 0.2);">
@@ -1098,22 +1126,33 @@
 
                     <!-- Breathing Exercise -->
                     <div class="card">
-                        <h3>🫁 Ademhalingsoefening</h3>
+                        <h3><i class="fas fa-lungs"></i> Ademhalingsoefening</h3>
                         
                         <div class="form-group">
-                            <label for="breathing-pattern">Selecteer patroon:</label>
+                            <label for="breathing-pattern"><i class="fas fa-lungs"></i> Selecteer Buteyko patroon:</label>
                             <select class="form-control" id="breathing-pattern" onchange="updateBreathingPattern()">
-                                <option value="gentle" selected>Zachte oefening (10 sec vrij ademhalen + 3 sec vasthouden)</option>
-                                <option value="standard">4-7-8 Standaard</option>
-                                <option value="advanced">6-8-10 Gevorderd</option>
+                                <option value="gentle" selected>Zachte oefening (10 sec vrij ademhalen + adempauze)</option>
+                                <option value="extended">Verlengde adempauze (in/uit → pauze → herhaal)</option>
                             </select>
                         </div>
 
-                        <div class="form-group">
-                            <label style="margin-bottom: 0.5rem; display: block;">🔊 Auditieve begeleiding:</label>
-                            <button class="btn btn-primary" id="audio-toggle" onclick="toggleAudioCues()" style="width: 100%; position: relative;">
-                                <span id="audio-status">Uitgeschakeld</span>
-                                <small style="display: block; font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.9;">Voor tijdens wandelen/fietsen • Alleen zachte oefening</small>
+                        <div class="form-group" id="hold-duration-group" style="display: block;">
+                            <label style="margin-bottom: 0.5rem; display: block;">⏱️ Adempauze duur: <strong><span id="hold-duration-display">3</span> seconden</strong></label>
+                            <div class="range-container">
+                                <input type="range" class="range-slider" id="hold-duration-slider" min="2" max="10" value="3" oninput="updateHoldDuration()">
+                            </div>
+                            <small style="color: var(--text-light); display: block; margin-top: 0.5rem;" id="hold-tip">
+                                💡 Tip: Begin met 3 seconden en verhoog geleidelijk naarmate je CO2-tolerantie verbetert.
+                            </small>
+                        </div>
+
+                        <div class="form-group" id="haptic-toggle-container" style="display: none;">
+                            <label style="margin-bottom: 0.5rem; display: block;"><i class="fas fa-mobile-alt"></i> Haptische feedback (trillingen):</label>
+                            <button class="btn btn-secondary" id="haptic-toggle" onclick="toggleHaptics()" style="width: 100%;">
+                                <span id="haptic-status">Uitgeschakeld</span>
+                                <small style="display: block; font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.9;">
+                                    Alleen Android • Voel vibraties bij fase overgangen
+                                </small>
                             </button>
                         </div>
 
@@ -1127,7 +1166,7 @@
                         </div>
 
                         <div id="breathing-info" style="text-align: center; margin-top: 1rem;">
-                            <p><strong>Cyclus:</strong> <span id="cycle-count">0</span> <span id="cycle-target">van 20 (zachte oefening)</span></p>
+                            <p><strong>Cyclus:</strong> <span id="cycle-count">0</span> <span id="cycle-target">van 20</span></p>
                             <p><strong>Fase:</strong> <span id="current-phase">Rust</span></p>
                         </div>
                     </div>
@@ -1137,11 +1176,11 @@
             <!-- Dagboek Tab -->
             <div id="dagboek" class="tab-content">
                 <div class="card">
-                    <h2>📊 Dagboek & Statistieken</h2>
+                    <h2><i class="fas fa-chart-bar"></i> Dagboek & Statistieken</h2>
                     
                     <div class="button-group" style="margin-bottom: 2rem;">
-                        <button class="btn btn-primary" onclick="openJournalModal()">📝 Nieuwe Entry</button>
-                        <button class="btn btn-success" onclick="exportDagboek()">💾 Exporteer</button>
+                        <button class="btn btn-primary" onclick="openJournalModal()"><i class="fas fa-pen"></i> Nieuwe Entry</button>
+                        <button class="btn btn-success" onclick="exportDagboek()"><i class="fas fa-download"></i> Exporteer</button>
                     </div>
 
                     <div class="form-group">
@@ -1177,27 +1216,27 @@
             <!-- Crisis Help Tab -->
             <div id="crisis" class="tab-content">
                 <div class="card crisis-card">
-                    <h2>🚨 Crisis Hulp</h2>
+                    <h2><i class="fas fa-exclamation-triangle"></i> Crisis Hulp</h2>
                     <p style="margin-bottom: 2rem;">Directe hulp bij acute hyperventilatie of paniekaanvallen.</p>
 
                     <div class="button-group">
                         <button class="btn btn-warning" onclick="startCrisisProtocol()">🆘 Start Noodprotocol</button>
-                        <button class="btn btn-primary" onclick="startCrisisBreathing()">🫁 Simpele Nood Ademhaling</button>
+                        <button class="btn btn-primary" onclick="startCrisisBreathing()"><i class="fas fa-lungs"></i> Simpele Nood Ademhaling</button>
                     </div>
 
                     <!-- Crisis Protocol Interface -->
                     <div id="crisis-protocol" class="hidden" style="margin-top: 2rem; text-align: center;">
                         <div class="card" style="background: rgba(255,255,255,0.95); color: var(--text-dark); margin-bottom: 1rem;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                                <h3 id="protocol-step-title">🛑 STOP - Je bent veilig</h3>
+                                <h3 id="protocol-step-title" style="color: #1f2937; font-weight: 700; margin: 0;">STOP - Je bent veilig</h3>
                                 <div style="background: var(--primary-color); color: white; padding: 0.5rem 1rem; border-radius: 2rem; font-weight: bold; min-width: 80px;">
                                     <span id="protocol-timer">00:30</span>
                                 </div>
                             </div>
                             
                             <div style="margin-bottom: 1.5rem;">
-                                <div style="background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid var(--primary-color);">
-                                    <p id="protocol-instructions" style="font-size: 1.1rem; font-weight: 500; margin: 0;">
+                                <div style="background: rgba(6, 182, 212, 0.15); padding: 1.25rem; border-radius: 0.5rem; border-left: 4px solid var(--primary-color);">
+                                    <p id="protocol-instructions" style="font-size: 1.15rem; font-weight: 600; margin: 0; color: #1f2937; line-height: 1.6;">
                                         Dit is hyperventilatie en het gaat voorbij. Leg je hand op je buik en voel je ademhaling.
                                     </p>
                                 </div>
@@ -1207,8 +1246,8 @@
                                 Voel je ademhaling...
                             </div>
 
-                            <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #10b981; margin-bottom: 1rem;">
-                                <p id="protocol-encouragement" style="margin: 0; font-weight: 500; color: #059669;">
+                            <div style="background: rgba(16, 185, 129, 0.15); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #10b981; margin-bottom: 1rem;">
+                                <p id="protocol-encouragement" style="margin: 0; font-weight: 600; color: #065f46; font-size: 1.05rem;">
                                     Je bent veilig. Dit gevoel is tijdelijk.
                                 </p>
                             </div>
@@ -1257,13 +1296,12 @@
     <div id="journal-modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeJournalModal()">&times;</span>
-            <h2>📝 Nieuwe Dagboek Entry</h2>
+            <h2><i class="fas fa-pen"></i> Nieuwe Dagboek Entry</h2>
             
             <div class="form-group">
                 <label for="entry-technique">Techniek gebruikt:</label>
                 <select class="form-control" id="entry-technique">
                     <option value="Buteyko Ademhaling">Buteyko Ademhaling</option>
-                    <option value="4-7-8 Ademhaling">4-7-8 Ademhaling</option>
                     <option value="Crisis Ademhaling">Crisis Ademhaling</option>
                     <option value="Noodprotocol">Noodprotocol</option>
                     <option value="Handmatige Entry">Handmatige Entry</option>
@@ -1291,9 +1329,12 @@
                 </div>
             </div>
 
-            <div class="form-group" id="cp-score-group" style="display: none;">
-                <label for="entry-cp-score">CP Score (seconden):</label>
-                <input type="number" class="form-control" id="entry-cp-score" min="1" max="120">
+            <div class="form-group" id="cp-score-group">
+                <label for="entry-cp-score"><i class="fas fa-stopwatch"></i> Control Pause Score (optioneel, in seconden):</label>
+                <input type="number" class="form-control" id="entry-cp-score" min="1" max="120" placeholder="Bijv. 25">
+                <small style="color: var(--text-light); display: block; margin-top: 0.25rem;">
+                    Vul je CP score in als je deze hebt gemeten. Normale waarden: 20-40 seconden.
+                </small>
             </div>
 
             <div class="form-group">
@@ -1371,12 +1412,56 @@
             </div>
 
             <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <input type="checkbox" id="entry-has-medication" onchange="toggleMedicationFields()" style="width: auto;">
+                    💊 Medicatie event toevoegen
+                </label>
+            </div>
+
+            <div id="medication-fields" style="display: none; background: rgba(255,255,255,0.3); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                <div class="form-group">
+                    <label for="entry-med-action">Actie:</label>
+                    <select class="form-control" id="entry-med-action">
+                        <option value="">Selecteer actie...</option>
+                        <option value="started">✅ Gestart met medicijn</option>
+                        <option value="stopped">⛔ Gestopt met medicijn</option>
+                        <option value="dose_change">🔄 Dosiswijziging</option>
+                        <option value="extra">➕ Extra dosis genomen</option>
+                        <option value="regular">📅 Reguliere dosis (voor tracking)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="entry-med-name">Medicijn naam:</label>
+                    <input type="text" class="form-control" id="entry-med-name" placeholder="Bijv. Omeprazol, Pantoprazol, Lorazepam">
+                    <small style="color: var(--text-light); display: block; margin-top: 0.25rem;">
+                        💡 Veelvoorkomend: PPI's (Omeprazol, Pantoprazol), antacida (Rennie, Gaviscon), anxiolytica (Lorazepam, Alprazolam)
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="entry-med-dose">Dosering:</label>
+                    <input type="text" class="form-control" id="entry-med-dose" placeholder="Bijv. 20mg, 40mg, 0.5mg">
+                </div>
+
+                <div class="form-group" id="med-previous-dose-group" style="display: none;">
+                    <label for="entry-med-previous-dose">Vorige dosering (bij wijziging):</label>
+                    <input type="text" class="form-control" id="entry-med-previous-dose" placeholder="Bijv. 20mg">
+                </div>
+
+                <div class="form-group">
+                    <label for="entry-med-reason">Reden (optioneel):</label>
+                    <input type="text" class="form-control" id="entry-med-reason" placeholder="Bijv. Arts advies, verhoogde klachten, preventief">
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label for="entry-notes">Notities:</label>
                 <textarea class="form-control" id="entry-notes" placeholder="Extra opmerkingen..."></textarea>
             </div>
 
             <div class="button-group">
-                <button class="btn btn-primary" onclick="saveJournalEntry()">💾 Opslaan</button>
+                <button class="btn btn-primary" onclick="saveJournalEntry()"><i class="fas fa-save"></i> Opslaan</button>
                 <button class="btn btn-orange" onclick="closeJournalModal()">Annuleren</button>
             </div>
         </div>
@@ -1413,6 +1498,13 @@
         measurementId: "G-SD2ZEYNMNY"
     };
 
+    // Global variables
+    let app, auth, db, currentUser = null;
+    let currentTab = 'dashboard';
+    let allJournalEntries = [];
+    let allCPMeasurements = [];
+    let progressChart = null;
+    let chartFilter = '10days'; // New default: last 10 days
 
     // ===========================================
     // DEV_MODE CONFIGURATION
@@ -1478,13 +1570,6 @@
             console.error('%c[DEV ERROR]', 'color: #ff0000; font-weight: bold;', message, error || '');
         }
     }
-    // Global variables
-    let app, auth, db, currentUser = null;
-    let currentTab = 'dashboard';
-    let allJournalEntries = [];
-    let allCPMeasurements = [];
-    let progressChart = null;
-    let chartFilter = '10days'; // New default: last 10 days
 
     // Breathing exercise variables
     let breathInterval = null;
@@ -1492,6 +1577,96 @@
     let breathCycleCount = 0;
     let breathingPattern = 'gentle';
     let isBreathing = false;
+    let customHoldDuration = 3; // Default hold duration for gentle and extended exercises
+
+    // ============================================
+    // HAPTIC FEEDBACK FOR MOBILE DEVICES
+    // ============================================
+    
+    // Check if haptic feedback is supported
+    const supportsHaptics = 'vibrate' in navigator;
+    
+    // Haptics enabled state (default off, user must opt-in)
+    let hapticsEnabled = localStorage.getItem('hapticsEnabled') === 'true' || false;
+    
+    // Haptic patterns for different breathing phases
+    const hapticPatterns = {
+        inhale: [50],           // Short pulse at start of inhale
+        exhale: [30, 50, 30],   // Double pulse pattern for exhale
+        hold: [100],            // Longer pulse for hold/pause
+        complete: [50, 100, 50, 100, 50] // Success pattern when cycle completes
+    };
+    
+    // Function to trigger haptic feedback
+    function triggerHaptic(patternName) {
+        if (!supportsHaptics || !hapticsEnabled) {
+            devLog('Haptic feedback skipped:', !supportsHaptics ? 'not supported' : 'disabled by user');
+            return;
+        }
+        
+        const pattern = hapticPatterns[patternName];
+        if (pattern) {
+            try {
+                navigator.vibrate(pattern);
+                devLog('Haptic feedback triggered:', patternName);
+            } catch (error) {
+                devError('Haptic feedback error:', error);
+            }
+        }
+    }
+    
+    // Toggle haptic feedback
+    window.toggleHaptics = function() {
+        hapticsEnabled = !hapticsEnabled;
+        localStorage.setItem('hapticsEnabled', hapticsEnabled);
+        updateHapticUI();
+        
+        // Give haptic feedback when enabling
+        if (hapticsEnabled && supportsHaptics) {
+            navigator.vibrate([50, 100, 50]); // Confirmation pattern
+        }
+        
+        devLog('Haptics toggled:', hapticsEnabled);
+    };
+    
+    // Update haptic UI elements
+    function updateHapticUI() {
+        const toggle = document.getElementById('haptic-toggle');
+        const status = document.getElementById('haptic-status');
+        const indicator = document.getElementById('haptic-indicator');
+        
+        if (toggle && status) {
+            if (hapticsEnabled) {
+                status.textContent = 'Ingeschakeld';
+                toggle.classList.remove('btn-secondary');
+                toggle.classList.add('btn-success');
+            } else {
+                status.textContent = 'Uitgeschakeld';
+                toggle.classList.remove('btn-success');
+                toggle.classList.add('btn-secondary');
+            }
+        }
+        
+        if (indicator) {
+            indicator.style.display = (hapticsEnabled && supportsHaptics) ? 'block' : 'none';
+        }
+    }
+    
+    // Initialize UI on load
+    document.addEventListener('DOMContentLoaded', function() {
+        if (supportsHaptics) {
+            console.log('✅ Haptic feedback supported on this device');
+            // Show toggle button
+            const toggleContainer = document.getElementById('haptic-toggle-container');
+            if (toggleContainer) {
+                toggleContainer.style.display = 'block';
+            }
+        } else {
+            console.log('ℹ️ Haptic feedback not available (desktop or unsupported browser)');
+        }
+        
+        updateHapticUI();
+    });
 
     // CP measurement variables
     let cpInterval = null;
@@ -1513,11 +1688,6 @@
     // Wake lock variables
     let wakeLock = null;
 
-    // Audio cues variables
-    let speechSynthesis = null;
-    let audioEnabled = false;
-    let speechVoice = null;
-
     // User stats - IMPROVED: Better streak tracking
     let userStats = {
         totalSessions: 0,
@@ -1525,7 +1695,9 @@
         lastSessionDate: null,
         cpMeasurements: [],
         achievements: [],
-        sessionDates: new Set() // Track unique session dates
+        sessionDates: new Set(), // Track unique session dates
+        activeMedications: [],    // List of currently active medications
+        medicationEvents: []      // Historical log of all medication events
     };
 
     // Crisis protocol steps
@@ -1533,42 +1705,42 @@
         {
             name: "Stop & Erken",
             duration: 30,
-            title: "🛑 STOP - Je bent veilig",
-            instructions: "Dit is hyperventilatie en het gaat voorbij. Leg je hand op je buik en voel je ademhaling.",
-            breathingText: "Voel je buik...",
-            encouragement: "Je bent veilig. Dit gevoel is tijdelijk."
+            title: "STOP - Je bent veilig",
+            instructions: "Dit is hyperventilatie en het gaat voorbij. Je bent NIET in gevaar. Leg je hand op je buik en voel je ademhaling.",
+            breathingText: "Voel je buik rustig bewegen...",
+            encouragement: "Je bent veilig. Dit gevoel is tijdelijk en onschadelijk."
         },
         {
-            name: "Paradoxale Ademhaling", 
+            name: "Buteyko Ademhaling", 
             duration: 90,
-            title: "🫁 Minder Ademhalen",
-            instructions: "NIET diep ademen! Neem kleine, ondiepe ademhalingen. Houd je adem 2-3 seconden vast tussen elke ademhaling.",
-            breathingText: "Klein inademen...",
-            encouragement: "Perfect! Minder ademen helpt je CO2 te herstellen."
+            title: "Verminder Je Ademhaling",
+            instructions: "Adem MINDER, niet meer. Neem kleine ademhalingen door je neus. Na elke UIT-ademin: Pauzeer 2-3 seconden voordat je weer inademt. Dit herstelt je CO2.",
+            breathingText: "In door neus... Uit... Pauze 2-3 sec...",
+            encouragement: "Perfect! Minder ademen herstelt je CO2 balans."
         },
         {
             name: "Grounding 5-4-3-2-1",
             duration: 60, 
-            title: "👁️ Focus naar Buiten",
-            instructions: "Kijk om je heen en benoem: 5 dingen die je ZIET, 4 dingen die je VOELT, 3 dingen die je HOORT.",
-            breathingText: "Kijk om je heen...",
-            encouragement: "Je hersenen komen terug in balans. Goed bezig!"
+            title: "Focus Naar Buiten",
+            instructions: "Kijk om je heen en benoem hardop of in gedachten: 5 dingen die je ZIET • 4 dingen die je aanraakt/VOELT • 3 dingen die je HOORT • 2 dingen die je RUIKT • 1 ding dat je PROEFT",
+            breathingText: "Kijk, voel, luister...",
+            encouragement: "Je hersenen komen terug uit alarmmodus. Goed bezig!"
         },
         {
-            name: "Rustgevende Ademhaling",
+            name: "Natuurlijke Ademhaling",
             duration: 60,
-            title: "🌊 Natuurlijke Ademhaling", 
-            instructions: "Laat je ademhaling nu natuurlijk worden. Adem rustig in door je neus, langzaam uit door je mond.",
-            breathingText: "Natuurlijk...",
-            encouragement: "Je lichaam herstelt zich. De paniek neemt af."
+            title: "Laat Los", 
+            instructions: "Laat je ademhaling nu natuurlijk worden. Adem rustig in door je neus, ontspannen uit door je neus of mond. Geen controle meer nodig.",
+            breathingText: "Natuurlijk en rustig...",
+            encouragement: "Je lichaam regelt zichzelf weer. De crisis is voorbij."
         },
         {
             name: "Bevestiging",
             duration: 30,
-            title: "✅ Je hebt het Overwonnen",
-            instructions: "Het ergste is voorbij. Je hebt controle teruggekregen. Je bent sterker dan je angst.",
-            breathingText: "Je bent sterk! 💪",
-            encouragement: "🎉 Geweldig gedaan! Je hebt de crisis doorstaan."
+            title: "Je Hebt Het Overwonnen",
+            instructions: "Het ergste is voorbij. Je hebt controle teruggekregen door de juiste technieken toe te passen. Onthoud: je kunt dit elke keer weer.",
+            breathingText: "Je bent sterker dan je angst",
+            encouragement: "Geweldig gedaan! Je hebt de crisis succesvol doorstaan."
         }
     ];
 
@@ -1587,165 +1759,6 @@
         "Graded exposure: begin met kleine ongemakken en bouw langzaam tolerantie op. Dit is hoe je brein leert dat sensaties niet gevaarlijk zijn.",
         "Consistentie is belangrijker dan perfectie. 5 minuten dagelijks oefenen werkt beter dan 1 uur per week."
     ];
-
-    // ============================================
-    // AUDIO CUES FUNCTIONS
-    // ============================================
-
-    function initSpeechSynthesis() {
-        if ('speechSynthesis' in window) {
-            speechSynthesis = window.speechSynthesis;
-            
-            // Wait for voices to load
-            setTimeout(() => {
-                const voices = speechSynthesis.getVoices();
-                
-                // Enhanced voice selection for more realistic voices
-                speechVoice = 
-                    // First priority: High-quality Dutch voices
-                    voices.find(voice => voice.name.includes('Ellen') && voice.lang.includes('nl')) ||
-                    voices.find(voice => voice.name.includes('Xander') && voice.lang.includes('nl')) ||
-                    voices.find(voice => voice.name.includes('Amelie') && voice.lang.includes('nl')) ||
-                    // Second priority: Any Dutch voice
-                    voices.find(voice => voice.lang.startsWith('nl-')) ||
-                    voices.find(voice => voice.lang.startsWith('nl')) ||
-                    // Third priority: High-quality English voices
-                    voices.find(voice => voice.name.includes('Samantha') && voice.lang.includes('en')) ||
-                    voices.find(voice => voice.name.includes('Alex') && voice.lang.includes('en')) ||
-                    voices.find(voice => voice.name.includes('Karen') && voice.lang.includes('en')) ||
-                    voices.find(voice => voice.name.includes('Daniel') && voice.lang.includes('en')) ||
-                    // Fourth priority: Any English voice
-                    voices.find(voice => voice.lang.startsWith('en-')) ||
-                    // Fallback: First available voice
-                    voices[0];
-                
-                console.log('🔊 Speech synthesis initialized:', speechVoice ? speechVoice.name : 'No voice available');
-                console.log('📝 Available voices:', voices.map(v => `${v.name} (${v.lang})`).slice(0, 5));
-            }, 500);
-            
-            return true;
-        } else {
-            console.warn('⚠️ Speech Synthesis API not supported');
-            return false;
-        }
-    }
-
-    // Toggle audio cues function
-    window.toggleAudioCues = function() {
-        audioEnabled = !audioEnabled;
-        
-        const button = document.getElementById('audio-toggle');
-        const status = document.getElementById('audio-status');
-        
-        if (audioEnabled) {
-            button.classList.remove('btn-primary');
-            button.classList.add('btn-success');
-            status.textContent = 'Ingeschakeld ✓';
-            
-            // Initialize speech if not already done
-            if (!speechSynthesis) {
-                initSpeechSynthesis();
-            }
-            
-            // Test audio with improved voice
-            setTimeout(() => {
-                speak("Auditieve begeleiding is nu ingeschakeld.", { 
-                    volume: 0.7, 
-                    rate: 0.85, 
-                    pitch: 1.0 
-                });
-            }, 200);
-            
-            showUserMessage('🔊 Audio begeleiding ingeschakeld voor zachte oefeningen', 'success');
-        } else {
-            button.classList.remove('btn-success');
-            button.classList.add('btn-primary');
-            status.textContent = 'Uitgeschakeld';
-            
-            // Cancel any ongoing speech
-            if (speechSynthesis) {
-                speechSynthesis.cancel();
-            }
-            
-            showUserMessage('🔇 Audio begeleiding uitgeschakeld', 'info');
-        }
-    };
-
-    function speak(text, options = {}) {
-        if (!speechSynthesis || !audioEnabled) return Promise.resolve();
-        
-        try {
-            // Cancel any ongoing speech
-            speechSynthesis.cancel();
-            
-            const utterance = new SpeechSynthesisUtterance(text);
-            
-            if (speechVoice) {
-                utterance.voice = speechVoice;
-            }
-            
-            utterance.rate = options.rate || 0.9;
-            utterance.pitch = options.pitch || 1;
-            utterance.volume = options.volume || 0.8;
-            
-            speechSynthesis.speak(utterance);
-            
-            return new Promise((resolve) => {
-                utterance.onend = resolve;
-                utterance.onerror = resolve;
-                // Timeout fallback
-                setTimeout(resolve, 5000);
-            });
-        } catch (error) {
-            console.warn('Speech synthesis error:', error);
-            return Promise.resolve();
-        }
-    }
-
-    async function speakWithTiming(text, seconds) {
-        if (!audioEnabled) return;
-        
-        try {
-            // First speak the instruction
-            await speak(text);
-            
-            // Then count down the seconds with gentle tones
-            for (let i = 1; i <= seconds; i++) {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                // Every 2 seconds, give a gentle tone cue
-                if (i % 2 === 0 && i < seconds) {
-                    playTone(220, 0.1); // Gentle A note
-                }
-            }
-        } catch (error) {
-            console.warn('Audio timing error:', error);
-        }
-    }
-
-    function playTone(frequency, duration) {
-        if (!audioEnabled) return;
-        
-        try {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.value = frequency;
-            oscillator.type = 'sine';
-            
-            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + duration);
-        } catch (error) {
-            console.warn('Audio context not available:', error);
-        }
-    }
 
     // ============================================
     // WAKE LOCK FUNCTIONS
@@ -1808,14 +1821,6 @@
             if (DEV_MODE) {
                 devLog('🔧 DEV_MODE: Bypassing Firebase authentication');
                 
-                // Create mock user
-                currentUser = {
-                    uid: 'dev-user-' + Date.now(),
-                    email: 'dev@ademruimte.local',
-                    displayName: 'Dev User',
-                    emailVerified: true
-                };
-                
                 // Show main app immediately
                 showMainApp();
                 updateUserInfo();
@@ -1869,9 +1874,6 @@
                 }
             });
 
-            // Show login form after Firebase initialization (only if not in DEV_MODE)
-            showLoginForm();
-
             return true;
         } catch (error) {
             console.error('Firebase initialization failed:', error);
@@ -1895,7 +1897,9 @@
                     ...userStats,
                     ...data,
                     sessionDates: new Set(data.sessionDates || []),
-                    lastSessionDate: data.lastSessionDate?.toDate?.() || data.lastSessionDate
+                    lastSessionDate: data.lastSessionDate?.toDate?.() || data.lastSessionDate,
+                    activeMedications: data.activeMedications || [],
+                    medicationEvents: data.medicationEvents || []
                 };
             }
         } catch (error) {
@@ -1936,37 +1940,6 @@
         document.getElementById('auth-screen').classList.add('hidden');
         document.getElementById('auth-loading').classList.add('hidden');
         document.getElementById('main-app').classList.remove('hidden');
-        
-        // Setup audio cues checkbox now that the main app is visible
-        setupAudioEventListeners();
-    }
-    
-    function setupAudioEventListeners() {
-        const audioCuesCheckbox = document.getElementById('audio-cues');
-        if (audioCuesCheckbox && !audioCuesCheckbox.hasAttribute('data-listener-added')) {
-            audioCuesCheckbox.addEventListener('change', (e) => {
-                if (e.target.checked) {
-                    try {
-                        // Test audio when enabled
-                        if (!speechSynthesis) {
-                            initSpeechSynthesis();
-                        }
-                        setTimeout(() => {
-                            speak("Auditieve begeleiding ingeschakeld. Dit werkt alleen bij de zachte oefening.", { volume: 0.6 }).catch(err => {
-                                console.warn('Audio test failed:', err);
-                            });
-                        }, 200);
-                    } catch (error) {
-                        console.warn('Audio cues setup error:', error);
-                        showUserMessage('⚠️ Audio niet beschikbaar op dit apparaat', 'warning');
-                        e.target.checked = false; // Uncheck if audio fails
-                    }
-                }
-            });
-            // Mark as having listener to avoid duplicates
-            audioCuesCheckbox.setAttribute('data-listener-added', 'true');
-            console.log('🔊 Audio cues event listener added');
-        }
     }
 
     function showLoginScreen() {
@@ -2106,7 +2079,7 @@
             await setPersistence(auth, persistence);
             
             await signInWithEmailAndPassword(auth, email, password);
-            showUserMessage('✅ Succesvol ingelogd!', 'success');            devLog('User logged in successfully', { email: currentUser.email, uid: currentUser.uid });
+            showUserMessage('✅ Succesvol ingelogd!', 'success');
             
         } catch (error) {
             console.error('Login error:', error);
@@ -2381,25 +2354,243 @@
     // BREATHING EXERCISES
     // ============================================
 
-    const breathingPatterns = {
-        gentle: { freeBreathing: 10, hold: 3, cycles: 20, description: "10 sec vrij ademhalen (2x in/uit) + 3 sec vasthouden" },
-        standard: { inhale: 4, hold: 7, exhale: 8, cycles: 10, description: "4-7-8 standaard patroon" },
-        advanced: { inhale: 6, hold: 8, exhale: 10, cycles: 10, description: "6-8-10 gevorderd patroon" }
+    // Function to get breathing pattern with current settings
+    function getBreathingPattern(patternName) {
+        const patterns = {
+            gentle: { 
+                freeBreathing: 10, 
+                hold: customHoldDuration,
+                cycles: 20, 
+                description: `10 sec vrij ademhalen + ${customHoldDuration} sec pauze`,
+                type: 'gentle'
+            },
+            extended: {
+                inhale: 4,
+                exhale: 4,
+                hold: customHoldDuration,
+                cycles: 15,
+                description: `In/uit (4s) → pauze ${customHoldDuration}s → herhaal`,
+                type: 'extended'
+            }
+        };
+        return patterns[patternName] || patterns.gentle;
+    }
+
+    window.updateHoldDuration = function() {
+        const slider = document.getElementById('hold-duration-slider');
+        const display = document.getElementById('hold-duration-display');
+        customHoldDuration = parseInt(slider.value);
+        display.textContent = customHoldDuration;
+        
+        // Update pattern description if gentle or extended is selected
+        if (breathingPattern === 'gentle' || breathingPattern === 'extended') {
+            const pattern = getBreathingPattern(breathingPattern);
+            const targetElement = document.getElementById('cycle-target');
+            if (targetElement) {
+                targetElement.textContent = `van ${pattern.cycles}`;
+            }
+        }
+        
+        devLog('Hold duration updated:', customHoldDuration);
     };
 
     window.updateBreathingPattern = function() {
         breathingPattern = document.getElementById('breathing-pattern').value;
-        const pattern = breathingPatterns[breathingPattern];
+        const pattern = getBreathingPattern(breathingPattern);
         const targetElement = document.getElementById('cycle-target');
+        const holdGroup = document.getElementById('hold-duration-group');
+        const holdTip = document.getElementById('hold-tip');
         
-        if (targetElement) {
-            if (breathingPattern === 'gentle') {
-                targetElement.textContent = 'van 20 (zachte oefening)';
+        // Show/hide hold duration slider
+        if (holdGroup) {
+            if (breathingPattern === 'gentle' || breathingPattern === 'extended') {
+                holdGroup.style.display = 'block';
+                
+                // Update tip based on pattern
+                if (holdTip) {
+                    if (breathingPattern === 'extended') {
+                        holdTip.innerHTML = '💡 Tip: Dit patroon helpt je CO2-tolerantie maximaal te verbeteren. Start met 3-4 seconden.';
+                    } else {
+                        holdTip.innerHTML = '💡 Tip: Begin met 3 seconden en verhoog geleidelijk naarmate je CO2-tolerantie verbetert.';
+                    }
+                }
             } else {
-                targetElement.textContent = `van ${pattern.cycles || 10}`;
+                holdGroup.style.display = 'none';
             }
         }
+        
+        if (targetElement) {
+            targetElement.textContent = `van ${pattern.cycles}`;
+        }
+        
+        devLog('Breathing pattern updated:', breathingPattern, pattern);
     };
+
+    // Medication tracking functions
+    window.toggleMedicationFields = function() {
+        const checkbox = document.getElementById('entry-has-medication');
+        const fields = document.getElementById('medication-fields');
+        
+        if (checkbox.checked) {
+            fields.style.display = 'block';
+        } else {
+            fields.style.display = 'none';
+            // Clear medication fields
+            document.getElementById('entry-med-action').selectedIndex = 0;
+            document.getElementById('entry-med-name').value = '';
+            document.getElementById('entry-med-dose').value = '';
+            document.getElementById('entry-med-previous-dose').value = '';
+            document.getElementById('entry-med-reason').value = '';
+            document.getElementById('med-previous-dose-group').style.display = 'none';
+        }
+    };
+
+    // Add event listener for medication action dropdown
+    document.addEventListener('DOMContentLoaded', function() {
+        const medActionSelect = document.getElementById('entry-med-action');
+        if (medActionSelect) {
+            medActionSelect.addEventListener('change', function() {
+                const previousDoseGroup = document.getElementById('med-previous-dose-group');
+                if (this.value === 'dose_change') {
+                    previousDoseGroup.style.display = 'block';
+                } else {
+                    previousDoseGroup.style.display = 'none';
+                }
+            });
+        }
+    });
+
+    // Update active medications list based on event
+    function updateActiveMedications(event) {
+        const { action, name, dose } = event;
+        
+        switch(action) {
+            case 'started':
+                // Add to active medications if not already present
+                const existingMed = userStats.activeMedications.find(m => m.name.toLowerCase() === name.toLowerCase());
+                if (!existingMed) {
+                    userStats.activeMedications.push({
+                        name: name,
+                        dose: dose,
+                        startedAt: new Date()
+                    });
+                    devLog('Medication added to active list:', name);
+                }
+                break;
+                
+            case 'stopped':
+                // Remove from active medications
+                userStats.activeMedications = userStats.activeMedications.filter(
+                    m => m.name.toLowerCase() !== name.toLowerCase()
+                );
+                devLog('Medication removed from active list:', name);
+                break;
+                
+            case 'dose_change':
+                // Update dosage
+                const medToUpdate = userStats.activeMedications.find(m => m.name.toLowerCase() === name.toLowerCase());
+                if (medToUpdate) {
+                    medToUpdate.dose = dose;
+                    medToUpdate.lastChanged = new Date();
+                    devLog('Medication dosage updated:', name, dose);
+                }
+                break;
+                
+            case 'extra':
+            case 'regular':
+                // These don't affect active medications list, just event log
+                devLog('Medication event logged (no change to active list):', action, name);
+                break;
+        }
+        
+        // Save updated medications
+        saveUserStats();
+    }
+
+    // Rebuild medication tracking from journal entries (data recovery)
+    function rebuildMedicationTrackingFromEntries() {
+        // Count medication events in entries vs userStats
+        const entriesWithMeds = allJournalEntries.filter(e => e.medicationEvent);
+        const statsEventCount = userStats.medicationEvents.length;
+        
+        devLog('Medication tracking check:', {
+            entriesWithMeds: entriesWithMeds.length,
+            statsEvents: statsEventCount,
+            activeMeds: userStats.activeMedications.length
+        });
+        
+        // If there's a significant mismatch, rebuild
+        if (entriesWithMeds.length > statsEventCount + 5) {
+            console.warn('⚠️ Medication tracking mismatch detected. Rebuilding from entries...');
+            
+            // Clear existing data
+            userStats.medicationEvents = [];
+            userStats.activeMedications = [];
+            
+            // Rebuild chronologically (oldest first)
+            const sortedEntries = [...allJournalEntries]
+                .filter(e => e.medicationEvent)
+                .sort((a, b) => a.timestamp - b.timestamp);
+            
+            sortedEntries.forEach(entry => {
+                const event = entry.medicationEvent;
+                
+                // Add to events history
+                userStats.medicationEvents.push(event);
+                
+                // Update active medications
+                updateActiveMedications(event);
+            });
+            
+            console.log('✅ Medication tracking rebuilt:', {
+                events: userStats.medicationEvents.length,
+                active: userStats.activeMedications.length
+            });
+            
+            // Save rebuilt data
+            saveUserStats();
+        }
+    }
+
+    // Format medication event for display
+    function formatMedicationEvent(event) {
+        const actionIcons = {
+            started: '✅',
+            stopped: '⛔',
+            dose_change: '🔄',
+            extra: '➕',
+            regular: '📅'
+        };
+        
+        const actionLabels = {
+            started: 'Gestart met',
+            stopped: 'Gestopt met',
+            dose_change: 'Dosiswijziging',
+            extra: 'Extra dosis',
+            regular: 'Reguliere dosis'
+        };
+        
+        const icon = actionIcons[event.action] || '💊';
+        const label = actionLabels[event.action] || event.action;
+        
+        let html = `<div style="margin: 0.5rem 0; padding: 0.5rem; background: rgba(147, 51, 234, 0.1); border-left: 3px solid #9333ea; border-radius: 0.25rem;">`;
+        html += `<small><strong>${icon} ${label}:</strong> ${event.name}`;
+        
+        if (event.dose) {
+            html += ` <span style="color: var(--text-light);">(${event.dose})</span>`;
+        }
+        
+        if (event.action === 'dose_change' && event.previousDose) {
+            html += ` <span style="color: var(--text-light);">← was ${event.previousDose}</span>`;
+        }
+        
+        if (event.reason) {
+            html += `<br><em style="color: var(--text-light); font-size: 0.85em;">Reden: ${event.reason}</em>`;
+        }
+        
+        html += `</small></div>`;
+        return html;
+    }
 
     window.startBreathing = function() {
         if (isBreathing) return;
@@ -2409,20 +2600,9 @@
         breathPhase = 'prepare';
         
         const circle = document.getElementById('breathing-circle');
-        const pattern = breathingPatterns[breathingPattern];
+        const pattern = getBreathingPattern(breathingPattern);
         
-        // Check if audio cues are enabled (now using button state)
-        // Audio only works with gentle pattern
-        const audioEnabledForThisSession = audioEnabled && breathingPattern === 'gentle';
-        
-        if (audioEnabledForThisSession && !speechSynthesis) {
-            initSpeechSynthesis();
-        }
-        
-        // Warn user if audio is enabled but not gentle pattern
-        if (audioEnabled && breathingPattern !== 'gentle') {
-            showUserMessage('⚠️ Audio begeleiding werkt alleen bij de zachte oefening', 'warning');
-        }
+        devLog('Starting breathing exercise:', { pattern: breathingPattern, config: pattern });
         
         document.getElementById('start-breathing').disabled = true;
         document.getElementById('stop-breathing').disabled = false;
@@ -2436,15 +2616,10 @@
         circle.className = "breathing-circle";
         circle.style.transform = 'scale(1)';
         
-        // Audio introduction if enabled
-        if (audioEnabledForThisSession) {
-            speak("Bereid je voor op de zachte ademhalingsoefening. We beginnen zo.");
-        }
-        
         setTimeout(() => {
             if (!isBreathing) return;
-            startBreathingCycleWithAudio(pattern, audioEnabledForThisSession);
-        }, audioEnabledForThisSession ? 3000 : 2000); // Longer delay if audio is enabled
+            startBreathingCycle(pattern);
+        }, 2000);
     };
 
     function startBreathingCycle(pattern) {
@@ -2452,134 +2627,22 @@
         
         const circle = document.getElementById('breathing-circle');
         let phaseTime = 0;
-        let currentPhase = breathingPattern === 'gentle' ? 'freeBreathing' : 'inhale';
-        let completedCycles = 0;
-        let totalCycles = pattern.cycles || 10;
         
-        breathInterval = setInterval(() => {
-            if (!isBreathing) return;
-            
-            phaseTime++;
-            
-            switch(currentPhase) {
-                case 'freeBreathing':
-                    circle.textContent = `Vrij ademen - ${phaseTime}s`;
-                    circle.className = "breathing-circle";
-                    document.getElementById('current-phase').textContent = 'Vrij ademhalen';
-                    
-                    // Audio cues for free breathing phase
-                    if (audioEnabled && phaseTime === 1) {
-                        speakWithTiming("Vrij ademen", pattern.freeBreathing || 10);
-                    }
-                    
-                    // Subtle breathing animation - gentle pulsing
-                    const breathingPhase = Math.sin((phaseTime * Math.PI * 4) / 10); // 4 breaths in 10 seconds
-                    const gentleScale = 1 + (0.08 * breathingPhase);
-                    circle.style.transform = `scale(${gentleScale})`;
-                    
-                    if (phaseTime >= (pattern.freeBreathing || 10)) {
-                        phaseTime = 0;
-                        currentPhase = 'hold';
-                    }
-                    break;
-                    
-                case 'inhale':
-                    circle.textContent = `Inademen (${phaseTime}s)`;
-                    circle.className = "breathing-circle inhale";
-                    document.getElementById('current-phase').textContent = 'Inademen';
-                    
-                    // Smooth scaling animation
-                    const inhaleProgress = phaseTime / pattern.inhale;
-                    const inhaleScale = 1 + (0.15 * Math.min(inhaleProgress, 1));
-                    circle.style.transform = `scale(${inhaleScale})`;
-                    
-                    if (phaseTime >= pattern.inhale) {
-                        phaseTime = 0;
-                        currentPhase = pattern.hold > 0 ? 'hold' : 'exhale';
-                    }
-                    break;
-                    
-                case 'hold':
-                    if (breathingPattern === 'gentle') {
-                        circle.textContent = `Vasthouden (${phaseTime}s)`;
-                        circle.className = "breathing-circle hold";
-                        document.getElementById('current-phase').textContent = 'Vasthouden';
-                        circle.style.transform = 'scale(1.1)';
-                        
-                        // Audio cues for hold phase
-                        if (audioEnabled && phaseTime === 1) {
-                            speakWithTiming("Hou vast", pattern.hold || 3);
-                        }
-                    } else {
-                        circle.textContent = `Vasthouden (${phaseTime}s)`;
-                        circle.className = "breathing-circle hold";
-                        document.getElementById('current-phase').textContent = 'Vasthouden';
-                        circle.style.transform = 'scale(1.15)';
-                    }
-                    
-                    const holdDuration = breathingPattern === 'gentle' ? pattern.hold : pattern.hold;
-                    if (phaseTime >= holdDuration) {
-                        phaseTime = 0;
-                        
-                        if (breathingPattern === 'gentle') {
-                            // For gentle pattern, complete the cycle after hold
-                            completedCycles++;
-                            document.getElementById('cycle-count').textContent = completedCycles;
-                            
-                            if (completedCycles >= totalCycles) {
-                                stopBreathing();
-                                return;
-                            } else {
-                                currentPhase = 'freeBreathing';
-                            }
-                        } else {
-                            currentPhase = 'exhale';
-                        }
-                    }
-                    break;
-                    
-                case 'exhale':
-                    circle.textContent = `Uitademen (${phaseTime}s)`;
-                    circle.className = "breathing-circle exhale";
-                    document.getElementById('current-phase').textContent = 'Uitademen';
-                    
-                    // Smooth scaling animation
-                    const exhaleProgress = phaseTime / pattern.exhale;
-                    const exhaleScale = 1.15 - (0.3 * Math.min(exhaleProgress, 1));
-                    circle.style.transform = `scale(${exhaleScale})`;
-                    
-                    if (phaseTime >= pattern.exhale) {
-                        phaseTime = 0;
-                        completedCycles++;
-                        document.getElementById('cycle-count').textContent = completedCycles;
-                        
-                        if (completedCycles >= totalCycles) {
-                            stopBreathing();
-                            return;
-                        } else {
-                            currentPhase = 'inhale';
-                        }
-                    }
-                    break;
-            }
-        }, 1000);
-    }
-
-    // Audio-enhanced version of the breathing cycle function
-    function startBreathingCycleWithAudio(pattern, audioEnabledForSession) {
-        if (!isBreathing) return;
-        
-        const circle = document.getElementById('breathing-circle');
-        let phaseTime = 0;
-        let currentPhase = breathingPattern === 'gentle' ? 'freeBreathing' : 'inhale';
-        let completedCycles = 0;
-        let totalCycles = pattern.cycles || 10;
-        
-        // Audio intro for the session
-        if (audioEnabledForSession) {
-            speak(`We beginnen met ${totalCycles} cycli van de zachte ademhalingsoefening.`);
+        // Determine initial phase based on pattern type
+        let currentPhase;
+        if (breathingPattern === 'gentle') {
+            currentPhase = 'freeBreathing';
+        } else if (breathingPattern === 'extended') {
+            currentPhase = 'inhale';
+        } else {
+            currentPhase = 'inhale';
         }
         
+        let completedCycles = 0;
+        let totalCycles = pattern.cycles || 10;
+        
+        devLog('Starting breathing cycle:', { pattern: breathingPattern, totalCycles, initialPhase: currentPhase });
+        
         breathInterval = setInterval(() => {
             if (!isBreathing) return;
             
@@ -2587,23 +2650,14 @@
             
             switch(currentPhase) {
                 case 'freeBreathing':
+                    // Trigger haptic at phase start
+                    if (phaseTime === 1) {
+                        triggerHaptic('inhale');
+                    }
+                    
                     circle.textContent = `Vrij ademen - ${phaseTime}s`;
                     circle.className = "breathing-circle";
                     document.getElementById('current-phase').textContent = 'Vrij ademhalen';
-                    
-                    // Enhanced audio cues for free breathing phase
-                    if (audioEnabledForSession && phaseTime === 1) {
-                        if (completedCycles === 0) {
-                            speak("Begin met vrij en natuurlijk ademen.");
-                        } else if (completedCycles % 5 === 0) {
-                            speak(`Cyclus ${completedCycles + 1}. Blijf vrij ademen.`);
-                        }
-                    }
-                    
-                    // Zachte tick elke seconde tijdens vrij ademen
-                    if (audioEnabledForSession) {
-                        playTone(200, 0.05); // Zeer zachte, lage toon voor vrij ademen
-                    }
                     
                     // Subtle breathing animation - gentle pulsing
                     const breathingPhase = Math.sin((phaseTime * Math.PI * 4) / 10); // 4 breaths in 10 seconds
@@ -2613,51 +2667,99 @@
                     if (phaseTime >= (pattern.freeBreathing || 10)) {
                         phaseTime = 0;
                         currentPhase = 'hold';
+                        triggerHaptic('hold'); // Haptic for transition to hold
                     }
                     break;
                     
                 case 'inhale':
-                    circle.textContent = `Inademen (${phaseTime}s)`;
-                    circle.className = "breathing-circle inhale";
-                    document.getElementById('current-phase').textContent = 'Inademen';
-                    
-                    // Audio cue for inhale
-                    if (audioEnabledForSession && phaseTime === 1) {
-                        speak("Adem in.");
+                    // Trigger haptic at phase start
+                    if (phaseTime === 1) {
+                        triggerHaptic('inhale');
                     }
                     
-                    // Zachte tick elke seconde tijdens inademen - oplopende toon
-                    if (audioEnabledForSession) {
-                        const frequency = 250 + (phaseTime * 20); // Langzaam oplopende toon
-                        playTone(frequency, 0.08);
-                    }
-                    
-                    // Smooth scaling animation
-                    const inhaleProgress = phaseTime / pattern.inhale;
-                    const inhaleScale = 1 + (0.15 * Math.min(inhaleProgress, 1));
-                    circle.style.transform = `scale(${inhaleScale})`;
-                    
-                    if (phaseTime >= pattern.inhale) {
-                        phaseTime = 0;
-                        currentPhase = pattern.hold > 0 ? 'hold' : 'exhale';
+                    if (breathingPattern === 'extended') {
+                        circle.textContent = `Inademen (${phaseTime}s)`;
+                        circle.className = "breathing-circle inhale";
+                        document.getElementById('current-phase').textContent = 'Inademen';
+                        
+                        const inhaleProgress = phaseTime / pattern.inhale;
+                        const inhaleScale = 1 + (0.15 * Math.min(inhaleProgress, 1));
+                        circle.style.transform = `scale(${inhaleScale})`;
+                        
+                        if (phaseTime >= pattern.inhale) {
+                            phaseTime = 0;
+                            currentPhase = 'exhale';  // Extended: go to exhale
+                            triggerHaptic('exhale'); // Haptic for exhale transition
+                        }
+                    } else {
+                        circle.textContent = `Inademen (${phaseTime}s)`;
+                        circle.className = "breathing-circle inhale";
+                        document.getElementById('current-phase').textContent = 'Inademen';
+                        
+                        const inhaleProgress = phaseTime / pattern.inhale;
+                        const inhaleScale = 1 + (0.15 * Math.min(inhaleProgress, 1));
+                        circle.style.transform = `scale(${inhaleScale})`;
+                        
+                        if (phaseTime >= pattern.inhale) {
+                            phaseTime = 0;
+                            const nextPhase = pattern.hold > 0 ? 'hold' : 'exhale';
+                            currentPhase = nextPhase;
+                            triggerHaptic(nextPhase); // Haptic for next phase
+                        }
                     }
                     break;
                     
                 case 'hold':
+                    // Trigger haptic at phase start
+                    if (phaseTime === 1) {
+                        triggerHaptic('hold');
+                    }
+                    
                     if (breathingPattern === 'gentle') {
                         circle.textContent = `Vasthouden (${phaseTime}s)`;
                         circle.className = "breathing-circle hold";
                         document.getElementById('current-phase').textContent = 'Vasthouden';
                         circle.style.transform = 'scale(1.1)';
                         
-                        // Enhanced audio cues for hold phase
-                        if (audioEnabledForSession && phaseTime === 1) {
-                            speak("Hou je adem even vast.");
+                        if (phaseTime >= pattern.hold) {
+                            phaseTime = 0;
+                            // For gentle pattern, complete the cycle after hold
+                            completedCycles++;
+                            document.getElementById('cycle-count').textContent = completedCycles;
+                            
+                            devLog('Gentle cycle completed:', completedCycles, 'of', totalCycles);
+                            
+                            if (completedCycles >= totalCycles) {
+                                triggerHaptic('complete'); // Success haptic!
+                                stopBreathing();
+                                return;
+                            } else {
+                                currentPhase = 'freeBreathing';
+                                triggerHaptic('inhale'); // Next cycle start
+                            }
                         }
+                    } else if (breathingPattern === 'extended') {
+                        circle.textContent = `Adempauze (${phaseTime}s)`;
+                        circle.className = "breathing-circle hold";
+                        document.getElementById('current-phase').textContent = 'Adempauze';
+                        circle.style.transform = 'scale(1.0)';
                         
-                        // Zachte tick elke seconde tijdens vasthouden - stabiele toon
-                        if (audioEnabledForSession) {
-                            playTone(300, 0.06); // Stabiele, duidelijke toon voor vasthouden
+                        if (phaseTime >= pattern.hold) {
+                            phaseTime = 0;
+                            // For extended pattern, complete cycle after hold
+                            completedCycles++;
+                            document.getElementById('cycle-count').textContent = completedCycles;
+                            
+                            devLog('Extended cycle completed:', completedCycles, 'of', totalCycles);
+                            
+                            if (completedCycles >= totalCycles) {
+                                triggerHaptic('complete'); // Success haptic!
+                                stopBreathing();
+                                return;
+                            } else {
+                                currentPhase = 'inhale';  // Start new cycle
+                                triggerHaptic('inhale'); // Next cycle start
+                            }
                         }
                     } else {
                         circle.textContent = `Vasthouden (${phaseTime}s)`;
@@ -2665,55 +2767,23 @@
                         document.getElementById('current-phase').textContent = 'Vasthouden';
                         circle.style.transform = 'scale(1.15)';
                         
-                        if (audioEnabledForSession && phaseTime === 1) {
-                            speak("Hou vast.");
-                        }
-                        
-                        // Zachte tick elke seconde tijdens vasthouden
-                        if (audioEnabledForSession) {
-                            playTone(300, 0.06);
-                        }
-                    }
-                    
-                    const holdDuration = breathingPattern === 'gentle' ? pattern.hold : pattern.hold;
-                    if (phaseTime >= holdDuration) {
-                        phaseTime = 0;
-                        
-                        if (breathingPattern === 'gentle') {
-                            // For gentle pattern, complete the cycle after hold
-                            completedCycles++;
-                            document.getElementById('cycle-count').textContent = completedCycles;
-                            
-                            if (completedCycles >= totalCycles) {
-                                if (audioEnabledForSession) {
-                                    speak("Uitstekend! Je hebt alle cycli voltooid.");
-                                }
-                                stopBreathing();
-                                return;
-                            } else {
-                                currentPhase = 'freeBreathing';
-                            }
-                        } else {
+                        if (phaseTime >= pattern.hold) {
+                            phaseTime = 0;
                             currentPhase = 'exhale';
+                            triggerHaptic('exhale'); // Exhale transition
                         }
                     }
                     break;
                     
                 case 'exhale':
+                    // Trigger haptic at phase start
+                    if (phaseTime === 1) {
+                        triggerHaptic('exhale');
+                    }
+                    
                     circle.textContent = `Uitademen (${phaseTime}s)`;
                     circle.className = "breathing-circle exhale";
                     document.getElementById('current-phase').textContent = 'Uitademen';
-                    
-                    // Audio cue for exhale
-                    if (audioEnabledForSession && phaseTime === 1) {
-                        speak("Adem langzaam uit.");
-                    }
-                    
-                    // Zachte tick elke seconde tijdens uitademen - dalende toon
-                    if (audioEnabledForSession) {
-                        const frequency = 320 - (phaseTime * 15); // Langzaam dalende toon
-                        playTone(frequency, 0.08);
-                    }
                     
                     // Smooth scaling animation
                     const exhaleProgress = phaseTime / pattern.exhale;
@@ -2722,17 +2792,26 @@
                     
                     if (phaseTime >= pattern.exhale) {
                         phaseTime = 0;
-                        completedCycles++;
-                        document.getElementById('cycle-count').textContent = completedCycles;
                         
-                        if (completedCycles >= totalCycles) {
-                            if (audioEnabledForSession) {
-                                speak("Perfect! Oefening voltooid.");
-                            }
-                            stopBreathing();
-                            return;
+                        if (breathingPattern === 'extended') {
+                            // For extended: go to hold after exhale
+                            currentPhase = 'hold';
+                            triggerHaptic('hold'); // Haptic for hold transition
                         } else {
-                            currentPhase = 'inhale';
+                            // For standard/advanced: complete cycle
+                            completedCycles++;
+                            document.getElementById('cycle-count').textContent = completedCycles;
+                            
+                            devLog('Standard/Advanced cycle completed:', completedCycles, 'of', totalCycles);
+                            
+                            if (completedCycles >= totalCycles) {
+                                triggerHaptic('complete'); // Success haptic!
+                                stopBreathing();
+                                return;
+                            } else {
+                                currentPhase = 'inhale';
+                                triggerHaptic('inhale'); // Next cycle start
+                            }
                         }
                     }
                     break;
@@ -2769,11 +2848,11 @@
             completedCycles = parseInt(cycleCountElement.textContent) || 0;
         }
         
-        const pattern = breathingPatterns[breathingPattern];
+        const pattern = getBreathingPattern(breathingPattern);
         const targetCycles = pattern ? (pattern.cycles || 10) : 10;
         
         // Enhanced debugging
-        console.log('=== BREATHING SESSION DEBUG ===');        devLog('Breathing session completed', { cycles: completedCycles, target: targetCycles, pattern: breathingPattern });
+        console.log('=== BREATHING SESSION DEBUG ===');
         console.log('Completed cycles:', completedCycles);
         console.log('Target cycles:', targetCycles);
         console.log('Pattern:', breathingPattern);
@@ -2833,6 +2912,9 @@
         const step = crisisProtocolSteps[crisisStep];
         crisisStepDuration = step.duration;
         crisisTimer = crisisStepDuration;
+        
+        // Trigger haptic feedback at step start
+        triggerHaptic('inhale'); // Gentle notification for new step
         
         // Update UI for current step
         document.getElementById('protocol-step-title').textContent = step.title;
@@ -2917,12 +2999,16 @@
             
             switch(phase) {
                 case 'small-inhale':
+                    if (phaseTimer === 1) {
+                        triggerHaptic('inhale'); // Haptic at phase start
+                    }
                     circle.textContent = "Klein inademen...";
                     circle.className = "breathing-circle inhale";
                     circle.style.transform = 'scale(1.05)';
                     if (phaseTimer >= 2) {
                         phase = 'hold';
                         phaseTimer = 0;
+                        triggerHaptic('hold'); // Haptic for hold
                     }
                     break;
                 case 'hold':
@@ -2932,6 +3018,7 @@
                     if (phaseTimer >= 3) {
                         phase = 'small-exhale';
                         phaseTimer = 0;
+                        triggerHaptic('exhale'); // Haptic for exhale
                     }
                     break;
                 case 'small-exhale':
@@ -2941,6 +3028,7 @@
                     if (phaseTimer >= 2) {
                         phase = 'small-inhale';
                         phaseTimer = 0;
+                        triggerHaptic('inhale'); // Haptic for next cycle
                     }
                     break;
             }
@@ -3011,6 +3099,9 @@
     }
 
     function completeCrisisProtocol() {
+        // Trigger success haptic pattern
+        triggerHaptic('complete');
+        
         // Update UI to show completion
         document.getElementById('protocol-step-title').textContent = "🎉 Protocol Voltooid";
         document.getElementById('protocol-instructions').textContent = "Je hebt het noodprotocol succesvol doorlopen. Je bent weer in controle.";
@@ -3130,7 +3221,7 @@
             
             // IMPROVED: Smart CP score handling for Buteyko
             if (technique === 'Buteyko Ademhaling') {
-                document.getElementById('cp-score-group').style.display = 'block';
+                // CP veld is altijd zichtbaar, vul alleen intelligente suggestie in
                 
                 // Try to find the best CP score to use
                 let scoreToUse = null;
@@ -3200,8 +3291,18 @@
         document.getElementById('after-value').textContent = '5';
         document.getElementById('entry-result').selectedIndex = 0;
         document.getElementById('entry-notes').value = '';
+        
+        // Reset medication fields
+        document.getElementById('entry-has-medication').checked = false;
+        document.getElementById('medication-fields').style.display = 'none';
+        document.getElementById('entry-med-action').selectedIndex = 0;
+        document.getElementById('entry-med-name').value = '';
+        document.getElementById('entry-med-dose').value = '';
+        document.getElementById('entry-med-previous-dose').value = '';
+        document.getElementById('entry-med-reason').value = '';
+        document.getElementById('med-previous-dose-group').style.display = 'none';
         document.getElementById('entry-cp-score').value = '';
-        document.getElementById('cp-score-group').style.display = 'none';
+        // CP field blijft altijd zichtbaar
         
         // Reset symptom checkboxes
         document.querySelectorAll('.symptom-checkbox').forEach(cb => {
@@ -3238,11 +3339,48 @@
                 userEmail: currentUser?.email
             };
 
+            // Handle medication event if checkbox is checked
+            const hasMedication = document.getElementById('entry-has-medication').checked;
+            if (hasMedication) {
+                const medAction = document.getElementById('entry-med-action').value;
+                const medName = document.getElementById('entry-med-name').value.trim();
+                const medDose = document.getElementById('entry-med-dose').value.trim();
+                const medReason = document.getElementById('entry-med-reason').value.trim();
+                
+                if (medAction && medName) {
+                    const medicationEvent = {
+                        action: medAction,
+                        name: medName,
+                        dose: medDose,
+                        reason: medReason,
+                        timestamp: new Date()
+                    };
+                    
+                    // For dose changes, include previous dose
+                    if (medAction === 'dose_change') {
+                        medicationEvent.previousDose = document.getElementById('entry-med-previous-dose').value.trim();
+                    }
+                    
+                    // Add to entry
+                    entry.medicationEvent = medicationEvent;
+                    
+                    // Update active medications list
+                    updateActiveMedications(medicationEvent);
+                    
+                    // Log to medication events history
+                    userStats.medicationEvents.push(medicationEvent);
+                    
+                    devLog('Medication event added:', medicationEvent);
+                }
+            }
+
             // Add CP score if available
             const cpScore = document.getElementById('entry-cp-score').value;
             if (cpScore && !isNaN(parseInt(cpScore))) {
                 entry.cpScore = parseInt(cpScore);
             }
+            
+            devLog('Saving journal entry:', entry);
 
             if (!entry.resultaat) {
                 showUserMessage('⚠️ Selecteer een resultaat voor de dagboek entry.', 'warning');
@@ -3371,6 +3509,9 @@
                 userStats.sessionDates.add(dateString);
             });
             
+            // IMPROVED: Rebuild medication tracking from entries if userStats is missing data
+            rebuildMedicationTrackingFromEntries();
+            
             displayJournalEntries();
             generateInsights();
             createProgressChart();
@@ -3485,6 +3626,8 @@
                             </span>
                         </div>
                         
+                        ${entry.medicationEvent ? formatMedicationEvent(entry.medicationEvent) : ''}
+                        ${entry.medicatie ? `<div style="margin: 0.5rem 0;"><small><strong>💊 Medicatie:</strong> ${entry.medicatie}</small></div>` : ''}
                         ${entry.notities ? `<div style="margin-top: 0.5rem; font-style: italic; color: var(--text-light);"><small>${entry.notities}</small></div>` : ''}
                     </div>
                 `;
@@ -3584,22 +3727,8 @@
         
         const lastCP = allCPData.length > 0 ? allCPData[0].score : null;
         
-        // IMPROVED: Calculate streak properly - ensure sessionDates is updated
-        // Rebuild sessionDates from journal entries if needed
-        if (userStats.sessionDates.size === 0 && allJournalEntries.length > 0) {
-            allJournalEntries.forEach(entry => {
-                const dateString = entry.timestamp.toDateString();
-                userStats.sessionDates.add(dateString);
-            });
-        }
-        
+        // IMPROVED: Calculate streak properly
         const currentStreak = calculateCurrentStreak();
-        console.log('📅 Current streak calculation:', {
-            sessionDatesCount: userStats.sessionDates.size,
-            journalEntriesCount: allJournalEntries.length,
-            calculatedStreak: currentStreak,
-            sessionDates: Array.from(userStats.sessionDates).slice(-5) // Last 5 dates for debugging
-        });
         
         // Update stats display
         document.getElementById('total-sessions').textContent = userStats.totalSessions + allJournalEntries.length;
@@ -3610,6 +3739,52 @@
         
         // Update personalized tip
         updatePersonalizedTip();
+        
+        // Update active medications display
+        updateActiveMedicationsDisplay();
+    }
+
+    // Update active medications display on dashboard
+    function updateActiveMedicationsDisplay() {
+        const card = document.getElementById('active-medications-card');
+        const content = document.getElementById('active-medications-content');
+        
+        if (!card || !content) return;
+        
+        if (userStats.activeMedications.length === 0) {
+            card.style.display = 'none';
+            return;
+        }
+        
+        card.style.display = 'block';
+        
+        let html = '<div style="display: grid; gap: 0.75rem;">';
+        
+        userStats.activeMedications.forEach(med => {
+            const startedDate = new Date(med.startedAt).toLocaleDateString('nl-BE');
+            const duration = Math.floor((new Date() - new Date(med.startedAt)) / (1000 * 60 * 60 * 24));
+            
+            html += `
+                <div style="padding: 0.75rem; background: rgba(147, 51, 234, 0.1); border-left: 3px solid #9333ea; border-radius: 0.25rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <strong>${med.name}</strong>
+                            ${med.dose ? `<span style="color: var(--text-light);"> • ${med.dose}</span>` : ''}
+                        </div>
+                        <small style="color: var(--text-light);">${duration} dagen</small>
+                    </div>
+                    <small style="color: var(--text-light); display: block; margin-top: 0.25rem;">
+                        Gestart: ${startedDate}
+                        ${med.lastChanged ? ` • Laatst gewijzigd: ${new Date(med.lastChanged).toLocaleDateString('nl-BE')}` : ''}
+                    </small>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        content.innerHTML = html;
+        
+        devLog('Active medications updated:', userStats.activeMedications.length);
     }
 
     // IMPROVED: Proper streak calculation
@@ -4018,12 +4193,64 @@
             }
         }
         
+        // INSIGHT 13: Medication correlation analysis
+        const entriesWithMeds = allTimeEntries.filter(e => e.medicationEvent);
+        if (entriesWithMeds.length >= 5) {
+            const medStarts = entriesWithMeds.filter(e => e.medicationEvent.action === 'started');
+            const medStops = entriesWithMeds.filter(e => e.medicationEvent.action === 'stopped');
+            
+            // Analyze improvement before and after starting medication
+            if (medStarts.length > 0) {
+                const medName = medStarts[0].medicationEvent.name;
+                const medStartDate = new Date(medStarts[0].timestamp);
+                
+                // Get entries before and after medication start
+                const beforeMed = allTimeEntries.filter(e => new Date(e.timestamp) < medStartDate).slice(0, 10);
+                const afterMed = allTimeEntries.filter(e => new Date(e.timestamp) >= medStartDate).slice(0, 10);
+                
+                if (beforeMed.length >= 3 && afterMed.length >= 3) {
+                    const avgBeforeMed = beforeMed.reduce((sum, e) => sum + (e.intensiteitVoor - e.intensiteitNa), 0) / beforeMed.length;
+                    const avgAfterMed = afterMed.reduce((sum, e) => sum + (e.intensiteitVoor - e.intensiteitNa), 0) / afterMed.length;
+                    
+                    if (avgAfterMed > avgBeforeMed + 0.5) {
+                        insights.push(`💊 <strong>Medicatie correlatie</strong>: Sinds start ${medName} is je gemiddelde verbetering toegenomen van ${avgBeforeMed.toFixed(1)} naar ${avgAfterMed.toFixed(1)} punten. Blijf dit monitoren met je arts.`);
+                    } else if (avgAfterMed < avgBeforeMed - 0.5) {
+                        insights.push(`💊 <strong>Medicatie observatie</strong>: Je gemiddelde verbetering is ${avgBeforeMed.toFixed(1)} → ${avgAfterMed.toFixed(1)} sinds ${medName}. Bespreek dit patroon met je arts.`);
+                    }
+                }
+            }
+            
+            // Track medication changes
+            if (userStats.medicationEvents.length >= 3) {
+                const recentEvents = userStats.medicationEvents.slice(-5);
+                const uniqueMeds = new Set(recentEvents.map(e => e.name.toLowerCase()));
+                
+                if (uniqueMeds.size >= 3) {
+                    insights.push(`💊 <strong>Medicatie monitoring</strong>: Je hebt ${userStats.medicationEvents.length} medicatie events gelogd. Deze data helpt bij het analyseren van langetermijn patronen.`);
+                }
+            }
+        }
+        
+        // INSIGHT 14: Active medication tracking
+        if (userStats.activeMedications.length > 0) {
+            const longTermMeds = userStats.activeMedications.filter(med => {
+                const duration = (new Date() - new Date(med.startedAt)) / (1000 * 60 * 60 * 24);
+                return duration >= 30;
+            });
+            
+            if (longTermMeds.length > 0) {
+                const medName = longTermMeds[0].name;
+                const duration = Math.floor((new Date() - new Date(longTermMeds[0].startedAt)) / (1000 * 60 * 60 * 24));
+                insights.push(`📅 <strong>Langetermijn medicatie</strong>: Je gebruikt ${medName} al ${duration} dagen. Overweeg met je arts te bespreken of deze medicatie nog nodig is gezien je voortgang.`);
+            }
+        }
+        
         if (insights.length === 0) {
             insights.push('📊 Blijf regelmatig oefenen en je ervaringen bijhouden. Betekenisvolle patronen worden zichtbaar na 2-4 weken consistent gebruik.');
         }
         
-        // Limit to 4 most relevant insights
-        const selectedInsights = insights.slice(0, 4);
+        // Limit to 5 most relevant insights (increased from 4)
+        const selectedInsights = insights.slice(0, 5);
         
         return selectedInsights.map(insight => `<p>${insight}</p>`).join('');
     }
@@ -4067,8 +4294,15 @@
             voor: entry.intensiteitVoor,
             na: entry.intensiteitNa,
             verbetering: entry.intensiteitVoor - entry.intensiteitNa,
-            technique: entry.techniekGebruikt
+            technique: entry.techniekGebruikt,
+            cpScore: entry.cpScore || null
         }));
+        
+        // Prepare CP measurements data aligned with chart entries
+        const cpData = chartData.map(d => d.cpScore);
+        const hasCPData = cpData.some(cp => cp !== null && cp !== undefined);
+        
+        devLog('Chart data prepared:', { entries: chartData.length, hasCPData });
         
         // Determine chart title based on filter
         let chartTitle = 'Voortgang Over Tijd';
@@ -4109,7 +4343,19 @@
                         type: 'bar',
                         yAxisID: 'y1',
                         barThickness: 20
-                    }
+                    },
+                    ...(hasCPData ? [{
+                        label: 'Control Pause (CP)',
+                        data: cpData,
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        yAxisID: 'y2',
+                        spanGaps: true,
+                        borderDash: [5, 5]
+                    }] : [])
                 ]
             },
             options: {
@@ -4178,7 +4424,25 @@
                         ticks: {
                             beginAtZero: true
                         }
-                    }
+                    },
+                    ...(hasCPData ? {
+                        y2: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'CP (seconden)'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                            ticks: {
+                                beginAtZero: true,
+                                max: 60
+                            }
+                        }
+                    } : {})
                 }
             }
         });
@@ -4311,21 +4575,14 @@
             await initFirebase();
             console.log('✅ Ademruimte app initialization completed successfully');
             
-            // Initialize Speech Synthesis after Firebase is loaded
-            try {
-                initSpeechSynthesis();
-            } catch (speechError) {
-                console.warn('Speech synthesis initialization failed:', speechError);
-            }
+            // Ensure login form is shown by default
+            showLoginForm();
             
         } catch (error) {
             console.error('❌ App initialization failed:', error);
             updateStatusIndicator('error');
             showUserMessage('App initialisatie mislukt. Herlaad de pagina.', 'error');
-            // Only show login screen if not in DEV_MODE
-            if (!DEV_MODE) {
-                showLoginScreen();
-            }
+            showLoginScreen();
         }
     });
 
@@ -4356,7 +4613,7 @@
         console.log('Cycle count element:', cycleElement);
         console.log('Cycle count text:', cycleElement ? cycleElement.textContent : 'NOT FOUND');
         
-        const pattern = breathingPatterns[breathingPattern];
+        const pattern = getBreathingPattern(breathingPattern);
         console.log('Current pattern:', pattern);
         console.log('Target cycles:', pattern ? pattern.cycles : 'UNDEFINED');
         

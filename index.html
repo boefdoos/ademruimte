@@ -1494,7 +1494,7 @@
                         <div style="display: flex; flex-direction: column; gap: 0.5rem; color: var(--text-light);">
                             <p><strong>Versie:</strong> 1.0.0</p>
                             <p><strong>Laatst bijgewerkt:</strong> 12 januari 2026</p>
-                            <p><strong>Contact:</strong> thomas.oostberg@gmail.com</p>
+                            <p><strong>Contact:</strong> <span id="settings-email-display"></span></p>
                             <p style="margin-top: 1rem;">
                                 Ademruimte helpt bij het bijhouden en verbeteren van chronische hyperventilatie 
                                 door middel van de wetenschappelijk onderbouwde Buteyko methode.
@@ -1801,7 +1801,7 @@
         return consent;
     }
     
-    function acceptCookies() {
+    window.acceptCookies = function() {
         localStorage.setItem('cookieConsent', JSON.stringify({
             essential: true,
             functional: true,
@@ -1812,7 +1812,7 @@
         console.log('✅ Cookie consent gegeven');
     }
     
-    function acceptEssentialOnly() {
+    window.acceptEssentialOnly = function() {
         localStorage.setItem('cookieConsent', JSON.stringify({
             essential: true,
             functional: false,
@@ -1823,7 +1823,7 @@
         console.log('✅ Alleen essentiële cookies geaccepteerd');
     }
     
-    function manageCookieConsent() {
+    window.manageCookieConsent = function() {
         const consent = JSON.parse(localStorage.getItem('cookieConsent') || '{}');
         const message = `Huidige cookie voorkeuren:
         
@@ -1841,7 +1841,7 @@ Wil je je voorkeuren wijzigen?`;
     }
     
     // Export user data (GDPR Art. 20)
-    async function exportUserData() {
+    window.exportUserData = async function() {
         if (!currentUser) {
             alert('Je moet ingelogd zijn om data te exporteren.');
             return;
@@ -1891,7 +1891,7 @@ Wil je je voorkeuren wijzigen?`;
     }
     
     // Delete user account (GDPR Art. 17)
-    async function deleteUserAccount() {
+    window.deleteUserAccount = async function() {
         if (!currentUser) {
             alert('Je moet ingelogd zijn.');
             return;
@@ -1991,6 +1991,20 @@ Wil je je voorkeuren wijzigen?`;
     document.addEventListener('DOMContentLoaded', function() {
         checkCookieConsent();
     });
+    
+    // Initialize bot-protected emails
+    function initializeEmails() {
+        // Email: troostberg@gmail.com (base64 encoded for bot protection)
+        const email = atob('dHJvb3N0YmVyZ0BnbWFpbC5jb20=');
+        
+        // Settings tab contact email
+        const settingsEmail = document.getElementById('settings-email-display');
+        if (settingsEmail) {
+            settingsEmail.textContent = email;
+        }
+        
+        console.log('✅ Bot-protected emails initialized');
+    }
 
     // Breathing exercise variables
     let breathInterval = null;
@@ -4942,6 +4956,9 @@ Wil je je voorkeuren wijzigen?`;
         
         showLoadingScreen();
         
+        // Bot-protected email initialization
+        initializeEmails();
+        
         // Setup tab navigation
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -5093,7 +5110,7 @@ Wil je je voorkeuren wijzigen?`;
                 <i class="fas fa-shield-alt"></i> Privacybeleid
             </a>
             <span style="color: #d1d5db;">|</span>
-            <a href="mailto:thomas.oostberg@gmail.com">
+            <a href="#" id="footer-email-link" onclick="location.href=atob('bWFpbHRvOnRyb29zdGJlcmdAZ21haWwuY29t'); return false;">
                 <i class="fas fa-envelope"></i> Contact
             </a>
             <span style="color: #d1d5db;">|</span>

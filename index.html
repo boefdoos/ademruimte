@@ -1357,9 +1357,8 @@
                         <div class="form-group">
                             <label><i class="fas fa-volume-up"></i> Audio begeleiding:</label>
                             <select class="form-control" id="resonant-audio" onchange="updateResonantAudio()">
-                                <option value="tones">Zachte tonen</option>
                                 <option value="silence" selected>Stil</option>
-                                <option value="nature">Natuurgeluiden</option>
+                                <option value="tones">Zachte tonen</option>
                             </select>
                         </div>
                     </div>
@@ -3580,53 +3579,6 @@ Wil je je voorkeuren wijzigen?`;
         }
     }
 
-    // Play nature sounds using filtered white noise for more realistic sound
-    function playResonantNature(phase) {
-        if (resonantAudioMode !== 'nature' || !resonantAudioContext) return;
-        
-        try {
-            // Resume audio context if suspended
-            if (resonantAudioContext.state === 'suspended') {
-                resonantAudioContext.resume();
-            }
-            
-            const bufferSize = resonantAudioContext.sampleRate * 0.3; // 300ms
-            const buffer = resonantAudioContext.createBuffer(1, bufferSize, resonantAudioContext.sampleRate);
-            const data = buffer.getChannelData(0);
-            
-            // Generate white noise
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = Math.random() * 2 - 1;
-            }
-            
-            const noise = resonantAudioContext.createBufferSource();
-            noise.buffer = buffer;
-            
-            // Create filter for more natural sound
-            const filter = resonantAudioContext.createBiquadFilter();
-            filter.type = 'bandpass';
-            // Higher frequency for inhale, lower for exhale
-            filter.frequency.value = phase === 'IN' ? 800 : 400;
-            filter.Q.value = 1;
-            
-            // Gain control for fade in/out
-            const gainNode = resonantAudioContext.createGain();
-            gainNode.gain.setValueAtTime(0, resonantAudioContext.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.05, resonantAudioContext.currentTime + 0.05);
-            gainNode.gain.linearRampToValueAtTime(0, resonantAudioContext.currentTime + 0.25);
-            
-            // Connect nodes
-            noise.connect(filter);
-            filter.connect(gainNode);
-            gainNode.connect(resonantAudioContext.destination);
-            
-            noise.start(resonantAudioContext.currentTime);
-            noise.stop(resonantAudioContext.currentTime + 0.3);
-        } catch (error) {
-            console.warn('Nature sound playback error:', error);
-        }
-    }
-
     // Animate the breathing circle
     function animateResonantBreath() {
         if (resonantPaused) return;
@@ -3660,8 +3612,6 @@ Wil je je voorkeuren wijzigen?`;
                 // Higher tone for inhale, lower for exhale
                 const frequency = phase === 'IN' ? 523.25 : 392.00; // C5 for inhale, G4 for exhale
                 playResonantTone(frequency, 0.15);
-            } else if (resonantAudioMode === 'nature') {
-                playResonantNature(phase);
             }
         }
         
@@ -3670,8 +3620,11 @@ Wil je je voorkeuren wijzigen?`;
         // Update timer
         updateResonantTimer();
         
-        // Continue animation
-        resonantAnimationId = requestAnimationFrame(animateResonantBreath);
+        // Continue animation ONLY if session is still active
+        // Check if resonantStartTime still exists (gets set to null on stop/complete)
+        if (resonantStartTime && !resonantPaused) {
+            resonantAnimationId = requestAnimationFrame(animateResonantBreath);
+        }
     }
 
     // Easing function for smooth breathing
@@ -3746,7 +3699,7 @@ Wil je je voorkeuren wijzigen?`;
         const select = document.getElementById('resonant-audio');
         resonantAudioMode = select.value;
         
-        // Initialize audio context if switching from silence to tones/nature
+        // Initialize audio context if switching from silence to tones
         if (resonantAudioMode !== 'silence' && !resonantAudioContext) {
             initResonantAudio();
         }
@@ -3755,9 +3708,6 @@ Wil je je voorkeuren wijzigen?`;
         if (resonantAudioMode === 'tones') {
             playResonantTone(523.25, 0.15);
             showUserMessage('🔊 Zachte tonen geactiveerd - je hoort een beep bij elke fase overgang', 'info');
-        } else if (resonantAudioMode === 'nature') {
-            playResonantNature('IN'); // Test with inhale phase
-            showUserMessage('🌿 Natuurgeluiden geactiveerd - zachte wind/water geluiden bij fase overgangen', 'info');
         } else {
             showUserMessage('🔇 Audio uitgeschakeld', 'info');
         }
@@ -3790,7 +3740,7 @@ Wil je je voorkeuren wijzigen?`;
         // Start animation
         animateResonantBreath();
         
-        const audioMsg = resonantAudioMode === 'silence' ? '' : ` met ${resonantAudioMode === 'tones' ? 'zachte tonen' : 'natuurgeluiden'}`;
+        const audioMsg = resonantAudioMode === 'tones' ? ' met zachte tonen' : '';
         showUserMessage(`✨ Resonant breathing sessie gestart: ${resonantDuration} minuten op ${resonantBPM} bpm${audioMsg}`, 'success');
         devLog('Resonant session started:', { duration: resonantDuration, bpm: resonantBPM, audio: resonantAudioMode });
     };
@@ -3837,8 +3787,10 @@ Wil je je voorkeuren wijzigen?`;
         
         drawResonantCircle(0.5, 'Sessie gestopt');
         
+        // Reset state variables
         resonantPaused = false;
         resonantStartTime = null;
+        resonantLastPhase = null; // Reset phase tracking
         
         // Show message
         if (completionPercentage >= 80) {
@@ -3881,8 +3833,10 @@ Wil je je voorkeuren wijzigen?`;
         
         drawResonantCircle(0.75, 'VOLTOOID! 🎉');
         
+        // Reset state variables
         resonantPaused = false;
         resonantStartTime = null;
+        resonantLastPhase = null; // Reset phase tracking for next session
         
         // Update stats
         userStats.totalSessions++;

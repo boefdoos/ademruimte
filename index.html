@@ -1165,6 +1165,7 @@
         <nav class="nav-tabs">
             <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-home"></i> Dashboard</button>
             <button class="tab-btn" data-tab="buteyko"><i class="fas fa-lungs"></i> Buteyko</button>
+            <button class="tab-btn" data-tab="resonant"><i class="fas fa-heartbeat"></i> Resonant</button>
             <button class="tab-btn" data-tab="dagboek"><i class="fas fa-chart-bar"></i> Dagboek</button>
             <button class="tab-btn" data-tab="crisis"><i class="fas fa-exclamation-triangle"></i> Crisis Hulp</button>
             <button class="tab-btn" data-tab="settings"><i class="fas fa-cog"></i> Instellingen</button>
@@ -1304,6 +1305,131 @@
                         <div id="breathing-info" style="text-align: center; margin-top: 1rem;">
                             <p><strong>Cyclus:</strong> <span id="cycle-count">0</span> <span id="cycle-target">van 20</span></p>
                             <p><strong>Fase:</strong> <span id="current-phase">Rust</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resonant Breathing Tab -->
+            <div id="resonant" class="tab-content">
+                <div class="card">
+                    <h2><i class="fas fa-heartbeat"></i> Resonant Breathing</h2>
+                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                        Resonant breathing (coherent breathing) activeert je parasympathische zenuwstelsel en verbetert HRV. 
+                        <strong>Aanbevolen:</strong> 2× per dag, 20 minuten.
+                    </p>
+
+                    <!-- Session Setup -->
+                    <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 2px solid rgba(16, 185, 129, 0.2);">
+                        <h3><i class="fas fa-cog"></i> Sessie Instellingen</h3>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-clock"></i> Sessie duur:</label>
+                            <div class="button-group" style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-secondary" onclick="setResonantDuration(10)">10 min</button>
+                                <button class="btn btn-secondary" onclick="setResonantDuration(15)">15 min</button>
+                                <button class="btn btn-primary" onclick="setResonantDuration(20)">20 min ⭐</button>
+                            </div>
+                            <p id="resonant-duration-display" style="margin-top: 0.5rem; color: var(--text-dark); font-weight: 600;">
+                                Geselecteerd: 20 minuten
+                            </p>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="margin-bottom: 0.5rem; display: block;">
+                                <i class="fas fa-lungs"></i> Ademhalingsritme: <strong><span id="resonant-bpm-display">5.5</span> ademhalingen/min</strong>
+                            </label>
+                            <div class="range-container">
+                                <input type="range" class="range-slider" id="resonant-bpm-slider" 
+                                       min="4.5" max="6.5" step="0.5" value="5.5" 
+                                       oninput="updateResonantBPM()">
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-light); margin-top: 0.25rem;">
+                                <span>4.5 bpm</span>
+                                <span>5.5 bpm (aanbevolen)</span>
+                                <span>6.5 bpm</span>
+                            </div>
+                            <small style="color: var(--text-light); display: block; margin-top: 0.5rem;">
+                                💡 5.5 ademhalingen/min is het "sweet spot" voor de meeste mensen. Begin hier en pas aan indien nodig.
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-volume-up"></i> Audio begeleiding:</label>
+                            <select class="form-control" id="resonant-audio" onchange="updateResonantAudio()">
+                                <option value="tones">Zachte tonen</option>
+                                <option value="silence" selected>Stil</option>
+                                <option value="nature">Natuurgeluiden</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Breathing Exercise -->
+                    <div class="card">
+                        <h3><i class="fas fa-play-circle"></i> Sessie</h3>
+                        
+                        <div class="resonant-circle-container" style="position: relative; display: flex; justify-content: center; align-items: center; min-height: 350px;">
+                            <canvas id="resonant-circle" width="300" height="300" style="max-width: 100%;"></canvas>
+                            <div id="resonant-phase-text" style="position: absolute; font-size: 1.5rem; font-weight: 600; color: var(--text-dark);">
+                                Klaar om te starten
+                            </div>
+                        </div>
+
+                        <div class="button-group" style="margin-top: 1.5rem;">
+                            <button class="btn btn-primary" id="start-resonant" onclick="startResonantBreathing()">
+                                <i class="fas fa-play"></i> Start Sessie
+                            </button>
+                            <button class="btn btn-warning" id="pause-resonant" onclick="pauseResonantBreathing()" disabled>
+                                <i class="fas fa-pause"></i> Pauze
+                            </button>
+                            <button class="btn btn-danger" id="stop-resonant" onclick="stopResonantBreathing()" disabled>
+                                <i class="fas fa-stop"></i> Stop
+                            </button>
+                        </div>
+
+                        <div id="resonant-info" style="text-align: center; margin-top: 1.5rem; background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 0.5rem;">
+                            <p style="margin-bottom: 0.5rem;">
+                                <strong>Tijd:</strong> <span id="resonant-time-display">20:00</span>
+                            </p>
+                            <p style="margin-bottom: 0;">
+                                <strong>Voortgang:</strong> <span id="resonant-progress">0%</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Instructions -->
+                    <div class="card" style="background: rgba(59, 130, 246, 0.1); border: 2px solid rgba(59, 130, 246, 0.2);">
+                        <h3><i class="fas fa-info-circle"></i> Instructies</h3>
+                        <ol style="margin-left: 1.5rem; line-height: 1.8;">
+                            <li>Kies je sessieduur (20 min aanbevolen)</li>
+                            <li>Pas indien gewenst het ademritme aan (5.5 bpm is ideaal)</li>
+                            <li>Klik "Start Sessie"</li>
+                            <li>Volg de cirkel: groter = inademen, kleiner = uitademen</li>
+                            <li>Houd het ritme comfortabel - geen air hunger!</li>
+                            <li>Na afloop kun je je ervaring bijhouden in het dagboek</li>
+                        </ol>
+                        <p style="margin-top: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
+                            <strong>💡 Tip:</strong> Resonant breathing werkt <em>cumulatief</em>. De effecten bouwen op over weken. 
+                            Consistentie is belangrijker dan perfectie!
+                        </p>
+                    </div>
+
+                    <!-- Weekly Progress -->
+                    <div class="card">
+                        <h3><i class="fas fa-chart-line"></i> Deze Week</h3>
+                        <div id="resonant-weekly-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                            <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                                <div style="font-size: 2rem; font-weight: 700; color: #10b981;"><span id="resonant-sessions-count">0</span></div>
+                                <div style="color: var(--text-light); font-size: 0.9rem;">Sessies voltooid</div>
+                            </div>
+                            <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                                <div style="font-size: 2rem; font-weight: 700; color: #3b82f6;"><span id="resonant-adherence">0</span>%</div>
+                                <div style="color: var(--text-light); font-size: 0.9rem;">Therapietrouw (doel: 14)</div>
+                            </div>
+                            <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                                <div style="font-size: 2rem; font-weight: 700; color: #f59e0b;"><span id="resonant-total-minutes">0</span></div>
+                                <div style="color: var(--text-light); font-size: 0.9rem;">Totale minuten</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1521,6 +1647,7 @@
                 <label for="entry-technique">Techniek gebruikt:</label>
                 <select class="form-control" id="entry-technique">
                     <option value="Buteyko Ademhaling">Buteyko Ademhaling</option>
+                    <option value="Resonant Breathing">Resonant Breathing</option>
                     <option value="Crisis Ademhaling">Crisis Ademhaling</option>
                     <option value="Noodprotocol">Noodprotocol</option>
                     <option value="Handmatige Entry">Handmatige Entry</option>
@@ -1724,6 +1851,20 @@
     let allCPMeasurements = [];
     let progressChart = null;
     let chartFilter = '10days'; // New default: last 10 days
+
+    // Resonant Breathing variables
+    let resonantDuration = 20; // minutes
+    let resonantBPM = 5.5; // breaths per minute
+    let resonantAudioMode = 'silence';
+    let resonantInterval = null;
+    let resonantStartTime = null;
+    let resonantPaused = false;
+    let resonantCanvas = null;
+    let resonantCtx = null;
+    let resonantAnimationId = null;
+    let resonantSessions = [];
+    let resonantAudioContext = null;
+    let resonantLastPhase = null; // Track phase changes for audio cues
 
     // ===========================================
     // DEV_MODE CONFIGURATION
@@ -3333,6 +3474,463 @@ Wil je je voorkeuren wijzigen?`;
         
         updateDashboard();
     };
+
+    // ============================================
+    // RESONANT BREATHING FUNCTIONS
+    // ============================================
+
+    // Initialize canvas after DOM loads
+    function initResonantCanvas() {
+        resonantCanvas = document.getElementById('resonant-circle');
+        if (!resonantCanvas) return;
+        
+        resonantCtx = resonantCanvas.getContext('2d');
+        resonantCanvas.width = 300;
+        resonantCanvas.height = 300;
+        
+        // Draw initial state
+        drawResonantCircle(0.5, 'Klaar om te starten');
+    }
+
+    // Draw breathing circle with smooth animation
+    function drawResonantCircle(scale, text) {
+        if (!resonantCtx) return;
+        
+        const canvas = resonantCanvas;
+        const ctx = resonantCtx;
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const baseRadius = 80;
+        const radius = baseRadius * scale;
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Create gradient based on phase
+        const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+        if (scale > 0.5) {
+            // Inhaling - blue gradient
+            gradient.addColorStop(0, '#4A90E2');
+            gradient.addColorStop(1, '#2563eb');
+        } else {
+            // Exhaling - green gradient
+            gradient.addColorStop(0, '#7ED321');
+            gradient.addColorStop(1, '#10b981');
+        }
+        
+        // Draw circle
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+        
+        // Add glow effect
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = scale > 0.5 ? '#4A90E2' : '#7ED321';
+        
+        // Update text element
+        const textElement = document.getElementById('resonant-phase-text');
+        if (textElement) {
+            textElement.textContent = text;
+            textElement.style.color = scale > 0.5 ? '#2563eb' : '#10b981';
+        }
+    }
+
+    // Initialize audio context for resonant breathing
+    function initResonantAudio() {
+        if (!resonantAudioContext) {
+            try {
+                resonantAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+                console.log('✅ Resonant audio context initialized');
+            } catch (error) {
+                console.warn('⚠️ Web Audio API not supported:', error);
+            }
+        }
+    }
+
+    // Play a tone for breath guidance
+    function playResonantTone(frequency = 440, duration = 0.15) {
+        if (resonantAudioMode === 'silence' || !resonantAudioContext) return;
+        
+        try {
+            // Resume audio context if suspended (browser autoplay policy)
+            if (resonantAudioContext.state === 'suspended') {
+                resonantAudioContext.resume();
+            }
+            
+            const oscillator = resonantAudioContext.createOscillator();
+            const gainNode = resonantAudioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(resonantAudioContext.destination);
+            
+            // Soft, gentle tone
+            oscillator.type = 'sine';
+            oscillator.frequency.value = frequency;
+            
+            // Fade in and out
+            gainNode.gain.setValueAtTime(0, resonantAudioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.1, resonantAudioContext.currentTime + 0.05);
+            gainNode.gain.linearRampToValueAtTime(0, resonantAudioContext.currentTime + duration);
+            
+            oscillator.start(resonantAudioContext.currentTime);
+            oscillator.stop(resonantAudioContext.currentTime + duration);
+        } catch (error) {
+            console.warn('Audio playback error:', error);
+        }
+    }
+
+    // Play nature sounds using filtered white noise for more realistic sound
+    function playResonantNature(phase) {
+        if (resonantAudioMode !== 'nature' || !resonantAudioContext) return;
+        
+        try {
+            // Resume audio context if suspended
+            if (resonantAudioContext.state === 'suspended') {
+                resonantAudioContext.resume();
+            }
+            
+            const bufferSize = resonantAudioContext.sampleRate * 0.3; // 300ms
+            const buffer = resonantAudioContext.createBuffer(1, bufferSize, resonantAudioContext.sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            // Generate white noise
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+            
+            const noise = resonantAudioContext.createBufferSource();
+            noise.buffer = buffer;
+            
+            // Create filter for more natural sound
+            const filter = resonantAudioContext.createBiquadFilter();
+            filter.type = 'bandpass';
+            // Higher frequency for inhale, lower for exhale
+            filter.frequency.value = phase === 'IN' ? 800 : 400;
+            filter.Q.value = 1;
+            
+            // Gain control for fade in/out
+            const gainNode = resonantAudioContext.createGain();
+            gainNode.gain.setValueAtTime(0, resonantAudioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.05, resonantAudioContext.currentTime + 0.05);
+            gainNode.gain.linearRampToValueAtTime(0, resonantAudioContext.currentTime + 0.25);
+            
+            // Connect nodes
+            noise.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(resonantAudioContext.destination);
+            
+            noise.start(resonantAudioContext.currentTime);
+            noise.stop(resonantAudioContext.currentTime + 0.3);
+        } catch (error) {
+            console.warn('Nature sound playback error:', error);
+        }
+    }
+
+    // Animate the breathing circle
+    function animateResonantBreath() {
+        if (resonantPaused) return;
+        
+        const breathCycleTime = 60 / resonantBPM; // Total time for one breath (in/out)
+        const inhaleTime = breathCycleTime / 2;
+        const exhaleTime = breathCycleTime / 2;
+        
+        const elapsed = (Date.now() - resonantStartTime) / 1000;
+        const cyclePosition = (elapsed % breathCycleTime) / breathCycleTime;
+        
+        // Calculate scale with smooth easing
+        let scale, phase;
+        if (cyclePosition < 0.5) {
+            // Inhale phase (0 to 0.5)
+            const t = cyclePosition * 2; // 0 to 1
+            scale = 0.5 + (easeInOutSine(t) * 0.5); // 0.5 to 1.0
+            phase = 'IN';
+        } else {
+            // Exhale phase (0.5 to 1.0)
+            const t = (cyclePosition - 0.5) * 2; // 0 to 1
+            scale = 1.0 - (easeInOutSine(t) * 0.5); // 1.0 to 0.5
+            phase = 'UIT';
+        }
+        
+        // Trigger audio cue on phase change
+        if (phase !== resonantLastPhase) {
+            resonantLastPhase = phase;
+            
+            if (resonantAudioMode === 'tones') {
+                // Higher tone for inhale, lower for exhale
+                const frequency = phase === 'IN' ? 523.25 : 392.00; // C5 for inhale, G4 for exhale
+                playResonantTone(frequency, 0.15);
+            } else if (resonantAudioMode === 'nature') {
+                playResonantNature(phase);
+            }
+        }
+        
+        drawResonantCircle(scale, phase);
+        
+        // Update timer
+        updateResonantTimer();
+        
+        // Continue animation
+        resonantAnimationId = requestAnimationFrame(animateResonantBreath);
+    }
+
+    // Easing function for smooth breathing
+    function easeInOutSine(t) {
+        return -(Math.cos(Math.PI * t) - 1) / 2;
+    }
+
+    // Update timer display
+    function updateResonantTimer() {
+        if (!resonantStartTime) return;
+        
+        const elapsed = Math.floor((Date.now() - resonantStartTime) / 1000);
+        const totalSeconds = resonantDuration * 60;
+        const remaining = Math.max(0, totalSeconds - elapsed);
+        
+        const minutes = Math.floor(remaining / 60);
+        const seconds = remaining % 60;
+        
+        const timeDisplay = document.getElementById('resonant-time-display');
+        if (timeDisplay) {
+            timeDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        const progress = Math.min(100, Math.round((elapsed / totalSeconds) * 100));
+        const progressDisplay = document.getElementById('resonant-progress');
+        if (progressDisplay) {
+            progressDisplay.textContent = `${progress}%`;
+        }
+        
+        // Check if session complete
+        if (remaining === 0 && !resonantPaused) {
+            completeResonantSession();
+        }
+    }
+
+    // Session control functions
+    window.setResonantDuration = function(minutes) {
+        resonantDuration = minutes;
+        const display = document.getElementById('resonant-duration-display');
+        if (display) {
+            display.textContent = `Geselecteerd: ${minutes} minuten${minutes === 20 ? ' ⭐' : ''}`;
+        }
+        
+        // Update buttons visual feedback
+        document.querySelectorAll('#resonant button.btn-secondary, #resonant button.btn-primary').forEach(btn => {
+            const btnMinutes = parseInt(btn.textContent);
+            if (btnMinutes === minutes) {
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-primary');
+            } else {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-secondary');
+            }
+        });
+        
+        devLog('Resonant duration set:', minutes, 'minutes');
+    };
+
+    window.updateResonantBPM = function() {
+        const slider = document.getElementById('resonant-bpm-slider');
+        resonantBPM = parseFloat(slider.value);
+        
+        const display = document.getElementById('resonant-bpm-display');
+        if (display) {
+            display.textContent = resonantBPM.toFixed(1);
+        }
+        
+        devLog('Resonant BPM set:', resonantBPM);
+    };
+
+    window.updateResonantAudio = function() {
+        const select = document.getElementById('resonant-audio');
+        resonantAudioMode = select.value;
+        
+        // Initialize audio context if switching from silence to tones/nature
+        if (resonantAudioMode !== 'silence' && !resonantAudioContext) {
+            initResonantAudio();
+        }
+        
+        // Play a test sound to show it works
+        if (resonantAudioMode === 'tones') {
+            playResonantTone(523.25, 0.15);
+            showUserMessage('🔊 Zachte tonen geactiveerd - je hoort een beep bij elke fase overgang', 'info');
+        } else if (resonantAudioMode === 'nature') {
+            playResonantNature('IN'); // Test with inhale phase
+            showUserMessage('🌿 Natuurgeluiden geactiveerd - zachte wind/water geluiden bij fase overgangen', 'info');
+        } else {
+            showUserMessage('🔇 Audio uitgeschakeld', 'info');
+        }
+        
+        devLog('Resonant audio mode:', resonantAudioMode);
+    };
+
+    window.startResonantBreathing = function() {
+        if (!resonantCanvas) {
+            initResonantCanvas();
+        }
+        
+        // Initialize audio if needed (and not silence mode)
+        if (resonantAudioMode !== 'silence' && !resonantAudioContext) {
+            initResonantAudio();
+        }
+        
+        // Request wake lock
+        requestWakeLock();
+        
+        resonantStartTime = Date.now();
+        resonantPaused = false;
+        resonantLastPhase = null; // Reset phase tracking for audio cues
+        
+        // Update button states
+        document.getElementById('start-resonant').disabled = true;
+        document.getElementById('pause-resonant').disabled = false;
+        document.getElementById('stop-resonant').disabled = false;
+        
+        // Start animation
+        animateResonantBreath();
+        
+        const audioMsg = resonantAudioMode === 'silence' ? '' : ` met ${resonantAudioMode === 'tones' ? 'zachte tonen' : 'natuurgeluiden'}`;
+        showUserMessage(`✨ Resonant breathing sessie gestart: ${resonantDuration} minuten op ${resonantBPM} bpm${audioMsg}`, 'success');
+        devLog('Resonant session started:', { duration: resonantDuration, bpm: resonantBPM, audio: resonantAudioMode });
+    };
+
+    window.pauseResonantBreathing = function() {
+        resonantPaused = !resonantPaused;
+        
+        const pauseBtn = document.getElementById('pause-resonant');
+        if (resonantPaused) {
+            if (resonantAnimationId) {
+                cancelAnimationFrame(resonantAnimationId);
+            }
+            pauseBtn.innerHTML = '<i class="fas fa-play"></i> Hervat';
+            drawResonantCircle(0.75, 'PAUZE');
+            showUserMessage('⏸️ Sessie gepauzeerd', 'info');
+        } else {
+            pauseBtn.innerHTML = '<i class="fas fa-pause"></i> Pauze';
+            animateResonantBreath();
+            showUserMessage('▶️ Sessie hervat', 'info');
+        }
+    };
+
+    window.stopResonantBreathing = function() {
+        // Stop animation
+        if (resonantAnimationId) {
+            cancelAnimationFrame(resonantAnimationId);
+            resonantAnimationId = null;
+        }
+        
+        // Release wake lock
+        releaseWakeLock();
+        
+        // Calculate session time
+        const elapsed = resonantStartTime ? Math.floor((Date.now() - resonantStartTime) / 1000) : 0;
+        const completedMinutes = Math.floor(elapsed / 60);
+        const targetMinutes = resonantDuration;
+        const completionPercentage = Math.min(100, Math.round((completedMinutes / targetMinutes) * 100));
+        
+        // Reset UI
+        document.getElementById('start-resonant').disabled = false;
+        document.getElementById('pause-resonant').disabled = true;
+        document.getElementById('stop-resonant').disabled = true;
+        document.getElementById('pause-resonant').innerHTML = '<i class="fas fa-pause"></i> Pauze';
+        
+        drawResonantCircle(0.5, 'Sessie gestopt');
+        
+        resonantPaused = false;
+        resonantStartTime = null;
+        
+        // Show message
+        if (completionPercentage >= 80) {
+            showUserMessage(`✅ Sessie voltooid: ${completedMinutes}/${targetMinutes} minuten (${completionPercentage}%)`, 'success');
+        } else {
+            showUserMessage(`⚠️ Sessie gestopt: ${completedMinutes}/${targetMinutes} minuten (${completionPercentage}%)`, 'warning');
+        }
+        
+        devLog('Resonant session stopped:', { completed: completedMinutes, target: targetMinutes });
+    };
+
+    function completeResonantSession() {
+        // Stop animation
+        if (resonantAnimationId) {
+            cancelAnimationFrame(resonantAnimationId);
+            resonantAnimationId = null;
+        }
+        
+        // Release wake lock
+        releaseWakeLock();
+        
+        // Save session data
+        const session = {
+            type: 'resonant_breathing',
+            timestamp: new Date(),
+            duration: resonantDuration,
+            breathRate: resonantBPM,
+            completed: true,
+            userId: currentUser?.uid,
+            userEmail: currentUser?.email
+        };
+        
+        resonantSessions.push(session);
+        
+        // Update UI
+        document.getElementById('start-resonant').disabled = false;
+        document.getElementById('pause-resonant').disabled = true;
+        document.getElementById('stop-resonant').disabled = true;
+        document.getElementById('pause-resonant').innerHTML = '<i class="fas fa-pause"></i> Pauze';
+        
+        drawResonantCircle(0.75, 'VOLTOOID! 🎉');
+        
+        resonantPaused = false;
+        resonantStartTime = null;
+        
+        // Update stats
+        userStats.totalSessions++;
+        updateStreak();
+        saveUserStats();
+        
+        // Update weekly stats
+        updateResonantWeeklyStats();
+        
+        // Success message with option to journal
+        setTimeout(() => {
+            showUserMessage('🎉 Resonant breathing sessie voltooid! Vul je ervaring in het dagboek in.', 'success');
+            
+            // Ask if user wants to journal
+            if (confirm('Wil je deze sessie in je dagboek bijhouden?')) {
+                openJournalModal('Resonant Breathing');
+            }
+        }, 1000);
+        
+        devLog('Resonant session completed:', session);
+    }
+
+    function updateResonantWeeklyStats() {
+        // Calculate this week's sessions
+        const now = new Date();
+        const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+        weekStart.setHours(0, 0, 0, 0);
+        
+        const thisWeekSessions = resonantSessions.filter(s => 
+            new Date(s.timestamp) >= weekStart && s.completed
+        );
+        
+        const sessionsCount = thisWeekSessions.length;
+        const targetSessions = 14; // 2 per day × 7 days
+        const adherence = Math.min(100, Math.round((sessionsCount / targetSessions) * 100));
+        const totalMinutes = thisWeekSessions.reduce((sum, s) => sum + s.duration, 0);
+        
+        // Update display
+        const countEl = document.getElementById('resonant-sessions-count');
+        const adherenceEl = document.getElementById('resonant-adherence');
+        const minutesEl = document.getElementById('resonant-total-minutes');
+        
+        if (countEl) countEl.textContent = sessionsCount;
+        if (adherenceEl) adherenceEl.textContent = adherence;
+        if (minutesEl) minutesEl.textContent = totalMinutes;
+        
+        devLog('Weekly resonant stats updated:', { sessions: sessionsCount, adherence, minutes: totalMinutes });
+    }
 
     // ============================================
     // CRISIS HELP FUNCTIONS
@@ -5030,6 +5628,10 @@ Wil je je voorkeuren wijzigen?`;
             await initFirebase();
             console.log('✅ Ademruimte app initialization completed successfully');
             
+            // Initialize resonant breathing canvas
+            initResonantCanvas();
+            console.log('✅ Resonant breathing canvas initialized');
+            
             // Ensure login form is shown by default
             showLoginForm();
             
@@ -5048,6 +5650,7 @@ Wil je je voorkeuren wijzigen?`;
         if (crisisInterval) clearInterval(crisisInterval);
         if (crisisProtocolActive) stopCrisisProtocol();
         if (progressChart) progressChart.destroy();
+        if (resonantAnimationId) cancelAnimationFrame(resonantAnimationId);
         
         // Release wake lock
         releaseWakeLock();

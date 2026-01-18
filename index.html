@@ -1692,7 +1692,7 @@
 
     
         <!-- HRV Tab Content -->
-        <div id="hrv-tab" class="tab-content">
+        <div id="hrv" class="tab-content">
             <div class="card">
                 <h2><i class="fas fa-heart-pulse"></i> HRV Meting Loggen</h2>
                 <p style="color: var(--text-light); margin-bottom: 1.5rem;">
@@ -2659,6 +2659,7 @@ Wil je je voorkeuren wijzigen?`;
                         await loadUserStats(); // NEW: Load user stats first
                         await loadJournalEntries();
                         await loadHRVData(); // Load HRV measurements
+                        await loadResonantSessions(); // Load resonant breathing sessions
                         updateDashboard();
                         generateInsights();
                     } catch (error) {
@@ -2797,10 +2798,18 @@ Wil je je voorkeuren wijzigen?`;
         });
         
         // Show selected tab
-        document.getElementById(tabName).classList.add('active');
+        const tabElement = document.getElementById(tabName);
+        if (!tabElement) {
+            console.error(`Tab "${tabName}" not found`);
+            return;
+        }
+        tabElement.classList.add('active');
         
         // Add active to selected button
-        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+        const tabButton = document.querySelector(`[data-tab="${tabName}"]`);
+        if (tabButton) {
+            tabButton.classList.add('active');
+        }
         
         currentTab = tabName;
         
@@ -2815,7 +2824,16 @@ Wil je je voorkeuren wijzigen?`;
         
         // Load HRV data when HRV tab is opened
         if (tabName === 'hrv') {
-            loadHRVData();
+            if (auth && auth.currentUser) {
+                loadHRVData();
+            }
+        }
+        
+        // Load resonant sessions when resonant tab is opened
+        if (tabName === 'resonant') {
+            if (auth && auth.currentUser) {
+                loadResonantSessions();
+            }
         }
         
         // Update settings UI when settings tab is opened
@@ -4080,6 +4098,76 @@ Wil je je voorkeuren wijzigen?`;
         }, 1000);
         
         devLog('Resonant session completed:', session);
+    }
+
+
+    // Save resonant session to Firebase
+    async function saveResonantSessionToFirebase(session) {
+        if (!auth || !auth.currentUser) {
+            console.warn('Not logged in, cannot save to Firebase');
+            return;
+        }
+        
+        try {
+            const { collection, addDoc } = await import('https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js');
+            
+            await addDoc(collection(db, 'resonant_sessions'), {
+                ...session,
+                userId: auth.currentUser.uid
+            });
+            
+            devLog('Resonant session saved to Firebase');
+        } catch (error) {
+            console.error('Error saving resonant session to Firebase:', error);
+        }
+    }
+    
+    // Load resonant sessions from Firebase
+    async function loadResonantSessions() {
+        if (!auth || !auth.currentUser) {
+            console.log('Auth not ready or user not logged in');
+            return;
+        }
+        
+        try {
+            const { collection, query, where, orderBy, getDocs } = await import('https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js');
+            
+            const q = query(
+                collection(db, 'resonant_sessions'),
+                where('userId', '==', auth.currentUser.uid),
+                orderBy('timestamp', 'desc')
+            );
+            
+            const snapshot = await getDocs(q);
+            resonantSessions = [];
+            
+            snapshot.forEach(doc => {
+                resonantSessions.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+            
+            // Also load from localStorage as backup
+            const localData = localStorage.getItem('resonantSessions');
+            if (localData && resonantSessions.length === 0) {
+                resonantSessions = JSON.parse(localData);
+            }
+            
+            // Update weekly stats
+            updateResonantWeeklyStats();
+            
+            devLog('Loaded resonant sessions:', resonantSessions.length);
+        } catch (error) {
+            console.error('Error loading resonant sessions:', error);
+            
+            // Fallback to localStorage
+            const localData = localStorage.getItem('resonantSessions');
+            if (localData) {
+                resonantSessions = JSON.parse(localData);
+                updateResonantWeeklyStats();
+            }
+        }
     }
 
     function updateResonantWeeklyStats() {
@@ -5878,7 +5966,7 @@ Wil je je voorkeuren wijzigen?`;
 let hrvChart = null;
 
 // Save HRV Measurement
-async function saveHRVMeasurement() {
+window.saveHRVMeasurement = async function() {
     const rmssd = parseFloat(document.getElementById('hrv-rmssd').value);
     const heartRate = parseFloat(document.getElementById('hrv-heart-rate').value);
     const note = document.getElementById('hrv-note').value.trim();
@@ -5899,13 +5987,18 @@ async function saveHRVMeasurement() {
         return;
     }
     
-    if (!auth.currentUser) {
+    if (!auth || !auth.currentUser) {
         showUserMessage('Je moet ingelogd zijn', 'error');
         return;
     }
     
+    if (!db) {
+        showUserMessage('Database niet beschikbaar', 'error');
+        return;
+    }
+    
     try {
-        const { collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+        const { collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js');
         
         const measurement = {
             rmssd: rmssd,
@@ -5936,10 +6029,18 @@ async function saveHRVMeasurement() {
 
 // Load HRV Data
 async function loadHRVData() {
-    if (!auth.currentUser) return;
+    if (!auth || !auth.currentUser) {
+        console.log('Auth not ready or user not logged in');
+        return;
+    }
+    
+    if (!db) {
+        console.error('Firestore not initialized');
+        return;
+    }
     
     try {
-        const { collection, query, where, orderBy, limit, getDocs } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+        const { collection, query, where, orderBy, limit, getDocs } = await import('https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js');
         
         const q = query(
             collection(db, 'hrv_measurements'),
@@ -6155,13 +6256,23 @@ function renderHRVChart(measurements) {
 }
 
 // Delete HRV Measurement
-async function deleteHRVMeasurement(measurementId) {
+window.deleteHRVMeasurement = async function(measurementId) {
     if (!confirm('Weet je zeker dat je deze meting wilt verwijderen?')) {
         return;
     }
     
+    if (!auth || !auth.currentUser) {
+        showUserMessage('Je moet ingelogd zijn', 'error');
+        return;
+    }
+    
+    if (!db) {
+        showUserMessage('Database niet beschikbaar', 'error');
+        return;
+    }
+    
     try {
-        const { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+        const { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js');
         
         await deleteDoc(doc(db, 'hrv_measurements', measurementId));
         

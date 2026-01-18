@@ -1031,6 +1031,144 @@
             gap: 1rem;
         }
     }
+
+    /* HRV Specific Styling */
+    .hrv-log-form {
+        background: rgba(255,255,255,0.7);
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 1.5rem;
+    }
+
+    .hrv-input-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .hrv-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .hrv-list-item {
+        background: rgba(255,255,255,0.7);
+        padding: 1rem;
+        border-radius: 0.75rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .hrv-list-item-main {
+        flex: 1;
+    }
+
+    .hrv-list-item-date {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-bottom: 0.25rem;
+    }
+
+    .hrv-list-item-values {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+    .hrv-value {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .hrv-value-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .hrv-value-label {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .hrv-delete-btn {
+        background: transparent;
+        border: none;
+        color: #ef4444;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        transition: var(--transition-base);
+    }
+
+    .hrv-delete-btn:hover {
+        background: rgba(239, 68, 68, 0.1);
+    }
+
+    .hrv-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .hrv-summary-card {
+        background: rgba(255,255,255,0.7);
+        padding: 1rem;
+        border-radius: 0.75rem;
+        text-align: center;
+    }
+
+    .hrv-summary-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .hrv-summary-label {
+        font-size: 0.85rem;
+        color: var(--text-light);
+        margin-top: 0.25rem;
+    }
+
+    .hrv-chart-container {
+        background: rgba(255,255,255,0.7);
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        margin-bottom: 1.5rem;
+    }
+
+    .hrv-empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--text-light);
+    }
+
+    .hrv-empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+    }
+
+    @media (max-width: 768px) {
+        .hrv-input-group {
+            grid-template-columns: 1fr;
+        }
+        
+        .hrv-list-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+    }
+
 </style>
 </head>
 
@@ -1167,6 +1305,7 @@
             <button class="tab-btn" data-tab="buteyko"><i class="fas fa-lungs"></i> Buteyko</button>
             <button class="tab-btn" data-tab="resonant"><i class="fas fa-heartbeat"></i> Resonant</button>
             <button class="tab-btn" data-tab="dagboek"><i class="fas fa-chart-bar"></i> Dagboek</button>
+            <button class="tab-btn" data-tab="hrv"><i class="fas fa-heart-pulse"></i> HRV</button>
             <button class="tab-btn" data-tab="crisis"><i class="fas fa-exclamation-triangle"></i> Crisis Hulp</button>
             <button class="tab-btn" data-tab="settings"><i class="fas fa-cog"></i> Instellingen</button>
         </nav>
@@ -1551,7 +1690,85 @@
                 </div>
             </div>
 
-            <!-- Settings Tab -->
+    
+        <!-- HRV Tab Content -->
+        <div id="hrv-tab" class="tab-content">
+            <div class="card">
+                <h2><i class="fas fa-heart-pulse"></i> HRV Meting Loggen</h2>
+                <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                    Voer handmatig je HRV meting in na gebruik van HRV4Training of andere HRV app.
+                </p>
+                
+                <div class="hrv-log-form">
+                    <div class="hrv-input-group">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="hrv-rmssd">RMSSD (ms) *</label>
+                            <input 
+                                type="number" 
+                                id="hrv-rmssd" 
+                                class="form-control" 
+                                placeholder="23"
+                                min="1"
+                                max="200"
+                                step="0.1"
+                            >
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="hrv-heart-rate">Hartslag (bpm) *</label>
+                            <input 
+                                type="number" 
+                                id="hrv-heart-rate" 
+                                class="form-control" 
+                                placeholder="65"
+                                min="30"
+                                max="200"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hrv-note">Notitie (optioneel)</label>
+                        <input 
+                            type="text" 
+                            id="hrv-note" 
+                            class="form-control" 
+                            placeholder="Bijv: Direct na wakker worden, voor/na oefening"
+                        >
+                    </div>
+                    
+                    <button onclick="saveHRVMeasurement()" class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-save"></i> Opslaan
+                    </button>
+                </div>
+            </div>
+            
+            <!-- HRV Summary Stats -->
+            <div class="card">
+                <h2><i class="fas fa-chart-line"></i> Overzicht</h2>
+                <div id="hrv-summary" class="hrv-summary">
+                    <!-- Filled by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- HRV Trend Chart -->
+            <div class="card">
+                <h2><i class="fas fa-chart-area"></i> Trend (laatste 10 metingen)</h2>
+                <div class="hrv-chart-container">
+                    <canvas id="hrv-chart"></canvas>
+                </div>
+            </div>
+            
+            <!-- HRV History List -->
+            <div class="card">
+                <h2><i class="fas fa-history"></i> Metingen (laatste 10)</h2>
+                <div id="hrv-list-container">
+                    <!-- Filled by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
             <div id="settings" class="tab-content">
                 <div class="card">
                     <h2><i class="fas fa-cog"></i> Instellingen</h2>
@@ -2441,6 +2658,7 @@ Wil je je voorkeuren wijzigen?`;
                     try {
                         await loadUserStats(); // NEW: Load user stats first
                         await loadJournalEntries();
+                        await loadHRVData(); // Load HRV measurements
                         updateDashboard();
                         generateInsights();
                     } catch (error) {
@@ -2593,6 +2811,11 @@ Wil je je voorkeuren wijzigen?`;
             setTimeout(() => {
                 document.getElementById('chart-10days').classList.add('active');
             }, 100);
+        }
+        
+        // Load HRV data when HRV tab is opened
+        if (tabName === 'hrv') {
+            loadHRVData();
         }
         
         // Update settings UI when settings tab is opened
@@ -5647,6 +5870,311 @@ Wil je je voorkeuren wijzigen?`;
 
     console.log('🔧 Ademruimte bug fixes loaded successfully');
     console.log('📱 Ademruimte app loaded successfully');
+
+// ============================================
+// HRV MEASUREMENT FUNCTIONS
+// ============================================
+
+let hrvChart = null;
+
+// Save HRV Measurement
+async function saveHRVMeasurement() {
+    const rmssd = parseFloat(document.getElementById('hrv-rmssd').value);
+    const heartRate = parseFloat(document.getElementById('hrv-heart-rate').value);
+    const note = document.getElementById('hrv-note').value.trim();
+    
+    // Validation
+    if (!rmssd || !heartRate) {
+        showUserMessage('RMSSD en Hartslag zijn verplicht', 'warning');
+        return;
+    }
+    
+    if (rmssd < 1 || rmssd > 200) {
+        showUserMessage('RMSSD moet tussen 1 en 200 ms zijn', 'warning');
+        return;
+    }
+    
+    if (heartRate < 30 || heartRate > 200) {
+        showUserMessage('Hartslag moet tussen 30 en 200 bpm zijn', 'warning');
+        return;
+    }
+    
+    if (!auth.currentUser) {
+        showUserMessage('Je moet ingelogd zijn', 'error');
+        return;
+    }
+    
+    try {
+        const { collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+        
+        const measurement = {
+            rmssd: rmssd,
+            heartRate: heartRate,
+            note: note || '',
+            source: 'manual',
+            timestamp: serverTimestamp(),
+            userId: auth.currentUser.uid
+        };
+        
+        await addDoc(collection(db, 'hrv_measurements'), measurement);
+        
+        showUserMessage('HRV meting opgeslagen! 📊', 'success');
+        
+        // Clear form
+        document.getElementById('hrv-rmssd').value = '';
+        document.getElementById('hrv-heart-rate').value = '';
+        document.getElementById('hrv-note').value = '';
+        
+        // Refresh display
+        loadHRVData();
+        
+    } catch (error) {
+        console.error('Error saving HRV:', error);
+        showUserMessage('Fout bij opslaan: ' + error.message, 'error');
+    }
+}
+
+// Load HRV Data
+async function loadHRVData() {
+    if (!auth.currentUser) return;
+    
+    try {
+        const { collection, query, where, orderBy, limit, getDocs } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+        
+        const q = query(
+            collection(db, 'hrv_measurements'),
+            where('userId', '==', auth.currentUser.uid),
+            orderBy('timestamp', 'desc'),
+            limit(10)
+        );
+        
+        const snapshot = await getDocs(q);
+        const measurements = [];
+        
+        snapshot.forEach(doc => {
+            measurements.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+        
+        // Update UI
+        renderHRVList(measurements);
+        renderHRVSummary(measurements);
+        renderHRVChart(measurements);
+        
+    } catch (error) {
+        console.error('Error loading HRV data:', error);
+        showUserMessage('Fout bij laden HRV data', 'error');
+    }
+}
+
+// Render HRV List
+function renderHRVList(measurements) {
+    const container = document.getElementById('hrv-list-container');
+    
+    if (measurements.length === 0) {
+        container.innerHTML = `
+            <div class="hrv-empty-state">
+                <i class="fas fa-heart-pulse"></i>
+                <p>Nog geen HRV metingen</p>
+                <p style="font-size: 0.9rem;">Log je eerste meting hierboven</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '<ul class="hrv-list">';
+    
+    measurements.forEach(m => {
+        const date = m.timestamp ? m.timestamp.toDate() : new Date();
+        const dateStr = date.toLocaleDateString('nl-NL', { 
+            weekday: 'short', 
+            day: 'numeric', 
+            month: 'short',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        html += `
+            <li class="hrv-list-item">
+                <div class="hrv-list-item-main">
+                    <div class="hrv-list-item-date">${dateStr}</div>
+                    <div class="hrv-list-item-values">
+                        <div class="hrv-value">
+                            <span class="hrv-value-number">${m.rmssd.toFixed(1)}</span>
+                            <span class="hrv-value-label">RMSSD (ms)</span>
+                        </div>
+                        <div class="hrv-value">
+                            <span class="hrv-value-number">${m.heartRate}</span>
+                            <span class="hrv-value-label">Hartslag</span>
+                        </div>
+                    </div>
+                    ${m.note ? `<div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;"><i class="fas fa-note-sticky"></i> ${m.note}</div>` : ''}
+                </div>
+                <button onclick="deleteHRVMeasurement('${m.id}')" class="hrv-delete-btn" title="Verwijder">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </li>
+        `;
+    });
+    
+    html += '</ul>';
+    container.innerHTML = html;
+}
+
+// Render HRV Summary
+function renderHRVSummary(measurements) {
+    const container = document.getElementById('hrv-summary');
+    
+    if (measurements.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: var(--text-light);">Nog geen data</p>';
+        return;
+    }
+    
+    // Calculate stats
+    const rmssdValues = measurements.map(m => m.rmssd);
+    const hrValues = measurements.map(m => m.heartRate);
+    
+    const avgRMSSD = (rmssdValues.reduce((a, b) => a + b, 0) / rmssdValues.length).toFixed(1);
+    const avgHR = Math.round(hrValues.reduce((a, b) => a + b, 0) / hrValues.length);
+    const latestRMSSD = measurements[0].rmssd.toFixed(1);
+    const latestHR = measurements[0].heartRate;
+    
+    container.innerHTML = `
+        <div class="hrv-summary-card">
+            <div class="hrv-summary-value">${latestRMSSD}</div>
+            <div class="hrv-summary-label">Laatste RMSSD</div>
+        </div>
+        <div class="hrv-summary-card">
+            <div class="hrv-summary-value">${avgRMSSD}</div>
+            <div class="hrv-summary-label">Gem. RMSSD</div>
+        </div>
+        <div class="hrv-summary-card">
+            <div class="hrv-summary-value">${latestHR}</div>
+            <div class="hrv-summary-label">Laatste HR</div>
+        </div>
+        <div class="hrv-summary-card">
+            <div class="hrv-summary-value">${avgHR}</div>
+            <div class="hrv-summary-label">Gem. HR</div>
+        </div>
+    `;
+}
+
+// Render HRV Chart
+function renderHRVChart(measurements) {
+    if (measurements.length === 0) {
+        const canvas = document.getElementById('hrv-chart');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.font = '16px sans-serif';
+        ctx.fillStyle = '#9ca3af';
+        ctx.textAlign = 'center';
+        ctx.fillText('Nog geen data voor grafiek', canvas.width / 2, canvas.height / 2);
+        return;
+    }
+    
+    // Destroy existing chart
+    if (hrvChart) {
+        hrvChart.destroy();
+    }
+    
+    // Prepare data (reverse for chronological order)
+    const reversedData = [...measurements].reverse();
+    const labels = reversedData.map(m => {
+        const date = m.timestamp ? m.timestamp.toDate() : new Date();
+        return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+    });
+    
+    const rmssdData = reversedData.map(m => m.rmssd);
+    
+    // Create chart
+    const ctx = document.getElementById('hrv-chart').getContext('2d');
+    hrvChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'RMSSD (ms)',
+                data: rmssdData,
+                borderColor: '#06b6d4',
+                backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                pointBackgroundColor: '#06b6d4',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    titleFont: {
+                        size: 14
+                    },
+                    bodyFont: {
+                        size: 13
+                    },
+                    callbacks: {
+                        label: function(context) {
+                            return `RMSSD: ${context.parsed.y.toFixed(1)} ms`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return value + ' ms';
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Delete HRV Measurement
+async function deleteHRVMeasurement(measurementId) {
+    if (!confirm('Weet je zeker dat je deze meting wilt verwijderen?')) {
+        return;
+    }
+    
+    try {
+        const { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+        
+        await deleteDoc(doc(db, 'hrv_measurements', measurementId));
+        
+        showUserMessage('Meting verwijderd', 'success');
+        loadHRVData();
+        
+    } catch (error) {
+        console.error('Error deleting HRV measurement:', error);
+        showUserMessage('Fout bij verwijderen', 'error');
+    }
+}
+
+
 </script>
 
 <!-- Cookie Consent Banner -->

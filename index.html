@@ -4058,13 +4058,19 @@ Wil je je voorkeuren wijzigen?`;
             type: 'resonant_breathing',
             timestamp: new Date(),
             duration: resonantDuration,
-            breathRate: resonantBPM,
+            bpm: resonantBPM, // Changed from breathRate to bpm for consistency
             completed: true,
             userId: currentUser?.uid,
             userEmail: currentUser?.email
         };
         
         resonantSessions.push(session);
+        
+        // Save to Firebase
+        saveResonantSessionToFirebase(session);
+        
+        // Save to localStorage as backup
+        localStorage.setItem('resonantSessions', JSON.stringify(resonantSessions));
         
         // Update UI
         document.getElementById('start-resonant').disabled = false;
@@ -4108,11 +4114,19 @@ Wil je je voorkeuren wijzigen?`;
             return;
         }
         
+        if (!db) {
+            console.error('Firestore not initialized');
+            return;
+        }
+        
         try {
-            const { collection, addDoc } = await import('https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js');
+            const { collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js');
             
             await addDoc(collection(db, 'resonant_sessions'), {
-                ...session,
+                duration: session.duration,
+                bpm: session.bpm,
+                completed: session.completed,
+                timestamp: serverTimestamp(), // Use server timestamp for consistency
                 userId: auth.currentUser.uid
             });
             
@@ -4129,6 +4143,11 @@ Wil je je voorkeuren wijzigen?`;
             return;
         }
         
+        if (!db) {
+            console.error('Firestore not initialized');
+            return;
+        }
+        
         try {
             const { collection, query, where, orderBy, getDocs } = await import('https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js');
             
@@ -4142,9 +4161,12 @@ Wil je je voorkeuren wijzigen?`;
             resonantSessions = [];
             
             snapshot.forEach(doc => {
+                const data = doc.data();
                 resonantSessions.push({
                     id: doc.id,
-                    ...doc.data()
+                    ...data,
+                    // Convert Firebase Timestamp to JavaScript Date
+                    timestamp: data.timestamp?.toDate ? data.timestamp.toDate() : new Date(data.timestamp)
                 });
             });
             

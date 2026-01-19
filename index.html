@@ -4035,6 +4035,57 @@ Wil je je voorkeuren wijzigen?`;
     
     // Global HRV data array
     let hMeasurements = [];
+    
+    // Console helper for debugging HRV data
+    window.debugHRV = function() {
+        console.log('=== HRV DATA DEBUG ===');
+        console.log('Total measurements:', hMeasurements.length);
+        
+        if (hMeasurements.length === 0) {
+            console.log('No HRV measurements loaded!');
+            return;
+        }
+        
+        console.log('\nFirst 3 measurements:');
+        hMeasurements.slice(0, 3).forEach((m, i) => {
+            console.log(`\nMeasurement ${i + 1}:`, {
+                rmssd: m.rmssd,
+                heartrate: m.heartrate,
+                hasHeartrate: m.heartrate !== undefined && m.heartrate !== null,
+                hrValue: typeof m.heartrate,
+                timestamp: m.timestamp,
+                notes: m.notes
+            });
+        });
+        
+        // Check for missing heartrate
+        const missingHR = hMeasurements.filter(m => !m.heartrate || m.heartrate === 0);
+        const validHR = hMeasurements.filter(m => m.heartrate && m.heartrate > 0);
+        
+        console.log('\nHeartrate Summary:');
+        console.log('- With valid heartrate:', validHR.length);
+        console.log('- Missing/zero heartrate:', missingHR.length);
+        
+        if (validHR.length > 0) {
+            const avgHR = validHR.reduce((sum, m) => sum + m.heartrate, 0) / validHR.length;
+            console.log('- Average HR (valid only):', avgHR.toFixed(1), 'bpm');
+        }
+        
+        if (missingHR.length > 0) {
+            console.log('\n⚠️ WARNING: Some measurements missing heartrate data!');
+            console.log('Missing heartrate entries:', missingHR.slice(0, 2));
+        }
+        
+        console.log('\n=== END DEBUG ===');
+        return {
+            total: hMeasurements.length,
+            withHeartrate: validHR.length,
+            missingHeartrate: missingHR.length,
+            measurements: hMeasurements
+        };
+    };
+    
+    console.log('💡 TIP: Run debugHRV() in console to diagnose HRV data issues');
     let hrvChart = null;
     
     // Save HRV measurement to Firebase
@@ -4113,10 +4164,16 @@ Wil je je voorkeuren wijzigen?`;
             
             snapshot.forEach(doc => {
                 const data = doc.data();
-                hMeasurements.push({
+                console.log('Loading HRV doc:', {
                     id: doc.id,
                     rmssd: data.rmssd,
                     heartrate: data.heartrate,
+                    rawData: data
+                });
+                hMeasurements.push({
+                    id: doc.id,
+                    rmssd: data.rmssd,
+                    heartrate: data.heartrate || data.heartRate || 0,  // Fallback to 0 if missing
                     notes: data.notes || '',
                     timestamp: data.timestamp?.toDate ? data.timestamp.toDate() : new Date(data.timestamp)
                 });
@@ -4149,8 +4206,15 @@ Wil je je voorkeuren wijzigen?`;
             return;
         }
         
-        const avgRmssd = hMeasurements.reduce((sum, m) => sum + m.rmssd, 0) / hMeasurements.length;
-        const avgHr = hMeasurements.reduce((sum, m) => sum + m.heartrate, 0) / hMeasurements.length;
+        const avgRmssd = hMeasurements.reduce((sum, m) => sum + (m.rmssd || 0), 0) / hMeasurements.length;
+        const avgHr = hMeasurements.reduce((sum, m) => sum + (m.heartrate || 0), 0) / hMeasurements.length;
+        
+        console.log('updateHRVStats:', {
+            avgRmssd,
+            avgHr,
+            count: hMeasurements.length,
+            sampleMeasurement: hMeasurements[0]
+        });
         
         avgRmssdEl.textContent = avgRmssd.toFixed(1) + ' ms';
         avgHrEl.textContent = Math.round(avgHr) + ' bpm';

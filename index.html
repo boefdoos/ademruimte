@@ -97,6 +97,15 @@
         opacity: 0.9;
         font-weight: 400;
     }
+    
+    /* Modern h2 headers in tabs - like dashboard */
+    .tab-content > h2 {
+        color: #1f2937;
+        font-size: 1.875rem;
+        font-weight: 700;
+        margin: 0 0 1.5rem 0;
+        letter-spacing: -0.025em;
+    }
 
     .user-info {
         position: absolute;
@@ -444,6 +453,7 @@
     /* Tab Content */
     .tab-content {
         display: none;
+        padding: 1.5rem;
     }
 
     .tab-content.active {
@@ -1032,143 +1042,391 @@
         }
     }
 
-    /* HRV Specific Styling */
-    .hrv-log-form {
-        background: rgba(255,255,255,0.7);
-        padding: 1.5rem;
-        border-radius: var(--border-radius);
-        margin-bottom: 1.5rem;
-    }
-
-    .hrv-input-group {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    .hrv-list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-
-    .hrv-list-item {
-        background: rgba(255,255,255,0.7);
-        padding: 1rem;
-        border-radius: 0.75rem;
-        margin-bottom: 0.75rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    /* ============================================
+       DASHBOARD REDESIGN STYLES
+       ============================================ */
+    
+    /* Welcome Header */
+    .welcome-header {
+        background: linear-gradient(135deg, #f7f9fb, #e8f0f7);
+        color: var(--text-color);
+        padding: 2rem;
+        border-radius: 1rem;
+        margin-bottom: 2rem;
         border-left: 4px solid var(--primary-color);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
-
-    .hrv-list-item-main {
-        flex: 1;
+    
+    .welcome-header h2 {
+        margin: 0 0 0.75rem 0;
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: var(--text-color);
     }
-
-    .hrv-list-item-date {
-        font-size: 0.85rem;
-        color: var(--text-light);
-        margin-bottom: 0.25rem;
-    }
-
-    .hrv-list-item-values {
-        display: flex;
-        gap: 1.5rem;
+    
+    .streak-badge {
+        display: inline-flex;
         align-items: center;
+        gap: 0.75rem;
+        background: white;
+        padding: 0.75rem 1.25rem;
+        border-radius: 0.5rem;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--text-color);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     }
-
-    .hrv-value {
+    
+    .streak-icon {
+        color: var(--primary-color);
+        font-size: 1.1rem;
+    }
+    
+    /* Daily Goals Section */
+    .daily-goals {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .daily-goals h3 {
+        margin: 0 0 1.5rem 0;
+        color: var(--text-color);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .goals-progress-text {
+        margin-left: auto;
+        font-size: 0.9rem;
+        color: var(--text-light);
+        font-weight: 600;
+    }
+    
+    .goal-item {
         display: flex;
         flex-direction: column;
-    }
-
-    .hrv-value-number {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary-color);
-    }
-
-    .hrv-value-label {
-        font-size: 0.75rem;
-        color: var(--text-light);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .hrv-delete-btn {
-        background: transparent;
-        border: none;
-        color: #ef4444;
-        cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        transition: var(--transition-base);
-    }
-
-    .hrv-delete-btn:hover {
-        background: rgba(239, 68, 68, 0.1);
-    }
-
-    .hrv-summary {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .hrv-summary-card {
-        background: rgba(255,255,255,0.7);
+        gap: 0.5rem;
         padding: 1rem;
-        border-radius: 0.75rem;
-        text-align: center;
+        border-radius: 0.5rem;
+        background: var(--background-color);
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
     }
-
-    .hrv-summary-value {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: var(--primary-color);
+    
+    .goal-item:hover {
+        background: #f0f0f0;
     }
-
-    .hrv-summary-label {
+    
+    .goal-item.completed {
+        background: rgba(16, 185, 129, 0.1);
+        border-left: 4px solid var(--success-color);
+    }
+    
+    .goal-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    
+    .goal-checkbox {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid var(--text-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .goal-item.completed .goal-checkbox {
+        background: var(--success-color);
+        border-color: var(--success-color);
+        color: white;
+    }
+    
+    .goal-title {
+        flex: 1;
+        font-weight: 600;
+        color: var(--text-color);
+    }
+    
+    .goal-item.completed .goal-title {
+        color: var(--success-color);
+    }
+    
+    .goal-time {
         font-size: 0.85rem;
         color: var(--text-light);
-        margin-top: 0.25rem;
     }
-
-    .hrv-chart-container {
-        background: rgba(255,255,255,0.7);
+    
+    .goal-progress-bar {
+        height: 8px;
+        background: #e0e0e0;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    
+    .goal-progress-fill {
+        height: 100%;
+        background: var(--primary-color);
+        transition: width 0.8s ease;
+        border-radius: 4px;
+        opacity: 0.8;
+    }
+    
+    .goal-item.completed .goal-progress-fill {
+        background: var(--success-color);
+        opacity: 1;
+    }
+    
+    .goal-action {
+        margin-top: 0.5rem;
+    }
+    
+    .goal-action-btn {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.5rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .goal-action-btn:hover {
+        background: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Quick Actions Grid */
+    
+    /* Weekly Progress Section */
+    .weekly-progress {
+        background: white;
+        border-radius: 1rem;
         padding: 1.5rem;
-        border-radius: var(--border-radius);
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .weekly-progress h3 {
+        margin: 0 0 1.5rem 0;
+        color: var(--text-color);
+    }
+    
+    .progress-item {
         margin-bottom: 1.5rem;
     }
-
-    .hrv-empty-state {
-        text-align: center;
-        padding: 3rem 1rem;
+    
+    .progress-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: var(--text-color);
+    }
+    
+    .progress-value {
+        color: var(--text-light);
+        font-size: 0.9rem;
+    }
+    
+    .progress-bar-container {
+        height: 12px;
+        background: #e0e0e0;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    
+    .progress-bar-fill {
+        height: 100%;
+        transition: width 0.5s ease;
+        border-radius: 6px;
+    }
+    
+    .progress-bar-fill.resonant {
+        background: var(--primary-color);
+        opacity: 0.7;
+    }
+    
+    .progress-bar-fill.hrv {
+        background: #10b981;
+        opacity: 0.7;
+    }
+    
+    .hrv-trend {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        color: var(--text-color);
+    }
+    
+    .trend-arrow {
+        font-size: 1.2rem;
+    }
+    
+    .trend-up {
+        color: var(--success-color);
+    }
+    
+    .trend-down {
+        color: var(--danger-color);
+    }
+    
+    .trend-neutral {
         color: var(--text-light);
     }
-
-    .hrv-empty-state i {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        opacity: 0.3;
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .welcome-header h2 {
+            font-size: 1.5rem;
+        }
     }
 
+
+    /* ============================================
+       SUB-TABS FOR UNIFIED SECTIONS
+       ============================================ */
+    
+    .sub-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+        border-bottom: 2px solid var(--background-color);
+        padding-bottom: 0;
+    }
+    
+    .sub-tab-btn {
+        background: none;
+        border: none;
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        color: var(--text-light);
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+        font-weight: 500;
+    }
+    
+    .sub-tab-btn:hover {
+        background: white;
+        border-color: #d1d5db;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .sub-tab-btn.active {
+        color: white;
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        font-weight: 700;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .sub-tab-content {
+        display: none;
+    }
+    
+    .sub-tab-content.active {
+        display: block;
+    }
+    
     @media (max-width: 768px) {
-        .hrv-input-group {
-            grid-template-columns: 1fr;
+        .sub-tabs {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
-        .hrv-list-item {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.75rem;
+        .sub-tab-btn {
+            padding: 0.75rem 1rem;
+            white-space: nowrap;
         }
     }
 
+    /* ============================================
+       SUB-TABS STYLING (Phase 2 - Step 1)
+       ============================================ */
+    
+    /* Sub-tabs container */
+    .sub-tabs {
+        display: flex;
+        gap: 0.25rem;
+        margin-bottom: 2rem;
+        margin-left: 0;
+        margin-right: 0;
+        margin-top: 0;
+        padding: 0 0 1rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        background: transparent;
+    }
+    
+    /* Individual sub-tab button */
+    .sub-tab-btn {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #6b7280;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+        flex-shrink: 0;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .sub-tab-btn:hover {
+        background: white;
+        border-color: #d1d5db;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .sub-tab-btn.active {
+        color: white;
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        font-weight: 700;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Sub-tab content container */
+    .sub-tab-content {
+        display: none;
+    }
+    
+    .sub-tab-content.active {
+        display: block;
+    }
+    
+    /* Mobile optimization */
+    @media (max-width: 768px) {
+        .sub-tab-btn {
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+        }
+    }
 </style>
 </head>
 
@@ -1301,73 +1559,171 @@
         </header>
 
         <nav class="nav-tabs">
-            <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-home"></i> Dashboard</button>
-            <button class="tab-btn" data-tab="buteyko"><i class="fas fa-lungs"></i> Buteyko</button>
-            <button class="tab-btn" data-tab="resonant"><i class="fas fa-heartbeat"></i> Resonant</button>
-            <button class="tab-btn" data-tab="dagboek"><i class="fas fa-chart-bar"></i> Dagboek</button>
-            <button class="tab-btn" data-tab="hrv"><i class="fas fa-heart-pulse"></i> HRV</button>
-            <button class="tab-btn" data-tab="crisis"><i class="fas fa-exclamation-triangle"></i> Crisis Hulp</button>
+            <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-home"></i> Vandaag</button>
+            <button class="tab-btn" data-tab="oefeningen"><i class="fas fa-wind"></i> Oefeningen</button>
+            <button class="tab-btn" data-tab="tracking"><i class="fas fa-chart-line"></i> Tracking</button>
+            <button class="tab-btn" data-tab="crisis"><i class="fas fa-life-ring"></i> Crisis</button>
             <button class="tab-btn" data-tab="settings"><i class="fas fa-cog"></i> Instellingen</button>
         </nav>
 
         <main class="container">
             <!-- Dashboard Tab -->
             <div id="dashboard" class="tab-content active">
-                <div class="card">
-                    <h2 id="dashboard-greeting">Welkom bij Ademruimte</h2>
-                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
-                        Op basis van wetenschappelijk onderzoek biedt Ademruimte effectieve hulp bij chronische hyperventilatie en bijkomende klachten. 
-                        <strong>70-80% van de patiënten</strong> behaalt significante verbetering met de juiste technieken.
-                    </p>
+                <!-- Welcome Header -->
+                <div class="welcome-header">
+                    <h2 id="welcome-greeting">Welkom</h2>
+                    <div class="streak-badge">
+                        <i class="fas fa-flame streak-icon"></i>
+                        <span id="streak-count">0</span> dagen streak
+                    </div>
+                </div>
+
+                <!-- Daily Goals -->
+                <div class="daily-goals">
+                    <h3>
+                        Vandaag's Doelen
+                        <span class="goals-progress-text" id="goals-progress-text">0/4 voltooid</span>
+                    </h3>
                     
-                    <div class="stats-grid" id="dashboard-stats">
-                        <div class="stat-card">
-                            <div class="stat-number" id="total-sessions">0</div>
-                            <div class="stat-label">Totaal sessies</div>
+                    <!-- Goal: HRV Measurement -->
+                    <div class="goal-item" id="goal-hrv">
+                        <div class="goal-header">
+                            <div class="goal-checkbox">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="goal-title">HRV Meting</div>
+                            <div class="goal-time" id="goal-hrv-time"></div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="streak-days">0</div>
-                            <div class="stat-label">Dagen streak</div>
+                        <div class="goal-progress-bar">
+                            <div class="goal-progress-fill" id="goal-hrv-progress" style="width: 0%"></div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="avg-improvement">-</div>
-                            <div class="stat-label">Gem. verbetering</div>
+                        <div class="goal-action" id="goal-hrv-action">
+                            <button class="goal-action-btn" onclick="showTab('tracking'); setTimeout(() => showSubTab('hrv-sub-content'), 100)">
+                                <i class="fas fa-plus"></i> Log Nu
+                            </button>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-number" id="last-cp">-</div>
-                            <div class="stat-label">Laatste CP</div>
+                    </div>
+
+                    <!-- Goal: Resonant Breathing -->
+                    <div class="goal-item" id="goal-resonant">
+                        <div class="goal-header">
+                            <div class="goal-checkbox">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="goal-title">Resonant Breathing</div>
+                            <div class="goal-time" id="goal-resonant-time">0/2</div>
+                        </div>
+                        <div class="goal-progress-bar">
+                            <div class="goal-progress-fill" id="goal-resonant-progress" style="width: 0%"></div>
+                        </div>
+                        <div class="goal-action" id="goal-resonant-action">
+                            <button class="goal-action-btn" onclick="showTab('oefeningen'); setTimeout(() => showSubTab('resonant-sub-content'), 100)">
+                                <i class="fas fa-play"></i> Start Nu
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Goal: Journal Entry -->
+                    <div class="goal-item" id="goal-journal">
+                        <div class="goal-header">
+                            <div class="goal-checkbox">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="goal-title">Dagboek Entry</div>
+                            <div class="goal-time" id="goal-journal-time"></div>
+                        </div>
+                        <div class="goal-progress-bar">
+                            <div class="goal-progress-fill" id="goal-journal-progress" style="width: 0%"></div>
+                        </div>
+                        <div class="goal-action" id="goal-journal-action">
+                            <button class="goal-action-btn" onclick="showTab('tracking'); setTimeout(() => showSubTab('dagboek-sub-content'), 100)">
+                                <i class="fas fa-edit"></i> Schrijf Entry
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Goal: Buteyko (Optional) -->
+                    <div class="goal-item" id="goal-buteyko">
+                        <div class="goal-header">
+                            <div class="goal-checkbox">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="goal-title">Buteyko Oefening <small style="color: #999;">(optioneel)</small></div>
+                            <div class="goal-time" id="goal-buteyko-time"></div>
+                        </div>
+                        <div class="goal-progress-bar">
+                            <div class="goal-progress-fill" id="goal-buteyko-progress" style="width: 0%"></div>
+                        </div>
+                        <div class="goal-action" id="goal-buteyko-action">
+                            <button class="goal-action-btn" onclick="showTab('oefeningen'); setTimeout(() => showSubTab('buteyko-sub-content'), 100)">
+                                <i class="fas fa-wind"></i> Start Oefening
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <div class="card">
-                    <h3><i class="fas fa-bullseye"></i> Jouw Persoonlijke Inzichten</h3>
-                    <div id="insights-content">
+                <!-- Weekly Progress -->
+                <div class="weekly-progress">
+                    <h3>Deze Week</h3>
+                    
+                    <!-- Resonant Breathing Progress -->
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>Resonant Breathing</span>
+                            <span class="progress-value" id="weekly-resonant-text">0/14 (0%)</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill resonant" id="weekly-resonant-bar" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- HRV Trend -->
+                    <div class="progress-item">
+                        <div class="progress-label">
+                            <span>HRV Trend</span>
+                            <span class="progress-value" id="weekly-hrv-text">Geen data</span>
+                        </div>
+                        <div class="hrv-trend" id="weekly-hrv-trend">
+                            <span id="hrv-trend-icon"></span>
+                            <span id="hrv-trend-text">Nog geen metingen deze week</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personal Insights -->
+                <div class="card" style="margin-top: 2rem;">
+                    <h3><i class="fas fa-lightbulb"></i> Persoonlijke Inzichten</h3>
+                    <div id="insights-content" style="margin-top: 1rem;">
                         <p style="color: var(--text-light);">Start met je eerste oefening om persoonlijke inzichten te ontvangen!</p>
                     </div>
                 </div>
 
-                <div class="card" id="active-medications-card" style="display: none;">
-                    <h3><i class="fas fa-pills"></i> Actieve Medicaties</h3>
-                    <div id="active-medications-content">
-                        <p style="color: var(--text-light);">Geen actieve medicaties geregistreerd.</p>
-                    </div>
-                    <small style="color: var(--text-light); display: block; margin-top: 1rem;">
-                        💡 Track je medicatie via dagboek entries om langetermijn patronen te analyseren
-                    </small>
-                </div>
-
-                <div class="card">
-                    <h3><i class="fas fa-lightbulb"></i> Jouw Persoonlijke Tip</h3>
-                    <div id="tip-content">
-                        <p>Start met je eerste oefening om persoonlijke tips te ontvangen!</p>
+                <!-- Personalized Tip -->
+                <div class="card" style="margin-top: 1.5rem; background: linear-gradient(135deg, rgba(107, 155, 209, 0.1) 0%, rgba(74, 123, 167, 0.1) 100%); border-left: 4px solid var(--primary-color);">
+                    <h3><i class="fas fa-star"></i> Tip van de Dag</h3>
+                    <div id="tip-content" style="margin-top: 1rem;">
+                        <p>Regelmatige oefening is belangrijker dan perfectie. Begin met korte sessies!</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Buteyko Tab -->
-            <div id="buteyko" class="tab-content">
-                <div class="card">
+            <!-- Oefeningen Tab (Phase 2 - NEW) -->
+            <div id="oefeningen" class="tab-content">
+                <h2>Ademhalingsoefeningen</h2>
+                
+                <!-- Sub-tabs -->
+                <div class="sub-tabs">
+                    <button class="sub-tab-btn active" onclick="showSubTab('buteyko-sub-content')">
+                        <i class="fas fa-wind"></i> Buteyko
+                    </button>
+                    <button class="sub-tab-btn" onclick="showSubTab('resonant-sub-content')">
+                        <i class="fas fa-heartbeat"></i> Resonant Breathing
+                    </button>
+                </div>
+                
+                <!-- Buteyko Sub-content -->
+                <div id="buteyko-sub-content" class="sub-tab-content active">
+<div class="card">
                     <h2><i class="fas fa-wind"></i> Buteyko Ademhaling</h2>
                     <p style="color: var(--text-light); margin-bottom: 0.5rem;">
                         De Buteyko methode helpt je CO2-tolerantie te verbeteren en hyperventilatie te reduceren.
@@ -1418,7 +1774,7 @@
                                 <input type="range" class="range-slider" id="hold-duration-slider" min="2" max="10" value="3" oninput="updateHoldDuration()">
                             </div>
                             <small style="color: var(--text-light); display: block; margin-top: 0.5rem;" id="hold-tip">
-                                💡 Tip: Begin met 3 seconden en verhoog geleidelijk naarmate je CO2-tolerantie verbetert.
+                                <i class="fas fa-lightbulb"></i> Tip: Begin met 3 seconden en verhoog geleidelijk naarmate je CO2-tolerantie verbetert.
                             </small>
                         </div>
 
@@ -1448,10 +1804,11 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Resonant Breathing Tab -->
-            <div id="resonant" class="tab-content">
-                <div class="card">
+                <!-- End Buteyko Sub-content -->
+                
+                <!-- Resonant Sub-content -->
+                <div id="resonant-sub-content" class="sub-tab-content">
+<div class="card">
                     <h2><i class="fas fa-heartbeat"></i> Resonant Breathing</h2>
                     <p style="color: var(--text-light); margin-bottom: 1.5rem;">
                         Resonant breathing (coherent breathing) activeert je parasympathische zenuwstelsel en verbetert HRV. 
@@ -1489,7 +1846,7 @@
                                 <span>6.5 bpm</span>
                             </div>
                             <small style="color: var(--text-light); display: block; margin-top: 0.5rem;">
-                                💡 5.5 ademhalingen/min is het "sweet spot" voor de meeste mensen. Begin hier en pas aan indien nodig.
+                                <i class="fas fa-lightbulb"></i> 5.5 ademhalingen/min is het "sweet spot" voor de meeste mensen. Begin hier en pas aan indien nodig.
                             </small>
                         </div>
 
@@ -1547,7 +1904,217 @@
                             <li>Na afloop kun je je ervaring bijhouden in het dagboek</li>
                         </ol>
                         <p style="margin-top: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
-                            <strong>💡 Tip:</strong> Resonant breathing werkt <em>cumulatief</em>. De effecten bouwen op over weken. 
+                            <strong><i class="fas fa-lightbulb"></i> Tip:</strong> Resonant breathing werkt <em>cumulatief</em>. De effecten bouwen op over weken. 
+                            Consistentie is belangrijker dan perfectie!
+                        </p>
+                    </div>
+
+                    <!-- Weekly Progress -->
+                    <div class="card">
+                        <h3><i class="fas fa-chart-line"></i> Deze Week</h3>
+                        <div id="resonant-weekly-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                            <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                                <div style="font-size: 2rem; font-weight: 700; color: #10b981;"><span id="resonant-sessions-count">0</span></div>
+                                <div style="color: var(--text-light); font-size: 0.9rem;">Sessies voltooid</div>
+                            </div>
+                            <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                                <div style="font-size: 2rem; font-weight: 700; color: #3b82f6;"><span id="resonant-adherence">0</span>%</div>
+                                <div style="color: var(--text-light); font-size: 0.9rem;">Therapietrouw (doel: 14)</div>
+                            </div>
+                            <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                                <div style="font-size: 2rem; font-weight: 700; color: #f59e0b;"><span id="resonant-total-minutes">0</span></div>
+                                <div style="color: var(--text-light); font-size: 0.9rem;">Totale minuten</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                </div>
+            </div>
+
+            <!-- Buteyko Tab -->
+            <div id="buteyko" class="tab-content" style="display: none;">
+                <div class="card">
+                    <h2><i class="fas fa-wind"></i> Buteyko Ademhaling</h2>
+                    <p style="color: var(--text-light); margin-bottom: 0.5rem;">
+                        De Buteyko methode helpt je CO2-tolerantie te verbeteren en hyperventilatie te reduceren.
+                    </p>
+                    <div id="haptic-indicator" style="display: none; background: rgba(16, 185, 129, 0.1); padding: 0.5rem 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem;">
+                        <i class="fas fa-mobile-alt" style="color: #10b981;"></i> <span style="color: #047857;">Haptische feedback actief</span>
+                    </div>
+
+                    <!-- Control Pause Measurement -->
+                    <div class="card" style="background: rgba(6, 182, 212, 0.1); border: 2px solid rgba(6, 182, 212, 0.2);">
+                        <h3>⏱️ Control Pause (CP) Meting</h3>
+                        <p style="margin-bottom: 1rem;">Meet je CO2-tolerantie. Normale waarden: 20-40 seconden.</p>
+                        
+                        <div class="cp-display" id="cp-timer">00</div>
+                        
+                        <div class="cp-controls">
+                            <button class="btn btn-primary" id="start-cp" onclick="startCPMeasurement()">Start CP Meting</button>
+                            <button class="btn btn-danger" id="stop-cp" onclick="stopCPMeasurement()" disabled>Stop</button>
+                            <button class="btn btn-warning" id="reset-cp" onclick="resetCPMeasurement()">Reset</button>
+                        </div>
+                        
+                        <div id="cp-instructions" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
+                            <strong>Instructies:</strong>
+                            <ol style="margin-top: 0.5rem;">
+                                <li>Adem normaal in en uit</li>
+                                <li>Na een normale uitademing, houd je adem in</li>
+                                <li>Klik "Start CP Meting" en stop zodra je de eerste drang voelt om te ademen</li>
+                                <li>Dit is je Control Pause score</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <!-- Breathing Exercise -->
+                    <div class="card">
+                        <h3><i class="fas fa-lungs"></i> Ademhalingsoefening</h3>
+                        
+                        <div class="form-group">
+                            <label for="breathing-pattern"><i class="fas fa-lungs"></i> Selecteer Buteyko patroon:</label>
+                            <select class="form-control" id="breathing-pattern" onchange="updateBreathingPattern()">
+                                <option value="gentle" selected>Zachte oefening (10 sec vrij ademhalen + adempauze)</option>
+                                <option value="extended">Verlengde adempauze (in/uit → pauze → herhaal)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="hold-duration-group" style="display: block;">
+                            <label style="margin-bottom: 0.5rem; display: block;">⏱️ Adempauze duur: <strong><span id="hold-duration-display">3</span> seconden</strong></label>
+                            <div class="range-container">
+                                <input type="range" class="range-slider" id="hold-duration-slider" min="2" max="10" value="3" oninput="updateHoldDuration()">
+                            </div>
+                            <small style="color: var(--text-light); display: block; margin-top: 0.5rem;" id="hold-tip">
+                                <i class="fas fa-lightbulb"></i> Tip: Begin met 3 seconden en verhoog geleidelijk naarmate je CO2-tolerantie verbetert.
+                            </small>
+                        </div>
+
+                        <div class="form-group" id="haptic-toggle-container" style="display: none;">
+                            <label style="margin-bottom: 0.5rem; display: block;"><i class="fas fa-mobile-alt"></i> Haptische feedback (trillingen):</label>
+                            <button class="btn btn-secondary" id="haptic-toggle" onclick="toggleHaptics()" style="width: 100%;">
+                                <span id="haptic-status">Uitgeschakeld</span>
+                                <small style="display: block; font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.9;">
+                                    Alleen Android • Voel vibraties bij fase overgangen
+                                </small>
+                            </button>
+                        </div>
+
+                        <div class="breathing-circle" id="breathing-circle">
+                            Bereid je voor
+                        </div>
+
+                        <div class="button-group">
+                            <button class="btn btn-primary" id="start-breathing" onclick="startBreathing()">Start Oefening</button>
+                            <button class="btn btn-danger" id="stop-breathing" onclick="stopBreathing()" disabled>Stop</button>
+                        </div>
+
+                        <div id="breathing-info" style="text-align: center; margin-top: 1rem;">
+                            <p><strong>Cyclus:</strong> <span id="cycle-count">0</span> <span id="cycle-target">van 20</span></p>
+                            <p><strong>Fase:</strong> <span id="current-phase">Rust</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resonant Breathing Tab -->
+            <div id="resonant" class="tab-content" style="display: none;">
+                <div class="card">
+                    <h2><i class="fas fa-heartbeat"></i> Resonant Breathing</h2>
+                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                        Resonant breathing (coherent breathing) activeert je parasympathische zenuwstelsel en verbetert HRV. 
+                        <strong>Aanbevolen:</strong> 2× per dag, 20 minuten.
+                    </p>
+
+                    <!-- Session Setup -->
+                    <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 2px solid rgba(16, 185, 129, 0.2);">
+                        <h3><i class="fas fa-cog"></i> Sessie Instellingen</h3>
+                        
+                        <div class="form-group">
+                            <label><i class="fas fa-clock"></i> Sessie duur:</label>
+                            <div class="button-group" style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-secondary" onclick="setResonantDuration(10)">10 min</button>
+                                <button class="btn btn-secondary" onclick="setResonantDuration(15)">15 min</button>
+                                <button class="btn btn-primary" onclick="setResonantDuration(20)">20 min ⭐</button>
+                            </div>
+                            <p id="resonant-duration-display" style="margin-top: 0.5rem; color: var(--text-dark); font-weight: 600;">
+                                Geselecteerd: 20 minuten
+                            </p>
+                        </div>
+
+                        <div class="form-group">
+                            <label style="margin-bottom: 0.5rem; display: block;">
+                                <i class="fas fa-lungs"></i> Ademhalingsritme: <strong><span id="resonant-bpm-display">5.5</span> ademhalingen/min</strong>
+                            </label>
+                            <div class="range-container">
+                                <input type="range" class="range-slider" id="resonant-bpm-slider" 
+                                       min="4.5" max="6.5" step="0.5" value="5.5" 
+                                       oninput="updateResonantBPM()">
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-light); margin-top: 0.25rem;">
+                                <span>4.5 bpm</span>
+                                <span>5.5 bpm (aanbevolen)</span>
+                                <span>6.5 bpm</span>
+                            </div>
+                            <small style="color: var(--text-light); display: block; margin-top: 0.5rem;">
+                                <i class="fas fa-lightbulb"></i> 5.5 ademhalingen/min is het "sweet spot" voor de meeste mensen. Begin hier en pas aan indien nodig.
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-volume-up"></i> Audio begeleiding:</label>
+                            <select class="form-control" id="resonant-audio" onchange="updateResonantAudio()">
+                                <option value="silence" selected>Stil</option>
+                                <option value="tones">Zachte tonen</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Breathing Exercise -->
+                    <div class="card">
+                        <h3><i class="fas fa-play-circle"></i> Sessie</h3>
+                        
+                        <div class="resonant-circle-container" style="position: relative; display: flex; justify-content: center; align-items: center; min-height: 350px;">
+                            <canvas id="resonant-circle" width="300" height="300" style="max-width: 100%;"></canvas>
+                            <div id="resonant-phase-text" style="position: absolute; font-size: 1.5rem; font-weight: 600; color: var(--text-dark);">
+                                Klaar om te starten
+                            </div>
+                        </div>
+
+                        <div class="button-group" style="margin-top: 1.5rem;">
+                            <button class="btn btn-primary" id="start-resonant" onclick="startResonantBreathing()">
+                                <i class="fas fa-play"></i> Start Sessie
+                            </button>
+                            <button class="btn btn-warning" id="pause-resonant" onclick="pauseResonantBreathing()" disabled>
+                                <i class="fas fa-pause"></i> Pauze
+                            </button>
+                            <button class="btn btn-danger" id="stop-resonant" onclick="stopResonantBreathing()" disabled>
+                                <i class="fas fa-stop"></i> Stop
+                            </button>
+                        </div>
+
+                        <div id="resonant-info" style="text-align: center; margin-top: 1.5rem; background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 0.5rem;">
+                            <p style="margin-bottom: 0.5rem;">
+                                <strong>Tijd:</strong> <span id="resonant-time-display">20:00</span>
+                            </p>
+                            <p style="margin-bottom: 0;">
+                                <strong>Voortgang:</strong> <span id="resonant-progress">0%</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Instructions -->
+                    <div class="card" style="background: rgba(59, 130, 246, 0.1); border: 2px solid rgba(59, 130, 246, 0.2);">
+                        <h3><i class="fas fa-info-circle"></i> Instructies</h3>
+                        <ol style="margin-left: 1.5rem; line-height: 1.8;">
+                            <li>Kies je sessieduur (20 min aanbevolen)</li>
+                            <li>Pas indien gewenst het ademritme aan (5.5 bpm is ideaal)</li>
+                            <li>Klik "Start Sessie"</li>
+                            <li>Volg de cirkel: groter = inademen, kleiner = uitademen</li>
+                            <li>Houd het ritme comfortabel - geen air hunger!</li>
+                            <li>Na afloop kun je je ervaring bijhouden in het dagboek</li>
+                        </ol>
+                        <p style="margin-top: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
+                            <strong><i class="fas fa-lightbulb"></i> Tip:</strong> Resonant breathing werkt <em>cumulatief</em>. De effecten bouwen op over weken. 
                             Consistentie is belangrijker dan perfectie!
                         </p>
                     </div>
@@ -1573,8 +2140,139 @@
                 </div>
             </div>
 
+            <!-- Tracking Tab (Phase 2 - NEW) -->
+            <div id="tracking" class="tab-content">
+                <h2>Progress Tracking</h2>
+                
+                <!-- Sub-tabs -->
+                <div class="sub-tabs">
+                    <button class="sub-tab-btn active" onclick="showSubTab('dagboek-sub-content')">
+                        <i class="fas fa-book"></i> Dagboek
+                    </button>
+                    <button class="sub-tab-btn" onclick="showSubTab('hrv-sub-content')">
+                        <i class="fas fa-chart-line"></i> HRV Log
+                    </button>
+                </div>
+                
+                <!-- Dagboek Sub-content -->
+                <div id="dagboek-sub-content" class="sub-tab-content active">
+<div class="card">
+                    <h2><i class="fas fa-chart-bar"></i> Dagboek & Statistieken</h2>
+                    
+                    <div class="button-group" style="margin-bottom: 2rem;">
+                        <button class="btn btn-primary" onclick="openJournalModal()"><i class="fas fa-pen"></i> Nieuwe Entry</button>
+                        <button class="btn btn-success" onclick="exportDagboek()"><i class="fas fa-download"></i> Exporteer</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="journal-filter">Filter dagboek entries:</label>
+                        <select class="form-control" id="journal-filter" onchange="filterJournalEntries()">
+                            <option value="last7" selected>Laatste 7 dagen</option>
+                            <option value="last30">Laatste 30 dagen</option>
+                            <option value="all">Alle entries</option>
+                        </select>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;"> Statistiek periode:</label>
+                        <div class="button-group">
+                            <button class="btn btn-primary" id="chart-10days" onclick="updateChartFilter('10days')">Laatste 10 dagen</button>
+                            <button class="btn btn-primary" id="chart-30days" onclick="updateChartFilter('30days')">Laatste 30 dagen</button>
+                            <button class="btn btn-primary" id="chart-all" onclick="updateChartFilter('all')">Alle data</button>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="progress-chart"></canvas>
+                    </div>
+
+                    <div id="journal-entries">
+                        <div style="text-align: center; color: var(--text-light); margin: 2rem 0;">
+                            <p>Nog geen dagboek entries. Begin met je eerste oefening!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                
+                <!-- HRV Sub-content -->
+                <div id="hrv-sub-content" class="sub-tab-content">
+<div class="card">
+                    <h2><i class="fas fa-chart-line"></i> Heart Rate Variability (HRV) Tracking</h2>
+                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                        Track je HRV (RMSSD) en hartslag om autonoom functioneren te monitoren.
+                    </p>
+
+                    <!-- HRV Input Form -->
+                    <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 2px solid rgba(16, 185, 129, 0.2);">
+                        <h3>Nieuwe HRV Meting</h3>
+                        <form id="hrv-form" onsubmit="saveHRVMeasurement(event)">
+                            <div class="form-group">
+                                <label for="hrv-rmssd"><i class="fas fa-heartbeat"></i> RMSSD (ms)</label>
+                                <input type="number" id="hrv-rmssd" min="0" max="200" step="0.1" required 
+                                       placeholder="bijv. 28.5" style="width: 100%;">
+                                <small style="color: var(--text-light);">
+                                    <i class="fas fa-info-circle"></i> RMSSD meet parasympathische activiteit. Normaal: 20-50ms
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="hrv-heartrate"><i class="fas fa-heart"></i> Hartslag (bpm)</label>
+                                <input type="number" id="hrv-heartrate" min="30" max="200" required 
+                                       placeholder="bijv. 65" style="width: 100%;">
+                                <small style="color: var(--text-light);">
+                                    <i class="fas fa-info-circle"></i> Rust hartslag, bij voorkeur 's ochtends
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="hrv-notes"><i class="fas fa-sticky-note"></i> Notities (optioneel)</label>
+                                <textarea id="hrv-notes" rows="2" placeholder="bijv. Na 10 min meditatie" 
+                                          style="width: 100%;"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-save"></i> Opslaan
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- HRV Statistics -->
+                    <div class="card">
+                        <h3>Statistieken</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                            <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);" id="hrv-avg-rmssd">--</div>
+                                <div style="color: var(--text-light); font-size: 0.9rem;">Gemiddelde RMSSD</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--success-color);" id="hrv-avg-hr">--</div>
+                                <div style="color: var(--text-light); font-size: 0.9rem;">Gemiddelde Hartslag</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--secondary-color);" id="hrv-count">0</div>
+                                <div style="color: var(--text-light); font-size: 0.9rem;">Totaal Metingen</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HRV Chart -->
+                    <div class="card">
+                        <h3>HRV Trend</h3>
+                        <canvas id="hrv-chart" style="max-height: 300px;"></canvas>
+                    </div>
+
+                    <!-- HRV History -->
+                    <div class="card">
+                        <h3>Recente Metingen</h3>
+                        <div id="hrv-list" style="max-height: 400px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+            </div>
+                </div>
+            </div>
+
             <!-- Dagboek Tab -->
-            <div id="dagboek" class="tab-content">
+            <div id="dagboek" class="tab-content" style="display: none;">
                 <div class="card">
                     <h2><i class="fas fa-chart-bar"></i> Dagboek & Statistieken</h2>
                     
@@ -1593,7 +2291,7 @@
                     </div>
 
                     <div style="margin-bottom: 1rem;">
-                        <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">📈 Statistiek periode:</label>
+                        <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;"> Statistiek periode:</label>
                         <div class="button-group">
                             <button class="btn btn-primary" id="chart-10days" onclick="updateChartFilter('10days')">Laatste 10 dagen</button>
                             <button class="btn btn-primary" id="chart-30days" onclick="updateChartFilter('30days')">Laatste 30 dagen</button>
@@ -1613,6 +2311,81 @@
                 </div>
             </div>
 
+            <!-- HRV Tab -->
+            <div id="hrv" class="tab-content" style="display: none;">
+                <div class="card">
+                    <h2><i class="fas fa-chart-line"></i> Heart Rate Variability (HRV) Tracking</h2>
+                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                        Track je HRV (RMSSD) en hartslag om autonoom functioneren te monitoren.
+                    </p>
+
+                    <!-- HRV Input Form -->
+                    <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 2px solid rgba(16, 185, 129, 0.2);">
+                        <h3>Nieuwe HRV Meting</h3>
+                        <form id="hrv-form" onsubmit="saveHRVMeasurement(event)">
+                            <div class="form-group">
+                                <label for="hrv-rmssd"><i class="fas fa-heartbeat"></i> RMSSD (ms)</label>
+                                <input type="number" id="hrv-rmssd" min="0" max="200" step="0.1" required 
+                                       placeholder="bijv. 28.5" style="width: 100%;">
+                                <small style="color: var(--text-light);">
+                                    <i class="fas fa-info-circle"></i> RMSSD meet parasympathische activiteit. Normaal: 20-50ms
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="hrv-heartrate"><i class="fas fa-heart"></i> Hartslag (bpm)</label>
+                                <input type="number" id="hrv-heartrate" min="30" max="200" required 
+                                       placeholder="bijv. 65" style="width: 100%;">
+                                <small style="color: var(--text-light);">
+                                    <i class="fas fa-info-circle"></i> Rust hartslag, bij voorkeur 's ochtends
+                                </small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="hrv-notes"><i class="fas fa-sticky-note"></i> Notities (optioneel)</label>
+                                <textarea id="hrv-notes" rows="2" placeholder="bijv. Na 10 min meditatie" 
+                                          style="width: 100%;"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-save"></i> Opslaan
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- HRV Statistics -->
+                    <div class="card">
+                        <h3>Statistieken</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                            <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);" id="hrv-avg-rmssd">--</div>
+                                <div style="color: var(--text-light); font-size: 0.9rem;">Gemiddelde RMSSD</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--success-color);" id="hrv-avg-hr">--</div>
+                                <div style="color: var(--text-light); font-size: 0.9rem;">Gemiddelde Hartslag</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--secondary-color);" id="hrv-count">0</div>
+                                <div style="color: var(--text-light); font-size: 0.9rem;">Totaal Metingen</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- HRV Chart -->
+                    <div class="card">
+                        <h3>HRV Trend</h3>
+                        <canvas id="hrv-chart" style="max-height: 300px;"></canvas>
+                    </div>
+
+                    <!-- HRV History -->
+                    <div class="card">
+                        <h3>Recente Metingen</h3>
+                        <div id="hrv-list" style="max-height: 400px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Crisis Help Tab -->
             <div id="crisis" class="tab-content">
                 <div class="card crisis-card">
@@ -1620,7 +2393,7 @@
                     <p style="margin-bottom: 2rem;">Directe hulp bij acute hyperventilatie of paniekaanvallen.</p>
 
                     <div class="button-group">
-                        <button class="btn btn-warning" onclick="startCrisisProtocol()">🆘 Start Noodprotocol</button>
+                        <button class="btn btn-warning" onclick="startCrisisProtocol()"> Start Noodprotocol</button>
                         <button class="btn btn-primary" onclick="startCrisisBreathing()"><i class="fas fa-lungs"></i> Simpele Nood Ademhaling</button>
                     </div>
 
@@ -1690,85 +2463,7 @@
                 </div>
             </div>
 
-    
-        <!-- HRV Tab Content -->
-        <div id="hrv" class="tab-content">
-            <div class="card">
-                <h2><i class="fas fa-heart-pulse"></i> HRV Meting Loggen</h2>
-                <p style="color: var(--text-light); margin-bottom: 1.5rem;">
-                    Voer handmatig je HRV meting in na gebruik van HRV4Training of andere HRV app.
-                </p>
-                
-                <div class="hrv-log-form">
-                    <div class="hrv-input-group">
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label for="hrv-rmssd">RMSSD (ms) *</label>
-                            <input 
-                                type="number" 
-                                id="hrv-rmssd" 
-                                class="form-control" 
-                                placeholder="23"
-                                min="1"
-                                max="200"
-                                step="0.1"
-                            >
-                        </div>
-                        
-                        <div class="form-group" style="margin-bottom: 0;">
-                            <label for="hrv-heart-rate">Hartslag (bpm) *</label>
-                            <input 
-                                type="number" 
-                                id="hrv-heart-rate" 
-                                class="form-control" 
-                                placeholder="65"
-                                min="30"
-                                max="200"
-                            >
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="hrv-note">Notitie (optioneel)</label>
-                        <input 
-                            type="text" 
-                            id="hrv-note" 
-                            class="form-control" 
-                            placeholder="Bijv: Direct na wakker worden, voor/na oefening"
-                        >
-                    </div>
-                    
-                    <button onclick="saveHRVMeasurement()" class="btn btn-primary" style="width: 100%;">
-                        <i class="fas fa-save"></i> Opslaan
-                    </button>
-                </div>
-            </div>
-            
-            <!-- HRV Summary Stats -->
-            <div class="card">
-                <h2><i class="fas fa-chart-line"></i> Overzicht</h2>
-                <div id="hrv-summary" class="hrv-summary">
-                    <!-- Filled by JavaScript -->
-                </div>
-            </div>
-            
-            <!-- HRV Trend Chart -->
-            <div class="card">
-                <h2><i class="fas fa-chart-area"></i> Trend (laatste 10 metingen)</h2>
-                <div class="hrv-chart-container">
-                    <canvas id="hrv-chart"></canvas>
-                </div>
-            </div>
-            
-            <!-- HRV History List -->
-            <div class="card">
-                <h2><i class="fas fa-history"></i> Metingen (laatste 10)</h2>
-                <div id="hrv-list-container">
-                    <!-- Filled by JavaScript -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Settings Tab -->
+            <!-- Settings Tab -->
             <div id="settings" class="tab-content">
                 <div class="card">
                     <h2><i class="fas fa-cog"></i> Instellingen</h2>
@@ -1997,7 +2692,7 @@
                     <label for="entry-med-name">Medicijn naam:</label>
                     <input type="text" class="form-control" id="entry-med-name" placeholder="Bijv. Lorazepam, Sertraline, Propranolol">
                     <small style="color: var(--text-light); display: block; margin-top: 0.25rem;">
-                        💡 Voor tracking: anxiolytica, antidepressiva, bètablokkers, of andere medicatie gerelateerd aan je klachten
+                        <i class="fas fa-lightbulb"></i> Voor tracking: anxiolytica, antidepressiva, bètablokkers, of andere medicatie gerelateerd aan je klachten
                     </small>
                 </div>
 
@@ -2658,8 +3353,6 @@ Wil je je voorkeuren wijzigen?`;
                     try {
                         await loadUserStats(); // NEW: Load user stats first
                         await loadJournalEntries();
-                        await loadHRVData(); // Load HRV measurements
-                        await loadResonantSessions(); // Load resonant breathing sessions
                         updateDashboard();
                         generateInsights();
                     } catch (error) {
@@ -2786,7 +3479,9 @@ Wil je je voorkeuren wijzigen?`;
     // TAB NAVIGATION
     // ============================================
 
-    function showTab(tabName) {
+    window.showTab = function(tabName) {
+        console.log('showTab called with:', tabName);
+        
         // Hide all tabs
         document.querySelectorAll('.tab-content').forEach(tab => {
             tab.classList.remove('active');
@@ -2798,17 +3493,17 @@ Wil je je voorkeuren wijzigen?`;
         });
         
         // Show selected tab
-        const tabElement = document.getElementById(tabName);
-        if (!tabElement) {
-            console.error(`Tab "${tabName}" not found`);
-            return;
+        const selectedTab = document.getElementById(tabName);
+        if (selectedTab) {
+            selectedTab.classList.add('active');
+        } else {
+            console.error('Tab not found:', tabName);
         }
-        tabElement.classList.add('active');
         
         // Add active to selected button
-        const tabButton = document.querySelector(`[data-tab="${tabName}"]`);
-        if (tabButton) {
-            tabButton.classList.add('active');
+        const selectedBtn = document.querySelector(`[data-tab="${tabName}"]`);
+        if (selectedBtn) {
+            selectedBtn.classList.add('active');
         }
         
         currentTab = tabName;
@@ -2818,27 +3513,756 @@ Wil je je voorkeuren wijzigen?`;
             createProgressChart();
             // Set default active state for chart filter (10 days)
             setTimeout(() => {
-                document.getElementById('chart-10days').classList.add('active');
+                const btn = document.getElementById('chart-10days');
+                if (btn) btn.classList.add('active');
             }, 100);
         }
         
-        // Load HRV data when HRV tab is opened
+        // Update dashboard when opened
+        if (tabName === 'dashboard') {
+            if (auth && auth.currentUser && typeof updateDashboard === 'function') {
+                setTimeout(() => updateDashboard(), 100);
+            }
+        }
+        
+        // Load HRV data when HRV tab opened
         if (tabName === 'hrv') {
-            if (auth && auth.currentUser) {
+            if (auth && auth.currentUser && typeof loadHRVData === 'function') {
                 loadHRVData();
             }
         }
         
-        // Load resonant sessions when resonant tab is opened
-        if (tabName === 'resonant') {
-            if (auth && auth.currentUser) {
-                loadResonantSessions();
-            }
+        // Auto-open first sub-tab when opening unified tabs
+        if (tabName === 'oefeningen') {
+            console.log('Opening Oefeningen - auto-switching to Buteyko');
+            setTimeout(() => {
+                if (typeof showSubTab === 'function') {
+                    showSubTab('buteyko-sub-content');
+                }
+            }, 50);
+        }
+        
+        if (tabName === 'tracking') {
+            console.log('Opening Tracking - auto-switching to Dagboek');
+            setTimeout(() => {
+                if (typeof showSubTab === 'function') {
+                    showSubTab('dagboek-sub-content');
+                }
+            }, 50);
         }
         
         // Update settings UI when settings tab is opened
         if (tabName === 'settings') {
             updateSettingsUI();
+        }
+    };
+    
+    // ============================================
+    // SUB-TABS FUNCTIONALITY (Phase 2 - Step 2)
+    // ============================================
+    
+    window.showSubTab = function(subTabId) {
+        console.log('showSubTab called with:', subTabId);
+        
+        // Get the sub-tab content element
+        const subTabContent = document.getElementById(subTabId);
+        if (!subTabContent) {
+            console.error('Sub-tab element not found:', subTabId);
+            return;
+        }
+        
+        // Find parent tab container - try multiple approaches
+        let parentTab = subTabContent.closest('.tab-content');
+        
+        // If closest doesn't work, try parentElement traversal
+        if (!parentTab) {
+            let el = subTabContent.parentElement;
+            while (el && !el.classList.contains('tab-content')) {
+                el = el.parentElement;
+            }
+            parentTab = el;
+        }
+        
+        if (!parentTab) {
+            console.error('Parent tab not found for sub-tab:', subTabId);
+            console.log('SubTab element:', subTabContent);
+            console.log('SubTab parent:', subTabContent.parentElement);
+            return;
+        }
+        
+        console.log('Switching sub-tabs in parent:', parentTab.id);
+        
+        // Hide all sub-tab contents in this parent
+        const allSubContents = parentTab.querySelectorAll('.sub-tab-content');
+        console.log('Found sub-tab contents:', allSubContents.length);
+        allSubContents.forEach(content => {
+            content.classList.remove('active');
+            content.style.display = 'none';
+        });
+        
+        // Remove active from all sub-tab buttons in this parent
+        const allSubButtons = parentTab.querySelectorAll('.sub-tab-btn');
+        console.log('Found sub-tab buttons:', allSubButtons.length);
+        allSubButtons.forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Show selected sub-tab
+        subTabContent.classList.add('active');
+        subTabContent.style.display = 'block';
+        
+        // Find and activate corresponding button
+        allSubButtons.forEach(btn => {
+            const onclick = btn.getAttribute('onclick');
+            if (onclick && onclick.includes(subTabId)) {
+                btn.classList.add('active');
+                console.log('Activated button for:', subTabId);
+            }
+        });
+        
+        console.log('Sub-tab switched to:', subTabId);
+        
+        // Load data if needed for specific sub-tabs
+        if (subTabId === 'hrv-sub-content') {
+            if (auth && auth.currentUser && typeof loadHRVData === 'function') {
+                loadHRVData();
+            }
+        }
+    };
+
+    // ============================================
+    // DASHBOARD FUNCTIONS
+    // ============================================
+    
+    // Update dashboard on load and after actions
+    async function updateDashboard() {
+        console.log('=== Updating Dashboard ===');
+        try {
+            updateWelcomeMessage();
+            await updateDailyGoals();
+            await updateWeeklyProgress();
+            console.log('=== Dashboard Updated ===');
+        } catch (error) {
+            console.error('Error updating dashboard:', error);
+        }
+    }
+    
+    // Update welcome message with name and streak
+    function updateWelcomeMessage() {
+        try {
+            const greetingEl = document.getElementById('welcome-greeting');
+            const streakEl = document.getElementById('streak-count');
+            
+            if (!greetingEl || !streakEl) {
+                console.log('Welcome elements not found');
+                return;
+            }
+            
+            // Get current hour for time-based greeting
+            const hour = new Date().getHours();
+            let greeting = 'Hey';
+            if (hour < 12) greeting = 'Goedemorgen';
+            else if (hour < 18) greeting = 'Goedemiddag';
+            else greeting = 'Goedenavond';
+            
+            // Add name if available
+            if (typeof currentUser !== 'undefined' && currentUser) {
+                const userName = currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : '');
+                if (userName) {
+                    const firstName = userName.includes(' ') ? userName.split(' ')[0] : userName;
+                    greeting += ' ' + firstName;
+                }
+            }
+            
+            greetingEl.textContent = greeting;
+            console.log('Welcome greeting set to:', greeting);
+            
+            // Calculate and display streak
+            let streak = 0;
+            if (typeof userStats !== 'undefined' && userStats && userStats.currentStreak) {
+                streak = userStats.currentStreak;
+            }
+            streakEl.textContent = streak;
+            console.log('Streak set to:', streak);
+        } catch (error) {
+            console.error('Error in updateWelcomeMessage:', error);
+        }
+    }
+    
+    // Update daily goals status
+    async function updateDailyGoals() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        let completedCount = 0;
+        const totalGoals = 4;
+        
+        // Goal 1: HRV Measurement
+        const hrvDone = await checkHRVToday();
+        updateGoalUI('hrv', hrvDone, hrvDone ? getLastHRVTime() : null);
+        if (hrvDone) completedCount++;
+        
+        // Goal 2: Resonant Breathing (target: 2)
+        const resonantCount = await checkResonantToday();
+        const resonantDone = resonantCount >= 2;
+        updateGoalUI('resonant', resonantDone, `${resonantCount}/2`, resonantCount / 2);
+        if (resonantDone) completedCount++;
+        
+        // Goal 3: Journal Entry
+        const journalDone = await checkJournalToday();
+        updateGoalUI('journal', journalDone, journalDone ? getLastJournalTime() : null);
+        if (journalDone) completedCount++;
+        
+        // Goal 4: Buteyko (optional)
+        const buteykoDone = await checkButeykoToday();
+        updateGoalUI('buteyko', buteykoDone, buteykoDone ? getLastButeykoTime() : null);
+        if (buteykoDone) completedCount++;
+        
+        // Update overall progress
+        const progressText = document.getElementById('goals-progress-text');
+        if (progressText) {
+            progressText.textContent = `${completedCount}/${totalGoals} voltooid`;
+        }
+    }
+    
+    // Update individual goal UI
+    function updateGoalUI(goalId, completed, timeText = null, partialProgress = null) {
+        const goalEl = document.getElementById(`goal-${goalId}`);
+        const progressEl = document.getElementById(`goal-${goalId}-progress`);
+        const timeEl = document.getElementById(`goal-${goalId}-time`);
+        const actionEl = document.getElementById(`goal-${goalId}-action`);
+        
+        if (!goalEl) return;
+        
+        // Update completion status
+        if (completed) {
+            goalEl.classList.add('completed');
+            if (actionEl) actionEl.style.display = 'none';
+        } else {
+            goalEl.classList.remove('completed');
+            if (actionEl) actionEl.style.display = 'block';
+        }
+        
+        // Update progress bar
+        if (progressEl) {
+            const width = partialProgress !== null ? (partialProgress * 100) : (completed ? 100 : 0);
+            progressEl.style.width = width + '%';
+        }
+        
+        // Update time text
+        if (timeEl && timeText) {
+            timeEl.textContent = timeText;
+            timeEl.style.display = 'block';
+        } else if (timeEl) {
+            timeEl.style.display = 'none';
+        }
+    }
+    
+    // Check if HRV logged today
+    async function checkHRVToday() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (hMeasurements && hMeasurements.length > 0) {
+            return hMeasurements.some(m => {
+                const mDate = new Date(m.timestamp);
+                mDate.setHours(0, 0, 0, 0);
+                return mDate.getTime() === today.getTime();
+            });
+        }
+        return false;
+    }
+    
+    // Get last HRV measurement time
+    function getLastHRVTime() {
+        if (hMeasurements && hMeasurements.length > 0) {
+            const latest = hMeasurements[0];
+            if (latest && latest.timestamp) {
+                const date = new Date(latest.timestamp);
+                return date.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+            }
+        }
+        return '';
+    }
+    
+    // Check resonant breathing sessions today
+    async function checkResonantToday() {
+        try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // Check if resonantSessions exists and is an array
+            if (typeof resonantSessions === 'undefined') {
+                console.log('resonantSessions is undefined');
+                return 0;
+            }
+            
+            if (!Array.isArray(resonantSessions)) {
+                console.log('resonantSessions is not an array:', typeof resonantSessions);
+                return 0;
+            }
+            
+            if (resonantSessions.length === 0) {
+                return 0;
+            }
+            
+            const count = resonantSessions.filter(s => {
+                if (!s) return false;
+                const sDate = new Date(s.timestamp || s.date);
+                sDate.setHours(0, 0, 0, 0);
+                return sDate.getTime() === today.getTime() && s.completed;
+            }).length;
+            
+            console.log('checkResonantToday:', count);
+            return count;
+        } catch (error) {
+            console.error('Error in checkResonantToday:', error);
+            return 0;
+        }
+    }
+    
+    // Check if journal entry today
+    async function checkJournalToday() {
+        try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (typeof allJournalEntries === 'undefined') {
+                console.log('allJournalEntries is undefined');
+                return false;
+            }
+            
+            if (!Array.isArray(allJournalEntries)) {
+                console.log('allJournalEntries is not an array:', typeof allJournalEntries);
+                return false;
+            }
+            
+            if (allJournalEntries.length === 0) {
+                return false;
+            }
+            
+            const found = allJournalEntries.some(e => {
+                if (!e) return false;
+                const eDate = new Date(e.timestamp || e.date);
+                eDate.setHours(0, 0, 0, 0);
+                return eDate.getTime() === today.getTime();
+            });
+            
+            console.log('checkJournalToday:', found);
+            return found;
+        } catch (error) {
+            console.error('Error in checkJournalToday:', error);
+            return false;
+        }
+    }
+    
+    // Get last journal time
+    function getLastJournalTime() {
+        if (allJournalEntries && allJournalEntries.length > 0) {
+            const latest = allJournalEntries[0];
+            if (latest && (latest.timestamp || latest.date)) {
+                const date = new Date(latest.timestamp || latest.date);
+                return date.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+            }
+        }
+        return '';
+    }
+    
+    // Check if Buteyko done today
+    async function checkButeykoToday() {
+        try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (typeof userStats === 'undefined') {
+                console.log('userStats is undefined');
+                return false;
+            }
+            
+            if (!userStats.cpMeasurements || !Array.isArray(userStats.cpMeasurements)) {
+                console.log('userStats.cpMeasurements not available');
+                return false;
+            }
+            
+            if (userStats.cpMeasurements.length === 0) {
+                return false;
+            }
+            
+            const found = userStats.cpMeasurements.some(m => {
+                if (!m) return false;
+                const mDate = new Date(m.timestamp || m.date);
+                mDate.setHours(0, 0, 0, 0);
+                return mDate.getTime() === today.getTime();
+            });
+            
+            console.log('checkButeykoToday:', found);
+            return found;
+        } catch (error) {
+            console.error('Error in checkButeykoToday:', error);
+            return false;
+        }
+    }
+    
+    // Get last Buteyko time
+    function getLastButeykoTime() {
+        if (userStats.cpMeasurements && userStats.cpMeasurements.length > 0) {
+            const latest = userStats.cpMeasurements[0];
+            if (latest && (latest.timestamp || latest.date)) {
+                const date = new Date(latest.timestamp || latest.date);
+                return date.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+            }
+        }
+        return '';
+    }
+    
+    // Update weekly progress section
+    async function updateWeeklyProgress() {
+        updateWeeklyResonantProgress();
+        updateWeeklyHRVTrend();
+    }
+    
+    // Update weekly resonant breathing progress
+    function updateWeeklyResonantProgress() {
+        try {
+            if (typeof resonantSessions === 'undefined' || !resonantSessions) {
+                console.log('resonantSessions not available for weekly progress');
+                return;
+            }
+            
+            if (!Array.isArray(resonantSessions)) {
+                console.log('resonantSessions is not an array');
+                return;
+            }
+            
+            const now = new Date();
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - now.getDay());
+            weekStart.setHours(0, 0, 0, 0);
+            
+            const thisWeekSessions = resonantSessions.filter(s => {
+                if (!s) return false;
+                const sDate = new Date(s.timestamp || s.date);
+                return sDate >= weekStart && s.completed;
+            });
+            
+            const count = thisWeekSessions.length;
+            const target = 14;
+            const percentage = Math.min(100, Math.round((count / target) * 100));
+            
+            console.log('Weekly resonant progress:', count, '/', target, '=', percentage + '%');
+            
+            const textEl = document.getElementById('weekly-resonant-text');
+            const barEl = document.getElementById('weekly-resonant-bar');
+            
+            if (textEl) {
+                textEl.textContent = `${count}/${target} (${percentage}%)`;
+            }
+            
+            if (barEl) {
+                barEl.style.width = percentage + '%';
+            }
+        } catch (error) {
+            console.error('Error in updateWeeklyResonantProgress:', error);
+        }
+    }
+    
+    // Update weekly HRV trend
+    function updateWeeklyHRVTrend() {
+        if (!hMeasurements || hMeasurements.length < 2) return;
+        
+        const now = new Date();
+        const weekStart = new Date(now);
+        weekStart.setDate(now.getDate() - now.getDay());
+        weekStart.setHours(0, 0, 0, 0);
+        
+        const thisWeek = hMeasurements.filter(m => 
+            new Date(m.timestamp) >= weekStart
+        );
+        
+        if (thisWeek.length < 2) return;
+        
+        // Calculate average for first half vs second half
+        const mid = Math.floor(thisWeek.length / 2);
+        const firstHalf = thisWeek.slice(mid);
+        const secondHalf = thisWeek.slice(0, mid);
+        
+        const avgFirst = firstHalf.reduce((sum, m) => sum + m.rmssd, 0) / firstHalf.length;
+        const avgSecond = secondHalf.reduce((sum, m) => sum + m.rmssd, 0) / secondHalf.length;
+        
+        const change = avgSecond - avgFirst;
+        const changeText = Math.abs(change).toFixed(1);
+        
+        const textEl = document.getElementById('weekly-hrv-text');
+        const iconEl = document.getElementById('hrv-trend-icon');
+        const trendTextEl = document.getElementById('hrv-trend-text');
+        
+        if (textEl) {
+            textEl.textContent = `${avgFirst.toFixed(1)}ms → ${avgSecond.toFixed(1)}ms`;
+        }
+        
+        if (iconEl && trendTextEl) {
+            if (change > 2) {
+                iconEl.innerHTML = '<i class="fas fa-arrow-up trend-arrow trend-up"></i>';
+                trendTextEl.textContent = `+${changeText}ms - Verbetering!`;
+                trendTextEl.className = 'trend-up';
+            } else if (change < -2) {
+                iconEl.innerHTML = '<i class="fas fa-arrow-down trend-arrow trend-down"></i>';
+                trendTextEl.textContent = `-${changeText}ms`;
+                trendTextEl.className = 'trend-down';
+            } else {
+                iconEl.innerHTML = '<i class="fas fa-arrow-right trend-arrow trend-neutral"></i>';
+                trendTextEl.textContent = `${change >= 0 ? '+' : ''}${changeText}ms - Stabiel`;
+                trendTextEl.className = 'trend-neutral';
+            }
+        }
+    }
+
+    // ============================================
+    // HRV TRACKING FUNCTIONS
+    // ============================================
+    
+    // Global HRV data array
+    let hMeasurements = [];
+    let hrvChart = null;
+    
+    // Save HRV measurement to Firebase
+    async function saveHRVMeasurement(event) {
+        if (event) event.preventDefault();
+        
+        if (!auth || !auth.currentUser) {
+            showUserMessage('Je moet ingelogd zijn', 'error');
+            return;
+        }
+        
+        if (!db) {
+            showUserMessage('Database niet beschikbaar', 'error');
+            return;
+        }
+        
+        const rmssd = parseFloat(document.getElementById('hrv-rmssd').value);
+        const heartrate = parseInt(document.getElementById('hrv-heartrate').value);
+        const notes = document.getElementById('hrv-notes').value.trim();
+        
+        if (!rmssd || !heartrate) {
+            showUserMessage('Vul alle verplichte velden in', 'error');
+            return;
+        }
+        
+        try {
+            const measurement = {
+                userId: auth.currentUser.uid,
+                rmssd: rmssd,
+                heartrate: heartrate,
+                notes: notes || '',
+                timestamp: serverTimestamp()
+            };
+            
+            await addDoc(collection(db, 'hrv_measurements'), measurement);
+            
+            showUserMessage('HRV meting opgeslagen!', 'success');
+            
+            // Update dashboard
+            if (typeof updateDashboard === 'function') {
+                updateDashboard();
+            }
+            
+            // Clear form
+            document.getElementById('hrv-form').reset();
+            
+            // Reload data
+            await loadHRVData();
+            
+        } catch (error) {
+            console.error('Error saving HRV:', error);
+            showUserMessage('Fout bij opslaan: ' + error.message, 'error');
+        }
+    }
+    
+    // Load HRV data from Firebase
+    async function loadHRVData() {
+        if (!auth || !auth.currentUser) return;
+        if (!db) return;
+        
+        try {
+            const q = query(
+                collection(db, 'hrv_measurements'),
+                where('userId', '==', auth.currentUser.uid),
+                orderBy('timestamp', 'desc')
+            );
+            
+            const snapshot = await getDocs(q);
+            hMeasurements = [];
+            
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                hMeasurements.push({
+                    id: doc.id,
+                    rmssd: data.rmssd,
+                    heartrate: data.heartrate,
+                    notes: data.notes || '',
+                    timestamp: data.timestamp?.toDate ? data.timestamp.toDate() : new Date(data.timestamp)
+                });
+            });
+            
+            console.log('Loaded HRV measurements:', hMeasurements.length);
+            
+            // Update UI
+            updateHRVStats();
+            renderHRVChart();
+            displayHRVList();
+            
+        } catch (error) {
+            console.error('Error loading HRV data:', error);
+        }
+    }
+    
+    // Update HRV statistics
+    function updateHRVStats() {
+        const avgRmssdEl = document.getElementById('hrv-avg-rmssd');
+        const avgHrEl = document.getElementById('hrv-avg-hr');
+        const countEl = document.getElementById('hrv-count');
+        
+        if (!avgRmssdEl || !avgHrEl || !countEl) return;
+        
+        if (hMeasurements.length === 0) {
+            avgRmssdEl.textContent = '--';
+            avgHrEl.textContent = '--';
+            countEl.textContent = '0';
+            return;
+        }
+        
+        const avgRmssd = hMeasurements.reduce((sum, m) => sum + m.rmssd, 0) / hMeasurements.length;
+        const avgHr = hMeasurements.reduce((sum, m) => sum + m.heartrate, 0) / hMeasurements.length;
+        
+        avgRmssdEl.textContent = avgRmssd.toFixed(1) + ' ms';
+        avgHrEl.textContent = Math.round(avgHr) + ' bpm';
+        countEl.textContent = hMeasurements.length;
+    }
+    
+    // Render HRV chart
+    function renderHRVChart() {
+        const canvas = document.getElementById('hrv-chart');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        
+        // Destroy existing chart
+        if (hrvChart) {
+            hrvChart.destroy();
+        }
+        
+        if (hMeasurements.length === 0) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#999';
+            ctx.textAlign = 'center';
+            ctx.fillText('Nog geen HRV metingen', canvas.width / 2, canvas.height / 2);
+            return;
+        }
+        
+        // Prepare data (reverse for chronological order)
+        const chartData = [...hMeasurements].reverse();
+        const labels = chartData.map(m => {
+            const date = new Date(m.timestamp);
+            return date.toLocaleDateString('nl-NL', { month: 'short', day: 'numeric' });
+        });
+        
+        hrvChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'RMSSD (ms)',
+                    data: chartData.map(m => m.rmssd),
+                    borderColor: '#6b9bd1',
+                    backgroundColor: 'rgba(107, 155, 209, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: 'RMSSD (ms)'
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Display HRV list
+    function displayHRVList() {
+        const listEl = document.getElementById('hrv-list');
+        if (!listEl) return;
+        
+        if (hMeasurements.length === 0) {
+            listEl.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 2rem;">Nog geen HRV metingen. Begin met je eerste meting!</p>';
+            return;
+        }
+        
+        let html = '';
+        hMeasurements.forEach(m => {
+            const date = new Date(m.timestamp);
+            const dateStr = date.toLocaleDateString('nl-NL', { 
+                weekday: 'short', 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            html += `
+                <div class="measurement-item" style="padding: 1rem; background: var(--background-color); border-radius: 0.5rem; margin-bottom: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: var(--text-color); margin-bottom: 0.25rem;">
+                                ${dateStr}
+                            </div>
+                            <div style="display: flex; gap: 1rem; font-size: 0.9rem;">
+                                <span><i class="fas fa-heartbeat"></i> RMSSD: <strong>${m.rmssd.toFixed(1)}ms</strong></span>
+                                <span><i class="fas fa-heart"></i> HR: <strong>${m.heartrate} bpm</strong></span>
+                            </div>
+                            ${m.notes ? `<div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-light);"><i class="fas fa-sticky-note"></i> ${m.notes}</div>` : ''}
+                        </div>
+                        <button onclick="deleteHRVMeasurement('${m.id}')" 
+                                class="btn btn-danger" 
+                                style="padding: 0.25rem 0.75rem; font-size: 0.85rem;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        listEl.innerHTML = html;
+    }
+    
+    // Delete HRV measurement
+    async function deleteHRVMeasurement(measurementId) {
+        if (!auth || !auth.currentUser) return;
+        if (!db) return;
+        
+        if (!confirm('Deze HRV meting verwijderen?')) return;
+        
+        try {
+            await deleteDoc(doc(db, 'hrv_measurements', measurementId));
+            showUserMessage('HRV meting verwijderd', 'success');
+            await loadHRVData();
+        } catch (error) {
+            console.error('Error deleting HRV:', error);
+            showUserMessage('Fout bij verwijderen: ' + error.message, 'error');
         }
     }
 
@@ -3068,7 +4492,7 @@ Wil je je voorkeuren wijzigen?`;
         try {
             const { signOut } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-auth.js");
             await signOut(auth);
-            showUserMessage('👋 Je bent uitgelogd', 'info');
+            showUserMessage(' Je bent uitgelogd', 'info');
         } catch (error) {
             console.error('Logout error:', error);
             showUserMessage('❌ Uitloggen mislukt', 'error');
@@ -3239,9 +4663,9 @@ Wil je je voorkeuren wijzigen?`;
                 // Update tip based on pattern
                 if (holdTip) {
                     if (breathingPattern === 'extended') {
-                        holdTip.innerHTML = '💡 Tip: Dit patroon helpt je CO2-tolerantie maximaal te verbeteren. Start met 3-4 seconden.';
+                        holdTip.innerHTML = '<i class="fas fa-lightbulb"></i> Tip: Dit patroon helpt je CO2-tolerantie maximaal te verbeteren. Start met 3-4 seconden.';
                     } else {
-                        holdTip.innerHTML = '💡 Tip: Begin met 3 seconden en verhoog geleidelijk naarmate je CO2-tolerantie verbetert.';
+                        holdTip.innerHTML = '<i class="fas fa-lightbulb"></i> Tip: Begin met 3 seconden en verhoog geleidelijk naarmate je CO2-tolerantie verbetert.';
                     }
                 }
             } else {
@@ -3657,7 +5081,7 @@ Wil je je voorkeuren wijzigen?`;
         releaseWakeLock();
         
         const circle = document.getElementById('breathing-circle');
-        circle.textContent = "Goed gedaan! 🎉";
+        circle.textContent = "Goed gedaan! ";
         circle.className = "breathing-circle";
         circle.style.transform = 'scale(1)';
         
@@ -3698,7 +5122,7 @@ Wil je je voorkeuren wijzigen?`;
             setTimeout(() => {
                 try {
                     openJournalModal('Buteyko Ademhaling');
-                    showUserMessage('🎉 Oefening voltooid! Vul je ervaring in.', 'success');
+                    showUserMessage(' Oefening voltooid! Vul je ervaring in.', 'success');
                 } catch (error) {
                     console.error('Error opening journal modal:', error);
                     // Fallback: show message to manually open journal
@@ -3982,7 +5406,7 @@ Wil je je voorkeuren wijzigen?`;
         animateResonantBreath();
         
         const audioMsg = resonantAudioMode === 'tones' ? ' met zachte tonen' : '';
-        showUserMessage(`✨ Resonant breathing sessie gestart: ${resonantDuration} minuten op ${resonantBPM} bpm${audioMsg}`, 'success');
+        showUserMessage(` Resonant breathing sessie gestart: ${resonantDuration} minuten op ${resonantBPM} bpm${audioMsg}`, 'success');
         devLog('Resonant session started:', { duration: resonantDuration, bpm: resonantBPM, audio: resonantAudioMode });
     };
 
@@ -4058,7 +5482,7 @@ Wil je je voorkeuren wijzigen?`;
             type: 'resonant_breathing',
             timestamp: new Date(),
             duration: resonantDuration,
-            bpm: resonantBPM, // Changed from breathRate to bpm for consistency
+            breathRate: resonantBPM,
             completed: true,
             userId: currentUser?.uid,
             userEmail: currentUser?.email
@@ -4066,19 +5490,13 @@ Wil je je voorkeuren wijzigen?`;
         
         resonantSessions.push(session);
         
-        // Save to Firebase
-        saveResonantSessionToFirebase(session);
-        
-        // Save to localStorage as backup
-        localStorage.setItem('resonantSessions', JSON.stringify(resonantSessions));
-        
         // Update UI
         document.getElementById('start-resonant').disabled = false;
         document.getElementById('pause-resonant').disabled = true;
         document.getElementById('stop-resonant').disabled = true;
         document.getElementById('pause-resonant').innerHTML = '<i class="fas fa-pause"></i> Pauze';
         
-        drawResonantCircle(0.75, 'VOLTOOID! 🎉');
+        drawResonantCircle(0.75, 'VOLTOOID! ');
         
         // Reset state variables
         resonantPaused = false;
@@ -4095,7 +5513,7 @@ Wil je je voorkeuren wijzigen?`;
         
         // Success message with option to journal
         setTimeout(() => {
-            showUserMessage('🎉 Resonant breathing sessie voltooid! Vul je ervaring in het dagboek in.', 'success');
+            showUserMessage(' Resonant breathing sessie voltooid! Vul je ervaring in het dagboek in.', 'success');
             
             // Ask if user wants to journal
             if (confirm('Wil je deze sessie in je dagboek bijhouden?')) {
@@ -4104,92 +5522,6 @@ Wil je je voorkeuren wijzigen?`;
         }, 1000);
         
         devLog('Resonant session completed:', session);
-    }
-
-
-    // Save resonant session to Firebase
-    async function saveResonantSessionToFirebase(session) {
-        if (!auth || !auth.currentUser) {
-            console.warn('Not logged in, cannot save to Firebase');
-            return;
-        }
-        
-        if (!db) {
-            console.error('Firestore not initialized');
-            return;
-        }
-        
-        try {
-            const { collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js');
-            
-            await addDoc(collection(db, 'resonant_sessions'), {
-                duration: session.duration,
-                bpm: session.bpm,
-                completed: session.completed,
-                timestamp: serverTimestamp(), // Use server timestamp for consistency
-                userId: auth.currentUser.uid
-            });
-            
-            devLog('Resonant session saved to Firebase');
-        } catch (error) {
-            console.error('Error saving resonant session to Firebase:', error);
-        }
-    }
-    
-    // Load resonant sessions from Firebase
-    async function loadResonantSessions() {
-        if (!auth || !auth.currentUser) {
-            console.log('Auth not ready or user not logged in');
-            return;
-        }
-        
-        if (!db) {
-            console.error('Firestore not initialized');
-            return;
-        }
-        
-        try {
-            const { collection, query, where, orderBy, getDocs } = await import('https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js');
-            
-            const q = query(
-                collection(db, 'resonant_sessions'),
-                where('userId', '==', auth.currentUser.uid),
-                orderBy('timestamp', 'desc')
-            );
-            
-            const snapshot = await getDocs(q);
-            resonantSessions = [];
-            
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                resonantSessions.push({
-                    id: doc.id,
-                    ...data,
-                    // Convert Firebase Timestamp to JavaScript Date
-                    timestamp: data.timestamp?.toDate ? data.timestamp.toDate() : new Date(data.timestamp)
-                });
-            });
-            
-            // Also load from localStorage as backup
-            const localData = localStorage.getItem('resonantSessions');
-            if (localData && resonantSessions.length === 0) {
-                resonantSessions = JSON.parse(localData);
-            }
-            
-            // Update weekly stats
-            updateResonantWeeklyStats();
-            
-            devLog('Loaded resonant sessions:', resonantSessions.length);
-        } catch (error) {
-            console.error('Error loading resonant sessions:', error);
-            
-            // Fallback to localStorage
-            const localData = localStorage.getItem('resonantSessions');
-            if (localData) {
-                resonantSessions = JSON.parse(localData);
-                updateResonantWeeklyStats();
-            }
-        }
     }
 
     function updateResonantWeeklyStats() {
@@ -4437,12 +5769,12 @@ Wil je je voorkeuren wijzigen?`;
         triggerHaptic('complete');
         
         // Update UI to show completion
-        document.getElementById('protocol-step-title').textContent = "🎉 Protocol Voltooid";
+        document.getElementById('protocol-step-title').textContent = " Protocol Voltooid";
         document.getElementById('protocol-instructions').textContent = "Je hebt het noodprotocol succesvol doorlopen. Je bent weer in controle.";
         document.getElementById('protocol-encouragement').textContent = "Je bent sterk! Overweeg om deze ervaring in je dagboek te noteren.";
         
         const circle = document.getElementById('protocol-circle');
-        circle.textContent = "Voltooid! 🎉";
+        circle.textContent = "Voltooid! ";
         circle.className = "breathing-circle";
         circle.style.transform = 'scale(1)';
         
@@ -4546,7 +5878,7 @@ Wil je je voorkeuren wijzigen?`;
     // ============================================
 
     window.openJournalModal = function(technique = '') {
-        console.log('📝 Opening journal modal for technique:', technique);
+        console.log(' Opening journal modal for technique:', technique);
         
         document.getElementById('journal-modal').style.display = 'block';
         
@@ -5039,47 +6371,6 @@ Wil je je voorkeuren wijzigen?`;
     // DASHBOARD & STATISTICS
     // ============================================
 
-    function updateDashboard() {
-        if (!currentUser) return;
-        
-        // Update greeting
-        const greeting = document.getElementById('dashboard-greeting');
-        const hour = new Date().getHours();
-        let timeGreeting = 'Goedemorgen';
-        if (hour >= 12) timeGreeting = 'Goedemiddag';
-        if (hour >= 18) timeGreeting = 'Goedenavond';
-        
-        const displayName = currentUser.displayName || currentUser.email?.split('@')[0] || 'daar';
-        const firstName = displayName.includes(' ') ? displayName.split(' ')[0] : displayName;
-        
-        greeting.textContent = `${timeGreeting}, ${firstName}!`;
-        
-        // Calculate stats
-        const allCPData = [...userStats.cpMeasurements, ...allCPMeasurements]
-            .filter(cp => cp.score !== undefined)
-            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        
-        const avgImprovement = allJournalEntries.length > 0 ? 
-            allJournalEntries.reduce((sum, e) => sum + (e.intensiteitVoor - e.intensiteitNa), 0) / allJournalEntries.length : 0;
-        
-        const lastCP = allCPData.length > 0 ? allCPData[0].score : null;
-        
-        // IMPROVED: Calculate streak properly
-        const currentStreak = calculateCurrentStreak();
-        
-        // Update stats display
-        document.getElementById('total-sessions').textContent = userStats.totalSessions + allJournalEntries.length;
-        document.getElementById('streak-days').textContent = currentStreak;
-        document.getElementById('avg-improvement').textContent = avgImprovement > 0 ? 
-            `+${avgImprovement.toFixed(1)}` : avgImprovement.toFixed(1);
-        document.getElementById('last-cp').textContent = lastCP ? `${lastCP}s` : '-';
-        
-        // Update personalized tip
-        updatePersonalizedTip();
-        
-        // Update active medications display
-        updateActiveMedicationsDisplay();
-    }
 
     // Update active medications display on dashboard
     function updateActiveMedicationsDisplay() {
@@ -5173,6 +6464,12 @@ Wil je je voorkeuren wijzigen?`;
 
     function updatePersonalizedTip() {
         const tipContainer = document.getElementById('tip-content');
+        
+        // Element doesn't exist in new dashboard - skip silently
+        if (!tipContainer) {
+            console.log('tip-content element not found (expected in new dashboard)');
+            return;
+        }
         
         if (allJournalEntries.length === 0) {
             // Fallback to evidence-based tips when no data
@@ -5362,6 +6659,12 @@ Wil je je voorkeuren wijzigen?`;
     function generateInsights() {
         const insightsContainer = document.getElementById('insights-content');
         
+        // Element doesn't exist in new dashboard - skip silently
+        if (!insightsContainer) {
+            console.log('insights-content element not found (expected in new dashboard)');
+            return;
+        }
+        
         if (allJournalEntries.length === 0) {
             insightsContainer.innerHTML = '<p style="color: var(--text-light);">Start met je eerste oefening om persoonlijke inzichten te ontvangen!</p>';
             return;
@@ -5504,7 +6807,7 @@ Wil je je voorkeuren wijzigen?`;
             const lastAvg = lastThree.reduce((sum, cp) => sum + cp.score, 0) / lastThree.length;
             
             if (lastAvg > firstAvg + 2) {
-                insights.push(`💨 <strong>CO2 tolerantie verbetering</strong>: Je gemiddelde CP is gestegen van ${firstAvg.toFixed(1)}s naar ${lastAvg.toFixed(1)}s. Dit toont fysiologische aanpassing aan gezondere CO2 niveaus.`);
+                insights.push(` <strong>CO2 tolerantie verbetering</strong>: Je gemiddelde CP is gestegen van ${firstAvg.toFixed(1)}s naar ${lastAvg.toFixed(1)}s. Dit toont fysiologische aanpassing aan gezondere CO2 niveaus.`);
             }
         }
         
@@ -5583,7 +6886,7 @@ Wil je je voorkeuren wijzigen?`;
         }
         
         if (insights.length === 0) {
-            insights.push('📊 Blijf regelmatig oefenen en je ervaringen bijhouden. Betekenisvolle patronen worden zichtbaar na 2-4 weken consistent gebruik.');
+            insights.push(' Blijf regelmatig oefenen en je ervaringen bijhouden. Betekenisvolle patronen worden zichtbaar na 2-4 weken consistent gebruik.');
         }
         
         // Limit to 5 most relevant insights (increased from 4)
@@ -5980,334 +7283,6 @@ Wil je je voorkeuren wijzigen?`;
 
     console.log('🔧 Ademruimte bug fixes loaded successfully');
     console.log('📱 Ademruimte app loaded successfully');
-
-// ============================================
-// HRV MEASUREMENT FUNCTIONS
-// ============================================
-
-let hrvChart = null;
-
-// Save HRV Measurement
-window.saveHRVMeasurement = async function() {
-    const rmssd = parseFloat(document.getElementById('hrv-rmssd').value);
-    const heartRate = parseFloat(document.getElementById('hrv-heart-rate').value);
-    const note = document.getElementById('hrv-note').value.trim();
-    
-    // Validation
-    if (!rmssd || !heartRate) {
-        showUserMessage('RMSSD en Hartslag zijn verplicht', 'warning');
-        return;
-    }
-    
-    if (rmssd < 1 || rmssd > 200) {
-        showUserMessage('RMSSD moet tussen 1 en 200 ms zijn', 'warning');
-        return;
-    }
-    
-    if (heartRate < 30 || heartRate > 200) {
-        showUserMessage('Hartslag moet tussen 30 en 200 bpm zijn', 'warning');
-        return;
-    }
-    
-    if (!auth || !auth.currentUser) {
-        showUserMessage('Je moet ingelogd zijn', 'error');
-        return;
-    }
-    
-    if (!db) {
-        showUserMessage('Database niet beschikbaar', 'error');
-        return;
-    }
-    
-    try {
-        const { collection, addDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js');
-        
-        const measurement = {
-            rmssd: rmssd,
-            heartRate: heartRate,
-            note: note || '',
-            source: 'manual',
-            timestamp: serverTimestamp(),
-            userId: auth.currentUser.uid
-        };
-        
-        await addDoc(collection(db, 'hrv_measurements'), measurement);
-        
-        showUserMessage('HRV meting opgeslagen! 📊', 'success');
-        
-        // Clear form
-        document.getElementById('hrv-rmssd').value = '';
-        document.getElementById('hrv-heart-rate').value = '';
-        document.getElementById('hrv-note').value = '';
-        
-        // Refresh display
-        loadHRVData();
-        
-    } catch (error) {
-        console.error('Error saving HRV:', error);
-        showUserMessage('Fout bij opslaan: ' + error.message, 'error');
-    }
-}
-
-// Load HRV Data
-async function loadHRVData() {
-    if (!auth || !auth.currentUser) {
-        console.log('Auth not ready or user not logged in');
-        return;
-    }
-    
-    if (!db) {
-        console.error('Firestore not initialized');
-        return;
-    }
-    
-    try {
-        const { collection, query, where, orderBy, limit, getDocs } = await import('https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js');
-        
-        const q = query(
-            collection(db, 'hrv_measurements'),
-            where('userId', '==', auth.currentUser.uid),
-            orderBy('timestamp', 'desc'),
-            limit(10)
-        );
-        
-        const snapshot = await getDocs(q);
-        const measurements = [];
-        
-        snapshot.forEach(doc => {
-            measurements.push({
-                id: doc.id,
-                ...doc.data()
-            });
-        });
-        
-        // Update UI
-        renderHRVList(measurements);
-        renderHRVSummary(measurements);
-        renderHRVChart(measurements);
-        
-    } catch (error) {
-        console.error('Error loading HRV data:', error);
-        showUserMessage('Fout bij laden HRV data', 'error');
-    }
-}
-
-// Render HRV List
-function renderHRVList(measurements) {
-    const container = document.getElementById('hrv-list-container');
-    
-    if (measurements.length === 0) {
-        container.innerHTML = `
-            <div class="hrv-empty-state">
-                <i class="fas fa-heart-pulse"></i>
-                <p>Nog geen HRV metingen</p>
-                <p style="font-size: 0.9rem;">Log je eerste meting hierboven</p>
-            </div>
-        `;
-        return;
-    }
-    
-    let html = '<ul class="hrv-list">';
-    
-    measurements.forEach(m => {
-        const date = m.timestamp ? m.timestamp.toDate() : new Date();
-        const dateStr = date.toLocaleDateString('nl-NL', { 
-            weekday: 'short', 
-            day: 'numeric', 
-            month: 'short',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-        
-        html += `
-            <li class="hrv-list-item">
-                <div class="hrv-list-item-main">
-                    <div class="hrv-list-item-date">${dateStr}</div>
-                    <div class="hrv-list-item-values">
-                        <div class="hrv-value">
-                            <span class="hrv-value-number">${m.rmssd.toFixed(1)}</span>
-                            <span class="hrv-value-label">RMSSD (ms)</span>
-                        </div>
-                        <div class="hrv-value">
-                            <span class="hrv-value-number">${m.heartRate}</span>
-                            <span class="hrv-value-label">Hartslag</span>
-                        </div>
-                    </div>
-                    ${m.note ? `<div style="font-size: 0.85rem; color: var(--text-light); margin-top: 0.5rem;"><i class="fas fa-note-sticky"></i> ${m.note}</div>` : ''}
-                </div>
-                <button onclick="deleteHRVMeasurement('${m.id}')" class="hrv-delete-btn" title="Verwijder">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </li>
-        `;
-    });
-    
-    html += '</ul>';
-    container.innerHTML = html;
-}
-
-// Render HRV Summary
-function renderHRVSummary(measurements) {
-    const container = document.getElementById('hrv-summary');
-    
-    if (measurements.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: var(--text-light);">Nog geen data</p>';
-        return;
-    }
-    
-    // Calculate stats
-    const rmssdValues = measurements.map(m => m.rmssd);
-    const hrValues = measurements.map(m => m.heartRate);
-    
-    const avgRMSSD = (rmssdValues.reduce((a, b) => a + b, 0) / rmssdValues.length).toFixed(1);
-    const avgHR = Math.round(hrValues.reduce((a, b) => a + b, 0) / hrValues.length);
-    const latestRMSSD = measurements[0].rmssd.toFixed(1);
-    const latestHR = measurements[0].heartRate;
-    
-    container.innerHTML = `
-        <div class="hrv-summary-card">
-            <div class="hrv-summary-value">${latestRMSSD}</div>
-            <div class="hrv-summary-label">Laatste RMSSD</div>
-        </div>
-        <div class="hrv-summary-card">
-            <div class="hrv-summary-value">${avgRMSSD}</div>
-            <div class="hrv-summary-label">Gem. RMSSD</div>
-        </div>
-        <div class="hrv-summary-card">
-            <div class="hrv-summary-value">${latestHR}</div>
-            <div class="hrv-summary-label">Laatste HR</div>
-        </div>
-        <div class="hrv-summary-card">
-            <div class="hrv-summary-value">${avgHR}</div>
-            <div class="hrv-summary-label">Gem. HR</div>
-        </div>
-    `;
-}
-
-// Render HRV Chart
-function renderHRVChart(measurements) {
-    if (measurements.length === 0) {
-        const canvas = document.getElementById('hrv-chart');
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.font = '16px sans-serif';
-        ctx.fillStyle = '#9ca3af';
-        ctx.textAlign = 'center';
-        ctx.fillText('Nog geen data voor grafiek', canvas.width / 2, canvas.height / 2);
-        return;
-    }
-    
-    // Destroy existing chart
-    if (hrvChart) {
-        hrvChart.destroy();
-    }
-    
-    // Prepare data (reverse for chronological order)
-    const reversedData = [...measurements].reverse();
-    const labels = reversedData.map(m => {
-        const date = m.timestamp ? m.timestamp.toDate() : new Date();
-        return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
-    });
-    
-    const rmssdData = reversedData.map(m => m.rmssd);
-    
-    // Create chart
-    const ctx = document.getElementById('hrv-chart').getContext('2d');
-    hrvChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'RMSSD (ms)',
-                data: rmssdData,
-                borderColor: '#06b6d4',
-                backgroundColor: 'rgba(6, 182, 212, 0.1)',
-                borderWidth: 3,
-                fill: true,
-                tension: 0.4,
-                pointRadius: 5,
-                pointHoverRadius: 7,
-                pointBackgroundColor: '#06b6d4',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    display: false
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    padding: 12,
-                    titleFont: {
-                        size: 14
-                    },
-                    bodyFont: {
-                        size: 13
-                    },
-                    callbacks: {
-                        label: function(context) {
-                            return `RMSSD: ${context.parsed.y.toFixed(1)} ms`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: false,
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    },
-                    ticks: {
-                        callback: function(value) {
-                            return value + ' ms';
-                        }
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    }
-                }
-            }
-        }
-    });
-}
-
-// Delete HRV Measurement
-window.deleteHRVMeasurement = async function(measurementId) {
-    if (!confirm('Weet je zeker dat je deze meting wilt verwijderen?')) {
-        return;
-    }
-    
-    if (!auth || !auth.currentUser) {
-        showUserMessage('Je moet ingelogd zijn', 'error');
-        return;
-    }
-    
-    if (!db) {
-        showUserMessage('Database niet beschikbaar', 'error');
-        return;
-    }
-    
-    try {
-        const { doc, deleteDoc } = await import('https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js');
-        
-        await deleteDoc(doc(db, 'hrv_measurements', measurementId));
-        
-        showUserMessage('Meting verwijderd', 'success');
-        loadHRVData();
-        
-    } catch (error) {
-        console.error('Error deleting HRV measurement:', error);
-        showUserMessage('Fout bij verwijderen', 'error');
-    }
-}
-
-
 </script>
 
 <!-- Cookie Consent Banner -->

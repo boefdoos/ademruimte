@@ -2156,7 +2156,7 @@
                 
                 <!-- Dagboek Sub-content -->
                 <div id="dagboek-sub-content" class="sub-tab-content active">
-<div class="card">
+                    <div class="card">
                     <h2><i class="fas fa-chart-bar"></i> Dagboek & Statistieken</h2>
                     
                     <div class="button-group" style="margin-bottom: 2rem;">
@@ -2196,7 +2196,7 @@
                 
                 <!-- HRV Sub-content -->
                 <div id="hrv-sub-content" class="sub-tab-content">
-<div class="card">
+                    <div class="card">
                     <h2><i class="fas fa-chart-line"></i> Heart Rate Variability (HRV) Tracking</h2>
                     <p style="color: var(--text-light); margin-bottom: 1.5rem;">
                         Track je HRV (RMSSD) en hartslag om autonoom functioneren te monitoren.
@@ -2266,8 +2266,6 @@
                         <h3>Recente Metingen</h3>
                         <div id="hrv-list" style="max-height: 400px; overflow-y: auto;"></div>
                     </div>
-                </div>
-            </div>
                 </div>
             </div>
 
@@ -4063,6 +4061,9 @@ Wil je je voorkeuren wijzigen?`;
         }
         
         try {
+            // Import Firestore functions
+            const { addDoc, collection, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+            
             const measurement = {
                 userId: auth.currentUser.uid,
                 rmssd: rmssd,
@@ -4098,6 +4099,9 @@ Wil je je voorkeuren wijzigen?`;
         if (!db) return;
         
         try {
+            // Import Firestore functions
+            const { getDocs, collection, query, where, orderBy } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+            
             const q = query(
                 collection(db, 'hrv_measurements'),
                 where('userId', '==', auth.currentUser.uid),
@@ -4271,6 +4275,9 @@ Wil je je voorkeuren wijzigen?`;
         if (!confirm('Deze HRV meting verwijderen?')) return;
         
         try {
+            // Import Firestore functions
+            const { deleteDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+            
             await deleteDoc(doc(db, 'hrv_measurements', measurementId));
             showUserMessage('HRV meting verwijderd', 'success');
             await loadHRVData();

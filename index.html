@@ -2322,7 +2322,7 @@
                     <!-- HRV Input Form -->
                     <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 2px solid rgba(16, 185, 129, 0.2);">
                         <h3>Nieuwe HRV Meting</h3>
-                        <form id="hrv-form" onsubmit="saveHRVMeasurement(event)">
+                        <form id="old-hrv-form" onsubmit="saveHRVMeasurement(event)">
                             <div class="form-group">
                                 <label for="hrv-rmssd"><i class="fas fa-heartbeat"></i> RMSSD (ms)</label>
                                 <input type="number" id="hrv-rmssd" min="0" max="200" step="0.1" required 
@@ -2358,15 +2358,15 @@
                         <h3>Statistieken</h3>
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
                             <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
-                                <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);" id="hrv-avg-rmssd">--</div>
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);" id="old-hrv-avg-rmssd">--</div>
                                 <div style="color: var(--text-light); font-size: 0.9rem;">Gemiddelde RMSSD</div>
                             </div>
                             <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
-                                <div style="font-size: 2rem; font-weight: 700; color: var(--success-color);" id="hrv-avg-hr">--</div>
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--success-color);" id="old-hrv-avg-hr">--</div>
                                 <div style="color: var(--text-light); font-size: 0.9rem;">Gemiddelde Hartslag</div>
                             </div>
                             <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
-                                <div style="font-size: 2rem; font-weight: 700; color: var(--secondary-color);" id="hrv-count">0</div>
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--secondary-color);" id="old-hrv-count">0</div>
                                 <div style="color: var(--text-light); font-size: 0.9rem;">Totaal Metingen</div>
                             </div>
                         </div>
@@ -2375,13 +2375,13 @@
                     <!-- HRV Chart -->
                     <div class="card">
                         <h3>HRV Trend</h3>
-                        <canvas id="hrv-chart" style="max-height: 300px;"></canvas>
+                        <canvas id="old-hrv-chart" style="max-height: 300px;"></canvas>
                     </div>
 
                     <!-- HRV History -->
                     <div class="card">
                         <h3>Recente Metingen</h3>
-                        <div id="hrv-list" style="max-height: 400px; overflow-y: auto;"></div>
+                        <div id="old-hrv-list" style="max-height: 400px; overflow-y: auto;"></div>
                     </div>
                 </div>
             </div>
@@ -3353,6 +3353,7 @@ Wil je je voorkeuren wijzigen?`;
                     try {
                         await loadUserStats(); // NEW: Load user stats first
                         await loadJournalEntries();
+                        await loadHRVData(); // Load HRV measurements
                         updateDashboard();
                         generateInsights();
                     } catch (error) {
@@ -3397,6 +3398,10 @@ Wil je je voorkeuren wijzigen?`;
                         timestamp: cp.timestamp?.toDate?.() || cp.timestamp || new Date(cp.timestamp)
                     }))
                 };
+                
+                // Calculate current streak from sessionDates
+                userStats.currentStreak = calculateStreak();
+                console.log('Calculated streak:', userStats.currentStreak, 'from', userStats.sessionDates.size, 'session dates');
             }
         } catch (error) {
             console.error('Error loading user stats:', error);
@@ -3793,7 +3798,11 @@ Wil je je voorkeuren wijzigen?`;
             
             // Check if resonantSessions exists and is an array
             if (typeof resonantSessions === 'undefined') {
-                console.log('resonantSessions is undefined');
+                console.log('resonantSessions is undefined - checking userStats');
+                // Fallback: if sessionDates has today, assume at least 1 session
+                if (userStats && userStats.sessionDates && userStats.sessionDates.has(today.toDateString())) {
+                    return 1; // Conservative estimate
+                }
                 return 0;
             }
             
@@ -3803,6 +3812,11 @@ Wil je je voorkeuren wijzigen?`;
             }
             
             if (resonantSessions.length === 0) {
+                console.log('resonantSessions array is empty - checking userStats');
+                // Fallback: if sessionDates has today, assume at least 1 session
+                if (userStats && userStats.sessionDates && userStats.sessionDates.has(today.toDateString())) {
+                    return 1; // Conservative estimate
+                }
                 return 0;
             }
             
@@ -6460,6 +6474,55 @@ Wil je je voorkeuren wijzigen?`;
         const today = new Date().toDateString();
         userStats.sessionDates.add(today);
         userStats.lastSessionDate = new Date();
+        
+        // Recalculate streak
+        userStats.currentStreak = calculateStreak();
+        console.log('Streak updated to:', userStats.currentStreak);
+    }
+
+
+    // Calculate current streak from sessionDates
+    function calculateStreak() {
+        if (!userStats.sessionDates || userStats.sessionDates.size === 0) {
+            return 0;
+        }
+        
+        // Convert Set to array and sort descending
+        const dates = Array.from(userStats.sessionDates)
+            .map(d => new Date(d))
+            .sort((a, b) => b - a);
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        // Check if there's activity today or yesterday to start counting
+        const mostRecentDate = dates[0];
+        mostRecentDate.setHours(0, 0, 0, 0);
+        
+        const daysDiff = Math.floor((today - mostRecentDate) / (1000 * 60 * 60 * 24));
+        
+        // If last activity was more than 1 day ago, streak is broken
+        if (daysDiff > 1) {
+            return 0;
+        }
+        
+        // Count consecutive days
+        let streak = 1;
+        let expectedDate = new Date(mostRecentDate);
+        
+        for (let i = 1; i < dates.length; i++) {
+            expectedDate.setDate(expectedDate.getDate() - 1);
+            const checkDate = new Date(dates[i]);
+            checkDate.setHours(0, 0, 0, 0);
+            
+            if (checkDate.getTime() === expectedDate.getTime()) {
+                streak++;
+            } else {
+                break;
+            }
+        }
+        
+        return streak;
     }
 
     function updatePersonalizedTip() {

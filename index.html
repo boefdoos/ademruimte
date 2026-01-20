@@ -2032,11 +2032,11 @@
                         <div class="form-group">
                             <label><i class="fas fa-clock"></i> Sessie duur:</label>
                             <div class="button-group" style="display: flex; gap: 0.5rem;">
-                                <button id="duration-10" class="btn btn-secondary" onclick="setResonantDuration(10)">10 min</button>
-                                <button id="duration-15" class="btn btn-secondary" onclick="setResonantDuration(15)">15 min</button>
-                                <button id="duration-20" class="btn btn-primary" onclick="setResonantDuration(20)">20 min ⭐</button>
+                                <button id="old-duration-10" class="btn btn-secondary" onclick="setResonantDuration(10)">10 min</button>
+                                <button id="old-duration-15" class="btn btn-secondary" onclick="setResonantDuration(15)">15 min</button>
+                                <button id="old-duration-20" class="btn btn-primary" onclick="setResonantDuration(20)">20 min ⭐</button>
                             </div>
-                            <p id="resonant-duration-display" style="margin-top: 0.5rem; color: var(--text-dark); font-weight: 600;">
+                            <p id="old-resonant-duration-display" style="margin-top: 0.5rem; color: var(--text-dark); font-weight: 600;">
                                 Geselecteerd: 20 minuten
                             </p>
                         </div>
@@ -2789,7 +2789,7 @@
         }
         
         console.log('Resonant duration set to:', minutes, 'minutes');
-    }
+    };
     let resonantBPM = 5.5; // breaths per minute
     let resonantAudioMode = 'silence';
     let resonantInterval = null;
@@ -4117,8 +4117,8 @@ Wil je je voorkeuren wijzigen?`;
     // Global HRV chart variable
     let hrvChart = null;
     
-    // Save HRV measurement to Firebase
-    async function saveHRVMeasurement() {
+    // Save HRV measurement to Firebase (GLOBAL)
+    window.saveHRVMeasurement = async function() {
         console.log('🔵 saveHRVMeasurement called');
         
         if (!auth || !auth.currentUser) {
@@ -4369,7 +4369,8 @@ Wil je je voorkeuren wijzigen?`;
     }
     
     // Delete HRV measurement
-    async function deleteHRVMeasurement(measurementId) {
+    // Delete HRV measurement (GLOBAL)
+    window.deleteHRVMeasurement = async function(measurementId) {
         if (!auth || !auth.currentUser) return;
         if (!db) return;
         
@@ -5448,27 +5449,7 @@ Wil je je voorkeuren wijzigen?`;
     }
 
     // Session control functions
-    window.setResonantDuration = function(minutes) {
-        resonantDuration = minutes;
-        const display = document.getElementById('resonant-duration-display');
-        if (display) {
-            display.textContent = `Geselecteerd: ${minutes} minuten${minutes === 20 ? ' ⭐' : ''}`;
-        }
-        
-        // Update buttons visual feedback
-        document.querySelectorAll('#resonant button.btn-secondary, #resonant button.btn-primary').forEach(btn => {
-            const btnMinutes = parseInt(btn.textContent);
-            if (btnMinutes === minutes) {
-                btn.classList.remove('btn-secondary');
-                btn.classList.add('btn-primary');
-            } else {
-                btn.classList.remove('btn-primary');
-                btn.classList.add('btn-secondary');
-            }
-        });
-        
-        devLog('Resonant duration set:', minutes, 'minutes');
-    };
+    // Duplicate setResonantDuration removed - using first definition with ID-based selectors
 
     window.updateResonantBPM = function() {
         const slider = document.getElementById('resonant-bpm-slider');

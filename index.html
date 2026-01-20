@@ -1822,9 +1822,9 @@
                         <div class="form-group">
                             <label><i class="fas fa-clock"></i> Sessie duur:</label>
                             <div class="button-group" style="display: flex; gap: 0.5rem;">
-                                <button class="btn btn-secondary" onclick="setResonantDuration(10)">10 min</button>
-                                <button class="btn btn-secondary" onclick="setResonantDuration(15)">15 min</button>
-                                <button class="btn btn-primary" onclick="setResonantDuration(20)">20 min ⭐</button>
+                                <button id="duration-10" class="btn btn-secondary" onclick="setResonantDuration(10)">10 min</button>
+                                <button id="duration-15" class="btn btn-secondary" onclick="setResonantDuration(15)">15 min</button>
+                                <button id="duration-20" class="btn btn-primary" onclick="setResonantDuration(20)">20 min ⭐</button>
                             </div>
                             <p id="resonant-duration-display" style="margin-top: 0.5rem; color: var(--text-dark); font-weight: 600;">
                                 Geselecteerd: 20 minuten
@@ -2032,9 +2032,9 @@
                         <div class="form-group">
                             <label><i class="fas fa-clock"></i> Sessie duur:</label>
                             <div class="button-group" style="display: flex; gap: 0.5rem;">
-                                <button class="btn btn-secondary" onclick="setResonantDuration(10)">10 min</button>
-                                <button class="btn btn-secondary" onclick="setResonantDuration(15)">15 min</button>
-                                <button class="btn btn-primary" onclick="setResonantDuration(20)">20 min ⭐</button>
+                                <button id="duration-10" class="btn btn-secondary" onclick="setResonantDuration(10)">10 min</button>
+                                <button id="duration-15" class="btn btn-secondary" onclick="setResonantDuration(15)">15 min</button>
+                                <button id="duration-20" class="btn btn-primary" onclick="setResonantDuration(20)">20 min ⭐</button>
                             </div>
                             <p id="resonant-duration-display" style="margin-top: 0.5rem; color: var(--text-dark); font-weight: 600;">
                                 Geselecteerd: 20 minuten
@@ -2763,6 +2763,33 @@
 
     // Resonant Breathing variables
     let resonantDuration = 20; // minutes
+    
+    // Set resonant breathing duration
+    window.setResonantDuration = function(minutes) {
+        resonantDuration = minutes;
+        
+        // Update display
+        const displayEl = document.getElementById('resonant-duration-display');
+        if (displayEl) {
+            displayEl.textContent = `Geselecteerd: ${minutes} minuten`;
+        }
+        
+        // Update all duration buttons
+        const buttons = document.querySelectorAll('[id^="duration-"]');
+        buttons.forEach(btn => {
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-secondary');
+        });
+        
+        // Highlight selected button by ID
+        const selectedBtn = document.getElementById(`duration-${minutes}`);
+        if (selectedBtn) {
+            selectedBtn.classList.remove('btn-secondary');
+            selectedBtn.classList.add('btn-primary');
+        }
+        
+        console.log('Resonant duration set to:', minutes, 'minutes');
+    }
     let resonantBPM = 5.5; // breaths per minute
     let resonantAudioMode = 'silence';
     let resonantInterval = null;
@@ -4086,18 +4113,24 @@ Wil je je voorkeuren wijzigen?`;
     };
     
     console.log('💡 TIP: Run debugHRV() in console to diagnose HRV data issues');
+    
+    // Global HRV chart variable
     let hrvChart = null;
     
     // Save HRV measurement to Firebase
     async function saveHRVMeasurement(event) {
         if (event) event.preventDefault();
         
+        console.log('🔵 saveHRVMeasurement called');
+        
         if (!auth || !auth.currentUser) {
+            console.error('❌ Not logged in');
             showUserMessage('Je moet ingelogd zijn', 'error');
             return;
         }
         
         if (!db) {
+            console.error('❌ Database not available');
             showUserMessage('Database niet beschikbaar', 'error');
             return;
         }
@@ -4106,12 +4139,16 @@ Wil je je voorkeuren wijzigen?`;
         const heartrate = parseInt(document.getElementById('hrv-heartrate').value);
         const notes = document.getElementById('hrv-notes').value.trim();
         
+        console.log('📝 Form values:', { rmssd, heartrate, notes });
+        
         if (!rmssd || !heartrate) {
+            console.error('❌ Missing required fields');
             showUserMessage('Vul alle verplichte velden in', 'error');
             return;
         }
         
         try {
+            console.log('📦 Importing Firestore functions...');
             // Import Firestore functions
             const { addDoc, collection, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
             
@@ -4123,8 +4160,10 @@ Wil je je voorkeuren wijzigen?`;
                 timestamp: serverTimestamp()
             };
             
+            console.log('💾 Saving to Firestore...', measurement);
             await addDoc(collection(db, 'hrv_measurements'), measurement);
             
+            console.log('✅ HRV measurement saved successfully!');
             showUserMessage('HRV meting opgeslagen!', 'success');
             
             // Update dashboard

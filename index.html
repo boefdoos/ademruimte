@@ -2716,7 +2716,7 @@
             </div>
 
             <div class="button-group">
-                <button class="btn btn-primary" onclick="saveJournalEntry()"><i class="fas fa-save"></i> Opslaan</button>
+                <button id="save-journal-btn" class="btn btn-primary" onclick="saveJournalEntry()"><i class="fas fa-save"></i> Opslaan</button>
                 <button class="btn btn-orange" onclick="closeJournalModal()">Annuleren</button>
             </div>
         </div>
@@ -2757,6 +2757,7 @@
     let app, auth, db, currentUser = null;
     let currentTab = 'dashboard';
     let allJournalEntries = [];
+    let isSavingJournal = false; // Prevent multiple simultaneous saves
     let allCPMeasurements = [];
     let progressChart = null;
     let chartFilter = '10days'; // New default: last 10 days
@@ -6051,6 +6052,14 @@ Wil je je voorkeuren wijzigen?`;
     window.closeJournalModal = function() {
         document.getElementById('journal-modal').style.display = 'none';
         
+        // Reset saving state and button
+        isSavingJournal = false;
+        const saveBtn = document.getElementById('save-journal-btn');
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fas fa-save"></i> Opslaan';
+        }
+        
         // Reset form
         document.getElementById('entry-technique').selectedIndex = 0;
         document.getElementById('entry-trigger').value = '';
@@ -6090,7 +6099,27 @@ Wil je je voorkeuren wijzigen?`;
     };
 
     window.saveJournalEntry = async function() {
+        // Prevent multiple simultaneous saves
+        if (isSavingJournal) {
+            console.log('⚠️ Already saving, ignoring duplicate click');
+            return;
+        }
+        
+        // Get save button
+        const saveBtn = document.getElementById('save-journal-btn');
+        
         try {
+            // Set saving state
+            isSavingJournal = true;
+            
+            // Disable button and show loading state
+            if (saveBtn) {
+                saveBtn.disabled = true;
+                saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Opslaan...';
+            }
+            
+            console.log('💾 Starting journal save...');
+            
             // Collect form data
             const sensations = Array.from(document.querySelectorAll('.symptom-checkbox:checked'))
                                 .map(cb => cb.dataset.symptom);
@@ -6185,9 +6214,25 @@ Wil je je voorkeuren wijzigen?`;
                 ` Verbetering: ${entry.intensiteitVoor} → ${entry.intensiteitNa}` : '';
             showUserMessage(`✅ Entry opgeslagen!${improvementText}`, 'success');
             
+            console.log('✅ Journal entry saved successfully');
+            
         } catch (error) {
-            console.error('Save error:', error);
+            console.error('❌ Save error:', error);
             showUserMessage('❌ Opslaan mislukt: ' + error.message, 'error');
+            
+            // Don't close modal on error - let user retry
+            return;
+            
+        } finally {
+            // Always reset saving state and re-enable button
+            isSavingJournal = false;
+            
+            if (saveBtn) {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Opslaan';
+            }
+            
+            console.log('🔓 Journal save state reset');
         }
     };
 

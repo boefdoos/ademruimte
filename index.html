@@ -1563,7 +1563,6 @@
             <button class="tab-btn" data-tab="oefeningen"><i class="fas fa-wind"></i> Oefeningen</button>
             <button class="tab-btn" data-tab="tracking"><i class="fas fa-chart-line"></i> Tracking</button>
             <button class="tab-btn" data-tab="crisis"><i class="fas fa-life-ring"></i> Crisis</button>
-            <button class="tab-btn" data-tab="settings"><i class="fas fa-cog"></i> Instellingen</button>
         </nav>
 
         <main class="container">
@@ -2461,88 +2460,6 @@
                 </div>
             </div>
 
-            <!-- Settings Tab -->
-            <div id="settings" class="tab-content">
-                <div class="card">
-                    <h2><i class="fas fa-cog"></i> Instellingen</h2>
-                    
-                    <!-- Account Info -->
-                    <div class="card" style="background: rgba(6, 182, 212, 0.1); border: 2px solid rgba(6, 182, 212, 0.2);">
-                        <h3><i class="fas fa-user"></i> Account</h3>
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
-                                <span style="color: var(--text-light);">Email:</span>
-                                <span id="settings-email" style="font-weight: 600;">-</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
-                                <span style="color: var(--text-light);">Account aangemaakt:</span>
-                                <span id="settings-created" style="font-weight: 600;">-</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
-                                <span style="color: var(--text-light);">Totaal sessies:</span>
-                                <span id="settings-sessions" style="font-weight: 600;">-</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Privacy & Data -->
-                    <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 2px solid rgba(16, 185, 129, 0.2);">
-                        <h3><i class="fas fa-shield-alt"></i> Privacy & Gegevens</h3>
-                        <p style="color: var(--text-light); margin-bottom: 1rem;">
-                            Je hebt volledige controle over je gegevens volgens de AVG/GDPR.
-                        </p>
-                        
-                        <div style="display: flex; flex-direction: column; gap: 1rem;">
-                            <button class="btn btn-primary" onclick="window.open('privacy-policy.html', '_blank')" style="width: 100%;">
-                                <i class="fas fa-file-contract"></i> Privacybeleid
-                            </button>
-                            
-                            <button class="btn btn-success" onclick="exportUserData()" style="width: 100%;">
-                                <i class="fas fa-download"></i> Exporteer Mijn Gegevens
-                                <small style="display: block; font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.9;">
-                                    Download al je data in JSON formaat
-                                </small>
-                            </button>
-                            
-                            <button class="btn btn-secondary" onclick="manageCookieConsent()" style="width: 100%;">
-                                <i class="fas fa-cookie-bite"></i> Cookie Voorkeuren
-                                <small style="display: block; font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.9;">
-                                    Beheer je toestemming
-                                </small>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Danger Zone -->
-                    <div class="card" style="background: rgba(239, 68, 68, 0.1); border: 2px solid rgba(239, 68, 68, 0.2);">
-                        <h3><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
-                        <p style="color: var(--text-light); margin-bottom: 1rem;">
-                            <strong>Waarschuwing:</strong> Deze actie kan niet ongedaan worden gemaakt.
-                        </p>
-                        
-                        <button class="btn btn-danger" onclick="deleteUserAccount()" style="width: 100%;">
-                            <i class="fas fa-trash-alt"></i> Account Permanent Verwijderen
-                            <small style="display: block; font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.9;">
-                                Verwijdert al je gegevens permanent
-                            </small>
-                        </button>
-                    </div>
-
-                    <!-- App Info -->
-                    <div class="card">
-                        <h3><i class="fas fa-info-circle"></i> Over Ademruimte</h3>
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem; color: var(--text-light);">
-                            <p><strong>Versie:</strong> 1.0.0</p>
-                            <p><strong>Laatst bijgewerkt:</strong> 12 januari 2026</p>
-                            <p><strong>Contact:</strong> <span id="settings-email-display"></span></p>
-                            <p style="margin-top: 1rem;">
-                                Ademruimte helpt bij het bijhouden en verbeteren van chronische hyperventilatie 
-                                door middel van de wetenschappelijk onderbouwde Buteyko methode.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </main>
     </div>
 
@@ -3380,6 +3297,7 @@ Wil je je voorkeuren wijzigen?`;
                         await loadUserStats(); // NEW: Load user stats first
                         await loadJournalEntries();
                         await loadHRVData(); // Load HRV measurements
+                        await loadResonantSessions(); // Load resonant breathing sessions
                         updateDashboard();
                         generateInsights();
                     } catch (error) {
@@ -3510,7 +3428,38 @@ Wil je je voorkeuren wijzigen?`;
     // TAB NAVIGATION
     // ============================================
 
-    window.showTab = function(tabName) {
+    // TEST HELPER: Check Crisis tab visibility
+    window.testCrisisTab = function() {
+        console.log('=== CRISIS TAB TEST ===');
+        
+        const crisisTab = document.getElementById('crisis');
+        if (!crisisTab) {
+            console.error('❌ Crisis tab element NOT found');
+            return;
+        }
+        
+        console.log('✅ Crisis element exists');
+        console.log('Classes:', crisisTab.className);
+        console.log('Has active class:', crisisTab.classList.contains('active'));
+        console.log('Display:', window.getComputedStyle(crisisTab).display);
+        console.log('Visibility:', window.getComputedStyle(crisisTab).visibility);
+        console.log('Opacity:', window.getComputedStyle(crisisTab).opacity);
+        console.log('Height:', window.getComputedStyle(crisisTab).height);
+        console.log('Content length:', crisisTab.innerHTML.length);
+        
+        // Check if content exists
+        const cards = crisisTab.querySelectorAll('.card');
+        console.log('Number of cards:', cards.length);
+        
+        const buttons = crisisTab.querySelectorAll('button');
+        console.log('Number of buttons:', buttons.length);
+        
+        // Try to show it
+        console.log('\nAttempting to show Crisis tab...');
+        showTab('crisis');
+    };
+    
+        window.showTab = function(tabName) {
         console.log('showTab called with:', tabName);
         
         // Hide all tabs
@@ -3560,6 +3509,20 @@ Wil je je voorkeuren wijzigen?`;
         if (tabName === 'hrv') {
             if (auth && auth.currentUser && typeof loadHRVData === 'function') {
                 loadHRVData();
+            }
+        }
+        
+        // Debug for Crisis tab
+        if (tabName === 'crisis') {
+            console.log('🚨 Crisis tab activated');
+            const crisisTab = document.getElementById('crisis');
+            if (crisisTab) {
+                console.log('✅ Crisis tab element found');
+                console.log('   Has active class:', crisisTab.classList.contains('active'));
+                console.log('   Display style:', window.getComputedStyle(crisisTab).display);
+                console.log('   Content length:', crisisTab.innerHTML.length);
+            } else {
+                console.error('❌ Crisis tab element NOT found!');
             }
         }
         
@@ -3666,6 +3629,7 @@ Wil je je voorkeuren wijzigen?`;
     // ============================================
     
     // Update dashboard on load and after actions
+    
     async function updateDashboard() {
         console.log('=== Updating Dashboard ===');
         try {
@@ -4387,6 +4351,51 @@ Wil je je voorkeuren wijzigen?`;
         } catch (error) {
             console.error('Error deleting HRV:', error);
             showUserMessage('Fout bij verwijderen: ' + error.message, 'error');
+        }
+    }
+
+    // Load Resonant Breathing sessions from Firestore
+    async function loadResonantSessions() {
+        if (!auth || !auth.currentUser) return;
+        if (!db) return;
+        
+        try {
+            console.log('📥 Loading resonant sessions from Firestore...');
+            
+            // Import Firestore functions
+            const { getDocs, collection, query, where, orderBy } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+            
+            const q = query(
+                collection(db, 'resonant_sessions'),
+                where('userId', '==', auth.currentUser.uid),
+                orderBy('timestamp', 'desc')
+            );
+            
+            const snapshot = await getDocs(q);
+            resonantSessions = [];
+            
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                resonantSessions.push({
+                    id: doc.id,
+                    type: data.type || 'resonant_breathing',
+                    timestamp: data.timestamp?.toDate ? data.timestamp.toDate() : new Date(data.timestamp),
+                    duration: data.duration || 20,
+                    breathRate: data.breathRate || 5.5,
+                    completed: data.completed !== false,
+                    userId: data.userId,
+                    userEmail: data.userEmail
+                });
+            });
+            
+            console.log(`✅ Loaded ${resonantSessions.length} resonant sessions`);
+            
+            // Update weekly stats display
+            updateResonantWeeklyStats();
+            
+        } catch (error) {
+            console.error('Error loading resonant sessions:', error);
+            // Don't show error to user - sessions will fall back to sessionDates
         }
     }
 
@@ -5561,14 +5570,51 @@ Wil je je voorkeuren wijzigen?`;
         resonantStartTime = null;
         resonantLastPhase = null; // Reset phase tracking
         
-        // Show message
+        // Save session if >= 80% complete
         if (completionPercentage >= 80) {
+            // Create session object
+            const session = {
+                type: 'resonant_breathing',
+                timestamp: new Date(),
+                duration: resonantDuration,
+                breathRate: resonantBPM,
+                completed: true,
+                actualMinutes: completedMinutes,
+                completionPercentage: completionPercentage,
+                userId: currentUser?.uid,
+                userEmail: currentUser?.email
+            };
+            
+            // Add to local array
+            resonantSessions.push(session);
+            
+            // Update stats
+            userStats.totalSessions++;
+            updateStreak();
+            saveUserStats();
+            
+            // Update weekly stats
+            updateResonantWeeklyStats();
+            
+            // Save to Firestore
+            if (currentUser && !DEV_MODE) {
+                (async () => {
+                    try {
+                        const { addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+                        await addDoc(collection(db, 'resonant_sessions'), session);
+                        console.log('✅ Resonant session saved (manual stop at ' + completionPercentage + '%)');
+                    } catch (error) {
+                        console.error('❌ Error saving resonant session:', error);
+                    }
+                })();
+            }
+            
             showUserMessage(`✅ Sessie voltooid: ${completedMinutes}/${targetMinutes} minuten (${completionPercentage}%)`, 'success');
         } else {
             showUserMessage(`⚠️ Sessie gestopt: ${completedMinutes}/${targetMinutes} minuten (${completionPercentage}%)`, 'warning');
         }
         
-        devLog('Resonant session stopped:', { completed: completedMinutes, target: targetMinutes });
+        devLog('Resonant session stopped:', { completed: completedMinutes, target: targetMinutes, saved: completionPercentage >= 80 });
     };
 
     function completeResonantSession() {
@@ -5615,9 +5661,24 @@ Wil je je voorkeuren wijzigen?`;
         // Update weekly stats
         updateResonantWeeklyStats();
         
+        // Save session to Firestore (persistent storage)
+        if (currentUser && !DEV_MODE) {
+            (async () => {
+                try {
+                    const { addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
+                    await addDoc(collection(db, 'resonant_sessions'), session);
+                    console.log('✅ Resonant session saved to Firestore');
+                } catch (error) {
+                    console.error('❌ Error saving resonant session:', error);
+                }
+            })();
+        } else if (DEV_MODE) {
+            console.log('🔧 DEV_MODE: Resonant session saved locally only');
+        }
+        
         // Success message with option to journal
         setTimeout(() => {
-            showUserMessage(' Resonant breathing sessie voltooid! Vul je ervaring in het dagboek in.', 'success');
+            showUserMessage('✅ Resonant breathing sessie voltooid! Vul je ervaring in het dagboek in.', 'success');
             
             // Ask if user wants to journal
             if (confirm('Wil je deze sessie in je dagboek bijhouden?')) {
@@ -7510,12 +7571,14 @@ Wil je je voorkeuren wijzigen?`;
         <div class="footer-links">
             <a href="privacy-policy.html" target="_blank">Privacybeleid</a>
             <span style="color: #d1d5db;">·</span>
-            <a href="#" id="footer-email-link" onclick="location.href=atob('bWFpbHRvOnRyb29zdGJlcmdAZ21haWwuY29t'); return false;">Contact</a>
+            <a href="#" onclick="event.preventDefault(); exportUserData();">Download Gegevens</a>
             <span style="color: #d1d5db;">·</span>
             <a href="#" onclick="event.preventDefault(); manageCookieConsent();">Cookies</a>
+            <span style="color: #d1d5db;">·</span>
+            <a href="#" onclick="event.preventDefault(); if(confirm('Weet je zeker dat je je account permanent wilt verwijderen? Dit kan niet ongedaan worden gemaakt.')) { deleteUserAccount(); }" style="color: #ef4444;">Account Verwijderen</a>
         </div>
         <div class="footer-info">
-            <p>© 2026 Ademruimte · Geen vervanging voor medische zorg</p>
+            <p>© 2026 Ademruimte v1.0.0 · Geen vervanging voor medische zorg</p>
         </div>
     </div>
 </footer>

@@ -1562,7 +1562,6 @@
             <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-home"></i> Vandaag</button>
             <button class="tab-btn" data-tab="oefeningen"><i class="fas fa-wind"></i> Oefeningen</button>
             <button class="tab-btn" data-tab="tracking"><i class="fas fa-chart-line"></i> Tracking</button>
-            <button class="tab-btn" data-tab="crisis"><i class="fas fa-life-ring"></i> Crisis</button>
         </nav>
 
         <main class="container">
@@ -2384,81 +2383,6 @@
             </div>
 
             <!-- Crisis Help Tab -->
-            <div id="crisis" class="tab-content">
-                <div class="card crisis-card">
-                    <h2><i class="fas fa-exclamation-triangle"></i> Crisis Hulp</h2>
-                    <p style="margin-bottom: 2rem;">Directe hulp bij acute hyperventilatie of paniekaanvallen.</p>
-
-                    <div class="button-group">
-                        <button class="btn btn-warning" onclick="startCrisisProtocol()"> Start Noodprotocol</button>
-                        <button class="btn btn-primary" onclick="startCrisisBreathing()"><i class="fas fa-lungs"></i> Simpele Nood Ademhaling</button>
-                    </div>
-
-                    <!-- Crisis Protocol Interface -->
-                    <div id="crisis-protocol" class="hidden" style="margin-top: 2rem; text-align: center;">
-                        <div class="card" style="background: rgba(255,255,255,0.95); color: var(--text-dark); margin-bottom: 1rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                                <h3 id="protocol-step-title" style="color: #1f2937; font-weight: 700; margin: 0;">STOP - Je bent veilig</h3>
-                                <div style="background: var(--primary-color); color: white; padding: 0.5rem 1rem; border-radius: 2rem; font-weight: bold; min-width: 80px;">
-                                    <span id="protocol-timer">00:30</span>
-                                </div>
-                            </div>
-                            
-                            <div style="margin-bottom: 1.5rem;">
-                                <div style="background: rgba(6, 182, 212, 0.15); padding: 1.25rem; border-radius: 0.5rem; border-left: 4px solid var(--primary-color);">
-                                    <p id="protocol-instructions" style="font-size: 1.15rem; font-weight: 600; margin: 0; color: #1f2937; line-height: 1.6;">
-                                        Dit is hyperventilatie en het gaat voorbij. Leg je hand op je buik en voel je ademhaling.
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div class="breathing-circle" id="protocol-circle" style="width: 150px; height: 150px; margin: 1rem auto;">
-                                Voel je ademhaling...
-                            </div>
-
-                            <div style="background: rgba(16, 185, 129, 0.15); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #10b981; margin-bottom: 1rem;">
-                                <p id="protocol-encouragement" style="margin: 0; font-weight: 600; color: #065f46; font-size: 1.05rem;">
-                                    Je bent veilig. Dit gevoel is tijdelijk.
-                                </p>
-                            </div>
-
-                            <div style="margin-bottom: 1rem;">
-                                <div style="background: rgba(0,0,0,0.1); height: 8px; border-radius: 4px; overflow: hidden;">
-                                    <div id="protocol-progress" style="background: var(--primary-color); height: 100%; width: 0%; transition: width 1s linear;"></div>
-                                </div>
-                                <small style="color: var(--text-light); margin-top: 0.5rem; display: block;">
-                                    Stap <span id="protocol-current-step">1</span> van <span id="protocol-total-steps">5</span>
-                                </small>
-                            </div>
-
-                            <button class="btn btn-danger" onclick="stopCrisisProtocol()" style="margin-top: 1rem;">
-                                Stoppen
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Simple Crisis Breathing -->
-                    <div id="crisis-breathing" class="hidden" style="margin-top: 2rem;">
-                        <div class="breathing-circle" id="crisis-circle">
-                            Volg de cirkel
-                        </div>
-                        <div style="text-align: center;">
-                            <button class="btn btn-danger" onclick="stopCrisisBreathing()">Stop</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3>📞 Noodhulp</h3>
-                    <p><strong>Bij acute noodsituaties:</strong></p>
-                    <ul style="margin: 1rem 0;">
-                        <li>🚑 Spoeddiensten: 112</li>
-                        <li>🩺 Huisarts: Contacteer je eigen huisarts</li>
-                        <li>🧠 Zelfmoordlijn: 1813 of 0800 32 123</li>
-                        <li>💬 Tele-onthaal: 106</li>
-                    </ul>
-                </div>
-            </div>
 
         </main>
     </div>
@@ -3300,6 +3224,7 @@ Wil je je voorkeuren wijzigen?`;
                         await loadResonantSessions(); // Load resonant breathing sessions
                         updateDashboard();
                         generateInsights();
+                        updatePersonalizedTip();  // Update daily tip
                     } catch (error) {
                         console.error('Error loading data on login:', error);
                         showUserMessage('Gegevens laden mislukt, probeer te verversen', 'warning');
@@ -3636,6 +3561,7 @@ Wil je je voorkeuren wijzigen?`;
             updateWelcomeMessage();
             await updateDailyGoals();
             await updateWeeklyProgress();
+            updatePersonalizedTip();  // Update daily tip
             console.log('=== Dashboard Updated ===');
         } catch (error) {
             console.error('Error updating dashboard:', error);

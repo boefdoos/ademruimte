@@ -2171,17 +2171,20 @@
                         </select>
                     </div>
 
-                    <div style="margin-bottom: 1rem;">
-                        <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;"> Statistiek periode:</label>
-                        <div class="button-group">
-                            <button class="btn btn-primary" id="chart-10days" onclick="updateChartFilter('10days')">Laatste 10 dagen</button>
-                            <button class="btn btn-primary" id="chart-30days" onclick="updateChartFilter('30days')">Laatste 30 dagen</button>
-                            <button class="btn btn-primary" id="chart-all" onclick="updateChartFilter('all')">Alle data</button>
-                        </div>
-                    </div>
-
-                    <div class="chart-container">
-                        <canvas id="progress-chart"></canvas>
+                    <!-- Chart tijdelijk disabled - wordt vervangen met evidence-based visualisatie -->
+                    <div class="card" style="background: rgba(107, 155, 209, 0.1); border-left: 4px solid var(--primary-color); margin-bottom: 1.5rem;">
+                        <h3><i class="fas fa-chart-line"></i> Voortgang Visualisatie</h3>
+                        <p style="color: var(--text-light);">
+                            De voortgangsgrafiek wordt binnenkort vervangen met evidence-based visualisaties gericht op:
+                        </p>
+                        <ul style="color: var(--text-light); margin: 1rem 0;">
+                            <li><strong>Consistentie tracking</strong>: Hoeveel dagen per week je oefent</li>
+                            <li><strong>CP trend</strong>: Control Pause progressie over weken/maanden</li>
+                            <li><strong>Trigger patronen</strong>: Visuele analyse van je triggers</li>
+                        </ul>
+                        <p style="color: var(--text-light); font-size: 0.9rem;">
+                            💡 <em>Voor nu focus je op consistentie - dagelijks oefenen is belangrijker dan perfecte scores!</em>
+                        </p>
                     </div>
 
                     <div id="journal-entries">
@@ -2286,17 +2289,20 @@
                         </select>
                     </div>
 
-                    <div style="margin-bottom: 1rem;">
-                        <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;"> Statistiek periode:</label>
-                        <div class="button-group">
-                            <button class="btn btn-primary" id="chart-10days" onclick="updateChartFilter('10days')">Laatste 10 dagen</button>
-                            <button class="btn btn-primary" id="chart-30days" onclick="updateChartFilter('30days')">Laatste 30 dagen</button>
-                            <button class="btn btn-primary" id="chart-all" onclick="updateChartFilter('all')">Alle data</button>
-                        </div>
-                    </div>
-
-                    <div class="chart-container">
-                        <canvas id="progress-chart"></canvas>
+                    <!-- Chart tijdelijk disabled - wordt vervangen met evidence-based visualisatie -->
+                    <div class="card" style="background: rgba(107, 155, 209, 0.1); border-left: 4px solid var(--primary-color); margin-bottom: 1.5rem;">
+                        <h3><i class="fas fa-chart-line"></i> Voortgang Visualisatie</h3>
+                        <p style="color: var(--text-light);">
+                            De voortgangsgrafiek wordt binnenkort vervangen met evidence-based visualisaties gericht op:
+                        </p>
+                        <ul style="color: var(--text-light); margin: 1rem 0;">
+                            <li><strong>Consistentie tracking</strong>: Hoeveel dagen per week je oefent</li>
+                            <li><strong>CP trend</strong>: Control Pause progressie over weken/maanden</li>
+                            <li><strong>Trigger patronen</strong>: Visuele analyse van je triggers</li>
+                        </ul>
+                        <p style="color: var(--text-light); font-size: 0.9rem;">
+                            💡 <em>Voor nu focus je op consistentie - dagelijks oefenen is belangrijker dan perfecte scores!</em>
+                        </p>
                     </div>
 
                     <div id="journal-entries">
@@ -2394,36 +2400,22 @@
             <h2><i class="fas fa-pen"></i> Nieuwe Dagboek Entry</h2>
             
             <div class="form-group">
-                <label for="entry-technique">Techniek gebruikt:</label>
+                <label for="entry-technique"><i class="fas fa-wind"></i> Techniek gebruikt:</label>
                 <select class="form-control" id="entry-technique">
                     <option value="Buteyko Ademhaling">Buteyko Ademhaling</option>
                     <option value="Resonant Breathing">Resonant Breathing</option>
-                    <option value="Crisis Ademhaling">Crisis Ademhaling</option>
-                    <option value="Noodprotocol">Noodprotocol</option>
+
                     <option value="Handmatige Entry">Handmatige Entry</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="entry-trigger">Trigger/Oorzaak:</label>
+                <label for="entry-trigger"><i class="fas fa-bolt"></i> Trigger/Oorzaak (optioneel):</label>
                 <input type="text" class="form-control" id="entry-trigger" placeholder="Wat triggerde de symptomen?">
             </div>
 
-            <div class="form-group">
-                <label for="entry-before">Intensiteit vóór (1-10):</label>
-                <div class="range-container">
-                    <input type="range" class="range-slider" id="entry-before" min="1" max="10" value="5" oninput="updateRangeValue('entry-before', 'before-value')">
-                    <div class="range-value" id="before-value">5</div>
-                </div>
-            </div>
 
-            <div class="form-group">
-                <label for="entry-after">Intensiteit na (1-10):</label>
-                <div class="range-container">
-                    <input type="range" class="range-slider" id="entry-after" min="1" max="10" value="5" oninput="updateRangeValue('entry-after', 'after-value')">
-                    <div class="range-value" id="after-value">5</div>
-                </div>
-            </div>
+
 
             <div class="form-group" id="cp-score-group">
                 <label for="entry-cp-score"><i class="fas fa-stopwatch"></i> Control Pause Score (optioneel, in seconden):</label>
@@ -2495,17 +2487,6 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="entry-result">Resultaat:</label>
-                <select class="form-control" id="entry-result">
-                    <option value="">Selecteer resultaat</option>
-                    <option value="Veel beter">Veel beter</option>
-                    <option value="Beter">Beter</option>
-                    <option value="Iets beter">Iets beter</option>
-                    <option value="Geen verandering">Geen verandering</option>
-                    <option value="Slechter">Slechter</option>
-                </select>
-            </div>
 
             <div class="form-group">
                 <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
@@ -6050,11 +6031,6 @@ Wil je je voorkeuren wijzigen?`;
         // Reset form
         document.getElementById('entry-technique').selectedIndex = 0;
         document.getElementById('entry-trigger').value = '';
-        document.getElementById('entry-before').value = '5';
-        document.getElementById('entry-after').value = '5';
-        document.getElementById('before-value').textContent = '5';
-        document.getElementById('after-value').textContent = '5';
-        document.getElementById('entry-result').selectedIndex = 0;
         document.getElementById('entry-notes').value = '';
         
         // Reset medication fields
@@ -6115,9 +6091,6 @@ Wil je je voorkeuren wijzigen?`;
                 techniekGebruikt: document.getElementById('entry-technique').value,
                 trigger: document.getElementById('entry-trigger').value,
                 sensaties: sensations,
-                intensiteitVoor: parseInt(document.getElementById('entry-before').value),
-                intensiteitNa: parseInt(document.getElementById('entry-after').value),
-                resultaat: document.getElementById('entry-result').value,
                 notities: document.getElementById('entry-notes').value,
                 timestamp: new Date(),
                 userId: currentUser?.uid,
@@ -6167,10 +6140,6 @@ Wil je je voorkeuren wijzigen?`;
             
             devLog('Saving journal entry:', entry);
 
-            if (!entry.resultaat) {
-                showUserMessage('⚠️ Selecteer een resultaat voor de dagboek entry.', 'warning');
-                return;
-            }
 
             // Add to local array
             allJournalEntries.unshift(entry);
@@ -6196,10 +6165,8 @@ Wil je je voorkeuren wijzigen?`;
             updateDashboard();
             generateInsights();
             
-            // Show prominent success message with details
-            const improvementText = entry.intensiteitVoor > entry.intensiteitNa ? 
-                ` Verbetering: ${entry.intensiteitVoor} → ${entry.intensiteitNa}` : '';
-            showUserMessage(`✅ Entry opgeslagen!${improvementText}`, 'success');
+            // Show success message
+            showUserMessage('✅ Dagboek entry opgeslagen!', 'success');
             
             console.log('✅ Journal entry saved successfully');
             
@@ -6403,32 +6370,22 @@ Wil je je voorkeuren wijzigen?`;
             `;
             
             entries.forEach(entry => {
-                const improvement = entry.intensiteitVoor - entry.intensiteitNa;
-                const improvementColor = improvement > 0 ? '#10b981' : improvement < 0 ? '#ef4444' : '#6b7280';
+                // Determine border color based on CP score if available, otherwise use default
+                const borderColor = entry.cpScore ? 
+                    (entry.cpScore >= 20 ? '#10b981' : entry.cpScore >= 15 ? '#f59e0b' : '#ef4444') : 
+                    'var(--primary-color)';
                 
                 html += `
-                    <div style="background: rgba(255,255,255,0.5); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid ${improvementColor};">
-                        <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 0.5rem;">
+                    <div style="background: rgba(255,255,255,0.5); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid ${borderColor};">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
                             <strong>${entry.techniekGebruikt}</strong>
                             <small style="color: var(--text-light);">${entry.timestamp.toLocaleDateString('nl-BE')}</small>
                         </div>
                         
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem; margin: 0.5rem 0;">
-                            <div><small>Voor: ${entry.intensiteitVoor}/10</small></div>
-                            <div><small>Na: ${entry.intensiteitNa}/10</small></div>
-                            <div><small>Verschil: ${improvement > 0 ? '+' : ''}${improvement}</small></div>
-                            ${entry.cpScore ? `<div><small>CP: ${entry.cpScore}s</small></div>` : ''}
-                        </div>
-                        
+                        ${entry.cpScore ? `<div style="margin: 0.5rem 0;"><small><strong>CP:</strong> ${entry.cpScore}s</small></div>` : ''}
                         ${entry.trigger ? `<div style="margin: 0.5rem 0;"><small><strong>Trigger:</strong> ${entry.trigger}</small></div>` : ''}
                         ${entry.sensaties && entry.sensaties.length ? `<div style="margin: 0.5rem 0;"><small><strong>Sensaties:</strong> ${entry.sensaties.join(', ')}</small></div>` : ''}
                         ${entry.symptomen && entry.symptomen.length ? `<div style="margin: 0.5rem 0;"><small><strong>Sensaties:</strong> ${entry.symptomen.join(', ')}</small></div>` : ''}
-                        
-                        <div style="margin: 0.5rem 0;">
-                            <span style="background: ${improvementColor}; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem;">
-                                ${entry.resultaat}
-                            </span>
-                        </div>
                         
                         ${entry.medicationEvent ? formatMedicationEvent(entry.medicationEvent) : ''}
                         ${entry.medicatie ? `<div style="margin: 0.5rem 0;"><small><strong>💊 Medicatie:</strong> ${entry.medicatie}</small></div>` : ''}
@@ -6478,13 +6435,12 @@ Wil je je voorkeuren wijzigen?`;
             text += `Datum: ${entry.timestamp.toLocaleString('nl-BE')}\n`;
             text += `Techniek: ${entry.techniekGebruikt}\n`;
             text += `Trigger: ${entry.trigger || 'Geen'}\n`;
-            text += `Intensiteit vóór: ${entry.intensiteitVoor}/10\n`;
-            text += `Intensiteit ná: ${entry.intensiteitNa}/10\n`;
+            // Intensiteit vóór/ná removed - not evidence-based for chronic tracking
             if (entry.cpScore) text += `CP Score: ${entry.cpScore} seconden\n`;
             // Support both old (symptomen) and new (sensaties) entries
             const sensations = entry.sensaties || entry.symptomen;
             if (sensations?.length) text += `Sensaties: ${sensations.join(', ')}\n`;
-            text += `Resultaat: ${entry.resultaat}\n`;
+            // Resultaat field removed - no longer tracked
             text += `Notities: ${entry.notities || 'Geen'}\n`;
             text += '\n---\n\n';
         });
@@ -6860,432 +6816,335 @@ Wil je je voorkeuren wijzigen?`;
 
     // IMPROVED: Evidence-based insights focusing on therapeutic progress
     function generateDetailedInsights() {
-        const recentEntries = allJournalEntries.slice(0, 20);
         const allTimeEntries = allJournalEntries;
         let insights = [];
         
-        // INSIGHT 1: Long-term progress patterns (not immediate results)
-        if (allTimeEntries.length >= 10) {
-            const earlyEntries = allTimeEntries.slice(-10); // First 10 entries
-            const laterEntries = allTimeEntries.slice(0, 10); // Last 10 entries
-            
-            const earlyAvg = earlyEntries.reduce((sum, e) => sum + (e.intensiteitVoor - e.intensiteitNa), 0) / earlyEntries.length;
-            const laterAvg = laterEntries.reduce((sum, e) => sum + (e.intensiteitVoor - e.intensiteitNa), 0) / laterEntries.length;
-            
-            if (laterAvg > earlyAvg + 0.5) {
-                insights.push(`🌱 <strong>Langetermijn verbetering</strong>: Je gemiddelde verbetering per sessie is toegenomen van ${earlyAvg.toFixed(1)} naar ${laterAvg.toFixed(1)} punten. Dit toont dat je ademhalingsvaardigheden zich geleidelijk ontwikkelen.`);
-            }
-        }
-        
-        // INSIGHT 2: Consistency and therapeutic engagement
+        // INSIGHT 1: Therapietrouw (meest belangrijke predictor!)
         const uniqueDays = new Set(allTimeEntries.map(e => e.timestamp.toDateString())).size;
         const daysSinceFirst = allTimeEntries.length > 0 ? 
             Math.ceil((new Date() - allTimeEntries[allTimeEntries.length - 1].timestamp) / (1000 * 60 * 60 * 24)) : 0;
         
-        if (daysSinceFirst > 7) {
+        if (daysSinceFirst > 7 && uniqueDays > 0) {
             const consistencyRate = uniqueDays / daysSinceFirst;
-            if (consistencyRate > 0.4) {
-                insights.push(`⭐ <strong>Uitstekende therapietrouw</strong>: Je hebt ${uniqueDays} van de laatste ${daysSinceFirst} dagen geoefend (${(consistencyRate * 100).toFixed(0)}%). Deze consistentie is cruciaal voor neuroplasticiteit en het hertrainen van ademhalingspatronen.`);
-            } else if (consistencyRate < 0.2) {
-                insights.push(`📅 <strong>Regelmat verbetert effectiviteit</strong>: Dagelijkse korte oefeningen (5-10 min) zijn effectiever dan sporadische lange sessies voor het hertrainen van automatische ademhalingspatronen.`);
+            const consistencyPct = (consistencyRate * 100).toFixed(0);
+            
+            if (consistencyRate >= 0.6) {
+                insights.push(`⭐ <strong>Uitstekende therapietrouw</strong>: Je hebt ${uniqueDays} van de laatste ${daysSinceFirst} dagen geoefend (${consistencyPct}%). Deze consistentie is de belangrijkste voorspeller van langetermijn succes bij chronische hyperventilatie.`);
+            } else if (consistencyRate >= 0.3) {
+                insights.push(`📅 <strong>Goede consistentie</strong>: Je hebt ${uniqueDays} van de laatste ${daysSinceFirst} dagen geoefend (${consistencyPct}%). Dit is een solide basis - probeer dit vol te houden!`);
+            } else if (consistencyRate < 0.3) {
+                insights.push(`💡 <strong>Tip: Verhoog consistentie</strong>: Dagelijkse korte oefeningen (5-10 min) zijn effectiever dan sporadische lange sessies. Consistentie is bij chronische hyperventilatie belangrijker dan perfectie.`);
             }
         }
         
-        // INSIGHT 3: Technique mastery and learning progression
-        const techniqueStats = {};
-        allTimeEntries.forEach(entry => {
-            const technique = entry.techniekGebruikt;
-            const improvement = entry.intensiteitVoor - entry.intensiteitNa;
+        // INSIGHT 2: CP Progressie (objectieve fysiologische marker)
+        if (typeof allCPMeasurements !== 'undefined' && allCPMeasurements && allCPMeasurements.length >= 4) {
+            const sortedCP = [...allCPMeasurements].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            const firstTwo = sortedCP.slice(0, 2);
+            const lastTwo = sortedCP.slice(-2);
             
-            if (!techniqueStats[technique]) {
-                techniqueStats[technique] = { 
-                    total: 0, 
-                    totalImprovement: 0, 
-                    recent: [], 
-                    early: []
-                };
-            }
+            const firstAvg = firstTwo.reduce((sum, cp) => sum + cp.score, 0) / firstTwo.length;
+            const lastAvg = lastTwo.reduce((sum, cp) => sum + cp.score, 0) / lastTwo.length;
             
-            techniqueStats[technique].total++;
-            techniqueStats[technique].totalImprovement += improvement;
-            
-            // Track recent vs early performance
-            if (techniqueStats[technique].total <= 5) {
-                techniqueStats[technique].early.push(improvement);
-            }
-            if (allTimeEntries.indexOf(entry) < 10) {
-                techniqueStats[technique].recent.push(improvement);
-            }
-        });
-        
-        const techniques = Object.keys(techniqueStats).filter(t => techniqueStats[t].total >= 5);
-        if (techniques.length > 0) {
-            techniques.forEach(technique => {
-                const stats = techniqueStats[technique];
-                if (stats.recent.length >= 3 && stats.early.length >= 3) {
-                    const recentAvg = stats.recent.reduce((sum, val) => sum + val, 0) / stats.recent.length;
-                    const earlyAvg = stats.early.reduce((sum, val) => sum + val, 0) / stats.early.length;
-                    
-                    if (recentAvg > earlyAvg + 0.5) {
-                        insights.push(`📚 <strong>Techniek verbetering</strong>: Je ${technique} vaardigheid is toegenomen. Dit toont motorisch leren - je zenuwstelsel past zich aan de nieuwe ademhalingspatronen aan.`);
-                    }
+            if (lastAvg > firstAvg + 3) {
+                insights.push(`🌱 <strong>CO₂ tolerantie verbetert</strong>: Je gemiddelde Control Pause is gestegen van ${firstAvg.toFixed(1)}s naar ${lastAvg.toFixed(1)}s. Dit toont fysiologische aanpassing - je lichaam went aan gezondere CO₂ niveaus.`);
+            } else if (lastAvg > firstAvg + 1) {
+                insights.push(`📈 <strong>CP stijgt geleidelijk</strong>: Je Control Pause laat een positieve trend zien (van ${firstAvg.toFixed(1)}s naar ${lastAvg.toFixed(1)}s). Blijf consistent oefenen voor verdere verbetering.`);
+            } else if (allCPMeasurements.length >= 10) {
+                const currentCP = lastAvg.toFixed(1);
+                if (currentCP < 20) {
+                    insights.push(`📊 <strong>CP nog laag</strong>: Je huidige CP (~${currentCP}s) ligt onder normaal (20-40s). Dit is een langetermijn proces - focus op dagelijkse Buteyko praktijk voor geleidelijke verbetering.`);
                 }
-            });
+            }
         }
         
-        // INSIGHT 4: Trigger pattern recognition and self-awareness
+        // INSIGHT 3: Trigger Pattern Herkenning
         const triggerAnalysis = {};
         allTimeEntries.filter(e => e.trigger && e.trigger.trim().length > 2).forEach(entry => {
             const trigger = entry.trigger.toLowerCase().trim();
             if (!triggerAnalysis[trigger]) {
-                triggerAnalysis[trigger] = {
-                    count: 0,
-                    totalImprovement: 0,
-                    avgBefore: 0
-                };
+                triggerAnalysis[trigger] = { count: 0 };
             }
             triggerAnalysis[trigger].count++;
-            triggerAnalysis[trigger].totalImprovement += (entry.intensiteitVoor - entry.intensiteitNa);
-            triggerAnalysis[trigger].avgBefore += entry.intensiteitVoor;
         });
         
-        const significantTriggers = Object.keys(triggerAnalysis).filter(t => triggerAnalysis[t].count >= 3);
+        const significantTriggers = Object.keys(triggerAnalysis)
+            .filter(t => triggerAnalysis[t].count >= 3)
+            .sort((a, b) => triggerAnalysis[b].count - triggerAnalysis[a].count);
+        
         if (significantTriggers.length > 0) {
-            const mostFrequentTrigger = significantTriggers.reduce((a, b) => 
-                triggerAnalysis[a].count > triggerAnalysis[b].count ? a : b);
+            const top = significantTriggers[0];
+            const topCount = triggerAnalysis[top].count;
             
-            insights.push(`🎯 <strong>Zelfkennis ontwikkeling</strong>: Je hebt "${mostFrequentTrigger}" ${triggerAnalysis[mostFrequentTrigger].count} keer geïdentificeerd als trigger. Deze bewustwording helpt bij het ontwikkelen van preventieve strategieën.`);
+            if (significantTriggers.length === 1) {
+                insights.push(`🎯 <strong>Trigger awareness</strong>: Je hebt "${top}" ${topCount}x geïdentificeerd als trigger. Deze bewustwording helpt bij het ontwikkelen van preventieve strategieën.`);
+            } else {
+                const top2 = significantTriggers[1];
+                insights.push(`🎯 <strong>Trigger patronen</strong>: Meest voorkomende triggers zijn "${top}" (${topCount}x) en "${top2}" (${triggerAnalysis[top2].count}x). Overweeg preventieve oefeningen voor deze situaties.`);
+            }
         }
         
-        // INSIGHT 5: Sensory awareness and interoceptive accuracy
+        // INSIGHT 4: Techniek Gebruik
+        const techniqueStats = {};
+        allTimeEntries.forEach(entry => {
+            const technique = entry.techniekGebruikt || 'Onbekend';
+            if (!techniqueStats[technique]) {
+                techniqueStats[technique] = 0;
+            }
+            techniqueStats[technique]++;
+        });
+        
+        const techniques = Object.keys(techniqueStats);
+        if (techniques.length > 1) {
+            const sorted = techniques.sort((a, b) => techniqueStats[b] - techniqueStats[a]);
+            const primary = sorted[0];
+            const primaryPct = ((techniqueStats[primary] / allTimeEntries.length) * 100).toFixed(0);
+            
+            if (techniqueStats[primary] > allTimeEntries.length * 0.8) {
+                insights.push(`🔄 <strong>Experimenteer met variatie</strong>: Je gebruikt voornamelijk ${primary} (${primaryPct}%). Overweeg ook andere technieken te proberen - verschillende benaderingen werken voor verschillende situaties.`);
+            } else {
+                const secondary = sorted[1];
+                insights.push(`💪 <strong>Goede techniek variatie</strong>: Je combineert ${primary} (${primaryPct}%) met ${secondary} (${((techniqueStats[secondary] / allTimeEntries.length) * 100).toFixed(0)}%). Dit experimenteren helpt je de beste aanpak voor jouw situatie te vinden.`);
+            }
+        }
+        
+        // INSIGHT 5: Sensatie Tracking (interoceptieve awareness)
         const sensationTracking = {};
         allTimeEntries.forEach(entry => {
             const sensations = entry.sensaties || entry.symptomen || [];
             sensations.forEach(sensation => {
                 if (!sensationTracking[sensation]) {
-                    sensationTracking[sensation] = {
-                        count: 0,
-                        improvements: []
-                    };
+                    sensationTracking[sensation] = 0;
                 }
-                sensationTracking[sensation].count++;
-                sensationTracking[sensation].improvements.push(entry.intensiteitVoor - entry.intensiteitNa);
+                sensationTracking[sensation]++;
             });
         });
         
-        const frequentSensations = Object.keys(sensationTracking).filter(s => sensationTracking[s].count >= 5);
+        const frequentSensations = Object.keys(sensationTracking)
+            .filter(s => sensationTracking[s] >= 5)
+            .sort((a, b) => sensationTracking[b] - sensationTracking[a]);
+        
         if (frequentSensations.length > 0) {
-            const topSensation = frequentSensations.reduce((a, b) => 
-                sensationTracking[a].count > sensationTracking[b].count ? a : b);
-            
-            insights.push(`🔍 <strong>Interoceptieve training</strong>: Je monitort "${topSensation}" consequent (${sensationTracking[topSensation].count}x). Het bijhouden van lichamelijke sensaties verbetert je interoceptieve accuraatheid.`);
+            const topSensation = frequentSensations[0];
+            const count = sensationTracking[topSensation];
+            insights.push(`🔍 <strong>Interoceptieve training</strong>: Je monitort "${topSensation}" het vaakst (${count}x). Het bijhouden van lichamelijke sensaties zonder oordeel verbetert je interoceptieve accuraatheid - een belangrijke vaardigheid bij chronische hyperventilatie.`);
         }
         
-        // INSIGHT 6: CP progression and physiological adaptation
-        if (allCPMeasurements.length >= 5) {
-            const sortedCP = [...allCPMeasurements].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-            const firstThree = sortedCP.slice(0, 3);
-            const lastThree = sortedCP.slice(-3);
-            
-            const firstAvg = firstThree.reduce((sum, cp) => sum + cp.score, 0) / firstThree.length;
-            const lastAvg = lastThree.reduce((sum, cp) => sum + cp.score, 0) / lastThree.length;
-            
-            if (lastAvg > firstAvg + 2) {
-                insights.push(` <strong>CO2 tolerantie verbetering</strong>: Je gemiddelde CP is gestegen van ${firstAvg.toFixed(1)}s naar ${lastAvg.toFixed(1)}s. Dit toont fysiologische aanpassing aan gezondere CO2 niveaus.`);
-            }
+        // INSIGHT 6: Beginner Encouragement
+        if (allTimeEntries.length >= 3 && allTimeEntries.length < 10) {
+            insights.push(`🌟 <strong>Goed bezig!</strong>: Je hebt ${allTimeEntries.length} sessies gelogd. Blijf dit volhouden - de eerste weken zijn cruciaal voor het opbouwen van nieuwe automatische adempatronen.`);
         }
         
-        // INSIGHT 7: Emotional regulation development
-        const emotionalWords = {
-            calm: ['rustig', 'kalm', 'ontspannen', 'vredig'],
-            anxious: ['angstig', 'onrustig', 'gespannen', 'zenuwachtig'],
-            frustrated: ['gefrustreerd', 'boos', 'geïrriteerd'],
-            confident: ['zelfverzekerd', 'controle', 'vertrouwen']
-        };
-        
-        const meaningfulNotes = allTimeEntries.filter(e => e.notities && e.notities.trim().length > 10);
-        if (meaningfulNotes.length >= 5) {
-            const allNotes = meaningfulNotes.map(e => e.notities.toLowerCase()).join(' ');
-            
-            const calmCount = emotionalWords.calm.reduce((count, word) => 
-                count + (allNotes.split(word).length - 1), 0);
-            const anxiousCount = emotionalWords.anxious.reduce((count, word) => 
-                count + (allNotes.split(word).length - 1), 0);
-            
-            if (calmCount > anxiousCount && calmCount >= 3) {
-                insights.push(`🌊 <strong>Emotieregulatie verbetering</strong>: Je notities bevatten meer woorden gerelateerd aan kalmte dan angst. Dit suggereert verbeterde emotionele zelfregulatie.`);
-            }
+        // INSIGHT 7: Long-term Practitioner
+        if (allTimeEntries.length >= 50 && uniqueDays >= 30) {
+            insights.push(`🏆 <strong>Ervaren beoefenaar</strong>: Je hebt ${allTimeEntries.length} sessies over ${uniqueDays} dagen voltooid. Deze langetermijn commitment is wat nodig is voor duurzame verandering in chronische patronen.`);
         }
         
-        // INSIGHT 13: Medication correlation analysis
-        const entriesWithMeds = allTimeEntries.filter(e => e.medicationEvent);
-        if (entriesWithMeds.length >= 5) {
-            const medStarts = entriesWithMeds.filter(e => e.medicationEvent.action === 'started');
-            const medStops = entriesWithMeds.filter(e => e.medicationEvent.action === 'stopped');
-            
-            // Analyze improvement before and after starting medication
-            if (medStarts.length > 0) {
-                const medName = medStarts[0].medicationEvent.name;
-                const medStartDate = new Date(medStarts[0].timestamp);
-                
-                // Get entries before and after medication start
-                const beforeMed = allTimeEntries.filter(e => new Date(e.timestamp) < medStartDate).slice(0, 10);
-                const afterMed = allTimeEntries.filter(e => new Date(e.timestamp) >= medStartDate).slice(0, 10);
-                
-                if (beforeMed.length >= 3 && afterMed.length >= 3) {
-                    const avgBeforeMed = beforeMed.reduce((sum, e) => sum + (e.intensiteitVoor - e.intensiteitNa), 0) / beforeMed.length;
-                    const avgAfterMed = afterMed.reduce((sum, e) => sum + (e.intensiteitVoor - e.intensiteitNa), 0) / afterMed.length;
-                    
-                    if (avgAfterMed > avgBeforeMed + 0.5) {
-                        insights.push(`💊 <strong>Medicatie correlatie</strong>: Sinds start ${medName} is je gemiddelde verbetering toegenomen van ${avgBeforeMed.toFixed(1)} naar ${avgAfterMed.toFixed(1)} punten. Blijf dit monitoren met je arts.`);
-                    } else if (avgAfterMed < avgBeforeMed - 0.5) {
-                        insights.push(`💊 <strong>Medicatie observatie</strong>: Je gemiddelde verbetering is ${avgBeforeMed.toFixed(1)} → ${avgAfterMed.toFixed(1)} sinds ${medName}. Bespreek dit patroon met je arts.`);
-                    }
-                }
-            }
-            
-            // Track medication changes
-            if (userStats.medicationEvents.length >= 3) {
-                const recentEvents = userStats.medicationEvents.slice(-5);
-                const uniqueMeds = new Set(recentEvents.map(e => e.name.toLowerCase()));
-                
-                if (uniqueMeds.size >= 3) {
-                    insights.push(`💊 <strong>Medicatie monitoring</strong>: Je hebt ${userStats.medicationEvents.length} medicatie events gelogd. Deze data helpt bij het analyseren van langetermijn patronen.`);
-                }
-            }
-        }
-        
-        // INSIGHT 14: Active medication tracking
-        if (userStats.activeMedications.length > 0) {
-            const longTermMeds = userStats.activeMedications.filter(med => {
-                const duration = (new Date() - new Date(med.startedAt)) / (1000 * 60 * 60 * 24);
-                return duration >= 30;
-            });
-            
-            if (longTermMeds.length > 0) {
-                const medName = longTermMeds[0].name;
-                const duration = Math.floor((new Date() - new Date(longTermMeds[0].startedAt)) / (1000 * 60 * 60 * 24));
-                insights.push(`📅 <strong>Langetermijn medicatie</strong>: Je gebruikt ${medName} al ${duration} dagen. Overweeg met je arts te bespreken of deze medicatie nog nodig is gezien je voortgang.`);
-            }
-        }
-        
+        // If no insights generated, provide encouragement
         if (insights.length === 0) {
-            insights.push(' Blijf regelmatig oefenen en je ervaringen bijhouden. Betekenisvolle patronen worden zichtbaar na 2-4 weken consistent gebruik.');
+            insights.push(`📝 <strong>Begin met tracken</strong>: Blijf je sessies bijhouden om patronen te herkennen. Focus op consistentie - dagelijkse oefening is de sleutel tot succes bij chronische hyperventilatie.`);
         }
         
-        // Limit to 5 most relevant insights (increased from 4)
-        const selectedInsights = insights.slice(0, 5);
-        
-        return selectedInsights.map(insight => `<p>${insight}</p>`).join('');
+        return '<ul style="list-style: none; padding: 0;">' + 
+               insights.map(i => '<li style="margin-bottom: 1rem; padding-left: 0;">' + i + '</li>').join('') + 
+               '</ul>';
     }
-
-    function createProgressChart() {
-        if (!currentUser || allJournalEntries.length === 0) return;
-        
-        const ctx = document.getElementById('progress-chart');
-        if (!ctx) return;
-        
-        // Destroy existing chart
-        if (progressChart) {
-            progressChart.destroy();
-        }
-        
-        // Filter data based on current chart filter
-        let filteredEntries = [...allJournalEntries];
-        const now = new Date();
-        
-        if (chartFilter === '10days') {
-            const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
-            filteredEntries = allJournalEntries.filter(entry => entry.timestamp >= tenDaysAgo);
-        } else if (chartFilter === '30days') {
-            const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-            filteredEntries = allJournalEntries.filter(entry => entry.timestamp >= thirtyDaysAgo);
-        }
-        
-        // Sort by timestamp (oldest first for chart)
-        filteredEntries.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-        
-        // Take last 50 entries to keep chart readable (for 'all' filter)
-        const chartEntries = chartFilter === 'all' ? filteredEntries.slice(-50) : filteredEntries;
-        
-        // Prepare data with actual dates
-        const chartData = chartEntries.map((entry) => ({
-            date: entry.timestamp.toLocaleDateString('nl-BE', { 
-                day: '2-digit', 
-                month: '2-digit' 
-            }),
-            fullDate: entry.timestamp.toLocaleDateString('nl-BE'),
-            voor: entry.intensiteitVoor,
-            na: entry.intensiteitNa,
-            verbetering: entry.intensiteitVoor - entry.intensiteitNa,
-            technique: entry.techniekGebruikt,
-            cpScore: entry.cpScore || null
-        }));
-        
-        // Prepare CP measurements data aligned with chart entries
-        const cpData = chartData.map(d => d.cpScore);
-        const hasCPData = cpData.some(cp => cp !== null && cp !== undefined);
-        
-        devLog('Chart data prepared:', { entries: chartData.length, hasCPData });
-        
-        // Determine chart title based on filter
-        let chartTitle = 'Voortgang Over Tijd';
-        if (chartFilter === '10days') {
-            chartTitle = 'Voortgang Laatste 10 Dagen';
-        } else if (chartFilter === '30days') {
-            chartTitle = 'Voortgang Laatste 30 Dagen';
-        }
-        
-        progressChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: chartData.map(d => d.date),
-                datasets: [
-                    {
-                        label: 'Voor sessie',
-                        data: chartData.map(d => d.voor),
-                        borderColor: '#ef4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        tension: 0.4,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    },
-                    {
-                        label: 'Na sessie',
-                        data: chartData.map(d => d.na),
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        tension: 0.4,
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    },
-                    {
-                        label: 'Verbetering',
-                        data: chartData.map(d => d.verbetering),
-                        borderColor: '#06b6d4',
-                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
-                        type: 'bar',
-                        yAxisID: 'y1',
-                        barThickness: 20
-                    },
-                    ...(hasCPData ? [{
-                        label: 'Control Pause (CP)',
-                        data: cpData,
-                        borderColor: '#f59e0b',
-                        backgroundColor: 'rgba(245, 158, 11, 0.2)',
-                        tension: 0.4,
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                        yAxisID: 'y2',
-                        spanGaps: true,
-                        borderDash: [5, 5]
-                    }] : [])
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    intersect: false,
-                    mode: 'index'
-                },
-                plugins: {
-                    title: {
-                        display: true,
-                        text: chartTitle,
-                        font: {
-                            size: 16,
-                            weight: 'bold'
-                        }
-                    },
-                    legend: {
-                        display: true,
-                        position: 'top'
-                    },
-                    tooltip: {
-                        callbacks: {
-                            title: function(tooltipItems) {
-                                const index = tooltipItems[0].dataIndex;
-                                return chartData[index].fullDate;
-                            },
-                            afterTitle: function(tooltipItems) {
-                                const index = tooltipItems[0].dataIndex;
-                                return `Techniek: ${chartData[index].technique}`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Datum'
-                        },
-                        ticks: {
-                            maxRotation: 45,
-                            minRotation: 0
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        max: 10,
-                        title: {
-                            display: true,
-                            text: 'Intensiteit (1-10)'
-                        }
-                    },
-                    y1: {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        title: {
-                            display: true,
-                            text: 'Verbetering'
-                        },
-                        grid: {
-                            drawOnChartArea: false,
-                        },
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    },
-                    ...(hasCPData ? {
-                        y2: {
-                            type: 'linear',
-                            display: true,
-                            position: 'right',
-                            title: {
-                                display: true,
-                                text: 'CP (seconden)'
-                            },
-                            grid: {
-                                drawOnChartArea: false,
-                            },
-                            ticks: {
-                                beginAtZero: true,
-                                max: 60
-                            }
-                        }
-                    } : {})
-                }
-            }
-        });
-        
-        // Update button active states
-        document.getElementById('chart-10days').classList.remove('active');
-        document.getElementById('chart-30days').classList.remove('active');
-        document.getElementById('chart-all').classList.remove('active');
-        document.getElementById(`chart-${chartFilter}`).classList.add('active');
-    }
-
-    // ============================================
+    // DISABLED: Chart depends on voor/na data that no longer exists
+    // /*
+    // function createProgressChart() {
+    // if (!currentUser || allJournalEntries.length === 0) return;
+    //     // const ctx = document.getElementById('progress-chart');
+    // if (!ctx) return;
+    //         // Destroy existing chart
+    // if (progressChart) {
+    // progressChart.destroy();
+    // }
+    //         // Filter data based on current chart filter
+    // let filteredEntries = [...allJournalEntries];
+    // const now = new Date();
+    //     // if (chartFilter === '10days') {
+    // const tenDaysAgo = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
+    // filteredEntries = allJournalEntries.filter(entry => entry.timestamp >= tenDaysAgo);
+    // } else if (chartFilter === '30days') {
+    // const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    // filteredEntries = allJournalEntries.filter(entry => entry.timestamp >= thirtyDaysAgo);
+    // }
+    //         // Sort by timestamp (oldest first for chart)
+    // filteredEntries.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    //         // Take last 50 entries to keep chart readable (for 'all' filter)
+    // const chartEntries = chartFilter === 'all' ? filteredEntries.slice(-50) : filteredEntries;
+    //         // Prepare data with actual dates
+    // const chartData = chartEntries.map((entry) => ({
+    // date: entry.timestamp.toLocaleDateString('nl-BE', { 
+    // day: '2-digit', 
+    // month: '2-digit' 
+    // }),
+    // fullDate: entry.timestamp.toLocaleDateString('nl-BE'),
+    // voor: entry.intensiteitVoor,
+    // na: entry.intensiteitNa,
+    // verbetering: entry.intensiteitVoor - entry.intensiteitNa,
+    // technique: entry.techniekGebruikt,
+    // cpScore: entry.cpScore || null
+    // }));
+    //         // Prepare CP measurements data aligned with chart entries
+    // const cpData = chartData.map(d => d.cpScore);
+    // const hasCPData = cpData.some(cp => cp !== null && cp !== undefined);
+    //     // devLog('Chart data prepared:', { entries: chartData.length, hasCPData });
+    //         // Determine chart title based on filter
+    // let chartTitle = 'Voortgang Over Tijd';
+    // if (chartFilter === '10days') {
+    // chartTitle = 'Voortgang Laatste 10 Dagen';
+    // } else if (chartFilter === '30days') {
+    // chartTitle = 'Voortgang Laatste 30 Dagen';
+    // }
+    //     // progressChart = new Chart(ctx, {
+    // type: 'line',
+    // data: {
+    // labels: chartData.map(d => d.date),
+    // datasets: [
+    // {
+    // label: 'Voor sessie',
+    // data: chartData.map(d => d.voor),
+    // borderColor: '#ef4444',
+    // backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    // tension: 0.4,
+    // pointRadius: 4,
+    // pointHoverRadius: 6
+    // },
+    // {
+    // label: 'Na sessie',
+    // data: chartData.map(d => d.na),
+    // borderColor: '#10b981',
+    // backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    // tension: 0.4,
+    // pointRadius: 4,
+    // pointHoverRadius: 6
+    // },
+    // {
+    // label: 'Verbetering',
+    // data: chartData.map(d => d.verbetering),
+    // borderColor: '#06b6d4',
+    // backgroundColor: 'rgba(6, 182, 212, 0.1)',
+    // type: 'bar',
+    // yAxisID: 'y1',
+    // barThickness: 20
+    // },
+    // ...(hasCPData ? [{
+    // label: 'Control Pause (CP)',
+    // data: cpData,
+    // borderColor: '#f59e0b',
+    // backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    // tension: 0.4,
+    // pointRadius: 5,
+    // pointHoverRadius: 7,
+    // yAxisID: 'y2',
+    // spanGaps: true,
+    // borderDash: [5, 5]
+    // }] : [])
+    // ]
+    // },
+    // options: {
+    // responsive: true,
+    // maintainAspectRatio: false,
+    // interaction: {
+    // intersect: false,
+    // mode: 'index'
+    // },
+    // plugins: {
+    // title: {
+    // display: true,
+    // text: chartTitle,
+    // font: {
+    // size: 16,
+    // weight: 'bold'
+    // }
+    // },
+    // legend: {
+    // display: true,
+    // position: 'top'
+    // },
+    // tooltip: {
+    // callbacks: {
+    // title: function(tooltipItems) {
+    // const index = tooltipItems[0].dataIndex;
+    // return chartData[index].fullDate;
+    // },
+    // afterTitle: function(tooltipItems) {
+    // const index = tooltipItems[0].dataIndex;
+    // return `Techniek: ${chartData[index].technique}`;
+    // }
+    // }
+    // }
+    // },
+    // scales: {
+    // x: {
+    // title: {
+    // display: true,
+    // text: 'Datum'
+    // },
+    // ticks: {
+    // maxRotation: 45,
+    // minRotation: 0
+    // }
+    // },
+    // y: {
+    // beginAtZero: true,
+    // max: 10,
+    // title: {
+    // display: true,
+    // text: 'Intensiteit (1-10)'
+    // }
+    // },
+    // y1: {
+    // type: 'linear',
+    // display: true,
+    // position: 'right',
+    // title: {
+    // display: true,
+    // text: 'Verbetering'
+    // },
+    // grid: {
+    // drawOnChartArea: false,
+    // },
+    // ticks: {
+    // beginAtZero: true
+    // }
+    // },
+    // ...(hasCPData ? {
+    // y2: {
+    // type: 'linear',
+    // display: true,
+    // position: 'right',
+    // title: {
+    // display: true,
+    // text: 'CP (seconden)'
+    // },
+    // grid: {
+    // drawOnChartArea: false,
+    // },
+    // ticks: {
+    // beginAtZero: true,
+    // max: 60
+    // }
+    // }
+    // } : {})
+    // }
+    // }
+    // });
+    //         // Update button active states
+    // document.getElementById('chart-10days').classList.remove('active');
+    // document.getElementById('chart-30days').classList.remove('active');
+    // document.getElementById('chart-all').classList.remove('active');
+    // document.getElementById(`chart-${chartFilter}`).classList.add('active');
+    // }
+    // */
+    //     // ============================================
     // UTILITY FUNCTIONS
     // ============================================
-
-    window.updateChartFilter = function(filter) {
-        chartFilter = filter;
-        createProgressChart();
-    };
+    //     window.updateChartFilter = function(filter) {
+    //     chartFilter = filter;
+    //     createProgressChart();
+    // };
 
     window.updateRangeValue = function(sliderId, valueId) {
         const slider = document.getElementById(sliderId);
@@ -7370,14 +7229,7 @@ Wil je je voorkeuren wijzigen?`;
             if (e.key === 'Enter') resetPassword();
         });
         
-        // Setup range sliders
-        document.getElementById('entry-before').addEventListener('input', (e) => {
-            updateRangeValue('entry-before', 'before-value');
-        });
-        
-        document.getElementById('entry-after').addEventListener('input', (e) => {
-            updateRangeValue('entry-after', 'after-value');
-        });
+        // Range sliders removed - no longer using voor/na intensity scores
         
         // Setup technique selector for CP score field
         document.getElementById('entry-technique').addEventListener('change', (e) => {

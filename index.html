@@ -3396,7 +3396,7 @@ Wil je je voorkeuren wijzigen?`;
         
         // Load data based on tab
         if (tabName === 'dagboek') {
-            createProgressChart();
+            // createProgressChart(); // Chart disabled
             // Set default active state for chart filter (10 days)
             setTimeout(() => {
                 const btn = document.getElementById('chart-10days');
@@ -6200,7 +6200,7 @@ Wil je je voorkeuren wijzigen?`;
             allCPMeasurements = [];
             displayJournalEntries();
             generateInsights();
-            createProgressChart();
+            // createProgressChart(); // Chart disabled
             return;
         }
         
@@ -6285,7 +6285,7 @@ Wil je je voorkeuren wijzigen?`;
             
             displayJournalEntries();
             generateInsights();
-            createProgressChart();
+            // createProgressChart(); // Chart disabled
             
             // Set default chart filter state (10 days)
             if (currentTab === 'dagboek') {

@@ -2187,42 +2187,6 @@
                         </select>
                     </div>
 
-                    <!-- Evidence-Based Visualisaties -->
-                    
-                    <!-- Consistentie Heatmap -->
-                    <div class="card">
-                        <h3><i class="fas fa-calendar-check"></i> Therapietrouw - Laatste 8 Weken</h3>
-                        <div id="consistency-heatmap" style="margin: 1rem 0;"></div>
-                        <div id="consistency-stats" style="margin-top: 1rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.5rem;"></div>
-                    </div>
-
-                    <!-- Intensity & CP Trends -->
-                    <div class="card">
-                        <h3><i class="fas fa-chart-line"></i> Intensiteit & CP Trend</h3>
-                        <div style="margin-bottom: 1rem;">
-                            <select id="trend-period" class="form-control" onchange="updateTrendCharts()" style="max-width: 200px;">
-                                <option value="30">Laatste 30 dagen</option>
-                                <option value="60">Laatste 60 dagen</option>
-                                <option value="90" selected>Laatste 90 dagen</option>
-                                <option value="all">Alle tijd</option>
-                            </select>
-                        </div>
-                        <canvas id="intensity-trend-chart" style="max-height: 300px;"></canvas>
-                    </div>
-
-                    <!-- CP vs Intensity Correlation -->
-                    <div class="card" id="correlation-card" style="display: none;">
-                        <h3><i class="fas fa-project-diagram"></i> CP vs Intensiteit Correlatie</h3>
-                        <canvas id="correlation-chart" style="max-height: 300px;"></canvas>
-                        <div id="correlation-stats" style="margin-top: 1rem;"></div>
-                    </div>
-
-                    <!-- Weekly Averages -->
-                    <div class="card">
-                        <h3><i class="fas fa-chart-bar"></i> Wekelijkse Gemiddeldes</h3>
-                        <canvas id="weekly-averages-chart" style="max-height: 300px;"></canvas>
-                    </div>
-
                     <div id="journal-entries">
                         <div style="text-align: center; color: var(--text-light); margin: 2rem 0;">
                             <p>Nog geen dagboek entries. Begin met je eerste oefening!</p>
@@ -2334,18 +2298,35 @@
                         <div id="consistency-stats" style="margin-top: 1rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.5rem;"></div>
                     </div>
 
-                    <!-- Intensity & CP Trends -->
+                    <!-- Intensity Trend -->
                     <div class="card">
-                        <h3><i class="fas fa-chart-line"></i> Intensiteit & CP Trend</h3>
+                        <h3><i class="fas fa-chart-line"></i> Intensiteit Trend</h3>
+                        <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">
+                            <i class="fas fa-info-circle"></i> Langetermijn trend over weken - dagelijkse fluctuaties zijn normaal
+                        </p>
                         <div style="margin-bottom: 1rem;">
-                            <select id="trend-period" class="form-control" onchange="updateTrendCharts()" style="max-width: 200px;">
-                                <option value="30">Laatste 30 dagen</option>
-                                <option value="60">Laatste 60 dagen</option>
-                                <option value="90" selected>Laatste 90 dagen</option>
-                                <option value="all">Alle tijd</option>
-                            </select>
+                            <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('intensity', 7)" id="intensity-7days">7 dagen</button>
+                            <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('intensity', 30)" id="intensity-30days" style="background: var(--primary-color);">30 dagen</button>
+                            <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('intensity', 90)" id="intensity-90days">90 dagen</button>
+                            <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('intensity', 'all')" id="intensity-all">Alles</button>
                         </div>
                         <canvas id="intensity-trend-chart" style="max-height: 300px;"></canvas>
+                        <div id="intensity-stats" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 0.5rem;"></div>
+                    </div>
+
+                    <!-- CP Trend -->
+                    <div class="card" id="cp-trend-card" style="display: none;">
+                        <h3><i class="fas fa-chart-area"></i> Control Pause Progressie</h3>
+                        <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">
+                            <i class="fas fa-info-circle"></i> Objectieve fysiologische marker - normaal: 20-40 seconden
+                        </p>
+                        <div style="margin-bottom: 1rem;">
+                            <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('cp', 30)" id="cp-30days" style="background: var(--primary-color);">30 dagen</button>
+                            <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('cp', 90)" id="cp-90days">90 dagen</button>
+                            <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('cp', 'all')" id="cp-all">Alles</button>
+                        </div>
+                        <canvas id="cp-chart" style="max-height: 300px;"></canvas>
+                        <div id="cp-stats" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 0.5rem;"></div>
                     </div>
 
                     <!-- CP vs Intensity Correlation -->
@@ -2359,6 +2340,16 @@
                     <div class="card">
                         <h3><i class="fas fa-chart-bar"></i> Wekelijkse Gemiddeldes</h3>
                         <canvas id="weekly-averages-chart" style="max-height: 300px;"></canvas>
+                    </div>
+
+                    <!-- Trigger Analysis -->
+                    <div class="card" id="triggers-card" style="display: none;">
+                        <h3><i class="fas fa-bolt"></i> Trigger Analyse</h3>
+                        <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">
+                            <i class="fas fa-info-circle"></i> Identificeer patronen voor betere preventie
+                        </p>
+                        <canvas id="triggers-chart" style="max-height: 300px;"></canvas>
+                        <div id="triggers-stats" style="margin-top: 1rem;"></div>
                     </div>
 
                     <div id="journal-entries">
@@ -6549,9 +6540,22 @@ Wil je je voorkeuren wijzigen?`;
                 
                 journalSnapshot.forEach((doc) => {
                     const data = doc.data();
+                    
+                    // BACKWARDS COMPATIBILITY: Map old intensiteit fields to new field
+                    // Old entries had intensiteitVoor and intensiteitNa
+                    // New entries have single intensiteit field
+                    let intensiteit = data.intensiteit;
+                    if (intensiteit === null || intensiteit === undefined) {
+                        // Use intensiteitNa as fallback (post-exercise feeling)
+                        if (data.intensiteitNa !== null && data.intensiteitNa !== undefined) {
+                            intensiteit = data.intensiteitNa;
+                        }
+                    }
+                    
                     allJournalEntries.push({
                         id: doc.id,
                         ...data,
+                        intensiteit: intensiteit, // Override with mapped value
                         timestamp: data.timestamp?.toDate() || new Date()
                     });
                 });
@@ -6567,9 +6571,19 @@ Wil je je voorkeuren wijzigen?`;
                 
                 simpleSnapshot.forEach((doc) => {
                     const data = doc.data();
+                    
+                    // BACKWARDS COMPATIBILITY: Map old intensiteit fields
+                    let intensiteit = data.intensiteit;
+                    if (intensiteit === null || intensiteit === undefined) {
+                        if (data.intensiteitNa !== null && data.intensiteitNa !== undefined) {
+                            intensiteit = data.intensiteitNa;
+                        }
+                    }
+                    
                     allJournalEntries.push({
                         id: doc.id,
                         ...data,
+                        intensiteit: intensiteit,
                         timestamp: data.timestamp?.toDate() || new Date()
                     });
                 });
@@ -7589,7 +7603,7 @@ Wil je je voorkeuren wijzigen?`;
     }
 
     function createIntensityTrendChart() {
-        const canvas = document.getElementById('intensity-chart');
+        const canvas = document.getElementById('intensity-trend-chart');
         const statsContainer = document.getElementById('intensity-stats');
         if (!canvas || !statsContainer) return;
         
@@ -7608,6 +7622,15 @@ Wil je je voorkeuren wijzigen?`;
             return;
         }
         
+        // Check if we have any intensity or CP data
+        const hasIntensity = entries.some(e => e.intensiteit !== null && e.intensiteit !== undefined);
+        const hasCP = entries.some(e => e.cpScore);
+        
+        if (!hasIntensity && !hasCP) {
+            canvas.parentElement.innerHTML = '<p style="text-align: center; color: var(--text-light);">Nog geen data met intensiteit of CP scores. Deze verschijnen zodra je nieuwe entries maakt!</p>';
+            return;
+        }
+        
         // Prepare data
         const dates = entries.map(e => e.timestamp.toLocaleDateString('nl-BE', { month: 'short', day: 'numeric' }));
         const intensityData = entries.map(e => e.intensiteit !== null && e.intensiteit !== undefined ? e.intensiteit : null);
@@ -7618,35 +7641,43 @@ Wil je je voorkeuren wijzigen?`;
             window.intensityTrendChartInstance.destroy();
         }
         
+        // Build datasets array - only include datasets with data
+        const datasets = [];
+        
+        if (hasIntensity) {
+            datasets.push({
+                label: 'Intensiteit',
+                data: intensityData,
+                borderColor: '#ef4444',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                borderWidth: 2,
+                tension: 0.3,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                yAxisID: 'y'
+            });
+        }
+        
+        if (hasCP) {
+            datasets.push({
+                label: 'CP Score',
+                data: cpData,
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                borderWidth: 2,
+                tension: 0.3,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                yAxisID: 'y1'
+            });
+        }
+        
         // Create chart
         window.intensityTrendChartInstance = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: dates,
-                datasets: [
-                    {
-                        label: 'Intensiteit',
-                        data: intensityData,
-                        borderColor: '#ef4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        yAxisID: 'y'
-                    },
-                    {
-                        label: 'CP Score',
-                        data: cpData,
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        pointRadius: 4,
-                        pointHoverRadius: 6,
-                        yAxisID: 'y1'
-                    }
-                ]
+                datasets: datasets
             },
             options: {
                 responsive: true,
@@ -7676,32 +7707,36 @@ Wil je je voorkeuren wijzigen?`;
                     }
                 },
                 scales: {
-                    y: {
-                        type: 'linear',
-                        position: 'left',
-                        title: {
-                            display: true,
-                            text: 'Intensiteit (0-10)',
-                            color: '#ef4444'
-                        },
-                        min: 0,
-                        max: 10,
-                        ticks: { color: '#ef4444' },
-                        grid: { color: 'rgba(255,255,255,0.1)' }
-                    },
-                    y1: {
-                        type: 'linear',
-                        position: 'right',
-                        title: {
-                            display: true,
-                            text: 'CP Score (sec)',
-                            color: '#10b981'
-                        },
-                        min: 0,
-                        max: 60,
-                        ticks: { color: '#10b981' },
-                        grid: { drawOnChartArea: false }
-                    },
+                    ...(hasIntensity && {
+                        y: {
+                            type: 'linear',
+                            position: hasCP ? 'left' : 'left',
+                            title: {
+                                display: true,
+                                text: 'Intensiteit (0-10)',
+                                color: '#ef4444'
+                            },
+                            min: 0,
+                            max: 10,
+                            ticks: { color: '#ef4444' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    }),
+                    ...(hasCP && {
+                        y1: {
+                            type: 'linear',
+                            position: hasIntensity ? 'right' : 'left',
+                            title: {
+                                display: true,
+                                text: 'CP Score (sec)',
+                                color: '#10b981'
+                            },
+                            min: 0,
+                            max: 60,
+                            ticks: { color: '#10b981' },
+                            grid: { drawOnChartArea: hasIntensity ? false : true }
+                        }
+                    }),
                     x: {
                         ticks: { color: '#999', maxRotation: 45, minRotation: 45 },
                         grid: { color: 'rgba(255,255,255,0.1)' }
@@ -7926,6 +7961,33 @@ Wil je je voorkeuren wijzigen?`;
             return;
         }
         
+        // Check what data we have
+        const hasIntensityData = avgIntensities.some(v => v !== null);
+        const hasCPData = avgCPs.some(v => v !== null);
+        
+        // Build datasets
+        const weeklyDatasets = [];
+        if (hasIntensityData) {
+            weeklyDatasets.push({
+                label: 'Gemiddelde Intensiteit',
+                data: avgIntensities,
+                backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                borderColor: '#ef4444',
+                borderWidth: 1,
+                yAxisID: 'y'
+            });
+        }
+        if (hasCPData) {
+            weeklyDatasets.push({
+                label: 'Gemiddelde CP',
+                data: avgCPs,
+                backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                borderColor: '#10b981',
+                borderWidth: 1,
+                yAxisID: 'y1'
+            });
+        }
+        
         // Destroy existing chart
         if (window.weeklyAveragesChartInstance) {
             window.weeklyAveragesChartInstance.destroy();
@@ -7936,24 +7998,7 @@ Wil je je voorkeuren wijzigen?`;
             type: 'bar',
             data: {
                 labels: weeks,
-                datasets: [
-                    {
-                        label: 'Gemiddelde Intensiteit',
-                        data: avgIntensities,
-                        backgroundColor: 'rgba(239, 68, 68, 0.6)',
-                        borderColor: '#ef4444',
-                        borderWidth: 1,
-                        yAxisID: 'y'
-                    },
-                    {
-                        label: 'Gemiddelde CP',
-                        data: avgCPs,
-                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
-                        borderColor: '#10b981',
-                        borderWidth: 1,
-                        yAxisID: 'y1'
-                    }
-                ]
+                datasets: weeklyDatasets
             },
             options: {
                 responsive: true,
@@ -7979,32 +8024,36 @@ Wil je je voorkeuren wijzigen?`;
                     }
                 },
                 scales: {
-                    y: {
-                        type: 'linear',
-                        position: 'left',
-                        title: {
-                            display: true,
-                            text: 'Intensiteit',
-                            color: '#ef4444'
-                        },
-                        min: 0,
-                        max: 10,
-                        ticks: { color: '#ef4444' },
-                        grid: { color: 'rgba(255,255,255,0.1)' }
-                    },
-                    y1: {
-                        type: 'linear',
-                        position: 'right',
-                        title: {
-                            display: true,
-                            text: 'CP Score',
-                            color: '#10b981'
-                        },
-                        min: 0,
-                        max: 60,
-                        ticks: { color: '#10b981' },
-                        grid: { drawOnChartArea: false }
-                    },
+                    ...(hasIntensityData && {
+                        y: {
+                            type: 'linear',
+                            position: hasCPData ? 'left' : 'left',
+                            title: {
+                                display: true,
+                                text: 'Intensiteit',
+                                color: '#ef4444'
+                            },
+                            min: 0,
+                            max: 10,
+                            ticks: { color: '#ef4444' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    }),
+                    ...(hasCPData && {
+                        y1: {
+                            type: 'linear',
+                            position: hasIntensityData ? 'right' : 'left',
+                            title: {
+                                display: true,
+                                text: 'CP Score',
+                                color: '#10b981'
+                            },
+                            min: 0,
+                            max: 60,
+                            ticks: { color: '#10b981' },
+                            grid: { drawOnChartArea: hasIntensityData ? false : true }
+                        }
+                    }),
                     x: {
                         ticks: { color: '#999' },
                         grid: { color: 'rgba(255,255,255,0.1)' }

@@ -1766,6 +1766,14 @@
                             </select>
                         </div>
 
+                        <div class="form-group">
+                            <label><i class="fas fa-volume-up"></i> Audio begeleiding:</label>
+                            <select class="form-control" id="buteyko-audio" onchange="updateButeykoAudio()">
+                                <option value="tones" selected>Zachte tonen</option>
+                                <option value="silence">Stil</option>
+                            </select>
+                        </div>
+
                         <div class="form-group" id="hold-duration-group" style="display: block;">
                             <label style="margin-bottom: 0.5rem; display: block;">⏱️ Adempauze duur: <strong><span id="hold-duration-display">3</span> seconden</strong></label>
                             <div class="range-container">
@@ -1974,6 +1982,14 @@
                             <select class="form-control" id="breathing-pattern" onchange="updateBreathingPattern()">
                                 <option value="gentle" selected>Zachte oefening (10 sec vrij ademhalen + adempauze)</option>
                                 <option value="extended">Verlengde adempauze (in/uit → pauze → herhaal)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-volume-up"></i> Audio begeleiding:</label>
+                            <select class="form-control" id="buteyko-audio" onchange="updateButeykoAudio()">
+                                <option value="tones" selected>Zachte tonen</option>
+                                <option value="silence">Stil</option>
                             </select>
                         </div>
 
@@ -2615,6 +2631,7 @@
     };
     let resonantBPM = 5.5; // breaths per minute
     let resonantAudioMode = 'silence';
+    let butekyoAudioMode = 'tones'; // Buteyko audio enabled by default
     let resonantInterval = null;
     let resonantStartTime = null;
     let resonantPaused = false;
@@ -4543,11 +4560,146 @@ Wil je je voorkeuren wijzigen?`;
     // BUTEYKO FUNCTIONS
     // ============================================
 
+
+    // Play audio cue for Buteyko exercises
+    async function playButeykoCue(type = 'start') {
+        if (!resonantAudioContext) {
+            try {
+                resonantAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+                await unlockAudioContext();
+            } catch (error) {
+                console.warn('Buteyko audio init failed:', error);
+                return;
+            }
+        }
+        
+        try {
+            // iOS FIX: Wait for resume
+            if (resonantAudioContext.state === 'suspended') {
+                await resonantAudioContext.resume();
+                console.log('🔊 Buteyko audio resumed');
+            }
+            
+            // Double check
+            if (resonantAudioContext.state !== 'running') {
+                console.warn('⚠️ Buteyko audio not running');
+                return;
+            }
+            
+            const now = resonantAudioContext.currentTime;
+            
+            if (type === 'start') {
+                // Start: Two quick beeps (E5, then G5)
+                playBeep(659.25, 0.15, now);
+                playBeep(783.99, 0.15, now + 0.2);
+            } else if (type === 'stop') {
+                // Stop: Three descending beeps (G5, E5, C5)
+                playBeep(783.99, 0.15, now);
+                playBeep(659.25, 0.15, now + 0.2);
+                playBeep(523.25, 0.2, now + 0.4);
+            }
+        } catch (error) {
+            console.warn('Buteyko audio error:', error);
+        }
+    }
+    
+    // Play audio cue for Buteyko breathing phases
+    async function playButeykoBreathCue(phase) {
+        // Check if audio is enabled for Buteyko
+        if (butekyoAudioMode === 'silence') {
+            return; // Audio disabled
+        }
+        
+        if (!resonantAudioContext) {
+            try {
+                console.log('🔊 Creating audio context for phase:', phase);
+                resonantAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+                await unlockAudioContext();
+            } catch (error) {
+                console.warn('⚠️ Buteyko audio not available:', error);
+                return;
+            }
+        }
+        
+        try {
+            // Resume if suspended
+            if (resonantAudioContext.state === 'suspended') {
+                await resonantAudioContext.resume();
+            }
+            
+            if (resonantAudioContext.state !== 'running') {
+                console.warn('⚠️ Audio context not running for phase:', phase, 'state:', resonantAudioContext.state);
+                return;
+            }
+            
+            console.log('🎵 Playing Buteyko audio cue:', phase);
+            const now = resonantAudioContext.currentTime;
+            
+            // Different tones for different phases
+            switch(phase) {
+                case 'inhale':
+                    // Inhale: Rising tone (C5 → E5)
+                    playBeep(523.25, 0.12, now);
+                    playBeep(659.25, 0.12, now + 0.13);
+                    break;
+                    
+                case 'exhale':
+                    // Exhale: Falling tone (E5 → C5)
+                    playBeep(659.25, 0.12, now);
+                    playBeep(523.25, 0.12, now + 0.13);
+                    break;
+                    
+                case 'hold':
+                    // Hold: Single mid tone (D5)
+                    playBeep(587.33, 0.2, now);
+                    break;
+                    
+                case 'freeBreathing':
+                    // Free breathing: Quick double beep (A4)
+                    playBeep(440, 0.08, now);
+                    playBeep(440, 0.08, now + 0.1);
+                    break;
+                    
+                case 'complete':
+                    // Complete cycle: Triple ascending (C5 → E5 → G5)
+                    playBeep(523.25, 0.15, now);
+                    playBeep(659.25, 0.15, now + 0.18);
+                    playBeep(783.99, 0.2, now + 0.36);
+                    break;
+            }
+        } catch (error) {
+            console.warn('Buteyko breathing audio error:', error);
+        }
+    }
+
+    // Helper: Play single beep
+    function playBeep(frequency, duration, startTime) {
+        const oscillator = resonantAudioContext.createOscillator();
+        const gainNode = resonantAudioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(resonantAudioContext.destination);
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.value = frequency;
+        
+        // Envelope: fade in and out
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(0.15, startTime + 0.02);
+        gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+        
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration);
+    }
+
     window.startCPMeasurement = function() {
         if (cpIsRunning) return;
         
         cpStartTime = Date.now();
         cpIsRunning = true;
+        
+        // Play start audio cue
+        playButeykoCue('start');
         
         // Request wake lock to keep screen on
         requestWakeLock();
@@ -4566,6 +4718,9 @@ Wil je je voorkeuren wijzigen?`;
         
         clearInterval(cpInterval);
         const cpScore = Math.floor((Date.now() - cpStartTime) / 1000);
+        
+        // Play stop audio cue
+        playButeykoCue('stop');
         
         cpIsRunning = false;
         
@@ -4886,7 +5041,7 @@ Wil je je voorkeuren wijzigen?`;
         return html;
     }
 
-    window.startBreathing = function() {
+    window.startBreathing = async function() {
         if (isBreathing) return;
         
         isBreathing = true;
@@ -4897,6 +5052,19 @@ Wil je je voorkeuren wijzigen?`;
         const pattern = getBreathingPattern(breathingPattern);
         
         devLog('Starting breathing exercise:', { pattern: breathingPattern, config: pattern });
+        
+        // AUDIO: Initialize audio context for Buteyko breathing cues (if enabled)
+        if (butekyoAudioMode !== 'silence' && !resonantAudioContext) {
+            console.log('🔊 Initializing audio for Buteyko breathing...');
+            try {
+                resonantAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+                await unlockAudioContext();
+                console.log('✅ Buteyko audio ready:', resonantAudioContext.state);
+            } catch (error) {
+                console.warn('⚠️ Buteyko audio init failed:', error);
+                // Continue without audio
+            }
+        }
         
         document.getElementById('start-breathing').disabled = true;
         document.getElementById('stop-breathing').disabled = false;
@@ -4944,9 +5112,10 @@ Wil je je voorkeuren wijzigen?`;
             
             switch(currentPhase) {
                 case 'freeBreathing':
-                    // Trigger haptic at phase start
+                    // Trigger haptic and audio at phase start
                     if (phaseTime === 1) {
                         triggerHaptic('inhale');
+                        playButeykoBreathCue('freeBreathing');
                     }
                     
                     circle.textContent = `Vrij ademen - ${phaseTime}s`;
@@ -4966,9 +5135,10 @@ Wil je je voorkeuren wijzigen?`;
                     break;
                     
                 case 'inhale':
-                    // Trigger haptic at phase start
+                    // Trigger haptic and audio at phase start
                     if (phaseTime === 1) {
                         triggerHaptic('inhale');
+                        playButeykoBreathCue('inhale');
                     }
                     
                     if (breathingPattern === 'extended') {
@@ -5004,9 +5174,10 @@ Wil je je voorkeuren wijzigen?`;
                     break;
                     
                 case 'hold':
-                    // Trigger haptic at phase start
+                    // Trigger haptic and audio at phase start
                     if (phaseTime === 1) {
                         triggerHaptic('hold');
+                        playButeykoBreathCue('hold');
                     }
                     
                     if (breathingPattern === 'gentle') {
@@ -5025,11 +5196,13 @@ Wil je je voorkeuren wijzigen?`;
                             
                             if (completedCycles >= totalCycles) {
                                 triggerHaptic('complete'); // Success haptic!
+                                playButeykoBreathCue('complete'); // Success audio!
                                 stopBreathing();
                                 return;
                             } else {
                                 currentPhase = 'freeBreathing';
                                 triggerHaptic('inhale'); // Next cycle start
+                                playButeykoBreathCue('freeBreathing'); // Audio for next cycle
                             }
                         }
                     } else if (breathingPattern === 'extended') {
@@ -5048,6 +5221,7 @@ Wil je je voorkeuren wijzigen?`;
                             
                             if (completedCycles >= totalCycles) {
                                 triggerHaptic('complete'); // Success haptic!
+                                playButeykoBreathCue('complete'); // Success audio!
                                 stopBreathing();
                                 return;
                             } else {
@@ -5065,14 +5239,16 @@ Wil je je voorkeuren wijzigen?`;
                             phaseTime = 0;
                             currentPhase = 'exhale';
                             triggerHaptic('exhale'); // Exhale transition
+                            playButeykoBreathCue('exhale'); // Audio for exhale
                         }
                     }
                     break;
                     
                 case 'exhale':
-                    // Trigger haptic at phase start
+                    // Trigger haptic and audio at phase start
                     if (phaseTime === 1) {
                         triggerHaptic('exhale');
+                        playButeykoBreathCue('exhale');
                     }
                     
                     circle.textContent = `Uitademen (${phaseTime}s)`;
@@ -5091,6 +5267,7 @@ Wil je je voorkeuren wijzigen?`;
                             // For extended: go to hold after exhale
                             currentPhase = 'hold';
                             triggerHaptic('hold'); // Haptic for hold transition
+                            playButeykoBreathCue('hold'); // Audio for hold
                         } else {
                             // For standard/advanced: complete cycle
                             completedCycles++;
@@ -5100,11 +5277,13 @@ Wil je je voorkeuren wijzigen?`;
                             
                             if (completedCycles >= totalCycles) {
                                 triggerHaptic('complete'); // Success haptic!
+                                playButeykoBreathCue('complete'); // Success audio!
                                 stopBreathing();
                                 return;
                             } else {
                                 currentPhase = 'inhale';
                                 triggerHaptic('inhale'); // Next cycle start
+                                playButeykoBreathCue('inhale'); // Audio for next cycle
                             }
                         }
                     }
@@ -5241,25 +5420,71 @@ Wil je je voorkeuren wijzigen?`;
     }
 
     // Initialize audio context for resonant breathing
-    function initResonantAudio() {
+    async function initResonantAudio() {
         if (!resonantAudioContext) {
             try {
                 resonantAudioContext = new (window.AudioContext || window.webkitAudioContext)();
                 console.log('✅ Resonant audio context initialized');
+                
+                // iOS FIX: Wait for unlock to complete
+                await unlockAudioContext();
+                
+                console.log('📱 Audio ready - state:', resonantAudioContext.state);
             } catch (error) {
                 console.warn('⚠️ Web Audio API not supported:', error);
             }
         }
     }
+    
+    // Unlock audio context for iOS (must be called after user interaction)
+    async function unlockAudioContext() {
+        if (!resonantAudioContext) return;
+        
+        try {
+            // Play silent sound to unlock audio on iOS
+            const oscillator = resonantAudioContext.createOscillator();
+            const gainNode = resonantAudioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(resonantAudioContext.destination);
+            
+            // Silent (gain = 0)
+            gainNode.gain.value = 0;
+            oscillator.frequency.value = 440;
+            
+            const now = resonantAudioContext.currentTime;
+            oscillator.start(now);
+            oscillator.stop(now + 0.01);
+            
+            // iOS FIX: Wait for resume
+            if (resonantAudioContext.state === 'suspended') {
+                await resonantAudioContext.resume();
+                console.log('✅ Audio context unlocked for iOS');
+            }
+            
+            // Wait a tiny bit for the silent sound to complete
+            await new Promise(resolve => setTimeout(resolve, 50));
+            
+        } catch (error) {
+            console.warn('Audio unlock error:', error);
+        }
+    }
 
-    // Play a tone for breath guidance
-    function playResonantTone(frequency = 440, duration = 0.15) {
+    // Play a tone for breath guidance (iOS compatible)
+    async function playResonantTone(frequency = 440, duration = 0.15) {
         if (resonantAudioMode === 'silence' || !resonantAudioContext) return;
         
         try {
-            // Resume audio context if suspended (browser autoplay policy)
+            // iOS FIX: Wait for resume() to complete
             if (resonantAudioContext.state === 'suspended') {
-                resonantAudioContext.resume();
+                await resonantAudioContext.resume();
+                console.log('🔊 Audio context resumed');
+            }
+            
+            // Double check we're running
+            if (resonantAudioContext.state !== 'running') {
+                console.warn('⚠️ Audio context not running:', resonantAudioContext.state);
+                return;
             }
             
             const oscillator = resonantAudioContext.createOscillator();
@@ -5273,12 +5498,13 @@ Wil je je voorkeuren wijzigen?`;
             oscillator.frequency.value = frequency;
             
             // Fade in and out
-            gainNode.gain.setValueAtTime(0, resonantAudioContext.currentTime);
-            gainNode.gain.linearRampToValueAtTime(0.1, resonantAudioContext.currentTime + 0.05);
-            gainNode.gain.linearRampToValueAtTime(0, resonantAudioContext.currentTime + duration);
+            const now = resonantAudioContext.currentTime;
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(0.15, now + 0.05);
+            gainNode.gain.linearRampToValueAtTime(0, now + duration);
             
-            oscillator.start(resonantAudioContext.currentTime);
-            oscillator.stop(resonantAudioContext.currentTime + duration);
+            oscillator.start(now);
+            oscillator.stop(now + duration);
         } catch (error) {
             console.warn('Audio playback error:', error);
         }
@@ -5400,14 +5626,45 @@ Wil je je voorkeuren wijzigen?`;
         devLog('Resonant audio mode:', resonantAudioMode);
     };
 
-    window.startResonantBreathing = function() {
+    window.updateButeykoAudio = async function() {
+        const select = document.getElementById('buteyko-audio');
+        butekyoAudioMode = select.value;
+        
+        // Initialize audio context if switching from silence to tones
+        if (butekyoAudioMode !== 'silence' && !resonantAudioContext) {
+            console.log('🔊 Initializing audio for Buteyko...');
+            try {
+                resonantAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+                await unlockAudioContext();
+                console.log('✅ Audio ready for Buteyko');
+            } catch (error) {
+                console.warn('⚠️ Audio init failed:', error);
+                showUserMessage('⚠️ Audio kon niet worden geïnitialiseerd', 'warning');
+                return;
+            }
+        }
+        
+        // Play a test sound to show it works
+        if (butekyoAudioMode === 'tones') {
+            // Play test: inhale cue (C5 → E5)
+            await playButeykoBreathCue('inhale');
+            showUserMessage('🔊 Buteyko audio geactiveerd - je hoort nu tonen bij elke fase', 'info');
+        } else {
+            showUserMessage('🔇 Buteyko audio uitgeschakeld', 'info');
+        }
+        
+        devLog('Buteyko audio mode:', butekyoAudioMode);
+    };
+
+    window.startResonantBreathing = async function() {
         if (!resonantCanvas) {
             initResonantCanvas();
         }
         
-        // Initialize audio if needed (and not silence mode)
+        // iOS FIX: Wait for audio initialization to complete
         if (resonantAudioMode !== 'silence' && !resonantAudioContext) {
-            initResonantAudio();
+            console.log('🔊 Initializing audio for iOS...');
+            await initResonantAudio();
         }
         
         // Request wake lock

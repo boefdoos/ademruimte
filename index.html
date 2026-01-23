@@ -2187,20 +2187,40 @@
                         </select>
                     </div>
 
-                    <!-- Chart tijdelijk disabled - wordt vervangen met evidence-based visualisatie -->
-                    <div class="card" style="background: rgba(107, 155, 209, 0.1); border-left: 4px solid var(--primary-color); margin-bottom: 1.5rem;">
-                        <h3><i class="fas fa-chart-line"></i> Voortgang Visualisatie</h3>
-                        <p style="color: var(--text-light);">
-                            De voortgangsgrafiek wordt binnenkort vervangen met evidence-based visualisaties gericht op:
-                        </p>
-                        <ul style="color: var(--text-light); margin: 1rem 0;">
-                            <li><strong>Consistentie tracking</strong>: Hoeveel dagen per week je oefent</li>
-                            <li><strong>CP trend</strong>: Control Pause progressie over weken/maanden</li>
-                            <li><strong>Trigger patronen</strong>: Visuele analyse van je triggers</li>
-                        </ul>
-                        <p style="color: var(--text-light); font-size: 0.9rem;">
-                            💡 <em>Voor nu focus je op consistentie - dagelijks oefenen is belangrijker dan perfecte scores!</em>
-                        </p>
+                    <!-- Evidence-Based Visualisaties -->
+                    
+                    <!-- Consistentie Heatmap -->
+                    <div class="card">
+                        <h3><i class="fas fa-calendar-check"></i> Therapietrouw - Laatste 8 Weken</h3>
+                        <div id="consistency-heatmap" style="margin: 1rem 0;"></div>
+                        <div id="consistency-stats" style="margin-top: 1rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.5rem;"></div>
+                    </div>
+
+                    <!-- Intensity & CP Trends -->
+                    <div class="card">
+                        <h3><i class="fas fa-chart-line"></i> Intensiteit & CP Trend</h3>
+                        <div style="margin-bottom: 1rem;">
+                            <select id="trend-period" class="form-control" onchange="updateTrendCharts()" style="max-width: 200px;">
+                                <option value="30">Laatste 30 dagen</option>
+                                <option value="60">Laatste 60 dagen</option>
+                                <option value="90" selected>Laatste 90 dagen</option>
+                                <option value="all">Alle tijd</option>
+                            </select>
+                        </div>
+                        <canvas id="intensity-trend-chart" style="max-height: 300px;"></canvas>
+                    </div>
+
+                    <!-- CP vs Intensity Correlation -->
+                    <div class="card" id="correlation-card" style="display: none;">
+                        <h3><i class="fas fa-project-diagram"></i> CP vs Intensiteit Correlatie</h3>
+                        <canvas id="correlation-chart" style="max-height: 300px;"></canvas>
+                        <div id="correlation-stats" style="margin-top: 1rem;"></div>
+                    </div>
+
+                    <!-- Weekly Averages -->
+                    <div class="card">
+                        <h3><i class="fas fa-chart-bar"></i> Wekelijkse Gemiddeldes</h3>
+                        <canvas id="weekly-averages-chart" style="max-height: 300px;"></canvas>
                     </div>
 
                     <div id="journal-entries">
@@ -2305,20 +2325,40 @@
                         </select>
                     </div>
 
-                    <!-- Chart tijdelijk disabled - wordt vervangen met evidence-based visualisatie -->
-                    <div class="card" style="background: rgba(107, 155, 209, 0.1); border-left: 4px solid var(--primary-color); margin-bottom: 1.5rem;">
-                        <h3><i class="fas fa-chart-line"></i> Voortgang Visualisatie</h3>
-                        <p style="color: var(--text-light);">
-                            De voortgangsgrafiek wordt binnenkort vervangen met evidence-based visualisaties gericht op:
-                        </p>
-                        <ul style="color: var(--text-light); margin: 1rem 0;">
-                            <li><strong>Consistentie tracking</strong>: Hoeveel dagen per week je oefent</li>
-                            <li><strong>CP trend</strong>: Control Pause progressie over weken/maanden</li>
-                            <li><strong>Trigger patronen</strong>: Visuele analyse van je triggers</li>
-                        </ul>
-                        <p style="color: var(--text-light); font-size: 0.9rem;">
-                            💡 <em>Voor nu focus je op consistentie - dagelijks oefenen is belangrijker dan perfecte scores!</em>
-                        </p>
+                    <!-- Evidence-Based Visualisaties -->
+                    
+                    <!-- Consistentie Heatmap -->
+                    <div class="card">
+                        <h3><i class="fas fa-calendar-check"></i> Therapietrouw - Laatste 8 Weken</h3>
+                        <div id="consistency-heatmap" style="margin: 1rem 0;"></div>
+                        <div id="consistency-stats" style="margin-top: 1rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.5rem;"></div>
+                    </div>
+
+                    <!-- Intensity & CP Trends -->
+                    <div class="card">
+                        <h3><i class="fas fa-chart-line"></i> Intensiteit & CP Trend</h3>
+                        <div style="margin-bottom: 1rem;">
+                            <select id="trend-period" class="form-control" onchange="updateTrendCharts()" style="max-width: 200px;">
+                                <option value="30">Laatste 30 dagen</option>
+                                <option value="60">Laatste 60 dagen</option>
+                                <option value="90" selected>Laatste 90 dagen</option>
+                                <option value="all">Alle tijd</option>
+                            </select>
+                        </div>
+                        <canvas id="intensity-trend-chart" style="max-height: 300px;"></canvas>
+                    </div>
+
+                    <!-- CP vs Intensity Correlation -->
+                    <div class="card" id="correlation-card" style="display: none;">
+                        <h3><i class="fas fa-project-diagram"></i> CP vs Intensiteit Correlatie</h3>
+                        <canvas id="correlation-chart" style="max-height: 300px;"></canvas>
+                        <div id="correlation-stats" style="margin-top: 1rem;"></div>
+                    </div>
+
+                    <!-- Weekly Averages -->
+                    <div class="card">
+                        <h3><i class="fas fa-chart-bar"></i> Wekelijkse Gemiddeldes</h3>
+                        <canvas id="weekly-averages-chart" style="max-height: 300px;"></canvas>
                     </div>
 
                     <div id="journal-entries">
@@ -2430,8 +2470,33 @@
                 <input type="text" class="form-control" id="entry-trigger" placeholder="Wat triggerde de symptomen?">
             </div>
 
-
-
+            <div class="form-group">
+                <label style="margin-bottom: 0.5rem; display: block;">
+                    <i class="fas fa-heartbeat"></i> Hoe voel je je na deze sessie? (optioneel)
+                </label>
+                <div class="range-container">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--text-light);">
+                        <span>😌 Goed (0)</span>
+                        <span>😫 Ernstig (10)</span>
+                    </div>
+                    <input type="range" 
+                           class="range-slider" 
+                           id="entry-intensity" 
+                           min="0" 
+                           max="10" 
+                           value="5"
+                           oninput="updateIntensityValue()">
+                    <div style="text-align: center; margin-top: 0.5rem;">
+                        <strong style="font-size: 1.5rem; color: var(--primary-color);">
+                            <span id="intensity-value">5</span>/10
+                        </strong>
+                    </div>
+                </div>
+                <small style="color: var(--text-light); display: block; margin-top: 0.5rem;">
+                    <i class="fas fa-info-circle"></i> <strong>Let op:</strong> Dit meet je algemene toestand, niet of de sessie direct hielp. 
+                    Verbetering gebeurt over weken/maanden. Deze score helpt langetermijn trends te zien.
+                </small>
+            </div>
 
             <div class="form-group" id="cp-score-group">
                 <label for="entry-cp-score"><i class="fas fa-stopwatch"></i> Control Pause Score (optioneel, in seconden):</label>
@@ -6288,6 +6353,8 @@ Wil je je voorkeuren wijzigen?`;
         // Reset form
         document.getElementById('entry-technique').selectedIndex = 0;
         document.getElementById('entry-trigger').value = '';
+        document.getElementById('entry-intensity').value = '5';
+        document.getElementById('intensity-value').textContent = '5';
         document.getElementById('entry-notes').value = '';
         
         // Reset medication fields
@@ -6347,6 +6414,7 @@ Wil je je voorkeuren wijzigen?`;
             const entry = {
                 techniekGebruikt: document.getElementById('entry-technique').value,
                 trigger: document.getElementById('entry-trigger').value,
+                intensiteit: parseInt(document.getElementById('entry-intensity').value) || null,
                 sensaties: sensations,
                 notities: document.getElementById('entry-notes').value,
                 timestamp: new Date(),
@@ -6400,6 +6468,9 @@ Wil je je voorkeuren wijzigen?`;
 
             // Add to local array
             allJournalEntries.unshift(entry);
+            
+            // Update visualizations
+            createAllVisualizations();
             
             // IMPROVED: Update streak tracking - add today's date to session dates
             const today = new Date().toDateString();
@@ -6458,6 +6529,7 @@ Wil je je voorkeuren wijzigen?`;
             displayJournalEntries();
             generateInsights();
             // createProgressChart(); // Chart disabled
+            createAllVisualizations(); // Create all evidence-based charts
             return;
         }
         
@@ -6543,6 +6615,7 @@ Wil je je voorkeuren wijzigen?`;
             displayJournalEntries();
             generateInsights();
             // createProgressChart(); // Chart disabled
+            createAllVisualizations(); // Create all evidence-based charts
             
             // Set default chart filter state (10 days)
             if (currentTab === 'dagboek') {
@@ -6640,6 +6713,7 @@ Wil je je voorkeuren wijzigen?`;
                         </div>
                         
                         ${entry.cpScore ? `<div style="margin: 0.5rem 0;"><small><strong>CP:</strong> ${entry.cpScore}s</small></div>` : ''}
+                        ${entry.intensiteit !== null && entry.intensiteit !== undefined ? `<div style="margin: 0.5rem 0;"><small><strong>Gevoel:</strong> <span style="color: ${entry.intensiteit <= 3 ? '#10b981' : entry.intensiteit <= 6 ? '#f59e0b' : '#ef4444'}; font-weight: bold;">${entry.intensiteit}/10</span></small></div>` : ''}
                         ${entry.trigger ? `<div style="margin: 0.5rem 0;"><small><strong>Trigger:</strong> ${entry.trigger}</small></div>` : ''}
                         ${entry.sensaties && entry.sensaties.length ? `<div style="margin: 0.5rem 0;"><small><strong>Sensaties:</strong> ${entry.sensaties.join(', ')}</small></div>` : ''}
                         ${entry.symptomen && entry.symptomen.length ? `<div style="margin: 0.5rem 0;"><small><strong>Sensaties:</strong> ${entry.symptomen.join(', ')}</small></div>` : ''}
@@ -6692,6 +6766,7 @@ Wil je je voorkeuren wijzigen?`;
             text += `Datum: ${entry.timestamp.toLocaleString('nl-BE')}\n`;
             text += `Techniek: ${entry.techniekGebruikt}\n`;
             text += `Trigger: ${entry.trigger || 'Geen'}\n`;
+            if (entry.intensiteit !== null && entry.intensiteit !== undefined) text += `Gevoel na sessie: ${entry.intensiteit}/10\n`;
             // Intensiteit vóór/ná removed - not evidence-based for chronic tracking
             if (entry.cpScore) text += `CP Score: ${entry.cpScore} seconden\n`;
             // Support both old (symptomen) and new (sensaties) entries
@@ -7402,6 +7477,855 @@ Wil je je voorkeuren wijzigen?`;
     //     chartFilter = filter;
     //     createProgressChart();
     // };
+
+    // ============================================
+    // EVIDENCE-BASED VISUALIZATIONS
+    // ============================================
+
+    function createConsistencyHeatmap() {
+        const container = document.getElementById('consistency-heatmap');
+        const statsContainer = document.getElementById('consistency-stats');
+        
+        if (!container || !statsContainer) return;
+        
+        // Get last 8 weeks of data
+        const today = new Date();
+        const eightWeeksAgo = new Date(today.getTime() - 56 * 24 * 60 * 60 * 1000);
+        
+        // Create date map of sessions
+        const sessionDates = new Set();
+        allJournalEntries.forEach(entry => {
+            if (entry.timestamp >= eightWeeksAgo) {
+                const dateStr = entry.timestamp.toDateString();
+                sessionDates.add(dateStr);
+            }
+        });
+        
+        // Build heatmap HTML
+        let html = '<div style="display: grid; grid-template-columns: auto repeat(7, 1fr); gap: 0.25rem; font-size: 0.75rem;">';
+        
+        // Day labels
+        html += '<div></div>'; // Empty corner
+        ['Ma', 'Di', 'Wo', 'Do', 'Vr', 'Za', 'Zo'].forEach(day => {
+            html += `<div style="text-align: center; color: var(--text-light);">${day}</div>`;
+        });
+        
+        // Calculate weeks
+        const weeks = [];
+        let currentDate = new Date(eightWeeksAgo);
+        
+        // Align to Monday
+        while (currentDate.getDay() !== 1) {
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        
+        for (let w = 0; w < 8; w++) {
+            const week = [];
+            for (let d = 0; d < 7; d++) {
+                const dateStr = currentDate.toDateString();
+                const hasSession = sessionDates.has(dateStr);
+                const isFuture = currentDate > today;
+                week.push({ date: new Date(currentDate), hasSession, isFuture });
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            weeks.push(week);
+        }
+        
+        // Render weeks
+        weeks.forEach((week, weekIndex) => {
+            html += `<div style="text-align: right; padding-right: 0.5rem; color: var(--text-light);">W${weekIndex + 1}</div>`;
+            week.forEach(day => {
+                const bgColor = day.isFuture ? '#333' : 
+                               day.hasSession ? '#10b981' : 
+                               '#444';
+                const title = day.isFuture ? '' : 
+                             day.hasSession ? `${day.date.toLocaleDateString('nl-BE')}: Geoefend ✅` :
+                             `${day.date.toLocaleDateString('nl-BE')}: Niet geoefend`;
+                html += `<div style="background: ${bgColor}; height: 2rem; border-radius: 0.25rem; cursor: help;" title="${title}"></div>`;
+            });
+        });
+        
+        html += '</div>';
+        
+        // Legend
+        html += '<div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem; font-size: 0.8rem;">';
+        html += '<div style="display: flex; align-items: center; gap: 0.5rem;"><div style="width: 1rem; height: 1rem; background: #10b981; border-radius: 0.25rem;"></div><span>Geoefend</span></div>';
+        html += '<div style="display: flex; align-items: center; gap: 0.5rem;"><div style="width: 1rem; height: 1rem; background: #444; border-radius: 0.25rem;"></div><span>Niet geoefend</span></div>';
+        html += '</div>';
+        
+        container.innerHTML = html;
+        
+        // Calculate stats
+        const totalDays = Array.from(sessionDates).filter(dateStr => {
+            const date = new Date(dateStr);
+            return date >= eightWeeksAgo && date <= today;
+        }).length;
+        
+        const percentage = Math.round((totalDays / 56) * 100);
+        
+        let message = '';
+        let messageColor = '';
+        if (percentage >= 80) {
+            message = '🌟 Uitstekend! Je therapietrouw is excellent.';
+            messageColor = '#10b981';
+        } else if (percentage >= 60) {
+            message = '👍 Goed bezig! Probeer consistent te blijven.';
+            messageColor = '#f59e0b';
+        } else if (percentage >= 40) {
+            message = '💪 Je bent op weg! Probeer vaker te oefenen.';
+            messageColor = '#f59e0b';
+        } else {
+            message = '⚡ Focus op consistentie - dagelijks oefenen is de sleutel!';
+            messageColor = '#ef4444';
+        }
+        
+        statsContainer.innerHTML = `
+            <div style="text-align: center;">
+                <div style="font-size: 2rem; font-weight: bold; color: ${messageColor};">${percentage}%</div>
+                <div style="margin: 0.5rem 0;"><strong>${totalDays} van 56 dagen</strong> geoefend</div>
+                <div style="color: var(--text-light);">${message}</div>
+            </div>
+        `;
+    }
+
+    function createIntensityTrendChart() {
+        const canvas = document.getElementById('intensity-chart');
+        const statsContainer = document.getElementById('intensity-stats');
+        if (!canvas || !statsContainer) return;
+        
+        const ctx = canvas.getContext('2d');
+        
+        // Use period variable
+        const daysAgo = intensityChartPeriod === 'all' ? 365 * 10 : intensityChartPeriod;
+        const cutoffDate = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
+        
+        const entries = allJournalEntries
+            .filter(e => e.timestamp >= cutoffDate)
+            .sort((a, b) => a.timestamp - b.timestamp);
+        
+        if (entries.length === 0) {
+            canvas.parentElement.innerHTML = '<p style="text-align: center; color: var(--text-light);">Nog geen data beschikbaar. Maak entries aan om trends te zien!</p>';
+            return;
+        }
+        
+        // Prepare data
+        const dates = entries.map(e => e.timestamp.toLocaleDateString('nl-BE', { month: 'short', day: 'numeric' }));
+        const intensityData = entries.map(e => e.intensiteit !== null && e.intensiteit !== undefined ? e.intensiteit : null);
+        const cpData = entries.map(e => e.cpScore || null);
+        
+        // Destroy existing chart
+        if (window.intensityTrendChartInstance) {
+            window.intensityTrendChartInstance.destroy();
+        }
+        
+        // Create chart
+        window.intensityTrendChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [
+                    {
+                        label: 'Intensiteit',
+                        data: intensityData,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'CP Score',
+                        data: cpData,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { color: '#fff' }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) label += ': ';
+                                if (context.parsed.y !== null) {
+                                    label += context.dataset.yAxisID === 'y' ? 
+                                            context.parsed.y + '/10' : 
+                                            context.parsed.y + 's';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Intensiteit (0-10)',
+                            color: '#ef4444'
+                        },
+                        min: 0,
+                        max: 10,
+                        ticks: { color: '#ef4444' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'CP Score (sec)',
+                            color: '#10b981'
+                        },
+                        min: 0,
+                        max: 60,
+                        ticks: { color: '#10b981' },
+                        grid: { drawOnChartArea: false }
+                    },
+                    x: {
+                        ticks: { color: '#999', maxRotation: 45, minRotation: 45 },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    }
+                }
+            }
+        });
+        
+        // Calculate and display stats
+        const intensityValues = intensityData.filter(v => v !== null);
+        if (intensityValues.length > 0) {
+            const avgIntensity = intensityValues.reduce((a, b) => a + b, 0) / intensityValues.length;
+            const firstIntensity = intensityValues[0];
+            const lastIntensity = intensityValues[intensityValues.length - 1];
+            const change = lastIntensity - firstIntensity;
+            const trend = change <= 0 ? '↓' : '↑';
+            const changeColor = change <= 0 ? '#10b981' : '#ef4444';
+            
+            let message = '';
+            if (avgIntensity <= 3) {
+                message = '🌟 Uitstekend! Je intensiteit is laag.';
+            } else if (avgIntensity <= 5) {
+                message = '👍 Goed! Blijf zo doorgaan.';
+            } else if (avgIntensity <= 7) {
+                message = '💪 Op weg naar verbetering!';
+            } else {
+                message = '⚡ Blijf consistent oefenen - verbetering komt!';
+            }
+            
+            statsContainer.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; text-align: center;">
+                    <div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #ef4444;">${avgIntensity.toFixed(1)}/10</div>
+                        <div style="color: var(--text-light); font-size: 0.9rem;">Gemiddeld</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: ${changeColor};">${trend} ${Math.abs(change).toFixed(1)}</div>
+                        <div style="color: var(--text-light); font-size: 0.9rem;">Verandering</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #6b9bd1;">${intensityValues.length}</div>
+                        <div style="color: var(--text-light); font-size: 0.9rem;">Metingen</div>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; text-align: center; color: var(--text-light);">
+                    ${message}
+                </div>
+            `;
+        }
+    }
+
+    function createCorrelationChart() {
+        const canvas = document.getElementById('correlation-chart');
+        const card = document.getElementById('correlation-card');
+        const statsContainer = document.getElementById('correlation-stats');
+        
+        if (!canvas || !card || !statsContainer) return;
+        
+        // Get entries with both CP and intensity
+        const validEntries = allJournalEntries.filter(e => 
+            e.cpScore && 
+            e.intensiteit !== null && 
+            e.intensiteit !== undefined
+        );
+        
+        if (validEntries.length < 5) {
+            card.style.display = 'none';
+            return;
+        }
+        
+        card.style.display = 'block';
+        
+        const ctx = canvas.getContext('2d');
+        
+        // Prepare scatter data
+        const scatterData = validEntries.map(e => ({
+            x: e.cpScore,
+            y: e.intensiteit
+        }));
+        
+        // Calculate correlation
+        const cpValues = validEntries.map(e => e.cpScore);
+        const intensityValues = validEntries.map(e => e.intensiteit);
+        const correlation = calculateCorrelation(cpValues, intensityValues);
+        
+        // Destroy existing chart
+        if (window.correlationChartInstance) {
+            window.correlationChartInstance.destroy();
+        }
+        
+        // Create chart
+        window.correlationChartInstance = new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'CP vs Intensiteit',
+                    data: scatterData,
+                    backgroundColor: 'rgba(107, 155, 209, 0.6)',
+                    borderColor: '#6b9bd1',
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `CP: ${context.parsed.x}s, Intensiteit: ${context.parsed.y}/10`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'CP Score (seconden)',
+                            color: '#fff'
+                        },
+                        ticks: { color: '#999' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Intensiteit (0-10)',
+                            color: '#fff'
+                        },
+                        min: 0,
+                        max: 10,
+                        ticks: { color: '#999' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    }
+                }
+            }
+        });
+        
+        // Show correlation stats
+        let interpretation = '';
+        let color = '';
+        if (Math.abs(correlation) >= 0.7) {
+            interpretation = 'Sterke correlatie';
+            color = '#10b981';
+        } else if (Math.abs(correlation) >= 0.4) {
+            interpretation = 'Matige correlatie';
+            color = '#f59e0b';
+        } else {
+            interpretation = 'Zwakke correlatie';
+            color = '#999';
+        }
+        
+        const message = correlation < 0 ? 
+            '✅ Hogere CP scores hangen samen met lagere intensiteit - dit is positief!' :
+            '⚠️ Onverwacht: hogere CP hangt samen met hogere intensiteit';
+        
+        statsContainer.innerHTML = `
+            <div style="padding: 1rem; background: rgba(107, 155, 209, 0.1); border-radius: 0.5rem;">
+                <div style="text-align: center;">
+                    <div style="font-size: 1.5rem; font-weight: bold; color: ${color};">r = ${correlation.toFixed(2)}</div>
+                    <div style="margin: 0.5rem 0;"><strong>${interpretation}</strong> (${validEntries.length} datapunten)</div>
+                    <div style="color: var(--text-light); font-size: 0.9rem;">${message}</div>
+                </div>
+            </div>
+        `;
+    }
+
+    function createWeeklyAveragesChart() {
+        const canvas = document.getElementById('weekly-averages-chart');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        
+        // Group by week
+        const weeklyData = {};
+        
+        allJournalEntries.forEach(entry => {
+            // Get week number
+            const weekStart = new Date(entry.timestamp);
+            weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1); // Monday
+            const weekKey = weekStart.toLocaleDateString('nl-BE', { month: 'short', day: 'numeric' });
+            
+            if (!weeklyData[weekKey]) {
+                weeklyData[weekKey] = {
+                    intensities: [],
+                    cpScores: [],
+                    count: 0
+                };
+            }
+            
+            weeklyData[weekKey].count++;
+            if (entry.intensiteit !== null && entry.intensiteit !== undefined) {
+                weeklyData[weekKey].intensities.push(entry.intensiteit);
+            }
+            if (entry.cpScore) {
+                weeklyData[weekKey].cpScores.push(entry.cpScore);
+            }
+        });
+        
+        // Get last 8 weeks
+        const weeks = Object.keys(weeklyData).slice(-8);
+        const avgIntensities = weeks.map(week => {
+            const intensities = weeklyData[week].intensities;
+            return intensities.length > 0 ? 
+                   intensities.reduce((a, b) => a + b, 0) / intensities.length : 
+                   null;
+        });
+        const avgCPs = weeks.map(week => {
+            const cpScores = weeklyData[week].cpScores;
+            return cpScores.length > 0 ? 
+                   cpScores.reduce((a, b) => a + b, 0) / cpScores.length : 
+                   null;
+        });
+        
+        if (weeks.length === 0) {
+            canvas.parentElement.innerHTML = '<p style="text-align: center; color: var(--text-light);">Nog geen wekelijkse data beschikbaar.</p>';
+            return;
+        }
+        
+        // Destroy existing chart
+        if (window.weeklyAveragesChartInstance) {
+            window.weeklyAveragesChartInstance.destroy();
+        }
+        
+        // Create chart
+        window.weeklyAveragesChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: weeks,
+                datasets: [
+                    {
+                        label: 'Gemiddelde Intensiteit',
+                        data: avgIntensities,
+                        backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                        borderColor: '#ef4444',
+                        borderWidth: 1,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Gemiddelde CP',
+                        data: avgCPs,
+                        backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                        borderColor: '#10b981',
+                        borderWidth: 1,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { color: '#fff' }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) label += ': ';
+                                if (context.parsed.y !== null) {
+                                    label += context.dataset.yAxisID === 'y' ? 
+                                            context.parsed.y.toFixed(1) + '/10' : 
+                                            context.parsed.y.toFixed(1) + 's';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Intensiteit',
+                            color: '#ef4444'
+                        },
+                        min: 0,
+                        max: 10,
+                        ticks: { color: '#ef4444' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'CP Score',
+                            color: '#10b981'
+                        },
+                        min: 0,
+                        max: 60,
+                        ticks: { color: '#10b981' },
+                        grid: { drawOnChartArea: false }
+                    },
+                    x: {
+                        ticks: { color: '#999' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    }
+                }
+            }
+        });
+    }
+
+    function createCPTrendChart() {
+        const canvas = document.getElementById('cp-chart');
+        const card = document.getElementById('cp-trend-card');
+        const statsContainer = document.getElementById('cp-stats');
+        
+        if (!canvas || !card || !statsContainer) return;
+        
+        // Get entries with CP scores
+        const cpEntries = allJournalEntries.filter(e => e.cpScore);
+        
+        if (cpEntries.length < 2) {
+            card.style.display = 'none';
+            return;
+        }
+        
+        card.style.display = 'block';
+        
+        // Filter by period
+        const days = cpChartPeriod === 'all' ? 365 * 10 : cpChartPeriod;
+        const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+        const filteredEntries = cpEntries
+            .filter(e => e.timestamp >= cutoffDate)
+            .sort((a, b) => a.timestamp - b.timestamp);
+        
+        if (filteredEntries.length === 0) {
+            card.style.display = 'none';
+            return;
+        }
+        
+        const ctx = canvas.getContext('2d');
+        const dates = filteredEntries.map(e => e.timestamp.toLocaleDateString('nl-BE', { month: 'short', day: 'numeric' }));
+        const cpScores = filteredEntries.map(e => e.cpScore);
+        
+        // Destroy existing
+        if (window.cpTrendChartInstance) {
+            window.cpTrendChartInstance.destroy();
+        }
+        
+        // Create chart
+        window.cpTrendChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'CP Score (seconden)',
+                    data: cpScores,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.3,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `CP: ${context.parsed.y} seconden`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'CP Score (seconden)',
+                            color: '#fff'
+                        },
+                        min: 0,
+                        max: 60,
+                        ticks: { color: '#999' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    },
+                    x: {
+                        ticks: { color: '#999', maxRotation: 45, minRotation: 45 },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    }
+                }
+            }
+        });
+        
+        // Calculate stats
+        const firstCP = cpScores[0];
+        const lastCP = cpScores[cpScores.length - 1];
+        const avgCP = cpScores.reduce((a, b) => a + b, 0) / cpScores.length;
+        const change = lastCP - firstCP;
+        const trend = change >= 0 ? '↗️' : '↘️';
+        const changeColor = change >= 0 ? '#10b981' : '#ef4444';
+        
+        let assessment = '';
+        if (avgCP >= 30) {
+            assessment = '🌟 Uitstekend! Je CO2-tolerantie is goed ontwikkeld.';
+        } else if (avgCP >= 20) {
+            assessment = '👍 Goed! Je bent binnen normale range.';
+        } else if (avgCP >= 15) {
+            assessment = '💪 Op weg naar verbetering. Blijf consistent oefenen!';
+        } else {
+            assessment = '⚡ Blijf oefenen - verbetering komt met tijd en consistentie.';
+        }
+        
+        statsContainer.innerHTML = `
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; text-align: center;">
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #10b981;">${avgCP.toFixed(1)}s</div>
+                    <div style="color: var(--text-light); font-size: 0.9rem;">Gemiddeld</div>
+                </div>
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: ${changeColor};">${trend} ${Math.abs(change).toFixed(1)}s</div>
+                    <div style="color: var(--text-light); font-size: 0.9rem;">Verandering</div>
+                </div>
+                <div>
+                    <div style="font-size: 1.5rem; font-weight: bold; color: #6b9bd1;">${cpScores.length}</div>
+                    <div style="color: var(--text-light); font-size: 0.9rem;">Metingen</div>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; text-align: center; color: var(--text-light);">
+                ${assessment}
+            </div>
+        `;
+    }
+
+    function createTriggersChart() {
+        const canvas = document.getElementById('triggers-chart');
+        const card = document.getElementById('triggers-card');
+        const statsContainer = document.getElementById('triggers-stats');
+        
+        if (!canvas || !card || !statsContainer) return;
+        
+        // Count triggers
+        const triggerCounts = {};
+        allJournalEntries.forEach(entry => {
+            if (entry.trigger && entry.trigger.trim()) {
+                const trigger = entry.trigger.toLowerCase().trim();
+                triggerCounts[trigger] = (triggerCounts[trigger] || 0) + 1;
+            }
+        });
+        
+        const triggers = Object.keys(triggerCounts);
+        
+        if (triggers.length === 0) {
+            card.style.display = 'none';
+            return;
+        }
+        
+        card.style.display = 'block';
+        
+        // Sort by count and take top 10
+        const sortedTriggers = triggers
+            .sort((a, b) => triggerCounts[b] - triggerCounts[a])
+            .slice(0, 10);
+        
+        const counts = sortedTriggers.map(t => triggerCounts[t]);
+        
+        const ctx = canvas.getContext('2d');
+        
+        // Destroy existing
+        if (window.triggersChartInstance) {
+            window.triggersChartInstance.destroy();
+        }
+        
+        // Create chart
+        window.triggersChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: sortedTriggers,
+                datasets: [{
+                    label: 'Aantal keer',
+                    data: counts,
+                    backgroundColor: 'rgba(107, 155, 209, 0.6)',
+                    borderColor: '#6b9bd1',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                indexAxis: 'y',
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Aantal keer',
+                            color: '#fff'
+                        },
+                        ticks: { color: '#999' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    },
+                    y: {
+                        ticks: { color: '#999' },
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+        
+        // Show stats
+        const totalTriggers = Object.values(triggerCounts).reduce((a, b) => a + b, 0);
+        const topTrigger = sortedTriggers[0];
+        const topCount = triggerCounts[topTrigger];
+        const topPercent = Math.round((topCount / totalTriggers) * 100);
+        
+        statsContainer.innerHTML = `
+            <div style="padding: 1rem; background: rgba(107, 155, 209, 0.1); border-radius: 0.5rem; text-align: center;">
+                <div><strong>Meest voorkomend:</strong> "${topTrigger}" (${topCount}× - ${topPercent}%)</div>
+                <div style="margin-top: 0.5rem; color: var(--text-light); font-size: 0.9rem;">
+                    💡 Focus op preventie voor deze trigger
+                </div>
+            </div>
+        `;
+    }
+
+    // Helper: Calculate Pearson correlation
+    function calculateCorrelation(x, y) {
+        const n = x.length;
+        if (n === 0) return 0;
+        
+        const sumX = x.reduce((a, b) => a + b, 0);
+        const sumY = y.reduce((a, b) => a + b, 0);
+        const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+        const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+        const sumY2 = y.reduce((sum, yi) => sum + yi * yi, 0);
+        
+        const numerator = n * sumXY - sumX * sumY;
+        const denominator = Math.sqrt((n * sumX2 - sumX * sumX) * (n * sumY2 - sumY * sumY));
+        
+        return denominator === 0 ? 0 : numerator / denominator;
+    }
+
+    // Update all charts
+    window.updateTrendCharts = function() {
+        createIntensityTrendChart();
+        createCorrelationChart();
+        createWeeklyAveragesChart();
+    };
+
+    // Update chart period and refresh
+    let intensityChartPeriod = 30; // default 30 days
+    let cpChartPeriod = 30; // default 30 days
+    
+    window.updateChartPeriod = function(chartType, days) {
+        // Update period
+        if (chartType === 'intensity') {
+            intensityChartPeriod = days;
+            // Update button states
+            document.querySelectorAll('[id^="intensity-"]').forEach(btn => {
+                btn.style.background = '';
+            });
+            const btnId = days === 'all' ? 'intensity-all' : `intensity-${days}days`;
+            const btn = document.getElementById(btnId);
+            if (btn) btn.style.background = 'var(--primary-color)';
+            // Refresh chart
+            createIntensityTrendChart();
+        } else if (chartType === 'cp') {
+            cpChartPeriod = days;
+            // Update button states
+            document.querySelectorAll('[id^="cp-"]').forEach(btn => {
+                btn.style.background = '';
+            });
+            const btnId = days === 'all' ? 'cp-all' : `cp-${days}days`;
+            const btn = document.getElementById(btnId);
+            if (btn) btn.style.background = 'var(--primary-color)';
+            // Refresh chart
+            createCPTrendChart();
+        }
+    };
+
+    // Create all visualizations when data loads
+    function createAllVisualizations() {
+        if (allJournalEntries.length === 0) {
+            // Hide all chart cards when no data
+            const cards = ['cp-trend-card', 'correlation-card', 'triggers-card'];
+            cards.forEach(id => {
+                const card = document.getElementById(id);
+                if (card) card.style.display = 'none';
+            });
+            return;
+        }
+        
+        // Create all charts
+        createConsistencyHeatmap();
+        createIntensityTrendChart();
+        createCPTrendChart();
+        createCorrelationChart();
+        createWeeklyAveragesChart();
+        createTriggersChart();
+    }
+
+    // ============================================
+    // END VISUALIZATIONS
+    // ============================================
+
+    window.updateIntensityValue = function() {
+        const slider = document.getElementById('entry-intensity');
+        const display = document.getElementById('intensity-value');
+        if (slider && display) {
+            display.textContent = slider.value;
+        }
+    };
 
     window.updateRangeValue = function(sliderId, valueId) {
         const slider = document.getElementById(sliderId);

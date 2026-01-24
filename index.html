@@ -8231,10 +8231,11 @@ Wil je je voorkeuren wijzigen?`;
         
         if (!canvas || !card || !statsContainer) return;
         
-        // Count triggers (supports both old string and new array format)
+        // Count triggers - ONLY use new checkbox format
+        // Old string triggers are ignored for clean statistics
         const triggerCounts = {};
         allJournalEntries.forEach(entry => {
-            // New format: triggers array
+            // Only count entries with new triggers array format
             if (entry.triggers && Array.isArray(entry.triggers)) {
                 entry.triggers.forEach(trigger => {
                     if (trigger && trigger.trim()) {
@@ -8243,13 +8244,7 @@ Wil je je voorkeuren wijzigen?`;
                     }
                 });
             }
-            // Old format: single trigger string (backwards compatibility)
-            else if (entry.trigger && entry.trigger.trim()) {
-                const triggers = entry.trigger.split(',').map(t => t.trim()).filter(t => t);
-                triggers.forEach(trigger => {
-                    triggerCounts[trigger] = (triggerCounts[trigger] || 0) + 1;
-                });
-            }
+            // Old trigger string format is IGNORED for statistics
         });
         
         const triggers = Object.keys(triggerCounts);

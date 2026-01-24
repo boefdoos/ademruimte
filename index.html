@@ -2163,15 +2163,18 @@
                     <button class="sub-tab-btn active" onclick="showSubTab('dagboek-sub-content')">
                         <i class="fas fa-book"></i> Dagboek
                     </button>
+                    <button class="sub-tab-btn" onclick="showSubTab('grafieken-sub-content')">
+                        <i class="fas fa-chart-bar"></i> Grafieken
+                    </button>
                     <button class="sub-tab-btn" onclick="showSubTab('hrv-sub-content')">
-                        <i class="fas fa-chart-line"></i> HRV Log
+                        <i class="fas fa-heartbeat"></i> HRV Log
                     </button>
                 </div>
                 
                 <!-- Dagboek Sub-content -->
                 <div id="dagboek-sub-content" class="sub-tab-content active">
                     <div class="card">
-                    <h2><i class="fas fa-chart-bar"></i> Dagboek & Statistieken</h2>
+                    <h2><i class="fas fa-book"></i> Ademhalingsdagboek</h2>
                     
                     <div class="button-group" style="margin-bottom: 2rem;">
                         <button class="btn btn-primary" onclick="openJournalModal()"><i class="fas fa-pen"></i> Nieuwe Entry</button>
@@ -2185,6 +2188,25 @@
                             <option value="last30">Laatste 30 dagen</option>
                             <option value="all">Alle entries</option>
                         </select>
+                    </div>
+
+                    <div id="journal-entries">
+                        <div style="text-align: center; color: var(--text-light); margin: 2rem 0;">
+                            <p>Nog geen dagboek entries. Begin met je eerste oefening!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                
+                <!-- HRV Sub-content -->
+                
+                <!-- Grafieken Sub-content -->
+                <div id="grafieken-sub-content" class="sub-tab-content">
+                    <div class="card">
+                        <h2><i class="fas fa-chart-bar"></i> Visualisaties & Statistieken</h2>
+                        <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                            <i class="fas fa-info-circle"></i> Evidence-based tracking van je progressie over tijd
+                        </p>
                     </div>
 
                                         <!-- Evidence-Based Visualisaties -->
@@ -2251,15 +2273,7 @@
                     </div>
 
 
-                    <div id="journal-entries">
-                        <div style="text-align: center; color: var(--text-light); margin: 2rem 0;">
-                            <p>Nog geen dagboek entries. Begin met je eerste oefening!</p>
-                        </div>
-                    </div>
                 </div>
-            </div>
-                
-                <!-- HRV Sub-content -->
                 <div id="hrv-sub-content" class="sub-tab-content">
                     <div class="card">
                     <h2><i class="fas fa-chart-line"></i> Heart Rate Variability (HRV) Tracking</h2>
@@ -2337,7 +2351,7 @@
             <!-- Dagboek Tab -->
             <div id="dagboek" class="tab-content" style="display: none;">
                 <div class="card">
-                    <h2><i class="fas fa-chart-bar"></i> Dagboek & Statistieken</h2>
+                    <h2><i class="fas fa-book"></i> Ademhalingsdagboek</h2>
                     
                     <div class="button-group" style="margin-bottom: 2rem;">
                         <button class="btn btn-primary" onclick="openJournalModal()"><i class="fas fa-pen"></i> Nieuwe Entry</button>
@@ -7724,7 +7738,8 @@ Wil je je voorkeuren wijzigen?`;
             borderWidth: 2,
             tension: 0.3,
             pointRadius: 4,
-            pointHoverRadius: 6
+            pointHoverRadius: 6,
+            spanGaps: true  // Connect line across missing days
         }];
         
         // Create chart
@@ -8146,7 +8161,8 @@ Wil je je voorkeuren wijzigen?`;
                     tension: 0.3,
                     pointRadius: 5,
                     pointHoverRadius: 7,
-                    fill: true
+                    fill: true,
+                    spanGaps: true  // Connect line across missing days
                 }]
             },
             options: {

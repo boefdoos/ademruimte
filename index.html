@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
@@ -8,16 +9,18 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Ademruimte - Hyperventilatie Helper</title>
-    
-    <!-- Preload kritieke resources -->
-    <link rel="preconnect" href="https://www.gstatic.com">
-    <link rel="preconnect" href="https://unpkg.com">
-    
-    <!-- Chart.js voor statistieken -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+```
+<!-- Preload kritieke resources -->
+<link rel="preconnect" href="https://www.gstatic.com">
+<link rel="preconnect" href="https://unpkg.com">
+
+<!-- Chart.js voor statistieken -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+<!-- Font Awesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+```
 
 <style>
     /* CSS Custom Properties voor consistentie */
@@ -1428,6 +1431,7 @@
         }
     }
 </style>
+
 </head>
 
 <body>
@@ -1441,1270 +1445,1278 @@
         </div>
     </div>
 
-    <!-- Authentication Screen -->
-    <div id="auth-screen" class="hidden">
-        <div class="auth-card">
-            <div id="login-form">
-                <h2>Inloggen bij Ademruimte</h2>
-                <p>Vul je gegevens in om door te gaan</p>
-                
-                <div class="form-group">
-                    <label for="login-email">E-mailadres:</label>
-                    <input type="email" class="form-control" id="login-email" placeholder="je@email.com" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="login-password">Wachtwoord:</label>
-                    <input type="password" class="form-control" id="login-password" placeholder="Wachtwoord" required>
-                </div>
-                
-                <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
-                    <input type="checkbox" id="remember-me" style="margin: 0; flex-shrink: 0;">
-                    <label for="remember-me" style="margin: 0; font-size: 0.9rem; cursor: pointer;">Onthoud mij</label>
-                </div>
-                
-                <div class="button-group">
-                    <button class="btn btn-primary" id="login-btn" onclick="loginUser()">
-                        <span>🔑 Inloggen</span>
-                    </button>
-                </div>
-                
-                <p style="margin-top: 1rem; font-size: 0.875rem;">
-                    <button onclick="showPasswordResetForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">Wachtwoord vergeten?</button>
-                </p>
-                
-                <p style="margin-top: 1.5rem; font-size: 0.875rem;">
-                    Nog geen account? 
-                    <button id="show-register" onclick="showRegisterForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Registreren</button>
+```
+<!-- Authentication Screen -->
+<div id="auth-screen" class="hidden">
+    <div class="auth-card">
+        <div id="login-form">
+            <h2>Inloggen bij Ademruimte</h2>
+            <p>Vul je gegevens in om door te gaan</p>
+            
+            <div class="form-group">
+                <label for="login-email">E-mailadres:</label>
+                <input type="email" class="form-control" id="login-email" placeholder="je@email.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="login-password">Wachtwoord:</label>
+                <input type="password" class="form-control" id="login-password" placeholder="Wachtwoord" required>
+            </div>
+            
+            <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+                <input type="checkbox" id="remember-me" style="margin: 0; flex-shrink: 0;">
+                <label for="remember-me" style="margin: 0; font-size: 0.9rem; cursor: pointer;">Onthoud mij</label>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn btn-primary" id="login-btn" onclick="loginUser()">
+                    <span>🔑 Inloggen</span>
+                </button>
+            </div>
+            
+            <p style="margin-top: 1rem; font-size: 0.875rem;">
+                <button onclick="showPasswordResetForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; text-decoration: underline;">Wachtwoord vergeten?</button>
+            </p>
+            
+            <p style="margin-top: 1.5rem; font-size: 0.875rem;">
+                Nog geen account? 
+                <button id="show-register" onclick="showRegisterForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Registreren</button>
+            </p>
+        </div>
+        
+        <div id="register-form" class="hidden">
+            <h2>Account Aanmaken</h2>
+            <p>Maak een nieuw account aan voor Ademruimte</p>
+            
+            <div class="form-group">
+                <label for="register-name">Volledige naam:</label>
+                <input type="text" class="form-control" id="register-name" placeholder="Je naam" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="register-email">E-mailadres:</label>
+                <input type="email" class="form-control" id="register-email" placeholder="je@email.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="register-password">Wachtwoord:</label>
+                <input type="password" class="form-control" id="register-password" placeholder="Minimaal 6 karakters" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="register-password-confirm">Bevestig wachtwoord:</label>
+                <input type="password" class="form-control" id="register-password-confirm" placeholder="Herhaal wachtwoord" required>
+            </div>
+            
+            <div style="background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.85rem;">
+                <p style="margin: 0; color: var(--text-dark);">
+                    <i class="fas fa-shield-alt"></i> Door een account aan te maken, ga je akkoord met ons 
+                    <a href="privacy-policy.html" target="_blank" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">privacybeleid</a> 
+                    en het gebruik van cookies voor app functionaliteit.
                 </p>
             </div>
             
-            <div id="register-form" class="hidden">
-                <h2>Account Aanmaken</h2>
-                <p>Maak een nieuw account aan voor Ademruimte</p>
-                
-                <div class="form-group">
-                    <label for="register-name">Volledige naam:</label>
-                    <input type="text" class="form-control" id="register-name" placeholder="Je naam" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="register-email">E-mailadres:</label>
-                    <input type="email" class="form-control" id="register-email" placeholder="je@email.com" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="register-password">Wachtwoord:</label>
-                    <input type="password" class="form-control" id="register-password" placeholder="Minimaal 6 karakters" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="register-password-confirm">Bevestig wachtwoord:</label>
-                    <input type="password" class="form-control" id="register-password-confirm" placeholder="Herhaal wachtwoord" required>
-                </div>
-                
-                <div style="background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.85rem;">
-                    <p style="margin: 0; color: var(--text-dark);">
-                        <i class="fas fa-shield-alt"></i> Door een account aan te maken, ga je akkoord met ons 
-                        <a href="privacy-policy.html" target="_blank" style="color: var(--primary-color); text-decoration: none; font-weight: 600;">privacybeleid</a> 
-                        en het gebruik van cookies voor app functionaliteit.
-                    </p>
-                </div>
-                
-                <div class="button-group">
-                    <button class="btn btn-success" id="register-btn" onclick="registerUser()">
-                        <span>✅ Account Aanmaken</span>
-                    </button>
-                </div>
-                
-                <p style="margin-top: 1.5rem; font-size: 0.875rem;">
-                    Al een account? 
-                    <button onclick="showLoginForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Inloggen</button>
-                </p>
+            <div class="button-group">
+                <button class="btn btn-success" id="register-btn" onclick="registerUser()">
+                    <span>✅ Account Aanmaken</span>
+                </button>
             </div>
             
-            <div id="password-reset-form" class="hidden">
-                <h2>Wachtwoord Resetten</h2>
-                <p>Vul je e-mailadres in om een reset link te ontvangen</p>
-                
-                <div class="form-group">
-                    <label for="reset-email">E-mailadres:</label>
-                    <input type="email" class="form-control" id="reset-email" placeholder="je@email.com" required>
-                </div>
-                
-                <div class="button-group">
-                    <button class="btn btn-warning" id="reset-btn" onclick="resetPassword()">
-                        <span>📧 Reset Link Versturen</span>
-                    </button>
-                </div>
-                
-                <p style="margin-top: 1.5rem; font-size: 0.875rem;">
-                    Weet je je wachtwoord weer? 
-                    <button onclick="showLoginForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Inloggen</button>
-                </p>
+            <p style="margin-top: 1.5rem; font-size: 0.875rem;">
+                Al een account? 
+                <button onclick="showLoginForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Inloggen</button>
+            </p>
+        </div>
+        
+        <div id="password-reset-form" class="hidden">
+            <h2>Wachtwoord Resetten</h2>
+            <p>Vul je e-mailadres in om een reset link te ontvangen</p>
+            
+            <div class="form-group">
+                <label for="reset-email">E-mailadres:</label>
+                <input type="email" class="form-control" id="reset-email" placeholder="je@email.com" required>
             </div>
+            
+            <div class="button-group">
+                <button class="btn btn-warning" id="reset-btn" onclick="resetPassword()">
+                    <span>📧 Reset Link Versturen</span>
+                </button>
+            </div>
+            
+            <p style="margin-top: 1.5rem; font-size: 0.875rem;">
+                Weet je je wachtwoord weer? 
+                <button onclick="showLoginForm()" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-weight: 600;">Inloggen</button>
+            </p>
         </div>
     </div>
+</div>
 
-    <!-- Main App -->
-    <div id="main-app" class="hidden">
-        <header>
-            <div class="user-info" id="user-info">
-                <div class="spinner"></div>
+<!-- Main App -->
+<div id="main-app" class="hidden">
+    <header>
+        <div class="user-info" id="user-info">
+            <div class="spinner"></div>
+        </div>
+        <div class="header-title">
+            <h1>Ademruimte</h1>
+            <p>Evidence-based hulp bij hyperventilatie en gerelateerde klachten</p>
+        </div>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-home"></i> Vandaag</button>
+        <button class="tab-btn" data-tab="oefeningen"><i class="fas fa-wind"></i> Oefeningen</button>
+        <button class="tab-btn" data-tab="tracking"><i class="fas fa-chart-line"></i> Tracking</button>
+    </nav>
+
+    <main class="container">
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <!-- Welcome Header -->
+            <div class="welcome-header">
+                <h2 id="welcome-greeting">Welkom</h2>
+                <div class="streak-badge">
+                    <i class="fas fa-flame streak-icon"></i>
+                    <span id="streak-count">0</span> dagen streak
+                </div>
             </div>
-            <div class="header-title">
-                <h1>Ademruimte</h1>
-                <p>Evidence-based hulp bij hyperventilatie en gerelateerde klachten</p>
-            </div>
-        </header>
 
-        <nav class="nav-tabs">
-            <button class="tab-btn active" data-tab="dashboard"><i class="fas fa-home"></i> Vandaag</button>
-            <button class="tab-btn" data-tab="oefeningen"><i class="fas fa-wind"></i> Oefeningen</button>
-            <button class="tab-btn" data-tab="tracking"><i class="fas fa-chart-line"></i> Tracking</button>
-        </nav>
-
-        <main class="container">
-            <!-- Dashboard Tab -->
-            <div id="dashboard" class="tab-content active">
-                <!-- Welcome Header -->
-                <div class="welcome-header">
-                    <h2 id="welcome-greeting">Welkom</h2>
-                    <div class="streak-badge">
-                        <i class="fas fa-flame streak-icon"></i>
-                        <span id="streak-count">0</span> dagen streak
+            <!-- Daily Goals -->
+            <div class="daily-goals">
+                <h3>
+                    Vandaag's Doelen
+                    <span class="goals-progress-text" id="goals-progress-text">0/4 voltooid</span>
+                </h3>
+                
+                <!-- Goal: HRV Measurement -->
+                <div class="goal-item" id="goal-hrv">
+                    <div class="goal-header">
+                        <div class="goal-checkbox">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="goal-title">HRV Meting</div>
+                        <div class="goal-time" id="goal-hrv-time"></div>
+                    </div>
+                    <div class="goal-progress-bar">
+                        <div class="goal-progress-fill" id="goal-hrv-progress" style="width: 0%"></div>
+                    </div>
+                    <div class="goal-action" id="goal-hrv-action">
+                        <button class="goal-action-btn" onclick="showTab('tracking'); setTimeout(() => showSubTab('hrv-sub-content'), 100)">
+                            <i class="fas fa-plus"></i> Log Nu
+                        </button>
                     </div>
                 </div>
 
-                <!-- Daily Goals -->
-                <div class="daily-goals">
-                    <h3>
-                        Vandaag's Doelen
-                        <span class="goals-progress-text" id="goals-progress-text">0/4 voltooid</span>
-                    </h3>
+                <!-- Goal: Resonant Breathing -->
+                <div class="goal-item" id="goal-resonant">
+                    <div class="goal-header">
+                        <div class="goal-checkbox">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="goal-title">Resonant Breathing</div>
+                        <div class="goal-time" id="goal-resonant-time">0/2</div>
+                    </div>
+                    <div class="goal-progress-bar">
+                        <div class="goal-progress-fill" id="goal-resonant-progress" style="width: 0%"></div>
+                    </div>
+                    <div class="goal-action" id="goal-resonant-action">
+                        <button class="goal-action-btn" onclick="showTab('oefeningen'); setTimeout(() => showSubTab('resonant-sub-content'), 100)">
+                            <i class="fas fa-play"></i> Start Nu
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Goal: Journal Entry -->
+                <div class="goal-item" id="goal-journal">
+                    <div class="goal-header">
+                        <div class="goal-checkbox">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="goal-title">Dagboek Entry</div>
+                        <div class="goal-time" id="goal-journal-time"></div>
+                    </div>
+                    <div class="goal-progress-bar">
+                        <div class="goal-progress-fill" id="goal-journal-progress" style="width: 0%"></div>
+                    </div>
+                    <div class="goal-action" id="goal-journal-action">
+                        <button class="goal-action-btn" onclick="showTab('tracking'); setTimeout(() => showSubTab('dagboek-sub-content'), 100)">
+                            <i class="fas fa-edit"></i> Schrijf Entry
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Goal: Buteyko (Optional) -->
+                <div class="goal-item" id="goal-buteyko">
+                    <div class="goal-header">
+                        <div class="goal-checkbox">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="goal-title">Buteyko Oefening <small style="color: #999;">(optioneel)</small></div>
+                        <div class="goal-time" id="goal-buteyko-time"></div>
+                    </div>
+                    <div class="goal-progress-bar">
+                        <div class="goal-progress-fill" id="goal-buteyko-progress" style="width: 0%"></div>
+                    </div>
+                    <div class="goal-action" id="goal-buteyko-action">
+                        <button class="goal-action-btn" onclick="showTab('oefeningen'); setTimeout(() => showSubTab('buteyko-sub-content'), 100)">
+                            <i class="fas fa-wind"></i> Start Oefening
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Progress -->
+            <div class="weekly-progress">
+                <h3>Deze Week</h3>
+                
+                <!-- Resonant Breathing Progress -->
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span>Resonant Breathing</span>
+                        <span class="progress-value" id="weekly-resonant-text">0/14 (0%)</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill resonant" id="weekly-resonant-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- HRV Trend -->
+                <div class="progress-item">
+                    <div class="progress-label">
+                        <span>HRV Trend</span>
+                        <span class="progress-value" id="weekly-hrv-text">Geen data</span>
+                    </div>
+                    <div class="hrv-trend" id="weekly-hrv-trend">
+                        <span id="hrv-trend-icon"></span>
+                        <span id="hrv-trend-text">Nog geen metingen deze week</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personal Insights -->
+            <div class="card" style="margin-top: 2rem;">
+                <h3><i class="fas fa-lightbulb"></i> Persoonlijke Inzichten</h3>
+                <div id="insights-content" style="margin-top: 1rem;">
+                    <p style="color: var(--text-light);">Start met je eerste oefening om persoonlijke inzichten te ontvangen!</p>
+                </div>
+            </div>
+
+            <!-- Personalized Tip -->
+            <div class="card" style="margin-top: 1.5rem; background: linear-gradient(135deg, rgba(107, 155, 209, 0.1) 0%, rgba(74, 123, 167, 0.1) 100%); border-left: 4px solid var(--primary-color);">
+                <h3><i class="fas fa-star"></i> Tip van de Dag</h3>
+                <div id="tip-content" style="margin-top: 1rem;">
+                    <p>Regelmatige oefening is belangrijker dan perfectie. Begin met korte sessies!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Oefeningen Tab (Phase 2 - NEW) -->
+        <div id="oefeningen" class="tab-content">
+            <h2>Ademhalingsoefeningen</h2>
+            
+            <!-- Sub-tabs -->
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" onclick="showSubTab('buteyko-sub-content')">
+                    <i class="fas fa-wind"></i> Buteyko
+                </button>
+                <button class="sub-tab-btn" onclick="showSubTab('resonant-sub-content')">
+                    <i class="fas fa-heartbeat"></i> Resonant Breathing
+                </button>
+            </div>
+            
+            <!-- Buteyko Sub-content -->
+            <div id="buteyko-sub-content" class="sub-tab-content active">
+```
+
+<div class="card">
+                    <h2><i class="fas fa-wind"></i> Buteyko Ademhaling</h2>
+                    <p style="color: var(--text-light); margin-bottom: 0.5rem;">
+                        De Buteyko methode helpt je CO2-tolerantie te verbeteren en hyperventilatie te reduceren.
+                    </p>
+                    <div id="haptic-indicator" style="display: none; background: rgba(16, 185, 129, 0.1); padding: 0.5rem 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem;">
+                        <i class="fas fa-mobile-alt" style="color: #10b981;"></i> <span style="color: #047857;">Haptische feedback actief</span>
+                    </div>
+
+```
+                <!-- Control Pause Measurement -->
+                <div class="card" style="background: rgba(6, 182, 212, 0.1); border: 2px solid rgba(6, 182, 212, 0.2);">
+                    <h3>⏱️ Control Pause (CP) Meting</h3>
+                    <p style="margin-bottom: 1rem;">Meet je CO2-tolerantie. Normale waarden: 20-40 seconden.</p>
                     
-                    <!-- Goal: HRV Measurement -->
-                    <div class="goal-item" id="goal-hrv">
-                        <div class="goal-header">
-                            <div class="goal-checkbox">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="goal-title">HRV Meting</div>
-                            <div class="goal-time" id="goal-hrv-time"></div>
+                    <div class="cp-display" id="cp-timer">00</div>
+                    
+                    <div class="cp-controls">
+                        <button class="btn btn-primary" id="start-cp" onclick="startCPMeasurement()">Start CP Meting</button>
+                        <button class="btn btn-danger" id="stop-cp" onclick="stopCPMeasurement()" disabled>Stop</button>
+                        <button class="btn btn-warning" id="reset-cp" onclick="resetCPMeasurement()">Reset</button>
+                    </div>
+                    
+                    <div id="cp-instructions" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
+                        <strong>Instructies:</strong>
+                        <ol style="margin-top: 0.5rem;">
+                            <li>Adem normaal in en uit</li>
+                            <li>Na een normale uitademing, houd je adem in</li>
+                            <li>Klik "Start CP Meting" en stop zodra je de eerste drang voelt om te ademen</li>
+                            <li>Dit is je Control Pause score</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Breathing Exercise -->
+                <div class="card">
+                    <h3><i class="fas fa-lungs"></i> Ademhalingsoefening</h3>
+                    
+                    <div class="form-group">
+                        <label for="breathing-pattern"><i class="fas fa-lungs"></i> Selecteer Buteyko patroon:</label>
+                        <select class="form-control" id="breathing-pattern" onchange="updateBreathingPattern()">
+                            <option value="gentle" selected>Zachte oefening (10 sec vrij ademhalen + adempauze)</option>
+                            <option value="extended">Verlengde adempauze (in/uit → pauze → herhaal)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-volume-up"></i> Audio begeleiding:</label>
+                        <select class="form-control" id="buteyko-audio" onchange="updateButeykoAudio()">
+                            <option value="tones" selected>Zachte tonen</option>
+                            <option value="silence">Stil</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="hold-duration-group" style="display: block;">
+                        <label style="margin-bottom: 0.5rem; display: block;">⏱️ Adempauze duur: <strong><span id="hold-duration-display">3</span> seconden</strong></label>
+                        <div class="range-container">
+                            <input type="range" class="range-slider" id="hold-duration-slider" min="2" max="10" value="3" oninput="updateHoldDuration()">
                         </div>
-                        <div class="goal-progress-bar">
-                            <div class="goal-progress-fill" id="goal-hrv-progress" style="width: 0%"></div>
+                        <small style="color: var(--text-light); display: block; margin-top: 0.5rem;" id="hold-tip">
+                            <i class="fas fa-lightbulb"></i> Tip: Begin met 3 seconden en verhoog geleidelijk naarmate je CO2-tolerantie verbetert.
+                        </small>
+                    </div>
+
+                    <div class="form-group" id="haptic-toggle-container" style="display: none;">
+                        <label style="margin-bottom: 0.5rem; display: block;"><i class="fas fa-mobile-alt"></i> Haptische feedback (trillingen):</label>
+                        <button class="btn btn-secondary" id="haptic-toggle" onclick="toggleHaptics()" style="width: 100%;">
+                            <span id="haptic-status">Uitgeschakeld</span>
+                            <small style="display: block; font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.9;">
+                                Alleen Android • Voel vibraties bij fase overgangen
+                            </small>
+                        </button>
+                    </div>
+
+                    <div class="breathing-circle" id="breathing-circle">
+                        Bereid je voor
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="start-breathing" onclick="startBreathing()">Start Oefening</button>
+                        <button class="btn btn-danger" id="stop-breathing" onclick="stopBreathing()" disabled>Stop</button>
+                    </div>
+
+                    <div id="breathing-info" style="text-align: center; margin-top: 1rem;">
+                        <p><strong>Cyclus:</strong> <span id="cycle-count">0</span> <span id="cycle-target">van 20</span></p>
+                        <p><strong>Fase:</strong> <span id="current-phase">Rust</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <!-- End Buteyko Sub-content -->
+            
+            <!-- Resonant Sub-content -->
+            <div id="resonant-sub-content" class="sub-tab-content">
+```
+
+<div class="card">
+                    <h2><i class="fas fa-heartbeat"></i> Resonant Breathing</h2>
+                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                        Resonant breathing (coherent breathing) activeert je parasympathische zenuwstelsel en verbetert HRV. 
+                        <strong>Aanbevolen:</strong> 2× per dag, 20 minuten.
+                    </p>
+
+```
+                <!-- Session Setup -->
+                <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 2px solid rgba(16, 185, 129, 0.2);">
+                    <h3><i class="fas fa-cog"></i> Sessie Instellingen</h3>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-clock"></i> Sessie duur:</label>
+                        <div class="button-group" style="display: flex; gap: 0.5rem;">
+                            <button id="duration-10" class="btn btn-secondary" onclick="setResonantDuration(10)">10 min</button>
+                            <button id="duration-15" class="btn btn-secondary" onclick="setResonantDuration(15)">15 min</button>
+                            <button id="duration-20" class="btn btn-primary" onclick="setResonantDuration(20)">20 min ⭐</button>
                         </div>
-                        <div class="goal-action" id="goal-hrv-action">
-                            <button class="goal-action-btn" onclick="showTab('tracking'); setTimeout(() => showSubTab('hrv-sub-content'), 100)">
-                                <i class="fas fa-plus"></i> Log Nu
-                            </button>
+                        <p id="resonant-duration-display" style="margin-top: 0.5rem; color: var(--text-dark); font-weight: 600;">
+                            Geselecteerd: 20 minuten
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="margin-bottom: 0.5rem; display: block;">
+                            <i class="fas fa-lungs"></i> Ademhalingsritme: <strong><span id="resonant-bpm-display">5.5</span> ademhalingen/min</strong>
+                        </label>
+                        <div class="range-container">
+                            <input type="range" class="range-slider" id="resonant-bpm-slider" 
+                                   min="4.5" max="6.5" step="0.5" value="5.5" 
+                                   oninput="updateResonantBPM()">
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-light); margin-top: 0.25rem;">
+                            <span>4.5 bpm</span>
+                            <span>5.5 bpm (aanbevolen)</span>
+                            <span>6.5 bpm</span>
+                        </div>
+                        <small style="color: var(--text-light); display: block; margin-top: 0.5rem;">
+                            <i class="fas fa-lightbulb"></i> 5.5 ademhalingen/min is het "sweet spot" voor de meeste mensen. Begin hier en pas aan indien nodig.
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-volume-up"></i> Audio begeleiding:</label>
+                        <select class="form-control" id="resonant-audio" onchange="updateResonantAudio()">
+                            <option value="silence" selected>Stil</option>
+                            <option value="tones">Zachte tonen</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Breathing Exercise -->
+                <div class="card">
+                    <h3><i class="fas fa-play-circle"></i> Sessie</h3>
+                    
+                    <div class="resonant-circle-container" style="position: relative; display: flex; justify-content: center; align-items: center; min-height: 350px;">
+                        <canvas id="resonant-circle" width="300" height="300" style="max-width: 100%;"></canvas>
+                        <div id="resonant-phase-text" style="position: absolute; font-size: 1.5rem; font-weight: 600; color: var(--text-dark);">
+                            Klaar om te starten
                         </div>
                     </div>
 
-                    <!-- Goal: Resonant Breathing -->
-                    <div class="goal-item" id="goal-resonant">
-                        <div class="goal-header">
-                            <div class="goal-checkbox">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="goal-title">Resonant Breathing</div>
-                            <div class="goal-time" id="goal-resonant-time">0/2</div>
-                        </div>
-                        <div class="goal-progress-bar">
-                            <div class="goal-progress-fill" id="goal-resonant-progress" style="width: 0%"></div>
-                        </div>
-                        <div class="goal-action" id="goal-resonant-action">
-                            <button class="goal-action-btn" onclick="showTab('oefeningen'); setTimeout(() => showSubTab('resonant-sub-content'), 100)">
-                                <i class="fas fa-play"></i> Start Nu
-                            </button>
-                        </div>
+                    <div class="button-group" style="margin-top: 1.5rem;">
+                        <button class="btn btn-primary" id="start-resonant" onclick="startResonantBreathing()">
+                            <i class="fas fa-play"></i> Start Sessie
+                        </button>
+                        <button class="btn btn-warning" id="pause-resonant" onclick="pauseResonantBreathing()" disabled>
+                            <i class="fas fa-pause"></i> Pauze
+                        </button>
+                        <button class="btn btn-danger" id="stop-resonant" onclick="stopResonantBreathing()" disabled>
+                            <i class="fas fa-stop"></i> Stop
+                        </button>
                     </div>
 
-                    <!-- Goal: Journal Entry -->
-                    <div class="goal-item" id="goal-journal">
-                        <div class="goal-header">
-                            <div class="goal-checkbox">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="goal-title">Dagboek Entry</div>
-                            <div class="goal-time" id="goal-journal-time"></div>
-                        </div>
-                        <div class="goal-progress-bar">
-                            <div class="goal-progress-fill" id="goal-journal-progress" style="width: 0%"></div>
-                        </div>
-                        <div class="goal-action" id="goal-journal-action">
-                            <button class="goal-action-btn" onclick="showTab('tracking'); setTimeout(() => showSubTab('dagboek-sub-content'), 100)">
-                                <i class="fas fa-edit"></i> Schrijf Entry
-                            </button>
-                        </div>
+                    <div id="resonant-info" style="text-align: center; margin-top: 1.5rem; background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 0.5rem;">
+                        <p style="margin-bottom: 0.5rem;">
+                            <strong>Tijd:</strong> <span id="resonant-time-display">20:00</span>
+                        </p>
+                        <p style="margin-bottom: 0;">
+                            <strong>Voortgang:</strong> <span id="resonant-progress">0%</span>
+                        </p>
                     </div>
+                </div>
 
-                    <!-- Goal: Buteyko (Optional) -->
-                    <div class="goal-item" id="goal-buteyko">
-                        <div class="goal-header">
-                            <div class="goal-checkbox">
-                                <i class="fas fa-check"></i>
-                            </div>
-                            <div class="goal-title">Buteyko Oefening <small style="color: #999;">(optioneel)</small></div>
-                            <div class="goal-time" id="goal-buteyko-time"></div>
-                        </div>
-                        <div class="goal-progress-bar">
-                            <div class="goal-progress-fill" id="goal-buteyko-progress" style="width: 0%"></div>
-                        </div>
-                        <div class="goal-action" id="goal-buteyko-action">
-                            <button class="goal-action-btn" onclick="showTab('oefeningen'); setTimeout(() => showSubTab('buteyko-sub-content'), 100)">
-                                <i class="fas fa-wind"></i> Start Oefening
-                            </button>
-                        </div>
-                    </div>
+                <!-- Instructions -->
+                <div class="card" style="background: rgba(59, 130, 246, 0.1); border: 2px solid rgba(59, 130, 246, 0.2);">
+                    <h3><i class="fas fa-info-circle"></i> Instructies</h3>
+                    <ol style="margin-left: 1.5rem; line-height: 1.8;">
+                        <li>Kies je sessieduur (20 min aanbevolen)</li>
+                        <li>Pas indien gewenst het ademritme aan (5.5 bpm is ideaal)</li>
+                        <li>Klik "Start Sessie"</li>
+                        <li>Volg de cirkel: groter = inademen, kleiner = uitademen</li>
+                        <li>Houd het ritme comfortabel - geen air hunger!</li>
+                        <li>Na afloop kun je je ervaring bijhouden in het dagboek</li>
+                    </ol>
+                    <p style="margin-top: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
+                        <strong><i class="fas fa-lightbulb"></i> Tip:</strong> Resonant breathing werkt <em>cumulatief</em>. De effecten bouwen op over weken. 
+                        Consistentie is belangrijker dan perfectie!
+                    </p>
                 </div>
 
                 <!-- Weekly Progress -->
-                <div class="weekly-progress">
-                    <h3>Deze Week</h3>
-                    
-                    <!-- Resonant Breathing Progress -->
-                    <div class="progress-item">
-                        <div class="progress-label">
-                            <span>Resonant Breathing</span>
-                            <span class="progress-value" id="weekly-resonant-text">0/14 (0%)</span>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div class="progress-bar-fill resonant" id="weekly-resonant-bar" style="width: 0%"></div>
-                        </div>
-                    </div>
-
-                    <!-- HRV Trend -->
-                    <div class="progress-item">
-                        <div class="progress-label">
-                            <span>HRV Trend</span>
-                            <span class="progress-value" id="weekly-hrv-text">Geen data</span>
-                        </div>
-                        <div class="hrv-trend" id="weekly-hrv-trend">
-                            <span id="hrv-trend-icon"></span>
-                            <span id="hrv-trend-text">Nog geen metingen deze week</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Personal Insights -->
-                <div class="card" style="margin-top: 2rem;">
-                    <h3><i class="fas fa-lightbulb"></i> Persoonlijke Inzichten</h3>
-                    <div id="insights-content" style="margin-top: 1rem;">
-                        <p style="color: var(--text-light);">Start met je eerste oefening om persoonlijke inzichten te ontvangen!</p>
-                    </div>
-                </div>
-
-                <!-- Personalized Tip -->
-                <div class="card" style="margin-top: 1.5rem; background: linear-gradient(135deg, rgba(107, 155, 209, 0.1) 0%, rgba(74, 123, 167, 0.1) 100%); border-left: 4px solid var(--primary-color);">
-                    <h3><i class="fas fa-star"></i> Tip van de Dag</h3>
-                    <div id="tip-content" style="margin-top: 1rem;">
-                        <p>Regelmatige oefening is belangrijker dan perfectie. Begin met korte sessies!</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Oefeningen Tab (Phase 2 - NEW) -->
-            <div id="oefeningen" class="tab-content">
-                <h2>Ademhalingsoefeningen</h2>
-                
-                <!-- Sub-tabs -->
-                <div class="sub-tabs">
-                    <button class="sub-tab-btn active" onclick="showSubTab('buteyko-sub-content')">
-                        <i class="fas fa-wind"></i> Buteyko
-                    </button>
-                    <button class="sub-tab-btn" onclick="showSubTab('resonant-sub-content')">
-                        <i class="fas fa-heartbeat"></i> Resonant Breathing
-                    </button>
-                </div>
-                
-                <!-- Buteyko Sub-content -->
-                <div id="buteyko-sub-content" class="sub-tab-content active">
-<div class="card">
-                    <h2><i class="fas fa-wind"></i> Buteyko Ademhaling</h2>
-                    <p style="color: var(--text-light); margin-bottom: 0.5rem;">
-                        De Buteyko methode helpt je CO2-tolerantie te verbeteren en hyperventilatie te reduceren.
-                    </p>
-                    <div id="haptic-indicator" style="display: none; background: rgba(16, 185, 129, 0.1); padding: 0.5rem 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem;">
-                        <i class="fas fa-mobile-alt" style="color: #10b981;"></i> <span style="color: #047857;">Haptische feedback actief</span>
-                    </div>
-
-                    <!-- Control Pause Measurement -->
-                    <div class="card" style="background: rgba(6, 182, 212, 0.1); border: 2px solid rgba(6, 182, 212, 0.2);">
-                        <h3>⏱️ Control Pause (CP) Meting</h3>
-                        <p style="margin-bottom: 1rem;">Meet je CO2-tolerantie. Normale waarden: 20-40 seconden.</p>
-                        
-                        <div class="cp-display" id="cp-timer">00</div>
-                        
-                        <div class="cp-controls">
-                            <button class="btn btn-primary" id="start-cp" onclick="startCPMeasurement()">Start CP Meting</button>
-                            <button class="btn btn-danger" id="stop-cp" onclick="stopCPMeasurement()" disabled>Stop</button>
-                            <button class="btn btn-warning" id="reset-cp" onclick="resetCPMeasurement()">Reset</button>
-                        </div>
-                        
-                        <div id="cp-instructions" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
-                            <strong>Instructies:</strong>
-                            <ol style="margin-top: 0.5rem;">
-                                <li>Adem normaal in en uit</li>
-                                <li>Na een normale uitademing, houd je adem in</li>
-                                <li>Klik "Start CP Meting" en stop zodra je de eerste drang voelt om te ademen</li>
-                                <li>Dit is je Control Pause score</li>
-                            </ol>
-                        </div>
-                    </div>
-
-                    <!-- Breathing Exercise -->
-                    <div class="card">
-                        <h3><i class="fas fa-lungs"></i> Ademhalingsoefening</h3>
-                        
-                        <div class="form-group">
-                            <label for="breathing-pattern"><i class="fas fa-lungs"></i> Selecteer Buteyko patroon:</label>
-                            <select class="form-control" id="breathing-pattern" onchange="updateBreathingPattern()">
-                                <option value="gentle" selected>Zachte oefening (10 sec vrij ademhalen + adempauze)</option>
-                                <option value="extended">Verlengde adempauze (in/uit → pauze → herhaal)</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label><i class="fas fa-volume-up"></i> Audio begeleiding:</label>
-                            <select class="form-control" id="buteyko-audio" onchange="updateButeykoAudio()">
-                                <option value="tones" selected>Zachte tonen</option>
-                                <option value="silence">Stil</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group" id="hold-duration-group" style="display: block;">
-                            <label style="margin-bottom: 0.5rem; display: block;">⏱️ Adempauze duur: <strong><span id="hold-duration-display">3</span> seconden</strong></label>
-                            <div class="range-container">
-                                <input type="range" class="range-slider" id="hold-duration-slider" min="2" max="10" value="3" oninput="updateHoldDuration()">
-                            </div>
-                            <small style="color: var(--text-light); display: block; margin-top: 0.5rem;" id="hold-tip">
-                                <i class="fas fa-lightbulb"></i> Tip: Begin met 3 seconden en verhoog geleidelijk naarmate je CO2-tolerantie verbetert.
-                            </small>
-                        </div>
-
-                        <div class="form-group" id="haptic-toggle-container" style="display: none;">
-                            <label style="margin-bottom: 0.5rem; display: block;"><i class="fas fa-mobile-alt"></i> Haptische feedback (trillingen):</label>
-                            <button class="btn btn-secondary" id="haptic-toggle" onclick="toggleHaptics()" style="width: 100%;">
-                                <span id="haptic-status">Uitgeschakeld</span>
-                                <small style="display: block; font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.9;">
-                                    Alleen Android • Voel vibraties bij fase overgangen
-                                </small>
-                            </button>
-                        </div>
-
-                        <div class="breathing-circle" id="breathing-circle">
-                            Bereid je voor
-                        </div>
-
-                        <div class="button-group">
-                            <button class="btn btn-primary" id="start-breathing" onclick="startBreathing()">Start Oefening</button>
-                            <button class="btn btn-danger" id="stop-breathing" onclick="stopBreathing()" disabled>Stop</button>
-                        </div>
-
-                        <div id="breathing-info" style="text-align: center; margin-top: 1rem;">
-                            <p><strong>Cyclus:</strong> <span id="cycle-count">0</span> <span id="cycle-target">van 20</span></p>
-                            <p><strong>Fase:</strong> <span id="current-phase">Rust</span></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-                <!-- End Buteyko Sub-content -->
-                
-                <!-- Resonant Sub-content -->
-                <div id="resonant-sub-content" class="sub-tab-content">
-<div class="card">
-                    <h2><i class="fas fa-heartbeat"></i> Resonant Breathing</h2>
-                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
-                        Resonant breathing (coherent breathing) activeert je parasympathische zenuwstelsel en verbetert HRV. 
-                        <strong>Aanbevolen:</strong> 2× per dag, 20 minuten.
-                    </p>
-
-                    <!-- Session Setup -->
-                    <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 2px solid rgba(16, 185, 129, 0.2);">
-                        <h3><i class="fas fa-cog"></i> Sessie Instellingen</h3>
-                        
-                        <div class="form-group">
-                            <label><i class="fas fa-clock"></i> Sessie duur:</label>
-                            <div class="button-group" style="display: flex; gap: 0.5rem;">
-                                <button id="duration-10" class="btn btn-secondary" onclick="setResonantDuration(10)">10 min</button>
-                                <button id="duration-15" class="btn btn-secondary" onclick="setResonantDuration(15)">15 min</button>
-                                <button id="duration-20" class="btn btn-primary" onclick="setResonantDuration(20)">20 min ⭐</button>
-                            </div>
-                            <p id="resonant-duration-display" style="margin-top: 0.5rem; color: var(--text-dark); font-weight: 600;">
-                                Geselecteerd: 20 minuten
-                            </p>
-                        </div>
-
-                        <div class="form-group">
-                            <label style="margin-bottom: 0.5rem; display: block;">
-                                <i class="fas fa-lungs"></i> Ademhalingsritme: <strong><span id="resonant-bpm-display">5.5</span> ademhalingen/min</strong>
-                            </label>
-                            <div class="range-container">
-                                <input type="range" class="range-slider" id="resonant-bpm-slider" 
-                                       min="4.5" max="6.5" step="0.5" value="5.5" 
-                                       oninput="updateResonantBPM()">
-                            </div>
-                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-light); margin-top: 0.25rem;">
-                                <span>4.5 bpm</span>
-                                <span>5.5 bpm (aanbevolen)</span>
-                                <span>6.5 bpm</span>
-                            </div>
-                            <small style="color: var(--text-light); display: block; margin-top: 0.5rem;">
-                                <i class="fas fa-lightbulb"></i> 5.5 ademhalingen/min is het "sweet spot" voor de meeste mensen. Begin hier en pas aan indien nodig.
-                            </small>
-                        </div>
-
-                        <div class="form-group">
-                            <label><i class="fas fa-volume-up"></i> Audio begeleiding:</label>
-                            <select class="form-control" id="resonant-audio" onchange="updateResonantAudio()">
-                                <option value="silence" selected>Stil</option>
-                                <option value="tones">Zachte tonen</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Breathing Exercise -->
-                    <div class="card">
-                        <h3><i class="fas fa-play-circle"></i> Sessie</h3>
-                        
-                        <div class="resonant-circle-container" style="position: relative; display: flex; justify-content: center; align-items: center; min-height: 350px;">
-                            <canvas id="resonant-circle" width="300" height="300" style="max-width: 100%;"></canvas>
-                            <div id="resonant-phase-text" style="position: absolute; font-size: 1.5rem; font-weight: 600; color: var(--text-dark);">
-                                Klaar om te starten
-                            </div>
-                        </div>
-
-                        <div class="button-group" style="margin-top: 1.5rem;">
-                            <button class="btn btn-primary" id="start-resonant" onclick="startResonantBreathing()">
-                                <i class="fas fa-play"></i> Start Sessie
-                            </button>
-                            <button class="btn btn-warning" id="pause-resonant" onclick="pauseResonantBreathing()" disabled>
-                                <i class="fas fa-pause"></i> Pauze
-                            </button>
-                            <button class="btn btn-danger" id="stop-resonant" onclick="stopResonantBreathing()" disabled>
-                                <i class="fas fa-stop"></i> Stop
-                            </button>
-                        </div>
-
-                        <div id="resonant-info" style="text-align: center; margin-top: 1.5rem; background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 0.5rem;">
-                            <p style="margin-bottom: 0.5rem;">
-                                <strong>Tijd:</strong> <span id="resonant-time-display">20:00</span>
-                            </p>
-                            <p style="margin-bottom: 0;">
-                                <strong>Voortgang:</strong> <span id="resonant-progress">0%</span>
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Instructions -->
-                    <div class="card" style="background: rgba(59, 130, 246, 0.1); border: 2px solid rgba(59, 130, 246, 0.2);">
-                        <h3><i class="fas fa-info-circle"></i> Instructies</h3>
-                        <ol style="margin-left: 1.5rem; line-height: 1.8;">
-                            <li>Kies je sessieduur (20 min aanbevolen)</li>
-                            <li>Pas indien gewenst het ademritme aan (5.5 bpm is ideaal)</li>
-                            <li>Klik "Start Sessie"</li>
-                            <li>Volg de cirkel: groter = inademen, kleiner = uitademen</li>
-                            <li>Houd het ritme comfortabel - geen air hunger!</li>
-                            <li>Na afloop kun je je ervaring bijhouden in het dagboek</li>
-                        </ol>
-                        <p style="margin-top: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
-                            <strong><i class="fas fa-lightbulb"></i> Tip:</strong> Resonant breathing werkt <em>cumulatief</em>. De effecten bouwen op over weken. 
-                            Consistentie is belangrijker dan perfectie!
-                        </p>
-                    </div>
-
-                    <!-- Weekly Progress -->
-                    <div class="card">
-                        <h3><i class="fas fa-chart-line"></i> Deze Week</h3>
-                        <div id="resonant-weekly-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
-                            <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
-                                <div style="font-size: 2rem; font-weight: 700; color: #10b981;"><span id="resonant-sessions-count">0</span></div>
-                                <div style="color: var(--text-light); font-size: 0.9rem;">Sessies voltooid</div>
-                            </div>
-                            <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
-                                <div style="font-size: 2rem; font-weight: 700; color: #3b82f6;"><span id="resonant-adherence">0</span>%</div>
-                                <div style="color: var(--text-light); font-size: 0.9rem;">Therapietrouw (doel: 14)</div>
-                            </div>
-                            <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
-                                <div style="font-size: 2rem; font-weight: 700; color: #f59e0b;"><span id="resonant-total-minutes">0</span></div>
-                                <div style="color: var(--text-light); font-size: 0.9rem;">Totale minuten</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-                </div>
-            </div>
-
-            <!-- Buteyko Tab -->
-            <div id="buteyko" class="tab-content" style="display: none;">
                 <div class="card">
-                    <h2><i class="fas fa-wind"></i> Buteyko Ademhaling</h2>
-                    <p style="color: var(--text-light); margin-bottom: 0.5rem;">
-                        De Buteyko methode helpt je CO2-tolerantie te verbeteren en hyperventilatie te reduceren.
-                    </p>
-                    <div id="haptic-indicator" style="display: none; background: rgba(16, 185, 129, 0.1); padding: 0.5rem 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem;">
-                        <i class="fas fa-mobile-alt" style="color: #10b981;"></i> <span style="color: #047857;">Haptische feedback actief</span>
-                    </div>
-
-                    <!-- Control Pause Measurement -->
-                    <div class="card" style="background: rgba(6, 182, 212, 0.1); border: 2px solid rgba(6, 182, 212, 0.2);">
-                        <h3>⏱️ Control Pause (CP) Meting</h3>
-                        <p style="margin-bottom: 1rem;">Meet je CO2-tolerantie. Normale waarden: 20-40 seconden.</p>
-                        
-                        <div class="cp-display" id="cp-timer">00</div>
-                        
-                        <div class="cp-controls">
-                            <button class="btn btn-primary" id="start-cp" onclick="startCPMeasurement()">Start CP Meting</button>
-                            <button class="btn btn-danger" id="stop-cp" onclick="stopCPMeasurement()" disabled>Stop</button>
-                            <button class="btn btn-warning" id="reset-cp" onclick="resetCPMeasurement()">Reset</button>
+                    <h3><i class="fas fa-chart-line"></i> Deze Week</h3>
+                    <div id="resonant-weekly-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: #10b981;"><span id="resonant-sessions-count">0</span></div>
+                            <div style="color: var(--text-light); font-size: 0.9rem;">Sessies voltooid</div>
                         </div>
-                        
-                        <div id="cp-instructions" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
-                            <strong>Instructies:</strong>
-                            <ol style="margin-top: 0.5rem;">
-                                <li>Adem normaal in en uit</li>
-                                <li>Na een normale uitademing, houd je adem in</li>
-                                <li>Klik "Start CP Meting" en stop zodra je de eerste drang voelt om te ademen</li>
-                                <li>Dit is je Control Pause score</li>
-                            </ol>
+                        <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: #3b82f6;"><span id="resonant-adherence">0</span>%</div>
+                            <div style="color: var(--text-light); font-size: 0.9rem;">Therapietrouw (doel: 14)</div>
                         </div>
-                    </div>
-
-                    <!-- Breathing Exercise -->
-                    <div class="card">
-                        <h3><i class="fas fa-lungs"></i> Ademhalingsoefening</h3>
-                        
-                        <div class="form-group">
-                            <label for="breathing-pattern"><i class="fas fa-lungs"></i> Selecteer Buteyko patroon:</label>
-                            <select class="form-control" id="breathing-pattern" onchange="updateBreathingPattern()">
-                                <option value="gentle" selected>Zachte oefening (10 sec vrij ademhalen + adempauze)</option>
-                                <option value="extended">Verlengde adempauze (in/uit → pauze → herhaal)</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label><i class="fas fa-volume-up"></i> Audio begeleiding:</label>
-                            <select class="form-control" id="buteyko-audio" onchange="updateButeykoAudio()">
-                                <option value="tones" selected>Zachte tonen</option>
-                                <option value="silence">Stil</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group" id="hold-duration-group" style="display: block;">
-                            <label style="margin-bottom: 0.5rem; display: block;">⏱️ Adempauze duur: <strong><span id="hold-duration-display">3</span> seconden</strong></label>
-                            <div class="range-container">
-                                <input type="range" class="range-slider" id="hold-duration-slider" min="2" max="10" value="3" oninput="updateHoldDuration()">
-                            </div>
-                            <small style="color: var(--text-light); display: block; margin-top: 0.5rem;" id="hold-tip">
-                                <i class="fas fa-lightbulb"></i> Tip: Begin met 3 seconden en verhoog geleidelijk naarmate je CO2-tolerantie verbetert.
-                            </small>
-                        </div>
-
-                        <div class="form-group" id="haptic-toggle-container" style="display: none;">
-                            <label style="margin-bottom: 0.5rem; display: block;"><i class="fas fa-mobile-alt"></i> Haptische feedback (trillingen):</label>
-                            <button class="btn btn-secondary" id="haptic-toggle" onclick="toggleHaptics()" style="width: 100%;">
-                                <span id="haptic-status">Uitgeschakeld</span>
-                                <small style="display: block; font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.9;">
-                                    Alleen Android • Voel vibraties bij fase overgangen
-                                </small>
-                            </button>
-                        </div>
-
-                        <div class="breathing-circle" id="breathing-circle">
-                            Bereid je voor
-                        </div>
-
-                        <div class="button-group">
-                            <button class="btn btn-primary" id="start-breathing" onclick="startBreathing()">Start Oefening</button>
-                            <button class="btn btn-danger" id="stop-breathing" onclick="stopBreathing()" disabled>Stop</button>
-                        </div>
-
-                        <div id="breathing-info" style="text-align: center; margin-top: 1rem;">
-                            <p><strong>Cyclus:</strong> <span id="cycle-count">0</span> <span id="cycle-target">van 20</span></p>
-                            <p><strong>Fase:</strong> <span id="current-phase">Rust</span></p>
+                        <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: #f59e0b;"><span id="resonant-total-minutes">0</span></div>
+                            <div style="color: var(--text-light); font-size: 0.9rem;">Totale minuten</div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Resonant Breathing Tab -->
-            <div id="resonant" class="tab-content" style="display: none;">
-                <div class="card">
-                    <h2><i class="fas fa-heartbeat"></i> Resonant Breathing</h2>
-                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
-                        Resonant breathing (coherent breathing) activeert je parasympathische zenuwstelsel en verbetert HRV. 
-                        <strong>Aanbevolen:</strong> 2× per dag, 20 minuten.
-                    </p>
-
-                    <!-- Session Setup -->
-                    <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 2px solid rgba(16, 185, 129, 0.2);">
-                        <h3><i class="fas fa-cog"></i> Sessie Instellingen</h3>
-                        
-                        <div class="form-group">
-                            <label><i class="fas fa-clock"></i> Sessie duur:</label>
-                            <div class="button-group" style="display: flex; gap: 0.5rem;">
-                                <button id="old-duration-10" class="btn btn-secondary" onclick="setResonantDuration(10)">10 min</button>
-                                <button id="old-duration-15" class="btn btn-secondary" onclick="setResonantDuration(15)">15 min</button>
-                                <button id="old-duration-20" class="btn btn-primary" onclick="setResonantDuration(20)">20 min ⭐</button>
-                            </div>
-                            <p id="old-resonant-duration-display" style="margin-top: 0.5rem; color: var(--text-dark); font-weight: 600;">
-                                Geselecteerd: 20 minuten
-                            </p>
-                        </div>
-
-                        <div class="form-group">
-                            <label style="margin-bottom: 0.5rem; display: block;">
-                                <i class="fas fa-lungs"></i> Ademhalingsritme: <strong><span id="resonant-bpm-display">5.5</span> ademhalingen/min</strong>
-                            </label>
-                            <div class="range-container">
-                                <input type="range" class="range-slider" id="resonant-bpm-slider" 
-                                       min="4.5" max="6.5" step="0.5" value="5.5" 
-                                       oninput="updateResonantBPM()">
-                            </div>
-                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-light); margin-top: 0.25rem;">
-                                <span>4.5 bpm</span>
-                                <span>5.5 bpm (aanbevolen)</span>
-                                <span>6.5 bpm</span>
-                            </div>
-                            <small style="color: var(--text-light); display: block; margin-top: 0.5rem;">
-                                <i class="fas fa-lightbulb"></i> 5.5 ademhalingen/min is het "sweet spot" voor de meeste mensen. Begin hier en pas aan indien nodig.
-                            </small>
-                        </div>
-
-                        <div class="form-group">
-                            <label><i class="fas fa-volume-up"></i> Audio begeleiding:</label>
-                            <select class="form-control" id="resonant-audio" onchange="updateResonantAudio()">
-                                <option value="silence" selected>Stil</option>
-                                <option value="tones">Zachte tonen</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Breathing Exercise -->
-                    <div class="card">
-                        <h3><i class="fas fa-play-circle"></i> Sessie</h3>
-                        
-                        <div class="resonant-circle-container" style="position: relative; display: flex; justify-content: center; align-items: center; min-height: 350px;">
-                            <canvas id="resonant-circle" width="300" height="300" style="max-width: 100%;"></canvas>
-                            <div id="resonant-phase-text" style="position: absolute; font-size: 1.5rem; font-weight: 600; color: var(--text-dark);">
-                                Klaar om te starten
-                            </div>
-                        </div>
-
-                        <div class="button-group" style="margin-top: 1.5rem;">
-                            <button class="btn btn-primary" id="start-resonant" onclick="startResonantBreathing()">
-                                <i class="fas fa-play"></i> Start Sessie
-                            </button>
-                            <button class="btn btn-warning" id="pause-resonant" onclick="pauseResonantBreathing()" disabled>
-                                <i class="fas fa-pause"></i> Pauze
-                            </button>
-                            <button class="btn btn-danger" id="stop-resonant" onclick="stopResonantBreathing()" disabled>
-                                <i class="fas fa-stop"></i> Stop
-                            </button>
-                        </div>
-
-                        <div id="resonant-info" style="text-align: center; margin-top: 1.5rem; background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 0.5rem;">
-                            <p style="margin-bottom: 0.5rem;">
-                                <strong>Tijd:</strong> <span id="resonant-time-display">20:00</span>
-                            </p>
-                            <p style="margin-bottom: 0;">
-                                <strong>Voortgang:</strong> <span id="resonant-progress">0%</span>
-                            </p>
-                        </div>
-                    </div>
-
-                    <!-- Instructions -->
-                    <div class="card" style="background: rgba(59, 130, 246, 0.1); border: 2px solid rgba(59, 130, 246, 0.2);">
-                        <h3><i class="fas fa-info-circle"></i> Instructies</h3>
-                        <ol style="margin-left: 1.5rem; line-height: 1.8;">
-                            <li>Kies je sessieduur (20 min aanbevolen)</li>
-                            <li>Pas indien gewenst het ademritme aan (5.5 bpm is ideaal)</li>
-                            <li>Klik "Start Sessie"</li>
-                            <li>Volg de cirkel: groter = inademen, kleiner = uitademen</li>
-                            <li>Houd het ritme comfortabel - geen air hunger!</li>
-                            <li>Na afloop kun je je ervaring bijhouden in het dagboek</li>
-                        </ol>
-                        <p style="margin-top: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
-                            <strong><i class="fas fa-lightbulb"></i> Tip:</strong> Resonant breathing werkt <em>cumulatief</em>. De effecten bouwen op over weken. 
-                            Consistentie is belangrijker dan perfectie!
-                        </p>
-                    </div>
-
-                    <!-- Weekly Progress -->
-                    <div class="card">
-                        <h3><i class="fas fa-chart-line"></i> Deze Week</h3>
-                        <div id="resonant-weekly-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
-                            <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
-                                <div style="font-size: 2rem; font-weight: 700; color: #10b981;"><span id="resonant-sessions-count">0</span></div>
-                                <div style="color: var(--text-light); font-size: 0.9rem;">Sessies voltooid</div>
-                            </div>
-                            <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
-                                <div style="font-size: 2rem; font-weight: 700; color: #3b82f6;"><span id="resonant-adherence">0</span>%</div>
-                                <div style="color: var(--text-light); font-size: 0.9rem;">Therapietrouw (doel: 14)</div>
-                            </div>
-                            <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
-                                <div style="font-size: 2rem; font-weight: 700; color: #f59e0b;"><span id="resonant-total-minutes">0</span></div>
-                                <div style="color: var(--text-light); font-size: 0.9rem;">Totale minuten</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        </div>
             </div>
+        </div>
 
-            <!-- Tracking Tab (Phase 2 - NEW) -->
-            <div id="tracking" class="tab-content">
-                <h2>Progress Tracking</h2>
-                
-                <!-- Sub-tabs -->
-                <div class="sub-tabs">
-                    <button class="sub-tab-btn active" onclick="showSubTab('dagboek-sub-content')">
-                        <i class="fas fa-book"></i> Dagboek
-                    </button>
-                    <button class="sub-tab-btn" onclick="showSubTab('grafieken-sub-content')">
-                        <i class="fas fa-chart-bar"></i> Grafieken
-                    </button>
-                    <button class="sub-tab-btn" onclick="showSubTab('hrv-sub-content')">
-                        <i class="fas fa-heartbeat"></i> HRV Log
-                    </button>
+        <!-- Buteyko Tab -->
+        <div id="buteyko" class="tab-content" style="display: none;">
+            <div class="card">
+                <h2><i class="fas fa-wind"></i> Buteyko Ademhaling</h2>
+                <p style="color: var(--text-light); margin-bottom: 0.5rem;">
+                    De Buteyko methode helpt je CO2-tolerantie te verbeteren en hyperventilatie te reduceren.
+                </p>
+                <div id="haptic-indicator" style="display: none; background: rgba(16, 185, 129, 0.1); padding: 0.5rem 0.75rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.9rem;">
+                    <i class="fas fa-mobile-alt" style="color: #10b981;"></i> <span style="color: #047857;">Haptische feedback actief</span>
                 </div>
-                
-                <!-- Dagboek Sub-content -->
-                <div id="dagboek-sub-content" class="sub-tab-content active">
-                    <div class="card">
-                    <h2><i class="fas fa-book"></i> Ademhalingsdagboek</h2>
+
+                <!-- Control Pause Measurement -->
+                <div class="card" style="background: rgba(6, 182, 212, 0.1); border: 2px solid rgba(6, 182, 212, 0.2);">
+                    <h3>⏱️ Control Pause (CP) Meting</h3>
+                    <p style="margin-bottom: 1rem;">Meet je CO2-tolerantie. Normale waarden: 20-40 seconden.</p>
                     
-                    <div class="button-group" style="margin-bottom: 2rem;">
-                        <button class="btn btn-primary" onclick="openJournalModal()"><i class="fas fa-pen"></i> Nieuwe Entry</button>
-                        <button class="btn btn-success" onclick="exportDagboek()"><i class="fas fa-download"></i> Exporteer</button>
+                    <div class="cp-display" id="cp-timer">00</div>
+                    
+                    <div class="cp-controls">
+                        <button class="btn btn-primary" id="start-cp" onclick="startCPMeasurement()">Start CP Meting</button>
+                        <button class="btn btn-danger" id="stop-cp" onclick="stopCPMeasurement()" disabled>Stop</button>
+                        <button class="btn btn-warning" id="reset-cp" onclick="resetCPMeasurement()">Reset</button>
                     </div>
+                    
+                    <div id="cp-instructions" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
+                        <strong>Instructies:</strong>
+                        <ol style="margin-top: 0.5rem;">
+                            <li>Adem normaal in en uit</li>
+                            <li>Na een normale uitademing, houd je adem in</li>
+                            <li>Klik "Start CP Meting" en stop zodra je de eerste drang voelt om te ademen</li>
+                            <li>Dit is je Control Pause score</li>
+                        </ol>
+                    </div>
+                </div>
 
+                <!-- Breathing Exercise -->
+                <div class="card">
+                    <h3><i class="fas fa-lungs"></i> Ademhalingsoefening</h3>
+                    
                     <div class="form-group">
-                        <label for="journal-filter">Filter dagboek entries:</label>
-                        <select class="form-control" id="journal-filter" onchange="filterJournalEntries()">
-                            <option value="last7" selected>Laatste 7 dagen</option>
-                            <option value="last30">Laatste 30 dagen</option>
-                            <option value="all">Alle entries</option>
+                        <label for="breathing-pattern"><i class="fas fa-lungs"></i> Selecteer Buteyko patroon:</label>
+                        <select class="form-control" id="breathing-pattern" onchange="updateBreathingPattern()">
+                            <option value="gentle" selected>Zachte oefening (10 sec vrij ademhalen + adempauze)</option>
+                            <option value="extended">Verlengde adempauze (in/uit → pauze → herhaal)</option>
                         </select>
                     </div>
 
-                    <div id="journal-entries">
-                        <div style="text-align: center; color: var(--text-light); margin: 2rem 0;">
-                            <p>Nog geen dagboek entries. Begin met je eerste oefening!</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-                
-                <!-- HRV Sub-content -->
-                
-                <!-- Grafieken Sub-content -->
-                <div id="grafieken-sub-content" class="sub-tab-content">
-                    <div class="card">
-                        <h2><i class="fas fa-chart-bar"></i> Visualisaties & Statistieken</h2>
-                        <p style="color: var(--text-light); margin-bottom: 1.5rem;">
-                            <i class="fas fa-info-circle"></i> Evidence-based tracking van je progressie over tijd
-                        </p>
-                    </div>
-
-                                        <!-- Evidence-Based Visualisaties -->
-                    
-                    <!-- Consistentie Heatmap -->
-                    <div class="card">
-                        <h3><i class="fas fa-calendar-check"></i> Therapietrouw - Laatste 8 Weken</h3>
-                        <div id="consistency-heatmap" style="margin: 1rem 0;"></div>
-                        <div id="consistency-stats" style="margin-top: 1rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.5rem;"></div>
-                    </div>
-
-                    <!-- Intensity Trend -->
-                    <div class="card">
-                        <h3><i class="fas fa-chart-line"></i> Intensiteit Trend</h3>
-                        <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">
-                            <i class="fas fa-info-circle"></i> Langetermijn trend over weken - dagelijkse fluctuaties zijn normaal
-                        </p>
-                        <div style="margin-bottom: 1rem;">
-                            <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('intensity', 7)" id="intensity-7days">7 dagen</button>
-                            <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('intensity', 30)" id="intensity-30days" style="background: var(--primary-color);">30 dagen</button>
-                            <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('intensity', 90)" id="intensity-90days">90 dagen</button>
-                            <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('intensity', 'all')" id="intensity-all">Alles</button>
-                        </div>
-                        <canvas id="intensity-trend-chart" style="max-height: 300px;"></canvas>
-                        <div id="intensity-stats" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 0.5rem;"></div>
-                    </div>
-
-                    <!-- CP Trend -->
-                    <div class="card" id="cp-trend-card" style="display: none;">
-                        <h3><i class="fas fa-chart-area"></i> Control Pause Progressie</h3>
-                        <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">
-                            <i class="fas fa-info-circle"></i> Objectieve fysiologische marker - normaal: 20-40 seconden
-                        </p>
-                        <div style="margin-bottom: 1rem;">
-                            <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('cp', 30)" id="cp-30days" style="background: var(--primary-color);">30 dagen</button>
-                            <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('cp', 90)" id="cp-90days">90 dagen</button>
-                            <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('cp', 'all')" id="cp-all">Alles</button>
-                        </div>
-                        <canvas id="cp-chart" style="max-height: 300px;"></canvas>
-                        <div id="cp-stats" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 0.5rem;"></div>
-                    </div>
-
-                    <!-- CP vs Intensity Correlation -->
-                    <div class="card" id="correlation-card" style="display: none;">
-                        <h3><i class="fas fa-project-diagram"></i> CP vs Intensiteit Correlatie</h3>
-                        <canvas id="correlation-chart" style="max-height: 300px;"></canvas>
-                        <div id="correlation-stats" style="margin-top: 1rem;"></div>
-                    </div>
-
-                    <!-- Weekly Averages -->
-                    <div class="card">
-                        <h3><i class="fas fa-chart-bar"></i> Wekelijkse Gemiddeldes</h3>
-                        <canvas id="weekly-averages-chart" style="max-height: 300px;"></canvas>
-                    </div>
-
-                    <!-- Trigger Analysis -->
-                    <div class="card" id="triggers-card" style="display: none;">
-                        <h3><i class="fas fa-bolt"></i> Trigger Analyse</h3>
-                        <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">
-                            <i class="fas fa-info-circle"></i> Identificeer patronen voor betere preventie
-                        </p>
-                        <canvas id="triggers-chart" style="max-height: 300px;"></canvas>
-                        <div id="triggers-stats" style="margin-top: 1rem;"></div>
-                    </div>
-
-
-                </div>
-                <div id="hrv-sub-content" class="sub-tab-content">
-                    <div class="card">
-                    <h2><i class="fas fa-chart-line"></i> Heart Rate Variability (HRV) Tracking</h2>
-                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
-                        Track je HRV (RMSSD) en hartslag om autonoom functioneren te monitoren.
-                    </p>
-
-                    <!-- HRV Input Form -->
-                    <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 2px solid rgba(16, 185, 129, 0.2);">
-                        <h3>Nieuwe HRV Meting</h3>
-                        <form id="hrv-form">
-                            <div class="form-group">
-                                <label for="hrv-rmssd"><i class="fas fa-heartbeat"></i> RMSSD (ms)</label>
-                                <input type="number" id="hrv-rmssd" min="0" max="200" step="0.1" required 
-                                       placeholder="bijv. 28.5" style="width: 100%;">
-                                <small style="color: var(--text-light);">
-                                    <i class="fas fa-info-circle"></i> RMSSD meet parasympathische activiteit. Normaal: 20-50ms
-                                </small>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="hrv-heartrate"><i class="fas fa-heart"></i> Hartslag (bpm)</label>
-                                <input type="number" id="hrv-heartrate" min="30" max="200" required 
-                                       placeholder="bijv. 65" style="width: 100%;">
-                                <small style="color: var(--text-light);">
-                                    <i class="fas fa-info-circle"></i> Rust hartslag, bij voorkeur 's ochtends
-                                </small>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="hrv-notes"><i class="fas fa-sticky-note"></i> Notities (optioneel)</label>
-                                <textarea id="hrv-notes" rows="2" placeholder="bijv. Na 10 min meditatie" 
-                                          style="width: 100%;"></textarea>
-                            </div>
-
-                            <button type="button" onclick="saveHRVMeasurement(event)" class="btn btn-primary" style="width: 100%;">
-                                <i class="fas fa-save"></i> Opslaan
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- HRV Statistics -->
-                    <div class="card">
-                        <h3>Statistieken</h3>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
-                            <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
-                                <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);" id="hrv-avg-rmssd">--</div>
-                                <div style="color: var(--text-light); font-size: 0.9rem;">Gemiddelde RMSSD</div>
-                            </div>
-                            <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
-                                <div style="font-size: 2rem; font-weight: 700; color: var(--success-color);" id="hrv-avg-hr">--</div>
-                                <div style="color: var(--text-light); font-size: 0.9rem;">Gemiddelde Hartslag</div>
-                            </div>
-                            <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
-                                <div style="font-size: 2rem; font-weight: 700; color: var(--secondary-color);" id="hrv-count">0</div>
-                                <div style="color: var(--text-light); font-size: 0.9rem;">Totaal Metingen</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- HRV Chart -->
-                    <div class="card">
-                        <h3>HRV Trend</h3>
-                        <canvas id="hrv-chart" style="max-height: 300px;"></canvas>
-                    </div>
-
-                    <!-- HRV History -->
-                    <div class="card">
-                        <h3>Recente Metingen</h3>
-                        <div id="hrv-list" style="max-height: 400px; overflow-y: auto;"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dagboek Tab -->
-            <div id="dagboek" class="tab-content" style="display: none;">
-                <div class="card">
-                    <h2><i class="fas fa-book"></i> Ademhalingsdagboek</h2>
-                    
-                    <div class="button-group" style="margin-bottom: 2rem;">
-                        <button class="btn btn-primary" onclick="openJournalModal()"><i class="fas fa-pen"></i> Nieuwe Entry</button>
-                        <button class="btn btn-success" onclick="exportDagboek()"><i class="fas fa-download"></i> Exporteer</button>
-                    </div>
-
                     <div class="form-group">
-                        <label for="journal-filter">Filter dagboek entries:</label>
-                        <select class="form-control" id="journal-filter" onchange="filterJournalEntries()">
-                            <option value="last7" selected>Laatste 7 dagen</option>
-                            <option value="last30">Laatste 30 dagen</option>
-                            <option value="all">Alle entries</option>
+                        <label><i class="fas fa-volume-up"></i> Audio begeleiding:</label>
+                        <select class="form-control" id="buteyko-audio" onchange="updateButeykoAudio()">
+                            <option value="tones" selected>Zachte tonen</option>
+                            <option value="silence">Stil</option>
                         </select>
                     </div>
 
-                    <div id="journal-entries">
-                        <div style="text-align: center; color: var(--text-light); margin: 2rem 0;">
-                            <p>Nog geen dagboek entries. Begin met je eerste oefening!</p>
+                    <div class="form-group" id="hold-duration-group" style="display: block;">
+                        <label style="margin-bottom: 0.5rem; display: block;">⏱️ Adempauze duur: <strong><span id="hold-duration-display">3</span> seconden</strong></label>
+                        <div class="range-container">
+                            <input type="range" class="range-slider" id="hold-duration-slider" min="2" max="10" value="3" oninput="updateHoldDuration()">
                         </div>
+                        <small style="color: var(--text-light); display: block; margin-top: 0.5rem;" id="hold-tip">
+                            <i class="fas fa-lightbulb"></i> Tip: Begin met 3 seconden en verhoog geleidelijk naarmate je CO2-tolerantie verbetert.
+                        </small>
+                    </div>
+
+                    <div class="form-group" id="haptic-toggle-container" style="display: none;">
+                        <label style="margin-bottom: 0.5rem; display: block;"><i class="fas fa-mobile-alt"></i> Haptische feedback (trillingen):</label>
+                        <button class="btn btn-secondary" id="haptic-toggle" onclick="toggleHaptics()" style="width: 100%;">
+                            <span id="haptic-status">Uitgeschakeld</span>
+                            <small style="display: block; font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.9;">
+                                Alleen Android • Voel vibraties bij fase overgangen
+                            </small>
+                        </button>
+                    </div>
+
+                    <div class="breathing-circle" id="breathing-circle">
+                        Bereid je voor
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="start-breathing" onclick="startBreathing()">Start Oefening</button>
+                        <button class="btn btn-danger" id="stop-breathing" onclick="stopBreathing()" disabled>Stop</button>
+                    </div>
+
+                    <div id="breathing-info" style="text-align: center; margin-top: 1rem;">
+                        <p><strong>Cyclus:</strong> <span id="cycle-count">0</span> <span id="cycle-target">van 20</span></p>
+                        <p><strong>Fase:</strong> <span id="current-phase">Rust</span></p>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- HRV Tab -->
-            <div id="hrv" class="tab-content" style="display: none;">
+        <!-- Resonant Breathing Tab -->
+        <div id="resonant" class="tab-content" style="display: none;">
+            <div class="card">
+                <h2><i class="fas fa-heartbeat"></i> Resonant Breathing</h2>
+                <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                    Resonant breathing (coherent breathing) activeert je parasympathische zenuwstelsel en verbetert HRV. 
+                    <strong>Aanbevolen:</strong> 2× per dag, 20 minuten.
+                </p>
+
+                <!-- Session Setup -->
+                <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 2px solid rgba(16, 185, 129, 0.2);">
+                    <h3><i class="fas fa-cog"></i> Sessie Instellingen</h3>
+                    
+                    <div class="form-group">
+                        <label><i class="fas fa-clock"></i> Sessie duur:</label>
+                        <div class="button-group" style="display: flex; gap: 0.5rem;">
+                            <button id="old-duration-10" class="btn btn-secondary" onclick="setResonantDuration(10)">10 min</button>
+                            <button id="old-duration-15" class="btn btn-secondary" onclick="setResonantDuration(15)">15 min</button>
+                            <button id="old-duration-20" class="btn btn-primary" onclick="setResonantDuration(20)">20 min ⭐</button>
+                        </div>
+                        <p id="old-resonant-duration-display" style="margin-top: 0.5rem; color: var(--text-dark); font-weight: 600;">
+                            Geselecteerd: 20 minuten
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="margin-bottom: 0.5rem; display: block;">
+                            <i class="fas fa-lungs"></i> Ademhalingsritme: <strong><span id="resonant-bpm-display">5.5</span> ademhalingen/min</strong>
+                        </label>
+                        <div class="range-container">
+                            <input type="range" class="range-slider" id="resonant-bpm-slider" 
+                                   min="4.5" max="6.5" step="0.5" value="5.5" 
+                                   oninput="updateResonantBPM()">
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-light); margin-top: 0.25rem;">
+                            <span>4.5 bpm</span>
+                            <span>5.5 bpm (aanbevolen)</span>
+                            <span>6.5 bpm</span>
+                        </div>
+                        <small style="color: var(--text-light); display: block; margin-top: 0.5rem;">
+                            <i class="fas fa-lightbulb"></i> 5.5 ademhalingen/min is het "sweet spot" voor de meeste mensen. Begin hier en pas aan indien nodig.
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-volume-up"></i> Audio begeleiding:</label>
+                        <select class="form-control" id="resonant-audio" onchange="updateResonantAudio()">
+                            <option value="silence" selected>Stil</option>
+                            <option value="tones">Zachte tonen</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Breathing Exercise -->
                 <div class="card">
-                    <h2><i class="fas fa-chart-line"></i> Heart Rate Variability (HRV) Tracking</h2>
-                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
-                        Track je HRV (RMSSD) en hartslag om autonoom functioneren te monitoren.
-                    </p>
-
-                    <!-- HRV Input Form -->
-                    <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 2px solid rgba(16, 185, 129, 0.2);">
-                        <h3>Nieuwe HRV Meting</h3>
-                        <form id="old-hrv-form" onsubmit="saveHRVMeasurement(event)">
-                            <div class="form-group">
-                                <label for="hrv-rmssd"><i class="fas fa-heartbeat"></i> RMSSD (ms)</label>
-                                <input type="number" id="hrv-rmssd" min="0" max="200" step="0.1" required 
-                                       placeholder="bijv. 28.5" style="width: 100%;">
-                                <small style="color: var(--text-light);">
-                                    <i class="fas fa-info-circle"></i> RMSSD meet parasympathische activiteit. Normaal: 20-50ms
-                                </small>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="hrv-heartrate"><i class="fas fa-heart"></i> Hartslag (bpm)</label>
-                                <input type="number" id="hrv-heartrate" min="30" max="200" required 
-                                       placeholder="bijv. 65" style="width: 100%;">
-                                <small style="color: var(--text-light);">
-                                    <i class="fas fa-info-circle"></i> Rust hartslag, bij voorkeur 's ochtends
-                                </small>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="hrv-notes"><i class="fas fa-sticky-note"></i> Notities (optioneel)</label>
-                                <textarea id="hrv-notes" rows="2" placeholder="bijv. Na 10 min meditatie" 
-                                          style="width: 100%;"></textarea>
-                            </div>
-
-                            <button type="button" onclick="saveHRVMeasurement(event)" class="btn btn-primary" style="width: 100%;">
-                                <i class="fas fa-save"></i> Opslaan
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- HRV Statistics -->
-                    <div class="card">
-                        <h3>Statistieken</h3>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
-                            <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
-                                <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);" id="old-hrv-avg-rmssd">--</div>
-                                <div style="color: var(--text-light); font-size: 0.9rem;">Gemiddelde RMSSD</div>
-                            </div>
-                            <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
-                                <div style="font-size: 2rem; font-weight: 700; color: var(--success-color);" id="old-hrv-avg-hr">--</div>
-                                <div style="color: var(--text-light); font-size: 0.9rem;">Gemiddelde Hartslag</div>
-                            </div>
-                            <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
-                                <div style="font-size: 2rem; font-weight: 700; color: var(--secondary-color);" id="old-hrv-count">0</div>
-                                <div style="color: var(--text-light); font-size: 0.9rem;">Totaal Metingen</div>
-                            </div>
+                    <h3><i class="fas fa-play-circle"></i> Sessie</h3>
+                    
+                    <div class="resonant-circle-container" style="position: relative; display: flex; justify-content: center; align-items: center; min-height: 350px;">
+                        <canvas id="resonant-circle" width="300" height="300" style="max-width: 100%;"></canvas>
+                        <div id="resonant-phase-text" style="position: absolute; font-size: 1.5rem; font-weight: 600; color: var(--text-dark);">
+                            Klaar om te starten
                         </div>
                     </div>
 
-                    <!-- HRV Chart -->
-                    <div class="card">
-                        <h3>HRV Trend</h3>
-                        <canvas id="old-hrv-chart" style="max-height: 300px;"></canvas>
+                    <div class="button-group" style="margin-top: 1.5rem;">
+                        <button class="btn btn-primary" id="start-resonant" onclick="startResonantBreathing()">
+                            <i class="fas fa-play"></i> Start Sessie
+                        </button>
+                        <button class="btn btn-warning" id="pause-resonant" onclick="pauseResonantBreathing()" disabled>
+                            <i class="fas fa-pause"></i> Pauze
+                        </button>
+                        <button class="btn btn-danger" id="stop-resonant" onclick="stopResonantBreathing()" disabled>
+                            <i class="fas fa-stop"></i> Stop
+                        </button>
                     </div>
 
-                    <!-- HRV History -->
-                    <div class="card">
-                        <h3>Recente Metingen</h3>
-                        <div id="old-hrv-list" style="max-height: 400px; overflow-y: auto;"></div>
+                    <div id="resonant-info" style="text-align: center; margin-top: 1.5rem; background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 0.5rem;">
+                        <p style="margin-bottom: 0.5rem;">
+                            <strong>Tijd:</strong> <span id="resonant-time-display">20:00</span>
+                        </p>
+                        <p style="margin-bottom: 0;">
+                            <strong>Voortgang:</strong> <span id="resonant-progress">0%</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Instructions -->
+                <div class="card" style="background: rgba(59, 130, 246, 0.1); border: 2px solid rgba(59, 130, 246, 0.2);">
+                    <h3><i class="fas fa-info-circle"></i> Instructies</h3>
+                    <ol style="margin-left: 1.5rem; line-height: 1.8;">
+                        <li>Kies je sessieduur (20 min aanbevolen)</li>
+                        <li>Pas indien gewenst het ademritme aan (5.5 bpm is ideaal)</li>
+                        <li>Klik "Start Sessie"</li>
+                        <li>Volg de cirkel: groter = inademen, kleiner = uitademen</li>
+                        <li>Houd het ritme comfortabel - geen air hunger!</li>
+                        <li>Na afloop kun je je ervaring bijhouden in het dagboek</li>
+                    </ol>
+                    <p style="margin-top: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
+                        <strong><i class="fas fa-lightbulb"></i> Tip:</strong> Resonant breathing werkt <em>cumulatief</em>. De effecten bouwen op over weken. 
+                        Consistentie is belangrijker dan perfectie!
+                    </p>
+                </div>
+
+                <!-- Weekly Progress -->
+                <div class="card">
+                    <h3><i class="fas fa-chart-line"></i> Deze Week</h3>
+                    <div id="resonant-weekly-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: #10b981;"><span id="resonant-sessions-count">0</span></div>
+                            <div style="color: var(--text-light); font-size: 0.9rem;">Sessies voltooid</div>
+                        </div>
+                        <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: #3b82f6;"><span id="resonant-adherence">0</span>%</div>
+                            <div style="color: var(--text-light); font-size: 0.9rem;">Therapietrouw (doel: 14)</div>
+                        </div>
+                        <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                            <div style="font-size: 2rem; font-weight: 700; color: #f59e0b;"><span id="resonant-total-minutes">0</span></div>
+                            <div style="color: var(--text-light); font-size: 0.9rem;">Totale minuten</div>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Crisis Help Tab -->
-
-        </main>
-    </div>
-
-    <!-- Journal Entry Modal -->
-    <div id="journal-modal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeJournalModal()">&times;</span>
-            <h2><i class="fas fa-pen"></i> Nieuwe Dagboek Entry</h2>
+        <!-- Tracking Tab (Phase 2 - NEW) -->
+        <div id="tracking" class="tab-content">
+            <h2>Progress Tracking</h2>
             
-            <div class="form-group">
-                <label for="entry-technique"><i class="fas fa-wind"></i> Techniek gebruikt:</label>
-                <select class="form-control" id="entry-technique">
-                    <option value="Buteyko Ademhaling">Buteyko Ademhaling</option>
-                    <option value="Resonant Breathing">Resonant Breathing</option>
+            <!-- Sub-tabs -->
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" onclick="showSubTab('dagboek-sub-content')">
+                    <i class="fas fa-book"></i> Dagboek
+                </button>
+                <button class="sub-tab-btn" onclick="showSubTab('grafieken-sub-content')">
+                    <i class="fas fa-chart-bar"></i> Grafieken
+                </button>
+                <button class="sub-tab-btn" onclick="showSubTab('hrv-sub-content')">
+                    <i class="fas fa-heartbeat"></i> HRV Log
+                </button>
+            </div>
+            
+            <!-- Dagboek Sub-content -->
+            <div id="dagboek-sub-content" class="sub-tab-content active">
+                <div class="card">
+                <h2><i class="fas fa-book"></i> Ademhalingsdagboek</h2>
+                
+                <div class="button-group" style="margin-bottom: 2rem;">
+                    <button class="btn btn-primary" onclick="openJournalModal()"><i class="fas fa-pen"></i> Nieuwe Entry</button>
+                    <button class="btn btn-success" onclick="exportDagboek()"><i class="fas fa-download"></i> Exporteer</button>
+                </div>
 
-                    <option value="Handmatige Entry">Handmatige Entry</option>
+                <div class="form-group">
+                    <label for="journal-filter">Filter dagboek entries:</label>
+                    <select class="form-control" id="journal-filter" onchange="filterJournalEntries()">
+                        <option value="last7" selected>Laatste 7 dagen</option>
+                        <option value="last30">Laatste 30 dagen</option>
+                        <option value="all">Alle entries</option>
+                    </select>
+                </div>
+
+                <div id="journal-entries">
+                    <div style="text-align: center; color: var(--text-light); margin: 2rem 0;">
+                        <p>Nog geen dagboek entries. Begin met je eerste oefening!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+            
+            <!-- HRV Sub-content -->
+            
+            <!-- Grafieken Sub-content -->
+            <div id="grafieken-sub-content" class="sub-tab-content">
+                <div class="card">
+                    <h2><i class="fas fa-chart-bar"></i> Visualisaties & Statistieken</h2>
+                    <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                        <i class="fas fa-info-circle"></i> Evidence-based tracking van je progressie over tijd
+                    </p>
+                </div>
+
+                                    <!-- Evidence-Based Visualisaties -->
+                
+                <!-- Consistentie Heatmap -->
+                <div class="card">
+                    <h3><i class="fas fa-calendar-check"></i> Therapietrouw - Laatste 8 Weken</h3>
+                    <div id="consistency-heatmap" style="margin: 1rem 0;"></div>
+                    <div id="consistency-stats" style="margin-top: 1rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 0.5rem;"></div>
+                </div>
+
+                <!-- Intensity Trend -->
+                <div class="card">
+                    <h3><i class="fas fa-chart-line"></i> Intensiteit Trend</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">
+                        <i class="fas fa-info-circle"></i> Langetermijn trend over weken - dagelijkse fluctuaties zijn normaal
+                    </p>
+                    <div style="margin-bottom: 1rem;">
+                        <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('intensity', 7)" id="intensity-7days">7 dagen</button>
+                        <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('intensity', 30)" id="intensity-30days" style="background: var(--primary-color);">30 dagen</button>
+                        <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('intensity', 90)" id="intensity-90days">90 dagen</button>
+                        <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('intensity', 'all')" id="intensity-all">Alles</button>
+                    </div>
+                    <canvas id="intensity-trend-chart" style="max-height: 300px;"></canvas>
+                    <div id="intensity-stats" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 0.5rem;"></div>
+                </div>
+
+                <!-- CP Trend -->
+                <div class="card" id="cp-trend-card" style="display: none;">
+                    <h3><i class="fas fa-chart-area"></i> Control Pause Progressie</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">
+                        <i class="fas fa-info-circle"></i> Objectieve fysiologische marker - normaal: 20-40 seconden
+                    </p>
+                    <div style="margin-bottom: 1rem;">
+                        <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('cp', 30)" id="cp-30days" style="background: var(--primary-color);">30 dagen</button>
+                        <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('cp', 90)" id="cp-90days">90 dagen</button>
+                        <button class="btn btn-secondary btn-sm" onclick="updateChartPeriod('cp', 'all')" id="cp-all">Alles</button>
+                    </div>
+                    <canvas id="cp-chart" style="max-height: 300px;"></canvas>
+                    <div id="cp-stats" style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 0.5rem;"></div>
+                </div>
+
+                <!-- CP vs Intensity Correlation -->
+                <div class="card" id="correlation-card" style="display: none;">
+                    <h3><i class="fas fa-project-diagram"></i> CP vs Intensiteit Correlatie</h3>
+                    <canvas id="correlation-chart" style="max-height: 300px;"></canvas>
+                    <div id="correlation-stats" style="margin-top: 1rem;"></div>
+                </div>
+
+                <!-- Weekly Averages -->
+                <div class="card">
+                    <h3><i class="fas fa-chart-bar"></i> Wekelijkse Gemiddeldes</h3>
+                    <canvas id="weekly-averages-chart" style="max-height: 300px;"></canvas>
+                </div>
+
+                <!-- Trigger Analysis -->
+                <div class="card" id="triggers-card" style="display: none;">
+                    <h3><i class="fas fa-bolt"></i> Trigger Analyse</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">
+                        <i class="fas fa-info-circle"></i> Identificeer patronen voor betere preventie
+                    </p>
+                    <canvas id="triggers-chart" style="max-height: 300px;"></canvas>
+                    <div id="triggers-stats" style="margin-top: 1rem;"></div>
+                </div>
+
+
+            </div>
+            <div id="hrv-sub-content" class="sub-tab-content">
+                <div class="card">
+                <h2><i class="fas fa-chart-line"></i> Heart Rate Variability (HRV) Tracking</h2>
+                <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                    Track je HRV (RMSSD) en hartslag om autonoom functioneren te monitoren.
+                </p>
+
+                <!-- HRV Input Form -->
+                <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 2px solid rgba(16, 185, 129, 0.2);">
+                    <h3>Nieuwe HRV Meting</h3>
+                    <form id="hrv-form">
+                        <div class="form-group">
+                            <label for="hrv-rmssd"><i class="fas fa-heartbeat"></i> RMSSD (ms)</label>
+                            <input type="number" id="hrv-rmssd" min="0" max="200" step="0.1" required 
+                                   placeholder="bijv. 28.5" style="width: 100%;">
+                            <small style="color: var(--text-light);">
+                                <i class="fas fa-info-circle"></i> RMSSD meet parasympathische activiteit. Normaal: 20-50ms
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hrv-heartrate"><i class="fas fa-heart"></i> Hartslag (bpm)</label>
+                            <input type="number" id="hrv-heartrate" min="30" max="200" required 
+                                   placeholder="bijv. 65" style="width: 100%;">
+                            <small style="color: var(--text-light);">
+                                <i class="fas fa-info-circle"></i> Rust hartslag, bij voorkeur 's ochtends
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hrv-notes"><i class="fas fa-sticky-note"></i> Notities (optioneel)</label>
+                            <textarea id="hrv-notes" rows="2" placeholder="bijv. Na 10 min meditatie" 
+                                      style="width: 100%;"></textarea>
+                        </div>
+
+                        <button type="button" onclick="saveHRVMeasurement(event)" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-save"></i> Opslaan
+                        </button>
+                    </form>
+                </div>
+
+                <!-- HRV Statistics -->
+                <div class="card">
+                    <h3>Statistieken</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);" id="hrv-avg-rmssd">--</div>
+                            <div style="color: var(--text-light); font-size: 0.9rem;">Gemiddelde RMSSD</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--success-color);" id="hrv-avg-hr">--</div>
+                            <div style="color: var(--text-light); font-size: 0.9rem;">Gemiddelde Hartslag</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--secondary-color);" id="hrv-count">0</div>
+                            <div style="color: var(--text-light); font-size: 0.9rem;">Totaal Metingen</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HRV Chart -->
+                <div class="card">
+                    <h3>HRV Trend</h3>
+                    <canvas id="hrv-chart" style="max-height: 300px;"></canvas>
+                </div>
+
+                <!-- HRV History -->
+                <div class="card">
+                    <h3>Recente Metingen</h3>
+                    <div id="hrv-list" style="max-height: 400px; overflow-y: auto;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dagboek Tab -->
+        <div id="dagboek" class="tab-content" style="display: none;">
+            <div class="card">
+                <h2><i class="fas fa-book"></i> Ademhalingsdagboek</h2>
+                
+                <div class="button-group" style="margin-bottom: 2rem;">
+                    <button class="btn btn-primary" onclick="openJournalModal()"><i class="fas fa-pen"></i> Nieuwe Entry</button>
+                    <button class="btn btn-success" onclick="exportDagboek()"><i class="fas fa-download"></i> Exporteer</button>
+                </div>
+
+                <div class="form-group">
+                    <label for="journal-filter">Filter dagboek entries:</label>
+                    <select class="form-control" id="journal-filter" onchange="filterJournalEntries()">
+                        <option value="last7" selected>Laatste 7 dagen</option>
+                        <option value="last30">Laatste 30 dagen</option>
+                        <option value="all">Alle entries</option>
+                    </select>
+                </div>
+
+                <div id="journal-entries">
+                    <div style="text-align: center; color: var(--text-light); margin: 2rem 0;">
+                        <p>Nog geen dagboek entries. Begin met je eerste oefening!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HRV Tab -->
+        <div id="hrv" class="tab-content" style="display: none;">
+            <div class="card">
+                <h2><i class="fas fa-chart-line"></i> Heart Rate Variability (HRV) Tracking</h2>
+                <p style="color: var(--text-light); margin-bottom: 1.5rem;">
+                    Track je HRV (RMSSD) en hartslag om autonoom functioneren te monitoren.
+                </p>
+
+                <!-- HRV Input Form -->
+                <div class="card" style="background: rgba(16, 185, 129, 0.1); border: 2px solid rgba(16, 185, 129, 0.2);">
+                    <h3>Nieuwe HRV Meting</h3>
+                    <form id="old-hrv-form" onsubmit="saveHRVMeasurement(event)">
+                        <div class="form-group">
+                            <label for="hrv-rmssd"><i class="fas fa-heartbeat"></i> RMSSD (ms)</label>
+                            <input type="number" id="hrv-rmssd" min="0" max="200" step="0.1" required 
+                                   placeholder="bijv. 28.5" style="width: 100%;">
+                            <small style="color: var(--text-light);">
+                                <i class="fas fa-info-circle"></i> RMSSD meet parasympathische activiteit. Normaal: 20-50ms
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hrv-heartrate"><i class="fas fa-heart"></i> Hartslag (bpm)</label>
+                            <input type="number" id="hrv-heartrate" min="30" max="200" required 
+                                   placeholder="bijv. 65" style="width: 100%;">
+                            <small style="color: var(--text-light);">
+                                <i class="fas fa-info-circle"></i> Rust hartslag, bij voorkeur 's ochtends
+                            </small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hrv-notes"><i class="fas fa-sticky-note"></i> Notities (optioneel)</label>
+                            <textarea id="hrv-notes" rows="2" placeholder="bijv. Na 10 min meditatie" 
+                                      style="width: 100%;"></textarea>
+                        </div>
+
+                        <button type="button" onclick="saveHRVMeasurement(event)" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-save"></i> Opslaan
+                        </button>
+                    </form>
+                </div>
+
+                <!-- HRV Statistics -->
+                <div class="card">
+                    <h3>Statistieken</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--primary-color);" id="old-hrv-avg-rmssd">--</div>
+                            <div style="color: var(--text-light); font-size: 0.9rem;">Gemiddelde RMSSD</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--success-color);" id="old-hrv-avg-hr">--</div>
+                            <div style="color: var(--text-light); font-size: 0.9rem;">Gemiddelde Hartslag</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: var(--background-color); border-radius: 0.5rem;">
+                            <div style="font-size: 2rem; font-weight: 700; color: var(--secondary-color);" id="old-hrv-count">0</div>
+                            <div style="color: var(--text-light); font-size: 0.9rem;">Totaal Metingen</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HRV Chart -->
+                <div class="card">
+                    <h3>HRV Trend</h3>
+                    <canvas id="old-hrv-chart" style="max-height: 300px;"></canvas>
+                </div>
+
+                <!-- HRV History -->
+                <div class="card">
+                    <h3>Recente Metingen</h3>
+                    <div id="old-hrv-list" style="max-height: 400px; overflow-y: auto;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crisis Help Tab -->
+
+    </main>
+</div>
+
+<!-- Journal Entry Modal -->
+<div id="journal-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeJournalModal()">&times;</span>
+        <h2><i class="fas fa-pen"></i> Nieuwe Dagboek Entry</h2>
+        
+        <div class="form-group">
+            <label for="entry-technique"><i class="fas fa-wind"></i> Techniek gebruikt:</label>
+            <select class="form-control" id="entry-technique">
+                <option value="Buteyko Ademhaling">Buteyko Ademhaling</option>
+                <option value="Resonant Breathing">Resonant Breathing</option>
+
+                <option value="Handmatige Entry">Handmatige Entry</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label style="margin-bottom: 0.75rem;"><i class="fas fa-bolt"></i> Triggers (meerdere mogelijk):</label>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; margin-bottom: 0.5rem;">
+                <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                    <input type="checkbox" class="trigger-checkbox" value="Hyper-waakzaamheid" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span style="user-select: none;">Hyper-waakzaamheid</span>
+                </label>
+                <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                    <input type="checkbox" class="trigger-checkbox" value="Emotionele gebeurtenis" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span style="user-select: none;">Emotionele gebeurtenis</span>
+                </label>
+                <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                    <input type="checkbox" class="trigger-checkbox" value="Sociale interactie" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span style="user-select: none;">Sociale interactie</span>
+                </label>
+                <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                    <input type="checkbox" class="trigger-checkbox" value="Piekergedachte" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span style="user-select: none;">Piekergedachte</span>
+                </label>
+                <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                    <input type="checkbox" class="trigger-checkbox" value="Fysieke inspanning" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span style="user-select: none;">Fysieke inspanning</span>
+                </label>
+                <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                    <input type="checkbox" class="trigger-checkbox" value="Link met trauma" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span style="user-select: none;">Link met trauma</span>
+                </label>
+                <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                    <input type="checkbox" class="trigger-checkbox" value="Hitte" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span style="user-select: none;">Hitte</span>
+                </label>
+                <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                    <input type="checkbox" class="trigger-checkbox" value="Na eten" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span style="user-select: none;">Na eten</span>
+                </label>
+                <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                    <input type="checkbox" class="trigger-checkbox" value="Veel schermtijd" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span style="user-select: none;">Veel schermtijd</span>
+                </label>
+                <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                    <input type="checkbox" class="trigger-checkbox" value="Vermoeidheid" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span style="user-select: none;">Vermoeidheid</span>
+                </label>
+                <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                    <input type="checkbox" class="trigger-checkbox" value="Medicatie niet genomen" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span style="user-select: none;">Medicatie niet genomen</span>
+                </label>
+                <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                    <input type="checkbox" class="trigger-checkbox" value="Medicatie dosis veranderd" style="width: 18px; height: 18px; cursor: pointer;">
+                    <span style="user-select: none;">Medicatie dosis veranderd</span>
+                </label>
+            </div>
+            <div style="margin-top: 0.5rem;">
+                <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" id="trigger-other-check">
+                    <span>Andere:</span>
+                    <input type="text" class="form-control" id="trigger-other-text" placeholder="Typ hier..." style="flex: 1; display: none;">
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label style="margin-bottom: 0.5rem; display: block;">
+                <i class="fas fa-heartbeat"></i> Hoe voel je je na deze sessie? (optioneel)
+            </label>
+            <div class="range-container">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--text-light);">
+                    <span>😌 Helemaal ok (0)</span>
+                    <span>😫 Heel onaangenaam (10)</span>
+                </div>
+                <input type="range" 
+                       class="range-slider" 
+                       id="entry-intensity" 
+                       min="0" 
+                       max="10" 
+                       value="5"
+                       oninput="updateIntensityValue()">
+                <div style="text-align: center; margin-top: 0.5rem;">
+                    <strong style="font-size: 1.5rem; color: var(--primary-color);">
+                        <span id="intensity-value">5</span>/10
+                    </strong>
+                </div>
+            </div>
+            <small style="color: var(--text-light); display: block; margin-top: 0.5rem;">
+                <i class="fas fa-info-circle"></i> <strong>Let op:</strong> Dit meet je algemene toestand, niet of de sessie direct hielp. 
+                Verbetering gebeurt over weken/maanden. Deze score helpt langetermijn trends te zien.
+            </small>
+        </div>
+
+        <div class="form-group" id="cp-score-group">
+            <label for="entry-cp-score"><i class="fas fa-stopwatch"></i> Control Pause Score (optioneel, in seconden):</label>
+            <input type="number" class="form-control" id="entry-cp-score" min="1" max="120" placeholder="Bijv. 25">
+            <small style="color: var(--text-light); display: block; margin-top: 0.25rem;">
+                Vul je CP score in als je deze hebt gemeten. Normale waarden: 20-40 seconden.
+            </small>
+        </div>
+
+        <div class="form-group">
+            <label>Sensaties (selecteer van toepassing):</label>
+            <div class="symptom-checkbox-container">
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Kortademigheid">
+                    <label>Kortademigheid</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Luchthonger">
+                    <label>Luchthonger</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Drukkend gevoel borst">
+                    <label>Drukkend gevoel borst</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Hartkloppingen">
+                    <label>Hartkloppingen</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Duizeligheid">
+                    <label>Duizeligheid</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Tintelingen">
+                    <label>Tintelingen</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Geforceerd gapen">
+                    <label>Geforceerd gapen</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Neus optrekken">
+                    <label>Neus optrekken</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Piekergedachten">
+                    <label>Piekergedachten</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Frustratie">
+                    <label>Frustratie</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Onwerkelijke gevoelens">
+                    <label>Onwerkelijke gevoelens</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Vermoeidheid">
+                    <label>Vermoeidheid</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Paniek">
+                    <label>Paniek</label>
+                </div>
+                <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
+                    <input type="checkbox" class="symptom-checkbox" data-symptom="Angst">
+                    <label>Angst</label>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                <input type="checkbox" id="entry-has-medication" onchange="toggleMedicationFields()" style="width: auto;">
+                💊 Medicatie event toevoegen
+            </label>
+        </div>
+
+        <div id="medication-fields" style="display: none; background: rgba(255,255,255,0.3); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+            <div class="form-group">
+                <label for="entry-med-action">Actie:</label>
+                <select class="form-control" id="entry-med-action">
+                    <option value="">Selecteer actie...</option>
+                    <option value="started">✅ Gestart met medicijn</option>
+                    <option value="stopped">⛔ Gestopt met medicijn</option>
+                    <option value="dose_change">🔄 Dosiswijziging</option>
+                    <option value="extra">➕ Extra dosis genomen</option>
+                    <option value="regular">📅 Reguliere dosis (voor tracking)</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label style="margin-bottom: 0.75rem;"><i class="fas fa-bolt"></i> Triggers (meerdere mogelijk):</label>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; margin-bottom: 0.5rem;">
-                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
-                        <input type="checkbox" class="trigger-checkbox" value="Hyper-waakzaamheid" style="width: 18px; height: 18px; cursor: pointer;">
-                        <span style="user-select: none;">Hyper-waakzaamheid</span>
-                    </label>
-                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
-                        <input type="checkbox" class="trigger-checkbox" value="Emotionele gebeurtenis" style="width: 18px; height: 18px; cursor: pointer;">
-                        <span style="user-select: none;">Emotionele gebeurtenis</span>
-                    </label>
-                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
-                        <input type="checkbox" class="trigger-checkbox" value="Sociale interactie" style="width: 18px; height: 18px; cursor: pointer;">
-                        <span style="user-select: none;">Sociale interactie</span>
-                    </label>
-                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
-                        <input type="checkbox" class="trigger-checkbox" value="Piekergedachte" style="width: 18px; height: 18px; cursor: pointer;">
-                        <span style="user-select: none;">Piekergedachte</span>
-                    </label>
-                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
-                        <input type="checkbox" class="trigger-checkbox" value="Fysieke inspanning" style="width: 18px; height: 18px; cursor: pointer;">
-                        <span style="user-select: none;">Fysieke inspanning</span>
-                    </label>
-                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
-                        <input type="checkbox" class="trigger-checkbox" value="Link met trauma" style="width: 18px; height: 18px; cursor: pointer;">
-                        <span style="user-select: none;">Link met trauma</span>
-                    </label>
-                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
-                        <input type="checkbox" class="trigger-checkbox" value="Hitte" style="width: 18px; height: 18px; cursor: pointer;">
-                        <span style="user-select: none;">Hitte</span>
-                    </label>
-                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
-                        <input type="checkbox" class="trigger-checkbox" value="Na eten" style="width: 18px; height: 18px; cursor: pointer;">
-                        <span style="user-select: none;">Na eten</span>
-                    </label>
-                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
-                        <input type="checkbox" class="trigger-checkbox" value="Veel schermtijd" style="width: 18px; height: 18px; cursor: pointer;">
-                        <span style="user-select: none;">Veel schermtijd</span>
-                    </label>
-                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
-                        <input type="checkbox" class="trigger-checkbox" value="Vermoeidheid" style="width: 18px; height: 18px; cursor: pointer;">
-                        <span style="user-select: none;">Vermoeidheid</span>
-                    </label>
-                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
-                        <input type="checkbox" class="trigger-checkbox" value="Medicatie niet genomen" style="width: 18px; height: 18px; cursor: pointer;">
-                        <span style="user-select: none;">Medicatie niet genomen</span>
-                    </label>
-                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
-                        <input type="checkbox" class="trigger-checkbox" value="Medicatie dosis veranderd" style="width: 18px; height: 18px; cursor: pointer;">
-                        <span style="user-select: none;">Medicatie dosis veranderd</span>
-                    </label>
-                </div>
-                <div style="margin-top: 0.5rem;">
-                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem;">
-                        <input type="checkbox" id="trigger-other-check">
-                        <span>Andere:</span>
-                        <input type="text" class="form-control" id="trigger-other-text" placeholder="Typ hier..." style="flex: 1; display: none;">
-                    </label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label style="margin-bottom: 0.5rem; display: block;">
-                    <i class="fas fa-heartbeat"></i> Hoe voel je je na deze sessie? (optioneel)
-                </label>
-                <div class="range-container">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--text-light);">
-                        <span>😌 Helemaal ok (0)</span>
-                        <span>😫 Heel onaangenaam (10)</span>
-                    </div>
-                    <input type="range" 
-                           class="range-slider" 
-                           id="entry-intensity" 
-                           min="0" 
-                           max="10" 
-                           value="5"
-                           oninput="updateIntensityValue()">
-                    <div style="text-align: center; margin-top: 0.5rem;">
-                        <strong style="font-size: 1.5rem; color: var(--primary-color);">
-                            <span id="intensity-value">5</span>/10
-                        </strong>
-                    </div>
-                </div>
-                <small style="color: var(--text-light); display: block; margin-top: 0.5rem;">
-                    <i class="fas fa-info-circle"></i> <strong>Let op:</strong> Dit meet je algemene toestand, niet of de sessie direct hielp. 
-                    Verbetering gebeurt over weken/maanden. Deze score helpt langetermijn trends te zien.
-                </small>
-            </div>
-
-            <div class="form-group" id="cp-score-group">
-                <label for="entry-cp-score"><i class="fas fa-stopwatch"></i> Control Pause Score (optioneel, in seconden):</label>
-                <input type="number" class="form-control" id="entry-cp-score" min="1" max="120" placeholder="Bijv. 25">
+                <label for="entry-med-name">Medicijn naam:</label>
+                <input type="text" class="form-control" id="entry-med-name" placeholder="Bijv. Lorazepam, Sertraline, Propranolol">
                 <small style="color: var(--text-light); display: block; margin-top: 0.25rem;">
-                    Vul je CP score in als je deze hebt gemeten. Normale waarden: 20-40 seconden.
+                    <i class="fas fa-lightbulb"></i> Voor tracking: anxiolytica, antidepressiva, bètablokkers, of andere medicatie gerelateerd aan je klachten
                 </small>
             </div>
 
             <div class="form-group">
-                <label>Sensaties (selecteer van toepassing):</label>
-                <div class="symptom-checkbox-container">
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Kortademigheid">
-                        <label>Kortademigheid</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Luchthonger">
-                        <label>Luchthonger</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Drukkend gevoel borst">
-                        <label>Drukkend gevoel borst</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Hartkloppingen">
-                        <label>Hartkloppingen</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Duizeligheid">
-                        <label>Duizeligheid</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Tintelingen">
-                        <label>Tintelingen</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Geforceerd gapen">
-                        <label>Geforceerd gapen</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Neus optrekken">
-                        <label>Neus optrekken</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Piekergedachten">
-                        <label>Piekergedachten</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Frustratie">
-                        <label>Frustratie</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Onwerkelijke gevoelens">
-                        <label>Onwerkelijke gevoelens</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Vermoeidheid">
-                        <label>Vermoeidheid</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Paniek">
-                        <label>Paniek</label>
-                    </div>
-                    <div class="symptom-checkbox-item" onclick="toggleSymptom(this)">
-                        <input type="checkbox" class="symptom-checkbox" data-symptom="Angst">
-                        <label>Angst</label>
-                    </div>
-                </div>
+                <label for="entry-med-dose">Dosering:</label>
+                <input type="text" class="form-control" id="entry-med-dose" placeholder="Bijv. 20mg, 40mg, 0.5mg">
             </div>
 
-
-            <div class="form-group">
-                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                    <input type="checkbox" id="entry-has-medication" onchange="toggleMedicationFields()" style="width: auto;">
-                    💊 Medicatie event toevoegen
-                </label>
-            </div>
-
-            <div id="medication-fields" style="display: none; background: rgba(255,255,255,0.3); padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
-                <div class="form-group">
-                    <label for="entry-med-action">Actie:</label>
-                    <select class="form-control" id="entry-med-action">
-                        <option value="">Selecteer actie...</option>
-                        <option value="started">✅ Gestart met medicijn</option>
-                        <option value="stopped">⛔ Gestopt met medicijn</option>
-                        <option value="dose_change">🔄 Dosiswijziging</option>
-                        <option value="extra">➕ Extra dosis genomen</option>
-                        <option value="regular">📅 Reguliere dosis (voor tracking)</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="entry-med-name">Medicijn naam:</label>
-                    <input type="text" class="form-control" id="entry-med-name" placeholder="Bijv. Lorazepam, Sertraline, Propranolol">
-                    <small style="color: var(--text-light); display: block; margin-top: 0.25rem;">
-                        <i class="fas fa-lightbulb"></i> Voor tracking: anxiolytica, antidepressiva, bètablokkers, of andere medicatie gerelateerd aan je klachten
-                    </small>
-                </div>
-
-                <div class="form-group">
-                    <label for="entry-med-dose">Dosering:</label>
-                    <input type="text" class="form-control" id="entry-med-dose" placeholder="Bijv. 20mg, 40mg, 0.5mg">
-                </div>
-
-                <div class="form-group" id="med-previous-dose-group" style="display: none;">
-                    <label for="entry-med-previous-dose">Vorige dosering (bij wijziging):</label>
-                    <input type="text" class="form-control" id="entry-med-previous-dose" placeholder="Bijv. 20mg">
-                </div>
-
-                <div class="form-group">
-                    <label for="entry-med-reason">Reden (optioneel):</label>
-                    <input type="text" class="form-control" id="entry-med-reason" placeholder="Bijv. Arts advies, verhoogde klachten, preventief">
-                </div>
+            <div class="form-group" id="med-previous-dose-group" style="display: none;">
+                <label for="entry-med-previous-dose">Vorige dosering (bij wijziging):</label>
+                <input type="text" class="form-control" id="entry-med-previous-dose" placeholder="Bijv. 20mg">
             </div>
 
             <div class="form-group">
-                <label for="entry-notes">Notities:</label>
-                <textarea class="form-control" id="entry-notes" placeholder="Extra opmerkingen..."></textarea>
+                <label for="entry-med-reason">Reden (optioneel):</label>
+                <input type="text" class="form-control" id="entry-med-reason" placeholder="Bijv. Arts advies, verhoogde klachten, preventief">
             </div>
+        </div>
 
-            <div class="button-group">
-                <button id="save-journal-btn" class="btn btn-primary" onclick="saveJournalEntry()"><i class="fas fa-save"></i> Opslaan</button>
-                <button class="btn btn-orange" onclick="closeJournalModal()">Annuleren</button>
-            </div>
+        <div class="form-group">
+            <label for="entry-notes">Notities:</label>
+            <textarea class="form-control" id="entry-notes" placeholder="Extra opmerkingen..."></textarea>
+        </div>
+
+        <div class="button-group">
+            <button id="save-journal-btn" class="btn btn-primary" onclick="saveJournalEntry()"><i class="fas fa-save"></i> Opslaan</button>
+            <button class="btn btn-orange" onclick="closeJournalModal()">Annuleren</button>
         </div>
     </div>
+</div>
 
-    <footer style="text-align: center; padding: 2rem 1rem; color: rgba(255,255,255,0.8); font-size: 0.8rem;">
-        <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
-            <p style="margin: 0;">📞 In noodgevallen: contacteer altijd je huisarts of spoeddiensten</p>
-            
-            <!-- Firebase Status Indicator -->
-            <div style="display: flex; align-items: center; gap: 0.375rem;">
-                <div id="firebase-status-dot" class="status-disconnected" style="width: 8px; height: 8px; border-radius: 50%; transition: all 0.3s ease; opacity: 0.6;" title="Firebase verbinding status"></div>
-                <span style="font-size: 0.7rem; opacity: 0.7;">Status</span>
-            </div>
-        </div>
+<footer style="text-align: center; padding: 2rem 1rem; color: rgba(255,255,255,0.8); font-size: 0.8rem;">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap;">
+        <p style="margin: 0;">📞 In noodgevallen: contacteer altijd je huisarts of spoeddiensten</p>
         
-        <!-- Developer Credit -->
-        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
-            <p style="margin: 0; font-size: 0.75rem; opacity: 0.8;">
-                Ontwikkeld door <strong>Thomas Van Troostenberghe</strong>
-            </p>
+        <!-- Firebase Status Indicator -->
+        <div style="display: flex; align-items: center; gap: 0.375rem;">
+            <div id="firebase-status-dot" class="status-disconnected" style="width: 8px; height: 8px; border-radius: 50%; transition: all 0.3s ease; opacity: 0.6;" title="Firebase verbinding status"></div>
+            <span style="font-size: 0.7rem; opacity: 0.7;">Status</span>
         </div>
-    </footer>
+    </div>
+    
+    <!-- Developer Credit -->
+    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+        <p style="margin: 0; font-size: 0.75rem; opacity: 0.8;">
+            Ontwikkeld door <strong>Thomas Van Troostenberghe</strong>
+        </p>
+    </div>
+</footer>
+```
 
 <script type="module">
     // Firebase configuration (exact same credentials)
@@ -3991,7 +4003,10 @@ Wil je je voorkeuren wijzigen?`;
             
             const now = new Date();
             const weekStart = new Date(now);
-            weekStart.setDate(now.getDate() - now.getDay());
+            // Week starts on Monday (NL/BE standard)
+            const dayOfWeek = now.getDay();
+            const daysToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+            weekStart.setDate(now.getDate() + daysToMonday);
             weekStart.setHours(0, 0, 0, 0);
             
             const thisWeekSessions = resonantSessions.filter(s => {
@@ -4027,7 +4042,10 @@ Wil je je voorkeuren wijzigen?`;
         
         const now = new Date();
         const weekStart = new Date(now);
-        weekStart.setDate(now.getDate() - now.getDay());
+        // Week starts on Monday (NL/BE standard)
+        const dayOfWeek = now.getDay();
+        const daysToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+        weekStart.setDate(now.getDate() + daysToMonday);
         weekStart.setHours(0, 0, 0, 0);
         
         const thisWeek = hMeasurements.filter(m => 
@@ -5983,7 +6001,11 @@ Wil je je voorkeuren wijzigen?`;
     function updateResonantWeeklyStats() {
         // Calculate this week's sessions
         const now = new Date();
-        const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+        const weekStart = new Date(now);
+        // Week starts on Monday (NL/BE standard)
+        const dayOfWeek = now.getDay();
+        const daysToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+        weekStart.setDate(weekStart.getDate() + daysToMonday);
         weekStart.setHours(0, 0, 0, 0);
         
         const thisWeekSessions = resonantSessions.filter(s => 
@@ -7799,9 +7821,15 @@ Wil je je voorkeuren wijzigen?`;
         const intensityValues = intensityData.filter(v => v !== null);
         if (intensityValues.length > 0) {
             const avgIntensity = intensityValues.reduce((a, b) => a + b, 0) / intensityValues.length;
-            const firstIntensity = intensityValues[0];
-            const lastIntensity = intensityValues[intensityValues.length - 1];
-            const change = lastIntensity - firstIntensity;
+            
+            // Compare first half average vs second half average
+            const midpoint = Math.floor(intensityValues.length / 2);
+            const firstHalf = intensityValues.slice(0, midpoint);
+            const secondHalf = intensityValues.slice(midpoint);
+            
+            const avgFirstHalf = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
+            const avgSecondHalf = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
+            const change = avgSecondHalf - avgFirstHalf;
             const trend = change <= 0 ? '↓' : '↑';
             const changeColor = change <= 0 ? '#10b981' : '#ef4444';
             
@@ -8201,10 +8229,16 @@ Wil je je voorkeuren wijzigen?`;
         });
         
         // Calculate stats
-        const firstCP = cpScores[0];
-        const lastCP = cpScores[cpScores.length - 1];
         const avgCP = cpScores.reduce((a, b) => a + b, 0) / cpScores.length;
-        const change = lastCP - firstCP;
+        
+        // Compare first half average vs second half average
+        const midpoint = Math.floor(cpScores.length / 2);
+        const firstHalf = cpScores.slice(0, midpoint);
+        const secondHalf = cpScores.slice(midpoint);
+        
+        const avgFirstHalf = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
+        const avgSecondHalf = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
+        const change = avgSecondHalf - avgFirstHalf;
         const trend = change >= 0 ? '↗️' : '↘️';
         const changeColor = change >= 0 ? '#10b981' : '#ef4444';
         
@@ -8626,6 +8660,7 @@ Wil je je voorkeuren wijzigen?`;
 </script>
 
 <!-- Cookie Consent Banner -->
+
 <div id="cookie-banner" class="cookie-banner" style="display: none;">
     <div class="cookie-content">
         <div class="cookie-text">
@@ -8648,6 +8683,7 @@ Wil je je voorkeuren wijzigen?`;
 </div>
 
 <!-- Footer -->
+
 <footer class="footer">
     <div class="footer-content">
         <div class="footer-links">

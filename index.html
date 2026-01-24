@@ -2458,8 +2458,64 @@
             </div>
 
             <div class="form-group">
-                <label for="entry-trigger"><i class="fas fa-bolt"></i> Trigger/Oorzaak (optioneel):</label>
-                <input type="text" class="form-control" id="entry-trigger" placeholder="Wat triggerde de symptomen?">
+                <label style="margin-bottom: 0.75rem;"><i class="fas fa-bolt"></i> Triggers (meerdere mogelijk):</label>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                        <input type="checkbox" class="trigger-checkbox" value="Hyper-waakzaamheid" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="user-select: none;">Hyper-waakzaamheid</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                        <input type="checkbox" class="trigger-checkbox" value="Emotionele gebeurtenis" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="user-select: none;">Emotionele gebeurtenis</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                        <input type="checkbox" class="trigger-checkbox" value="Sociale interactie" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="user-select: none;">Sociale interactie</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                        <input type="checkbox" class="trigger-checkbox" value="Piekergedachte" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="user-select: none;">Piekergedachte</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                        <input type="checkbox" class="trigger-checkbox" value="Fysieke inspanning" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="user-select: none;">Fysieke inspanning</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                        <input type="checkbox" class="trigger-checkbox" value="Link met trauma" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="user-select: none;">Link met trauma</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                        <input type="checkbox" class="trigger-checkbox" value="Hitte" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="user-select: none;">Hitte</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                        <input type="checkbox" class="trigger-checkbox" value="Na eten" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="user-select: none;">Na eten</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                        <input type="checkbox" class="trigger-checkbox" value="Veel schermtijd" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="user-select: none;">Veel schermtijd</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                        <input type="checkbox" class="trigger-checkbox" value="Vermoeidheid" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="user-select: none;">Vermoeidheid</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                        <input type="checkbox" class="trigger-checkbox" value="Medicatie niet genomen" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="user-select: none;">Medicatie niet genomen</span>
+                    </label>
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 0.25rem; cursor: pointer; transition: background 0.2s;">
+                        <input type="checkbox" class="trigger-checkbox" value="Medicatie dosis veranderd" style="width: 18px; height: 18px; cursor: pointer;">
+                        <span style="user-select: none;">Medicatie dosis veranderd</span>
+                    </label>
+                </div>
+                <div style="margin-top: 0.5rem;">
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" id="trigger-other-check">
+                        <span>Andere:</span>
+                        <input type="text" class="form-control" id="trigger-other-text" placeholder="Typ hier..." style="flex: 1; display: none;">
+                    </label>
+                </div>
             </div>
 
             <div class="form-group">
@@ -2468,8 +2524,8 @@
                 </label>
                 <div class="range-container">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--text-light);">
-                        <span>😌 Goed (0)</span>
-                        <span>😫 Ernstig (10)</span>
+                        <span>😌 Helemaal ok (0)</span>
+                        <span>😫 Heel onaangenaam (10)</span>
                     </div>
                     <input type="range" 
                            class="range-slider" 
@@ -6403,9 +6459,23 @@ Wil je je voorkeuren wijzigen?`;
             const sensations = Array.from(document.querySelectorAll('.symptom-checkbox:checked'))
                                 .map(cb => cb.dataset.symptom);
             
+            // Collect triggers from checkboxes
+            const selectedTriggers = [];
+            document.querySelectorAll('.trigger-checkbox:checked').forEach(cb => {
+                selectedTriggers.push(cb.value);
+            });
+            
+            // Add "Andere" if checked and has text
+            const otherCheck = document.getElementById('trigger-other-check');
+            const otherText = document.getElementById('trigger-other-text');
+            if (otherCheck && otherCheck.checked && otherText && otherText.value.trim()) {
+                selectedTriggers.push('Andere: ' + otherText.value.trim());
+            }
+            
             const entry = {
                 techniekGebruikt: document.getElementById('entry-technique').value,
-                trigger: document.getElementById('entry-trigger').value,
+                triggers: selectedTriggers, // Array instead of single string
+                trigger: selectedTriggers.join(', ') || null, // Backwards compatibility
                 intensiteit: parseInt(document.getElementById('entry-intensity').value) || null,
                 sensaties: sensations,
                 notities: document.getElementById('entry-notes').value,
@@ -6729,7 +6799,7 @@ Wil je je voorkeuren wijzigen?`;
                         
                         ${entry.cpScore ? `<div style="margin: 0.5rem 0;"><small><strong>CP:</strong> ${entry.cpScore}s</small></div>` : ''}
                         ${entry.intensiteit !== null && entry.intensiteit !== undefined ? `<div style="margin: 0.5rem 0;"><small><strong>Gevoel:</strong> <span style="color: ${entry.intensiteit <= 3 ? '#10b981' : entry.intensiteit <= 6 ? '#f59e0b' : '#ef4444'}; font-weight: bold;">${entry.intensiteit}/10</span></small></div>` : ''}
-                        ${entry.trigger ? `<div style="margin: 0.5rem 0;"><small><strong>Trigger:</strong> ${entry.trigger}</small></div>` : ''}
+                        ${entry.triggers && entry.triggers.length ? `<div style="margin: 0.5rem 0;"><small><strong>Triggers:</strong></small> <div style="display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.25rem;">${entry.triggers.map(t => `<span style="display: inline-block; padding: 0.2rem 0.5rem; background: rgba(107,155,209,0.2); border-radius: 0.25rem; font-size: 0.85rem;">${t}</span>`).join(' ')}</div></div>` : entry.trigger ? `<div style="margin: 0.5rem 0;"><small><strong>Trigger:</strong> ${entry.trigger}</small></div>` : ''}
                         ${entry.sensaties && entry.sensaties.length ? `<div style="margin: 0.5rem 0;"><small><strong>Sensaties:</strong> ${entry.sensaties.join(', ')}</small></div>` : ''}
                         ${entry.symptomen && entry.symptomen.length ? `<div style="margin: 0.5rem 0;"><small><strong>Sensaties:</strong> ${entry.symptomen.join(', ')}</small></div>` : ''}
                         
@@ -6780,7 +6850,11 @@ Wil je je voorkeuren wijzigen?`;
         allJournalEntries.forEach(entry => {
             text += `Datum: ${entry.timestamp.toLocaleString('nl-BE')}\n`;
             text += `Techniek: ${entry.techniekGebruikt}\n`;
-            text += `Trigger: ${entry.trigger || 'Geen'}\n`;
+            // Handle both old (string) and new (array) trigger formats
+            const triggerText = entry.triggers && entry.triggers.length ? 
+                entry.triggers.join(', ') : 
+                (entry.trigger || 'Geen');
+            text += `Triggers: ${triggerText}\n`;
             if (entry.intensiteit !== null && entry.intensiteit !== undefined) text += `Gevoel na sessie: ${entry.intensiteit}/10\n`;
             // Intensiteit vóór/ná removed - not evidence-based for chronic tracking
             if (entry.cpScore) text += `CP Score: ${entry.cpScore} seconden\n`;
@@ -7623,55 +7697,35 @@ Wil je je voorkeuren wijzigen?`;
             return;
         }
         
-        // Check if we have any intensity or CP data
+        // Check if we have intensity data
         const hasIntensity = entries.some(e => e.intensiteit !== null && e.intensiteit !== undefined);
-        const hasCP = entries.some(e => e.cpScore);
         
-        if (!hasIntensity && !hasCP) {
-            canvas.parentElement.innerHTML = '<p style="text-align: center; color: var(--text-light);">Nog geen data met intensiteit of CP scores. Deze verschijnen zodra je nieuwe entries maakt!</p>';
+        if (!hasIntensity) {
+            canvas.parentElement.innerHTML = '<p style="text-align: center; color: var(--text-light);">Nog geen data met intensiteit scores. Deze verschijnen zodra je nieuwe entries maakt!</p>';
             return;
         }
         
         // Prepare data
         const dates = entries.map(e => e.timestamp.toLocaleDateString('nl-BE', { month: 'short', day: 'numeric' }));
         const intensityData = entries.map(e => e.intensiteit !== null && e.intensiteit !== undefined ? e.intensiteit : null);
-        const cpData = entries.map(e => e.cpScore || null);
         
         // Destroy existing chart
         if (window.intensityTrendChartInstance) {
             window.intensityTrendChartInstance.destroy();
         }
         
-        // Build datasets array - only include datasets with data
-        const datasets = [];
-        
-        if (hasIntensity) {
-            datasets.push({
-                label: 'Intensiteit',
-                data: intensityData,
-                borderColor: '#ef4444',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                borderWidth: 2,
-                tension: 0.3,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                yAxisID: 'y'
-            });
-        }
-        
-        if (hasCP) {
-            datasets.push({
-                label: 'CP Score',
-                data: cpData,
-                borderColor: '#10b981',
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                borderWidth: 2,
-                tension: 0.3,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                yAxisID: 'y1'
-            });
-        }
+        // Only intensity dataset
+        const datasets = [{
+            label: 'Intensiteit',
+            data: intensityData,
+            borderColor: '#ef4444',
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            fill: true,
+            borderWidth: 2,
+            tension: 0.3,
+            pointRadius: 4,
+            pointHoverRadius: 6
+        }];
         
         // Create chart
         window.intensityTrendChartInstance = new Chart(ctx, {
@@ -7698,9 +7752,7 @@ Wil je je voorkeuren wijzigen?`;
                                 let label = context.dataset.label || '';
                                 if (label) label += ': ';
                                 if (context.parsed.y !== null) {
-                                    label += context.dataset.yAxisID === 'y' ? 
-                                            context.parsed.y + '/10' : 
-                                            context.parsed.y + 's';
+                                    label += context.parsed.y + '/10';
                                 }
                                 return label;
                             }
@@ -7710,9 +7762,8 @@ Wil je je voorkeuren wijzigen?`;
                 scales: {
                     y: {
                         type: 'linear',
-                        position: 'left',
                         title: {
-                            display: hasIntensity,
+                            display: true,
                             text: 'Intensiteit (0-10)',
                             color: '#ef4444'
                         },
@@ -7720,19 +7771,6 @@ Wil je je voorkeuren wijzigen?`;
                         max: 10,
                         ticks: { color: '#ef4444' },
                         grid: { color: 'rgba(255,255,255,0.1)' }
-                    },
-                    y1: {
-                        type: 'linear',
-                        position: 'right',
-                        title: {
-                            display: hasCP,
-                            text: 'CP Score (sec)',
-                            color: '#10b981'
-                        },
-                        min: 0,
-                        max: 60,
-                        ticks: { color: '#10b981' },
-                        grid: { drawOnChartArea: false }
                     },
                     x: {
                         ticks: { color: '#999', maxRotation: 45, minRotation: 45 },
@@ -8193,12 +8231,24 @@ Wil je je voorkeuren wijzigen?`;
         
         if (!canvas || !card || !statsContainer) return;
         
-        // Count triggers
+        // Count triggers (supports both old string and new array format)
         const triggerCounts = {};
         allJournalEntries.forEach(entry => {
-            if (entry.trigger && entry.trigger.trim()) {
-                const trigger = entry.trigger.toLowerCase().trim();
-                triggerCounts[trigger] = (triggerCounts[trigger] || 0) + 1;
+            // New format: triggers array
+            if (entry.triggers && Array.isArray(entry.triggers)) {
+                entry.triggers.forEach(trigger => {
+                    if (trigger && trigger.trim()) {
+                        const t = trigger.trim();
+                        triggerCounts[t] = (triggerCounts[t] || 0) + 1;
+                    }
+                });
+            }
+            // Old format: single trigger string (backwards compatibility)
+            else if (entry.trigger && entry.trigger.trim()) {
+                const triggers = entry.trigger.split(',').map(t => t.trim()).filter(t => t);
+                triggers.forEach(trigger => {
+                    triggerCounts[trigger] = (triggerCounts[trigger] || 0) + 1;
+                });
             }
         });
         
@@ -8360,6 +8410,26 @@ Wil je je voorkeuren wijzigen?`;
     // ============================================
     // END VISUALIZATIONS
     // ============================================
+
+    // Handle "Andere" trigger checkbox
+    window.toggleOtherTrigger = function() {
+        const checkbox = document.getElementById('trigger-other-check');
+        const textField = document.getElementById('trigger-other-text');
+        if (checkbox && textField) {
+            textField.style.display = checkbox.checked ? 'block' : 'none';
+            if (!checkbox.checked) {
+                textField.value = '';
+            }
+        }
+    };
+    
+    // Add event listener for "Andere" checkbox
+    document.addEventListener('DOMContentLoaded', function() {
+        const otherCheckbox = document.getElementById('trigger-other-check');
+        if (otherCheckbox) {
+            otherCheckbox.addEventListener('change', toggleOtherTrigger);
+        }
+    });
 
     window.updateIntensityValue = function() {
         const slider = document.getElementById('entry-intensity');

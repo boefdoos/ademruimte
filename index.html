@@ -7707,36 +7707,32 @@ Wil je je voorkeuren wijzigen?`;
                     }
                 },
                 scales: {
-                    ...(hasIntensity && {
-                        y: {
-                            type: 'linear',
-                            position: hasCP ? 'left' : 'left',
-                            title: {
-                                display: true,
-                                text: 'Intensiteit (0-10)',
-                                color: '#ef4444'
-                            },
-                            min: 0,
-                            max: 10,
-                            ticks: { color: '#ef4444' },
-                            grid: { color: 'rgba(255,255,255,0.1)' }
-                        }
-                    }),
-                    ...(hasCP && {
-                        y1: {
-                            type: 'linear',
-                            position: hasIntensity ? 'right' : 'left',
-                            title: {
-                                display: true,
-                                text: 'CP Score (sec)',
-                                color: '#10b981'
-                            },
-                            min: 0,
-                            max: 60,
-                            ticks: { color: '#10b981' },
-                            grid: { drawOnChartArea: hasIntensity ? false : true }
-                        }
-                    }),
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: hasIntensity,
+                            text: 'Intensiteit (0-10)',
+                            color: '#ef4444'
+                        },
+                        min: 0,
+                        max: 10,
+                        ticks: { color: '#ef4444' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: hasCP,
+                            text: 'CP Score (sec)',
+                            color: '#10b981'
+                        },
+                        min: 0,
+                        max: 60,
+                        ticks: { color: '#10b981' },
+                        grid: { drawOnChartArea: false }
+                    },
                     x: {
                         ticks: { color: '#999', maxRotation: 45, minRotation: 45 },
                         grid: { color: 'rgba(255,255,255,0.1)' }
@@ -8024,36 +8020,32 @@ Wil je je voorkeuren wijzigen?`;
                     }
                 },
                 scales: {
-                    ...(hasIntensityData && {
-                        y: {
-                            type: 'linear',
-                            position: hasCPData ? 'left' : 'left',
-                            title: {
-                                display: true,
-                                text: 'Intensiteit',
-                                color: '#ef4444'
-                            },
-                            min: 0,
-                            max: 10,
-                            ticks: { color: '#ef4444' },
-                            grid: { color: 'rgba(255,255,255,0.1)' }
-                        }
-                    }),
-                    ...(hasCPData && {
-                        y1: {
-                            type: 'linear',
-                            position: hasIntensityData ? 'right' : 'left',
-                            title: {
-                                display: true,
-                                text: 'CP Score',
-                                color: '#10b981'
-                            },
-                            min: 0,
-                            max: 60,
-                            ticks: { color: '#10b981' },
-                            grid: { drawOnChartArea: hasIntensityData ? false : true }
-                        }
-                    }),
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: hasIntensityData,
+                            text: 'Intensiteit',
+                            color: '#ef4444'
+                        },
+                        min: 0,
+                        max: 10,
+                        ticks: { color: '#ef4444' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: hasCPData,
+                            text: 'CP Score',
+                            color: '#10b981'
+                        },
+                        min: 0,
+                        max: 60,
+                        ticks: { color: '#10b981' },
+                        grid: { drawOnChartArea: false }
+                    },
                     x: {
                         ticks: { color: '#999' },
                         grid: { color: 'rgba(255,255,255,0.1)' }

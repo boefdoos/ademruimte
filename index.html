@@ -5516,7 +5516,8 @@ Wil je je voorkeuren wijzigen?`;
         }
         
         // iOS FIX: Wait for audio initialization to complete
-        if (resonantAudioMode !== 'silence' && !resonantAudioContext) {            await initResonantAudio();
+        if (resonantAudioMode !== 'silence' && !resonantAudioContext) {
+            await initResonantAudio();
         }
         
         // Request wake lock
@@ -5528,14 +5529,13 @@ Wil je je voorkeuren wijzigen?`;
         
         // Update button states
         document.getElementById('start-resonant').disabled = true;
-        document.getElementById('pause-resonant').disabled = false;
         document.getElementById('stop-resonant').disabled = false;
         
         // Start animation
         animateResonantBreath();
         
         const audioMsg = resonantAudioMode === 'tones' ? ' met zachte tonen' : '';
-        showUserMessage(` Resonant breathing sessie gestart: ${resonantDuration} minuten op ${resonantBPM} bpm${audioMsg}`, 'success');
+        showUserMessage(`Resonant breathing sessie gestart: ${resonantDuration} minuten op ${resonantBPM} bpm${audioMsg}`, 'success');
         devLog('Resonant session started:', { duration: resonantDuration, bpm: resonantBPM, audio: resonantAudioMode });
     };
 

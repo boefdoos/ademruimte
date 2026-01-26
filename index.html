@@ -15,6 +15,7 @@
     
     <!-- Chart.js voor statistieken -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/2.0.1/chartjs-plugin-zoom.min.js"></script>
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -1894,22 +1895,6 @@
                         </div>
                     </div>
 
-                    <!-- Instructions -->
-                    <div class="card" style="background: rgba(59, 130, 246, 0.1); border: 2px solid rgba(59, 130, 246, 0.2);">
-                        <h3><i class="fas fa-info-circle"></i> Instructies</h3>
-                        <ol style="margin-left: 1.5rem; line-height: 1.8;">
-                            <li>Kies je sessieduur (20 min aanbevolen)</li>
-                            <li>Pas indien gewenst het ademritme aan (5.5 bpm is ideaal)</li>
-                            <li>Klik "Start Sessie"</li>
-                            <li>Volg de cirkel: groter = inademen, kleiner = uitademen</li>
-                            <li>Houd het ritme comfortabel - geen air hunger!</li>
-                            <li>Na afloop kun je je ervaring bijhouden in het dagboek</li>
-                        </ol>
-                        <p style="margin-top: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
-                            <strong><i class="fas fa-lightbulb"></i> Tip:</strong> Resonant breathing werkt <em>cumulatief</em>. De effecten bouwen op over weken. 
-                            Consistentie is belangrijker dan perfectie!
-                        </p>
-                    </div>
 
                     <!-- Weekly Progress -->
                     <div class="card">
@@ -2109,22 +2094,6 @@
                         </div>
                     </div>
 
-                    <!-- Instructions -->
-                    <div class="card" style="background: rgba(59, 130, 246, 0.1); border: 2px solid rgba(59, 130, 246, 0.2);">
-                        <h3><i class="fas fa-info-circle"></i> Instructies</h3>
-                        <ol style="margin-left: 1.5rem; line-height: 1.8;">
-                            <li>Kies je sessieduur (20 min aanbevolen)</li>
-                            <li>Pas indien gewenst het ademritme aan (5.5 bpm is ideaal)</li>
-                            <li>Klik "Start Sessie"</li>
-                            <li>Volg de cirkel: groter = inademen, kleiner = uitademen</li>
-                            <li>Houd het ritme comfortabel - geen air hunger!</li>
-                            <li>Na afloop kun je je ervaring bijhouden in het dagboek</li>
-                        </ol>
-                        <p style="margin-top: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.5); border-radius: 0.5rem;">
-                            <strong><i class="fas fa-lightbulb"></i> Tip:</strong> Resonant breathing werkt <em>cumulatief</em>. De effecten bouwen op over weken. 
-                            Consistentie is belangrijker dan perfectie!
-                        </p>
-                    </div>
 
                     <!-- Weekly Progress -->
                     <div class="card">
@@ -2743,7 +2712,8 @@
         if (selectedBtn) {
             selectedBtn.classList.remove('btn-secondary');
             selectedBtn.classList.add('btn-primary');
-        }    };
+        }
+    };
     let resonantBPM = 5.5; // breaths per minute
     let resonantAudioMode = 'silence';
     let butekyoAudioMode = 'tones'; // Buteyko audio enabled by default
@@ -4124,9 +4094,7 @@ Wil je je voorkeuren wijzigen?`;
                     fill: true
                 }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
+            options: getMobileChartOptions({
                 plugins: {
                     legend: {
                         display: true
@@ -4141,7 +4109,7 @@ Wil je je voorkeuren wijzigen?`;
                         }
                     }
                 }
-            }
+            })
         });
     }
     
@@ -7336,6 +7304,117 @@ Wil je je voorkeuren wijzigen?`;
     // };
 
     // ============================================
+    
+    // Add zoom reset instructions (shown once per session)
+    window.showZoomInstructions = function() {
+        if (!sessionStorage.getItem('zoomInstructionsShown')) {
+            showUserMessage('💡 Tip: Pinch om in/uit te zoomen op grafieken. Dubbel-klik om te resetten.', 'info');
+            sessionStorage.setItem('zoomInstructionsShown', 'true');
+        }
+    };
+
+    // CHART HELPERS
+    // ============================================
+    
+    // Get mobile-optimized chart options
+    function getMobileChartOptions(baseOptions = {}) {
+        const isMobile = window.innerWidth < 768;
+        
+        return {
+            ...baseOptions,
+            responsive: true,
+            maintainAspectRatio: !isMobile, // Allow height adjustment on mobile
+            interaction: {
+                mode: 'nearest',
+                intersect: false
+            },
+            plugins: {
+                ...baseOptions.plugins,
+                zoom: {
+                    pan: {
+                        enabled: true,
+                        mode: 'x'
+                    },
+                    zoom: {
+                        wheel: {
+                            enabled: true
+                        },
+                        pinch: {
+                            enabled: true
+                        },
+                        mode: 'x',
+                        onZoomComplete: function({chart}) {
+                            // Show reset hint after first zoom
+                            if (!chart._zoomHintShown) {
+                                showUserMessage('💡 Dubbel-klik om zoom te resetten', 'info');
+                                chart._zoomHintShown = true;
+                            }
+                        }
+                    }
+                },
+                legend: {
+                    ...baseOptions.plugins?.legend,
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        color: '#fff',
+                        font: {
+                            size: isMobile ? 11 : 12
+                        },
+                        padding: isMobile ? 8 : 10,
+                        usePointStyle: true,
+                        generateLabels: function(chart) {
+                            const datasets = chart.data.datasets;
+                            return datasets.map((dataset, i) => ({
+                                text: dataset.label || '',
+                                fillStyle: dataset.backgroundColor,
+                                strokeStyle: dataset.borderColor,
+                                lineWidth: dataset.borderWidth,
+                                hidden: !chart.isDatasetVisible(i),
+                                index: i
+                            }));
+                        }
+                    }
+                },
+                tooltip: {
+                    ...baseOptions.plugins?.tooltip,
+                    enabled: true,
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleFont: { size: isMobile ? 12 : 14 },
+                    bodyFont: { size: isMobile ? 11 : 13 },
+                    padding: isMobile ? 8 : 12
+                }
+            },
+            scales: baseOptions.scales ? {
+                ...baseOptions.scales,
+                x: {
+                    ...baseOptions.scales.x,
+                    ticks: {
+                        ...baseOptions.scales.x?.ticks,
+                        font: { size: isMobile ? 9 : 11 },
+                        maxRotation: isMobile ? 45 : 0,
+                        minRotation: isMobile ? 45 : 0
+                    }
+                },
+                y: baseOptions.scales.y ? {
+                    ...baseOptions.scales.y,
+                    ticks: {
+                        ...baseOptions.scales.y?.ticks,
+                        font: { size: isMobile ? 9 : 11 }
+                    }
+                } : undefined,
+                y1: baseOptions.scales.y1 ? {
+                    ...baseOptions.scales.y1,
+                    ticks: {
+                        ...baseOptions.scales.y1?.ticks,
+                        font: { size: isMobile ? 9 : 11 }
+                    }
+                } : undefined
+            } : undefined
+        };
+    }
+
+    // ============================================
     // EVIDENCE-BASED VISUALIZATIONS
     // ============================================
 
@@ -7725,34 +7804,48 @@ Wil je je voorkeuren wijzigen?`;
         
         const ctx = canvas.getContext('2d');
         
-        // Group by week
-        const weeklyData = {};
+        // Group by week with proper date tracking
+        const weeklyDataMap = new Map(); // Use Map to maintain order
         
         allJournalEntries.forEach(entry => {
-            // Get week number
+            // Get week start (Monday)
             const weekStart = new Date(entry.timestamp);
-            weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1); // Monday
-            const weekKey = weekStart.toLocaleDateString('nl-BE', { month: 'short', day: 'numeric' });
+            const dayOfWeek = weekStart.getDay();
+            const daysToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+            weekStart.setDate(weekStart.getDate() + daysToMonday);
+            weekStart.setHours(0, 0, 0, 0);
             
-            if (!weeklyData[weekKey]) {
-                weeklyData[weekKey] = {
+            const weekKey = weekStart.getTime(); // Use timestamp as key for proper sorting
+            const weekLabel = weekStart.toLocaleDateString('nl-BE', { month: 'short', day: 'numeric' });
+            
+            if (!weeklyDataMap.has(weekKey)) {
+                weeklyDataMap.set(weekKey, {
+                    label: weekLabel,
                     intensities: [],
                     cpScores: [],
                     count: 0
-                };
+                });
             }
             
-            weeklyData[weekKey].count++;
+            const weekData = weeklyDataMap.get(weekKey);
+            weekData.count++;
             if (entry.intensiteit !== null && entry.intensiteit !== undefined) {
-                weeklyData[weekKey].intensities.push(entry.intensiteit);
+                weekData.intensities.push(entry.intensiteit);
             }
             if (entry.cpScore) {
-                weeklyData[weekKey].cpScores.push(entry.cpScore);
+                weekData.cpScores.push(entry.cpScore);
             }
         });
         
-        // Get last 8 weeks
-        const weeks = Object.keys(weeklyData).slice(-8);
+        // Sort by date (oldest to newest) and get last 8 weeks
+        const sortedWeeks = Array.from(weeklyDataMap.entries())
+            .sort((a, b) => a[0] - b[0]) // Sort by timestamp
+            .slice(-8); // Get last 8 weeks
+        
+        const weeks = sortedWeeks.map(([_, data]) => data.label);
+        const weeklyData = Object.fromEntries(
+            weeks.map(label => [label, sortedWeeks.find(([_, d]) => d.label === label)[1]])
+        );
         const avgIntensities = weeks.map(week => {
             const intensities = weeklyData[week].intensities;
             return intensities.length > 0 ? 
@@ -7810,14 +7903,8 @@ Wil je je voorkeuren wijzigen?`;
                 labels: weeks,
                 datasets: weeklyDatasets
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
+            options: getMobileChartOptions({
                 plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: { color: '#fff' }
-                    },
                     tooltip: {
                         callbacks: {
                             label: function(context) {
@@ -7858,14 +7945,14 @@ Wil je je voorkeuren wijzigen?`;
                         min: 0,
                         max: 60,
                         ticks: { color: '#10b981' },
-                        grid: { drawOnChartArea: false }
+                        grid: { display: false }
                     },
                     x: {
-                        ticks: { color: '#999' },
+                        ticks: { color: '#fff' },
                         grid: { color: 'rgba(255,255,255,0.1)' }
                     }
                 }
-            }
+            })
         });
     }
 

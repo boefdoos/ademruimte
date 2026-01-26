@@ -7353,7 +7353,6 @@ Wil je je voorkeuren wijzigen?`;
                     }
                 },
                 legend: {
-                    ...baseOptions.plugins?.legend,
                     display: true,
                     position: 'top',
                     labels: {
@@ -7366,14 +7365,22 @@ Wil je je voorkeuren wijzigen?`;
                         generateLabels: function(chart) {
                             const datasets = chart.data.datasets;
                             return datasets.map((dataset, i) => ({
-                                text: dataset.label || '',
+                                text: dataset.label || 'Dataset ' + (i + 1),
                                 fillStyle: dataset.backgroundColor,
                                 strokeStyle: dataset.borderColor,
-                                lineWidth: dataset.borderWidth,
+                                lineWidth: dataset.borderWidth || 2,
                                 hidden: !chart.isDatasetVisible(i),
-                                index: i
+                                index: i,
+                                fontColor: '#fff'
                             }));
                         }
+                    },
+                    onClick: function(e, legendItem, legend) {
+                        const index = legendItem.index;
+                        const chart = legend.chart;
+                        const meta = chart.getDatasetMeta(index);
+                        meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
+                        chart.update();
                     }
                 },
                 tooltip: {
@@ -7897,6 +7904,10 @@ Wil je je voorkeuren wijzigen?`;
         }
         
         // Create chart
+        // Debug: Log labels
+        console.log('Weekly Averages Chart - Labels:', weeks);
+        console.log('Weekly Averages Chart - Datasets:', weeklyDatasets);
+        
         window.weeklyAveragesChartInstance = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -7948,7 +7959,12 @@ Wil je je voorkeuren wijzigen?`;
                         grid: { display: false }
                     },
                     x: {
-                        ticks: { color: '#fff' },
+                        ticks: { 
+                            color: '#fff',
+                            font: { size: 11 },
+                            maxRotation: 45,
+                            minRotation: 45
+                        },
                         grid: { color: 'rgba(255,255,255,0.1)' }
                     }
                 }
@@ -8058,18 +8074,18 @@ Wil je je voorkeuren wijzigen?`;
         const avgFirstHalf = firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length;
         const avgSecondHalf = secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length;
         const change = avgSecondHalf - avgFirstHalf;
-        const trend = change >= 0 ? '↗️' : '↘️';
+        const trend = change >= 0 ? '↗' : '↘';
         const changeColor = change >= 0 ? '#10b981' : '#ef4444';
         
         let assessment = '';
         if (avgCP >= 30) {
-            assessment = '🌟 Uitstekend! Je CO2-tolerantie is goed ontwikkeld.';
+            assessment = 'Uitstekend! Je CO2-tolerantie is goed ontwikkeld.';
         } else if (avgCP >= 20) {
-            assessment = '👍 Goed! Je bent binnen normale range.';
+            assessment = 'Goed! Je bent binnen normale range.';
         } else if (avgCP >= 15) {
-            assessment = '💪 Op weg naar verbetering. Blijf consistent oefenen!';
+            assessment = 'Op weg naar verbetering. Blijf consistent oefenen!';
         } else {
-            assessment = '⚡ Blijf oefenen - verbetering komt met tijd en consistentie.';
+            assessment = 'Blijf oefenen - verbetering komt met tijd en consistentie.';
         }
         
         statsContainer.innerHTML = `

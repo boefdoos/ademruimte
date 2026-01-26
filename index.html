@@ -1879,9 +1879,6 @@
                             <button class="btn btn-primary" id="start-resonant" onclick="startResonantBreathing()">
                                 <i class="fas fa-play"></i> Start Sessie
                             </button>
-                            <button class="btn btn-warning" id="pause-resonant" onclick="pauseResonantBreathing()" disabled>
-                                <i class="fas fa-pause"></i> Pauze
-                            </button>
                             <button class="btn btn-danger" id="stop-resonant" onclick="stopResonantBreathing()" disabled>
                                 <i class="fas fa-stop"></i> Stop
                             </button>
@@ -2096,9 +2093,6 @@
                         <div class="button-group" style="margin-top: 1.5rem;">
                             <button class="btn btn-primary" id="start-resonant" onclick="startResonantBreathing()">
                                 <i class="fas fa-play"></i> Start Sessie
-                            </button>
-                            <button class="btn btn-warning" id="pause-resonant" onclick="pauseResonantBreathing()" disabled>
-                                <i class="fas fa-pause"></i> Pauze
                             </button>
                             <button class="btn btn-danger" id="stop-resonant" onclick="stopResonantBreathing()" disabled>
                                 <i class="fas fa-stop"></i> Stop
@@ -5577,6 +5571,8 @@ Wil je je voorkeuren wijzigen?`;
         devLog('Resonant session started:', { duration: resonantDuration, bpm: resonantBPM, audio: resonantAudioMode });
     };
 
+    // DISABLED: Pause function removed per user request
+    /*
     window.pauseResonantBreathing = function() {
         resonantPaused = !resonantPaused;
         
@@ -5594,6 +5590,7 @@ Wil je je voorkeuren wijzigen?`;
             showUserMessage('▶️ Sessie hervat', 'info');
         }
     };
+    */
 
     window.stopResonantBreathing = function() {
         // Stop animation
@@ -6296,8 +6293,12 @@ Wil je je voorkeuren wijzigen?`;
             // Add to local array
             allJournalEntries.unshift(entry);
             
-            // Update visualizations
-            createAllVisualizations();
+            // Update visualizations (wrapped in try-catch to prevent errors if charts aren't visible)
+            try {
+                createAllVisualizations();
+            } catch (vizError) {
+                console.warn('Visualization update failed (charts may not be visible):', vizError);
+            }
             
             // IMPROVED: Update streak tracking - add today's date to session dates
             const today = new Date().toDateString();
@@ -7038,14 +7039,22 @@ Wil je je voorkeuren wijzigen?`;
             }
         }
         
-        // INSIGHT 3: Trigger Pattern Herkenning
+        // INSIGHT 3: Trigger Pattern Herkenning (ALLEEN nieuwe triggers array)
         const triggerAnalysis = {};
-        allTimeEntries.filter(e => e.trigger && e.trigger.trim().length > 2).forEach(entry => {
-            const trigger = entry.trigger.toLowerCase().trim();
-            if (!triggerAnalysis[trigger]) {
-                triggerAnalysis[trigger] = { count: 0 };
+        allTimeEntries.forEach(entry => {
+            // ONLY count entries with new triggers array format
+            if (entry.triggers && Array.isArray(entry.triggers)) {
+                entry.triggers.forEach(trigger => {
+                    if (trigger && trigger.trim().length > 2) {
+                        const t = trigger.toLowerCase().trim();
+                        if (!triggerAnalysis[t]) {
+                            triggerAnalysis[t] = { count: 0 };
+                        }
+                        triggerAnalysis[t].count++;
+                    }
+                });
             }
-            triggerAnalysis[trigger].count++;
+            // Old trigger string format is IGNORED for insights
         });
         
         const significantTriggers = Object.keys(triggerAnalysis)

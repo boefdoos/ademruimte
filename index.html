@@ -5578,9 +5578,7 @@ Wil je je voorkeuren wijzigen?`;
         
         // Reset UI
         document.getElementById('start-resonant').disabled = false;
-        document.getElementById('pause-resonant').disabled = true;
         document.getElementById('stop-resonant').disabled = true;
-        document.getElementById('pause-resonant').innerHTML = '<i class="fas fa-pause"></i> Pauze';
         
         drawResonantCircle(0.5, 'Sessie gestopt');
         
@@ -5621,13 +5619,18 @@ Wil je je voorkeuren wijzigen?`;
                     try {
                         const { addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
                         await addDoc(collection(db, 'resonant_sessions'), session);
-        } catch (error) {
+                    } catch (error) {
                         console.error('❌ Error saving resonant session:', error);
                     }
                 })();
             }
             
             showUserMessage(`✅ Sessie voltooid: ${completedMinutes}/${targetMinutes} minuten (${completionPercentage}%)`, 'success');
+            
+            // Open journal modal after short delay
+            setTimeout(() => {
+                openJournalModal('Resonant Breathing');
+            }, 1500);
         } else {
             showUserMessage(`⚠️ Sessie gestopt: ${completedMinutes}/${targetMinutes} minuten (${completionPercentage}%)`, 'warning');
         }
@@ -5660,11 +5663,9 @@ Wil je je voorkeuren wijzigen?`;
         
         // Update UI
         document.getElementById('start-resonant').disabled = false;
-        document.getElementById('pause-resonant').disabled = true;
         document.getElementById('stop-resonant').disabled = true;
-        document.getElementById('pause-resonant').innerHTML = '<i class="fas fa-pause"></i> Pauze';
         
-        drawResonantCircle(0.75, 'VOLTOOID! ');
+        drawResonantCircle(0.75, 'VOLTOOID!');
         
         // Reset state variables
         resonantPaused = false;
@@ -5685,21 +5686,19 @@ Wil je je voorkeuren wijzigen?`;
                 try {
                     const { addDoc, collection } = await import("https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js");
                     await addDoc(collection(db, 'resonant_sessions'), session);
-        } catch (error) {
+                } catch (error) {
                     console.error('❌ Error saving resonant session:', error);
                 }
             })();
-        } else if (DEV_MODE) {        }
+        }
         
-        // Success message with option to journal
+        // Success message
+        showUserMessage('✅ Resonant breathing sessie voltooid!', 'success');
+        
+        // Open journal modal after short delay
         setTimeout(() => {
-            showUserMessage('✅ Resonant breathing sessie voltooid! Vul je ervaring in het dagboek in.', 'success');
-            
-            // Ask if user wants to journal
-            if (confirm('Wil je deze sessie in je dagboek bijhouden?')) {
-                openJournalModal('Resonant Breathing');
-            }
-        }, 1000);
+            openJournalModal('Resonant Breathing');
+        }, 1500);
         
         devLog('Resonant session completed:', session);
     }

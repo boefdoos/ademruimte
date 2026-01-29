@@ -366,6 +366,15 @@
     .range-slider {
         -webkit-appearance: none;
         width: 100%;
+        height: 8px;
+        border-radius: 4px;
+        background: #e5e7eb;
+        outline: none;
+        transition: var(--transition-base);
+    }
+    
+    /* Specific styling for intensity slider with gradient */
+    #entry-intensity {
         height: 12px;
         border-radius: 6px;
         background: linear-gradient(to right, 
@@ -376,45 +385,66 @@
             #ef4444 80%,     /* Red-orange */
             #dc2626 100%     /* Red (10) */
         );
-        outline: none;
-        transition: var(--transition-base);
         box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .range-slider::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
-        width: 28px;
-        height: 28px;
+        width: 24px;
+        height: 24px;
         border-radius: 50%;
-        background: white;
+        background: var(--primary-color);
         cursor: pointer;
-        border: 4px solid #1f2937;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        border: 3px solid white;
+        box-shadow: var(--shadow-sm);
         transition: var(--transition-base);
     }
 
     .range-slider::-webkit-slider-thumb:hover {
+        transform: scale(1.1);
+    }
+    
+    /* Specific thumb styling for intensity slider */
+    #entry-intensity::-webkit-slider-thumb {
+        width: 28px;
+        height: 28px;
+        background: white;
+        border: 4px solid #1f2937;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    
+    #entry-intensity::-webkit-slider-thumb:hover {
         transform: scale(1.15);
         box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
 
     .range-slider::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        cursor: pointer;
+        border: 3px solid white;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    /* Specific thumb styling for intensity slider (Firefox) */
+    #entry-intensity::-moz-range-thumb {
         width: 28px;
         height: 28px;
-        border-radius: 50%;
         background: white;
-        cursor: pointer;
         border: 4px solid #1f2937;
         box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
     
-    .range-slider::-moz-range-thumb:hover {
+    #entry-intensity::-moz-range-thumb:hover {
         transform: scale(1.15);
         box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
     
-    .range-slider::-moz-range-track {
+    /* Specific track styling for intensity slider (Firefox) */
+    #entry-intensity::-moz-range-track {
         width: 100%;
         height: 12px;
         border-radius: 6px;
